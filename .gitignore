@@ -364,3 +364,5 @@ FodyWeavers.xsd
 /Temp
 /Library
 \Assets\AssetPackages
+/Assets/Resources
+/Assets/Scenes
