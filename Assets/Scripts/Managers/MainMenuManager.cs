@@ -5,14 +5,15 @@ using UnityEngine;
 public class MainMenuManager : MonoBehaviour
 {
 	public GameObject mainMenuObj;
+	public static MainMenuManager Instance;
 
 	public void Start()
 	{
-		
+		Instance = this;
 	}
 	public void Update()
 	{
-		ShowHideMainMenuKeybind();
+		//ShowHideMainMenuKeybind();
 	}
 
 	//button actions
@@ -29,17 +30,12 @@ public class MainMenuManager : MonoBehaviour
 	}
 
 	//show/hide main menu
-	public void ShowHideMainMenuKeybind()
+	public void ShowHideMainMenu()
 	{
-		/*
-		if (Input.GetKeyDown(KeyCode.Escape))
-		{
-			if (!mainMenuObj.activeInHierarchy)
-				ShowMainMenu();
-			else if (mainMenuObj.activeInHierarchy)
-				HideMainMenu();
-		}
-		*/
+		if (!mainMenuObj.activeInHierarchy)
+			ShowMainMenu();
+		else if (mainMenuObj.activeInHierarchy)
+			HideMainMenu();
 	}
 	public void ShowMainMenu()
 	{

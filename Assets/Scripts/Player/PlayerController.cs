@@ -5,6 +5,7 @@ using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Windows;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,7 +14,6 @@ public class PlayerController : MonoBehaviour
 
 	Vector2 moveDirection = Vector2.zero;
 	public float speed;
-
 
 	private void Awake()
 	{
@@ -35,11 +35,31 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		moveDirection = _playerInputs.Player.Movement.ReadValue<Vector2>();
+
 	}
 
 	private void FixedUpdate()
 	{
+		moveDirection = _playerInputs.Player.Movement.ReadValue<Vector2>();
 		_rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
+	}
+
+	/// <summary>
+	/// Below are all player actions
+	/// </summary>
+
+	//player action
+	private void OnCameraZoom()
+	{
+		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
+		float value = _playerInputs.Player.CameraZoom.ReadValue<float>();
+		if (Camera.main.orthographicSize > 3 && value == 120 || Camera.main.orthographicSize < 8 && value == -120)
+			Camera.main.orthographicSize -= value / 480;
+	}
+
+	//ui action
+	private void OnMainMenu()
+	{
+		MainMenuManager.Instance.ShowHideMainMenu();
 	}
 }
