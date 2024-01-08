@@ -61,10 +61,17 @@
     <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputActions.cs" />
+    <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\KeybindsManager.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
+    <Compile Include="Assets\Scripts\Items\Weapons.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
+    <Compile Include="Assets\Scripts\Utilities.cs" />
+    <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
