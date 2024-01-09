@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15125d2e4ec8c9f4d9fdc521f4911922, type: 3}
+  m_Name: HalfPlateChespiece
+  m_EditorClassIdentifier: 
+  itemName: Half Plate Chestpiece
+  itemImage: {fileID: 0}
+  ItemPrice: 275
+  ItemId: 0
+  itemType: 1
+  isEquipable: 1
+  isStackable: 0
+  MaxStackCount: 1
+  baseBonusHealth: 6
+  baseBonusMana: 0
+  classRestriction: 1
+  armorSlot: 1
+  bonusPhysicalResistance: 6
+  bonusPoisonResistance: 6
+  bonusFireResistance: 6
+  bonusIceResistance: 6

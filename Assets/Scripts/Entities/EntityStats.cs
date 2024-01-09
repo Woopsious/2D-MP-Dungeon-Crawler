@@ -6,7 +6,7 @@ using UnityEngine;
 public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
-	//public SOEntityBaseStats entityBaseStats;
+	public SOEntityStats entityBaseStats;
 	public int entityLevel;
 	public float statModifier;
 

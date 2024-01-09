@@ -60,11 +60,16 @@ SpriteAtlas:
     - 76686699748622a48b566623ca98afc6: -2026166544
     - 76686699748622a48b566623ca98afc6: 435920959
     - 76686699748622a48b566623ca98afc6: 125164314
+    - 76686699748622a48b566623ca98afc6: -788839049
+    - 76686699748622a48b566623ca98afc6: -1975513336
     - 76686699748622a48b566623ca98afc6: -34624218
     - 76686699748622a48b566623ca98afc6: -329120930
     - 76686699748622a48b566623ca98afc6: 582408270
     - 76686699748622a48b566623ca98afc6: -683263113
     - 76686699748622a48b566623ca98afc6: -1691701891
+    - 76686699748622a48b566623ca98afc6: -256620199
+    - 76686699748622a48b566623ca98afc6: 1727710949
+    - 76686699748622a48b566623ca98afc6: -762973996
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: -1729793132, guid: 76686699748622a48b566623ca98afc6, type: 3}
@@ -77,11 +82,16 @@ SpriteAtlas:
   - {fileID: -2026166544, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: 435920959, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: 125164314, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: -788839049, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: -1975513336, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -34624218, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -329120930, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: 582408270, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -683263113, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -1691701891, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: -256620199, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: -762973996, guid: 76686699748622a48b566623ca98afc6, type: 3}
   m_PackedSpriteNamesToIndex:
   - Dungeon TileSheet 16x16_1
   - Dungeon TileSheet 16x16_0
@@ -93,11 +103,16 @@ SpriteAtlas:
   - Dungeon TileSheet 16x16_6
   - Dungeon TileSheet 16x16_9
   - Dungeon TileSheet 16x16_8
+  - Chest_Empty
+  - Enemy_Skeleton
   - Dungeon TileSheet 16x16_10
   - Dungeon TileSheet 16x16_11
   - Dungeon TileSheet 16x16_12
   - Player_M
   - Player_F
+  - Chest_Full
+  - Enemy_Zombie
+  - Chest_Closed
   m_RenderDataMap: {}
   m_Tag: Atlas
   m_IsVariant: 0

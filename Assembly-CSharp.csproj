@@ -59,13 +59,24 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Entities\PlayerDetection.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\KeybindsManager.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
+    <Compile Include="Assets\Scripts\Items\Items.cs" />
+    <Compile Include="Assets\Scripts\Items\Armors.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
+    <Compile Include="Assets\Scripts\Items\Consumables.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />

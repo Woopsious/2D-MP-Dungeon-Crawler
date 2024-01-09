@@ -7,20 +7,19 @@ public class EntityBehaviour : MonoBehaviour
 {
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
-	public Rigidbody rb;
+	public Rigidbody2D rb;
 
-	public SOEntityBehaviours entityBehaviour;
-	public SphereCollider viewRangeCollider;
-	public GameObject centerPoint;
+	public SOEntityBehaviour entityBehaviour;
+	public CircleCollider2D viewRangeCollider;
 
 	private Bounds idleBounds;
-	private Vector3 movePosition;
+	private Vector2 movePosition;
 	private bool HasReachedDestination;
 
 	public float idleTimer;
 
 	public PlayerController player;
-	public Vector3 playersLastKnownPosition;
+	public Vector2 playersLastKnownPosition;
 	private Bounds chaseBounds;
 
 	public void Start()
@@ -50,13 +49,13 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		UpdatePlayerPosition();
 
-		if (playersLastKnownPosition == Vector3.zero)
+		if (playersLastKnownPosition == Vector2.zero)
 		{
 			// 1. idle and randomly move around the map within bounds of where they spawned
 			IdleAtPositionTimer();
 			CheckDistance();
 		}
-		else if (playersLastKnownPosition != Vector3.zero)
+		else if (playersLastKnownPosition != Vector2.zero)
 		{
 			// 2. when play enters agro range, chase player endless till they escape max chase range
 			// 2A. if they escape max chase range move to last know position
@@ -91,7 +90,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public void FindNewIdlePosition()
 	{
-		Vector3 randomMovePosition = Utilities.GetRandomPointInBounds(idleBounds);
+		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(idleBounds);
 		movePosition = SampleNewMovePosition(randomMovePosition);
 
 		if (CheckAndSetNewPath(movePosition))
@@ -104,7 +103,7 @@ public class EntityBehaviour : MonoBehaviour
 	public void ChasePlayer()
 	{
 		HasReachedDestination = false;
-		Vector3 movePosition = SampleNewMovePosition(playersLastKnownPosition);
+		Vector2 movePosition = SampleNewMovePosition(playersLastKnownPosition);
 		CheckAndSetNewPath(movePosition);
 
 		if (CheckChaseDistance())
@@ -133,7 +132,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public bool CheckChaseDistance()
 	{
-		float distance = Vector3.Distance(gameObject.transform.position, playersLastKnownPosition);
+		float distance = Vector2.Distance(gameObject.transform.position, playersLastKnownPosition);
 
 		if (distance < entityBehaviour.maxChaseRange)
 			return false;
@@ -141,12 +140,12 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//idle + attack behaviour
-	public Vector3 SampleNewMovePosition(Vector3 position)
+	public Vector3 SampleNewMovePosition(Vector2 position)
 	{
 		NavMesh.SamplePosition(position, out NavMeshHit navMeshHit, 10, navMeshAgent.areaMask);
 		return navMeshHit.position;
 	}
-	public bool CheckAndSetNewPath(Vector3 movePosition)
+	public bool CheckAndSetNewPath(Vector2 movePosition)
 	{
 		NavMeshPath path = new NavMeshPath();
 		if (navMeshAgent.CalculatePath(movePosition, path))
@@ -162,7 +161,7 @@ public class EntityBehaviour : MonoBehaviour
 		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && HasReachedDestination == false)
 		{
 			HasReachedDestination = true;
-			playersLastKnownPosition = Vector3.zero;
+			playersLastKnownPosition = Vector2.zero;
 		}
 	}
 

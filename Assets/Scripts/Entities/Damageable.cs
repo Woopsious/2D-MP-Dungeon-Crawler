@@ -9,12 +9,8 @@ public class Damageable : MonoBehaviour
 
 	public event Action<int, IDamagable.DamageType, bool> OnHit;
 
-	public void OnTriggerEnter(Collider other)
+	public void OnHitFromDamageSource(int damage, IDamagable.DamageType damageType)
 	{
-		if (other.gameObject.GetComponent<Weapons>() == null) return;
-
-		Weapons weapon = other.gameObject.GetComponent<Weapons>();
-
-		OnHit?.Invoke(weapon.damage, (IDamagable.DamageType)weapon.baseDamageType, isDestroyedInOneHit);
+		OnHit?.Invoke(damage, damageType, isDestroyedInOneHit);
 	}
 }
