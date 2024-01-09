@@ -19,7 +19,7 @@ public class Items : MonoBehaviour
 	public Rarity rarity;
 	public enum Rarity
 	{
-		isCommon, isRare, isLegendary
+		isCommon, isRare, isEpic, isLegendary
 	}
 
 	[Header("Item Base Ref")]

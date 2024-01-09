@@ -18,6 +18,4 @@ MonoBehaviour:
   poisonDamageResistance: 5
   fireDamageResistance: 5
   iceDamageResistance: 5
-  navMeshMoveSpeed: 8
-  navMeshTurnSpeed: 100
   maxMana: 0

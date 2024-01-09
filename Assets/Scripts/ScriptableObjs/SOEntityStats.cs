@@ -14,10 +14,6 @@ public class SOEntityStats : ScriptableObject
 	public int fireDamageResistance;
 	public int iceDamageResistance;
 
-	[Header("Speed")]
-	public float navMeshMoveSpeed;
-	public int navMeshTurnSpeed;
-
 	[Header("Mana")]
 	public int maxMana;
 }

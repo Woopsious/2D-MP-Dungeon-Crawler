@@ -17,7 +17,6 @@ public class Utilities
 			Random.Range(bounds.min.z, bounds.max.z));
 	}
 	//return random rarity
-	/*
 	public static Items.Rarity SetRarity()
 	{
 		float percentage = GetRandomNumber(101); //5% for legendary | 15% for epic | 30% for rare | 50% for common
@@ -27,11 +26,10 @@ public class Utilities
 		else if (percentage >= 80 && percentage < 95)
 			return Items.Rarity.isEpic;
 		else if (percentage >= 50 && percentage < 80)
-			return Items.Rarity.isRare
+			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
 	}
-	*/
 	//return random item lvl in range of player lvl +/- a max of 4
 	public static int SetItemLevel(int level)
 	{

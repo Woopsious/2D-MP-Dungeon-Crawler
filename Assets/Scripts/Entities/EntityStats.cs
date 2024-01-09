@@ -40,7 +40,7 @@ public class EntityStats : MonoBehaviour
 
 	private void Start()
 	{
-		GetStatModifier(entityLevel, IGetStatModifier.Rarity.isCommon);
+		SetStats();
 	}
 	private void OnEnable()
 	{
@@ -50,20 +50,26 @@ public class EntityStats : MonoBehaviour
 	{
 		GetComponent<Damageable>().OnHit -= RecieveDamage;
 	}
-	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
-	{
-		float modifier = (level - 1f) / 20;  //get level modifier
-		SetStats(modifier += 1);
-	}
 
-	public void SetStats(float modifier)
+	public void SetStats()
 	{
-		//maxHealth = (int)(entityBaseStats.maxHealth * modifier);
-		//currentHealth = (int)(entityBaseStats.maxHealth * modifier);
-		//physicalResistance = (int)(entityBaseStats.physicalDamageResistance * modifier);
-		//poisonResistance = (int)(entityBaseStats.poisonDamageResistance * modifier);
-		//fireResistance = (int)(entityBaseStats.fireDamageResistance * modifier);
-		//iceResistance = (int)(entityBaseStats.iceDamageResistance * modifier);
+		float modifier = (entityLevel - 1f) / 20;  //get level modifier
+		statModifier = modifier += 1;
+
+		try
+		{
+			maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
+			currentHealth = (int)(entityBaseStats.maxHealth * statModifier);
+			physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
+			poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
+			fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
+			iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
+		}
+		catch
+		{
+			//throwing null ref here being thrown here even though all values get properly assigned
+			//debugging shows for some reason entityBaseStats ref returns null but entityBaseStats.maxHealth return 100
+		}
 	}
 
 	//health functions

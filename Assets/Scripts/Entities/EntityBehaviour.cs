@@ -13,28 +13,28 @@ public class EntityBehaviour : MonoBehaviour
 	public CircleCollider2D viewRangeCollider;
 
 	private Bounds idleBounds;
-	private Vector2 movePosition;
-	private bool HasReachedDestination;
+	public Vector2 movePosition;
+	public bool HasReachedDestination;
 
 	public float idleTimer;
 
-	public PlayerController player;
-	public Vector2 playersLastKnownPosition;
 	private Bounds chaseBounds;
+	public Vector2 playersLastKnownPosition;
+	public PlayerController player;
 
 	public void Start()
 	{
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
-			transform.position.y - 3, transform.position.z - entityBehaviour.idleWanderRadius);
+			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z - 3);
 
 		idleBounds.max = new Vector3(transform.position.x + entityBehaviour.idleWanderRadius,
-			transform.position.y + 3, transform.position.z + entityBehaviour.idleWanderRadius);
+			transform.position.y + entityBehaviour.idleWanderRadius, transform.position.z + 3);
 
 		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
-			transform.position.y - 3, transform.position.z - entityBehaviour.maxChaseRange);
+			transform.position.y - entityBehaviour.maxChaseRange, transform.position.z - 3);
 
 		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
-			transform.position.y + 3, transform.position.z + entityBehaviour.maxChaseRange);
+			transform.position.y + entityBehaviour.maxChaseRange, transform.position.z + 3);
 
 		HasReachedDestination = true;
 
@@ -116,16 +116,14 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public bool CheckIfPlayerVisible()
 	{
-		try
-		{
-			Physics.Linecast(transform.position, player.transform.position, out RaycastHit hit, includeMe);
+		if (player == null) return false;
 
-			if (hit.point != null && hit.collider.gameObject == player.gameObject)
-				return true;
-			else
-				return false;
+		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
+		if (hit.point != null && hit.collider.gameObject == player.gameObject)
+		{
+			return true;
 		}
-		catch
+		else
 		{
 			return false;
 		}
@@ -140,7 +138,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//idle + attack behaviour
-	public Vector3 SampleNewMovePosition(Vector2 position)
+	public Vector2 SampleNewMovePosition(Vector2 position)
 	{
 		NavMesh.SamplePosition(position, out NavMeshHit navMeshHit, 10, navMeshAgent.areaMask);
 		return navMeshHit.position;

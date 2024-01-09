@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class SOLootPools : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	public int droppedGoldAmount;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	public List<SOItems> lootPoolList = new List<SOItems>();
+
+	public int minDroppedItemsAmount;
+	public int maxDroppedItemsAmount;
 }
