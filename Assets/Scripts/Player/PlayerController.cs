@@ -15,6 +15,9 @@ public class PlayerController : MonoBehaviour
 	Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
+	public GameObject weapon;
+	public Collider2D weaponCollider;
+
 	private void Awake()
 	{
 		_playerInputs = new PlayerInputActions();
@@ -49,6 +52,23 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 
 	//player action
+	public bool canAttackAgain;
+	private void OnMainAttack()
+	{
+		if (!canAttackAgain) return;
+		Debug.Log("Attacking");
+
+		canAttackAgain = false;
+		weaponCollider.enabled = true;
+		StartCoroutine(weaponCooldown());
+	}
+	IEnumerator weaponCooldown()
+	{
+		yield return new WaitForSeconds(0.1f);
+		weaponCollider.enabled = false;
+		yield return new WaitForSeconds(weapon.GetComponent<Weapons>().weaponBaseRef.baseAttackSpeed - 0.1f);
+		canAttackAgain = true;
+	}
 	private void OnCameraZoom()
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input

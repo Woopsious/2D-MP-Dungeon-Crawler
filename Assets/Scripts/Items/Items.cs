@@ -48,7 +48,8 @@ public class Items : MonoBehaviour
 	{
 		float modifier = 1f;
 		if (rarity == IGetStatModifier.Rarity.isLegendary) { modifier += 0.75f; } //get rarity modifier
-		if (rarity == IGetStatModifier.Rarity.isRare) { modifier += 0.25f; }
+		if (rarity == IGetStatModifier.Rarity.isEpic) { modifier += 0.4f; } //get rarity modifier
+		if (rarity == IGetStatModifier.Rarity.isRare) { modifier += 0.15f; }
 		else { modifier += 0; }
 
 		statModifier = modifier + (level - 1f) / 20;  //get level modifier

@@ -8,7 +8,6 @@ public class Weapons : Items
 	public int damage;
 	public int bonusMana;
 	public bool isEquippedByPlayer;
-	public bool isEquippedByNonPlayer;
 
 	public void Start()
 	{
@@ -32,6 +31,6 @@ public class Weapons : Items
 	{
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType);
+		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, isEquippedByPlayer);
 	}
 }
