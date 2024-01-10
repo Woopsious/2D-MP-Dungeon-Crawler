@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BaseDagger
   m_EditorClassIdentifier: 
   itemName: Dagger
-  itemImage: {fileID: 0}
+  itemImage: {fileID: -665695768, guid: 90a480f821bd0654faa33e2d609f7b86, type: 3}
   ItemPrice: 200
   ItemId: 0
   itemType: 4
@@ -24,6 +24,7 @@ MonoBehaviour:
   baseDamage: 25
   baseAttackSpeed: 1
   baseKnockback: 0.125
+  classRestriction: 0
   baseDamageType: 0
   isRangedWeapon: 0
   baseMaxAttackRange: 0

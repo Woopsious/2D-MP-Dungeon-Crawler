@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BaseMace
   m_EditorClassIdentifier: 
   itemName: Mace
-  itemImage: {fileID: 0}
+  itemImage: {fileID: -835131005, guid: 90a480f821bd0654faa33e2d609f7b86, type: 3}
   ItemPrice: 200
   ItemId: 0
   itemType: 2

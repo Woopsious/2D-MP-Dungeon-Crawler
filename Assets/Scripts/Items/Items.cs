@@ -39,9 +39,10 @@ public class Items : MonoBehaviour
 		itemLevel = setLevel;
 		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity);
 
-		name = GetItemName();
 		itemName = GetItemName();
+		name = itemName;
 		itemImage = GetItemImage();
+		GetComponent<SpriteRenderer>().sprite = itemImage;
 		ItemPrice = GetItemPrice();
 	}
 	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)

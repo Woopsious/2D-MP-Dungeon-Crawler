@@ -10,17 +10,19 @@ public class EntityBehaviour : MonoBehaviour
 	public Rigidbody2D rb;
 
 	public SOEntityBehaviour entityBehaviour;
-	public CircleCollider2D viewRangeCollider;
+	public EnemyBaseState currentState;
+	public EnemyIdleState idleState = new EnemyIdleState();
+	public EnemyAttackState attackState = new EnemyAttackState();
 
-	private Bounds idleBounds;
+	public Bounds idleBounds;
 	public Vector2 movePosition;
 	public bool HasReachedDestination;
-
 	public float idleTimer;
 
-	private Bounds chaseBounds;
+	public Bounds chaseBounds;
 	public Vector2 playersLastKnownPosition;
 	public PlayerController player;
+	public CircleCollider2D viewRangeCollider;
 
 	public void Start()
 	{
@@ -47,6 +49,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public void Update()
 	{
+		currentState.UpdateLogic(this);
 		UpdatePlayerPosition();
 
 		if (playersLastKnownPosition == Vector2.zero)
@@ -68,6 +71,10 @@ public class EntityBehaviour : MonoBehaviour
 			else
 				CheckDistance();
 		}
+	}
+	public void FixedUpdate()
+	{
+		currentState.UpdatePhysics(this);
 	}
 
 	/// <summary>
@@ -120,13 +127,9 @@ public class EntityBehaviour : MonoBehaviour
 
 		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
 		if (hit.point != null && hit.collider.gameObject == player.gameObject)
-		{
 			return true;
-		}
 		else
-		{
 			return false;
-		}
 	}
 	public bool CheckChaseDistance()
 	{
@@ -174,5 +177,16 @@ public class EntityBehaviour : MonoBehaviour
 
 		Gizmos.color = Color.blue;
 		Gizmos.DrawWireCube(chaseBounds.center, chaseBounds.size);
+	}
+	//STATE CHANGES
+	public void ChangeStateIdle()
+	{
+		currentState = idleState;
+		currentState.Enter(this);
+	}
+	public void ChangeStateAttack()
+	{
+		currentState = attackState;
+		currentState.Enter(this);
 	}
 }
