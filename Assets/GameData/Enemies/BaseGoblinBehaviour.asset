@@ -16,7 +16,7 @@ MonoBehaviour:
   idleWanderRadius: 10
   aggroRange: 10
   maxChaseRange: 12
-  attackRange: 0
   navMeshMoveSpeed: 5
   navMeshTurnSpeed: 80
   navMeshAcceleration: 6
+  navMeshStoppingDistance: 1.25

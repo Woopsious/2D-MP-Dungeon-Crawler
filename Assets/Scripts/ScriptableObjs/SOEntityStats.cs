@@ -4,6 +4,7 @@ using UnityEngine;
 public class SOEntityStats : ScriptableObject
 {
 	public string entityName;
+	public Sprite sprite;
 
 	[Header("health")]
 	public int maxHealth;

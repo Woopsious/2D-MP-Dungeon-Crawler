@@ -7,18 +7,21 @@ public class EntityBehaviour : MonoBehaviour
 {
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
-	public Rigidbody2D rb;
+	private Rigidbody2D rb;
+	private SpriteRenderer spriteRenderer;
 
 	public SOEntityBehaviour entityBehaviour;
-	public EnemyBaseState currentState;
-	public EnemyIdleState idleState = new EnemyIdleState();
-	public EnemyAttackState attackState = new EnemyAttackState();
+	private EnemyBaseState currentState;
+	private EnemyIdleState idleState = new EnemyIdleState();
+	private EnemyAttackState attackState = new EnemyAttackState();
 
+	[HideInInspector]
 	public Bounds idleBounds;
 	public Vector2 movePosition;
 	public bool HasReachedDestination;
 	public float idleTimer;
 
+	[HideInInspector]
 	public Bounds chaseBounds;
 	public Vector2 playersLastKnownPosition;
 	public PlayerController player;
@@ -26,6 +29,10 @@ public class EntityBehaviour : MonoBehaviour
 
 	public void Start()
 	{
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
 			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z - 3);
 
@@ -46,98 +53,29 @@ public class EntityBehaviour : MonoBehaviour
 		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
 		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;
 		navMeshAgent.acceleration = entityBehaviour.navMeshAcceleration;
+		navMeshAgent.stoppingDistance = entityBehaviour.navMeshStoppingDistance;
+
+		ChangeStateIdle();
 	}
 	public void Update()
 	{
+		/// <summary>
+		/// LOGIC FOR ENTITY BEHAVIOUR
+		/// 1. idle and randomly move around the map within bounds of where they spawned
+		/// 2. when play enters agro range, chase player endless till they escape max chase range
+		/// 2A. if they escape max chase range move to last know position
+		/// 2B. if player moves out of visible range move to last know position
+		/// 3. once there, if player not found go back to step 1.
+		/// 4. once there, if player is found return to step 2.
+		/// </summary>
+		/// 
 		currentState.UpdateLogic(this);
-		UpdatePlayerPosition();
-
-		if (playersLastKnownPosition == Vector2.zero)
-		{
-			// 1. idle and randomly move around the map within bounds of where they spawned
-			IdleAtPositionTimer();
-			CheckDistance();
-		}
-		else if (playersLastKnownPosition != Vector2.zero)
-		{
-			// 2. when play enters agro range, chase player endless till they escape max chase range
-			// 2A. if they escape max chase range move to last know position
-			// 2B. if player moves out of visible range move to last know position
-			// 3. once there, if player not found go back to step 1.
-			// 4. once there, if player is found return to step 2.
-
-			if (CheckIfPlayerVisible())
-				ChasePlayer();
-			else
-				CheckDistance();
-		}
 	}
 	public void FixedUpdate()
 	{
 		currentState.UpdatePhysics(this);
-	}
-
-	/// <summary>
-	/// using a state machine in actual project will be better long term and simpler to maintain
-	/// </summary>
-	/// 
-	//idle behaviour
-	public void IdleAtPositionTimer()
-	{
-		if (HasReachedDestination == true)
-		{
-			idleTimer -= Time.deltaTime;
-
-			if (idleTimer < 0)
-			{
-				idleTimer = entityBehaviour.idleWaitTime;
-				FindNewIdlePosition();
-			}
-		}
-	}
-	public void FindNewIdlePosition()
-	{
-		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(idleBounds);
-		movePosition = SampleNewMovePosition(randomMovePosition);
-
-		if (CheckAndSetNewPath(movePosition))
-			return;
-		else
-			FindNewIdlePosition();
-	}
-
-	//attack behaviour
-	public void ChasePlayer()
-	{
-		HasReachedDestination = false;
-		Vector2 movePosition = SampleNewMovePosition(playersLastKnownPosition);
-		CheckAndSetNewPath(movePosition);
-
-		if (CheckChaseDistance())
-			player = null;
-	}
-	public void UpdatePlayerPosition()
-	{
-		if (player != null && CheckIfPlayerVisible())
-			playersLastKnownPosition = player.transform.position;
-	}
-	public bool CheckIfPlayerVisible()
-	{
-		if (player == null) return false;
-
-		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
-		if (hit.point != null && hit.collider.gameObject == player.gameObject)
-			return true;
-		else
-			return false;
-	}
-	public bool CheckChaseDistance()
-	{
-		float distance = Vector2.Distance(gameObject.transform.position, playersLastKnownPosition);
-
-		if (distance < entityBehaviour.maxChaseRange)
-			return false;
-		else return true;
+		rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
+		spriteRenderer.flipX = true;
 	}
 
 	//idle + attack behaviour
@@ -155,15 +93,50 @@ public class EntityBehaviour : MonoBehaviour
 			HasReachedDestination = false;
 			return true;
 		}
-		else return false;
+		else
+			return false;
 	}
-	public void CheckDistance()
+	public bool CheckIfPlayerVisible()
+	{
+		if (player == null) return false;
+
+		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
+		if (hit.point != null && hit.collider.gameObject == player.gameObject)
+			return true;
+		else
+			return false;
+	}
+	public bool CheckDistanceToDestination()
 	{
 		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && HasReachedDestination == false)
 		{
 			HasReachedDestination = true;
-			playersLastKnownPosition = Vector2.zero;
+			return false;
 		}
+		else
+			return true;
+	}
+	public bool CheckDistanceToPlayer()
+	{
+		if (player == null) return false;
+		float distance = Vector2.Distance(transform.position, player.transform.position);
+
+		if (distance < entityBehaviour.maxChaseRange)
+			return false;
+		else
+			return true;
+	}
+
+	//STATE CHANGES
+	public void ChangeStateIdle()
+	{
+		currentState = idleState;
+		currentState.Enter(this);
+	}
+	public void ChangeStateAttack()
+	{
+		currentState = attackState;
+		currentState.Enter(this);
 	}
 
 	//utility
@@ -177,16 +150,5 @@ public class EntityBehaviour : MonoBehaviour
 
 		Gizmos.color = Color.blue;
 		Gizmos.DrawWireCube(chaseBounds.center, chaseBounds.size);
-	}
-	//STATE CHANGES
-	public void ChangeStateIdle()
-	{
-		currentState = idleState;
-		currentState.Enter(this);
-	}
-	public void ChangeStateAttack()
-	{
-		currentState = attackState;
-		currentState.Enter(this);
 	}
 }

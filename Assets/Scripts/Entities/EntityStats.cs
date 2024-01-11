@@ -7,6 +7,7 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
+	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
 	public float statModifier;
 
@@ -40,6 +41,9 @@ public class EntityStats : MonoBehaviour
 
 	private void Start()
 	{
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+
 		SetStats();
 	}
 	private void OnEnable()
