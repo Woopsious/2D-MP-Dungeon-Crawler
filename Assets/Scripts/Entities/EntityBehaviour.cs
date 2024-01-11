@@ -74,8 +74,15 @@ public class EntityBehaviour : MonoBehaviour
 	public void FixedUpdate()
 	{
 		currentState.UpdatePhysics(this);
-		rb.velocity = new Vector2(Input.GetAxisRaw("Horizontal"), 0f);
-		spriteRenderer.flipX = true;
+
+		FlipSprite();
+	}
+	public void FlipSprite()
+	{
+		if (navMeshAgent.velocity.x < 0)
+			transform.eulerAngles = new Vector3(0, 0, 0);
+		else
+			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
 
 	//idle + attack behaviour

@@ -3,16 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Windows;
 
 public class PlayerController : MonoBehaviour
 {
-	PlayerInputActions _playerInputs;
-	Rigidbody2D _rb;
+	public Camera playerCamera;
+	private PlayerInputActions playerInputs;
+	private Rigidbody2D rb;
+	private SpriteRenderer spriteRenderer;
 
-	Vector2 moveDirection = Vector2.zero;
+	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
 	public GameObject weapon;
@@ -20,31 +23,38 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
-		_playerInputs = new PlayerInputActions();
-		_rb = GetComponent<Rigidbody2D>();
+		playerInputs = new PlayerInputActions();
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		playerCamera.transform.parent = null;
 	}
 
 	private void OnEnable()
 	{
-		if (_playerInputs == null)
-			_playerInputs = new PlayerInputActions();
-		_playerInputs.Enable();
+		if (playerInputs == null)
+			playerInputs = new PlayerInputActions();
+		playerInputs.Enable();
 	}
 
 	private void OnDisable()
 	{
-		_playerInputs.Disable();
+		playerInputs.Disable();
 	}
 
 	private void Update()
 	{
-
+		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 10);
 	}
 
 	private void FixedUpdate()
 	{
-		moveDirection = _playerInputs.Player.Movement.ReadValue<Vector2>();
-		_rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
+		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
+		rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
+
+		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
+			transform.eulerAngles = new Vector3(0,0,0);
+		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
+			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
 
 	/// <summary>
@@ -72,9 +82,9 @@ public class PlayerController : MonoBehaviour
 	private void OnCameraZoom()
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = _playerInputs.Player.CameraZoom.ReadValue<float>();
-		if (Camera.main.orthographicSize > 3 && value == 120 || Camera.main.orthographicSize < 8 && value == -120)
-			Camera.main.orthographicSize -= value / 480;
+		float value = playerInputs.Player.CameraZoom.ReadValue<float>();
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
+			playerCamera.orthographicSize -= value / 480;
 	}
 
 	//ui action

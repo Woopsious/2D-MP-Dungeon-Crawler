@@ -18,5 +18,5 @@ MonoBehaviour:
   maxChaseRange: 12
   navMeshMoveSpeed: 5
   navMeshTurnSpeed: 80
-  navMeshAcceleration: 6
+  navMeshAcceleration: 5
   navMeshStoppingDistance: 1.25
