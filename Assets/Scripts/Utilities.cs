@@ -19,13 +19,13 @@ public class Utilities
 	//return random rarity
 	public static Items.Rarity SetRarity()
 	{
-		float percentage = GetRandomNumber(101); //5% for legendary | 15% for epic | 30% for rare | 50% for common
+		float percentage = GetRandomNumber(101); //3% for legendary | 15% for epic | 30% for rare | 52% for common
 
-		if (percentage >= 95)
+		if (percentage >= 98)
 			return Items.Rarity.isLegendary;
-		else if (percentage >= 80 && percentage < 95)
+		else if (percentage >= 82 && percentage < 98)
 			return Items.Rarity.isEpic;
-		else if (percentage >= 50 && percentage < 80)
+		else if (percentage >= 52 && percentage < 82)
 			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
@@ -37,8 +37,8 @@ public class Utilities
 		int itemLvl = GetRandomNumber(9);
 		itemLvl += entityLvl;
 
-		if (itemLvl <= 0)
-			itemLvl = 0;
+		if (itemLvl <= 4) //stop items from dropping below lvl 0
+			itemLvl = 5;
 		return itemLvl - 4;
 	}
 }

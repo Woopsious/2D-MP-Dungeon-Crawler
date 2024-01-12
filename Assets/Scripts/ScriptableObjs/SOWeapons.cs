@@ -15,6 +15,12 @@ public class SOWeapons : SOItems
 	{
 		light, medium, heavy
 	}
+	[Header("Weapon Type")]
+	public WeaponType weaponType;
+	public enum WeaponType
+	{
+		isMainHand, isOffhand, isBoth
+	}
 
 	[Header("Damage Type")]
 	public DamageType baseDamageType;

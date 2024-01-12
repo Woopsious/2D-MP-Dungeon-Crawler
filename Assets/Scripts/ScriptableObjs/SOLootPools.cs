@@ -1,8 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SOLootPools : MonoBehaviour
+[CreateAssetMenu(fileName = "LootPoolScriptableObject", menuName = "LootPools")]
+public class SOLootPools : ScriptableObject
 {
 	public int droppedGoldAmount;
 

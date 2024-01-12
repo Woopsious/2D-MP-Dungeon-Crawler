@@ -20,10 +20,6 @@ public class EntityLootSpawnHandler : MonoBehaviour
 	{
 		for (int i = 0; i < lootPool.minDroppedItemsAmount; i++) //spawn item from loot pool at death location
 		{
-			///
-			/// in future make items have a loot pool weight, higher weight = more common EG: chainmail armor rarer then leather armor etc.
-			///
-
 			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count);
 			GameObject go = Instantiate(droppedItemPrefab, obj.transform.position, Quaternion.identity);
 

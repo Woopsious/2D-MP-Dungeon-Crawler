@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e63e2fa31c0f2f4caef19bbff981b47, type: 3}
+  m_Name: Basic
+  m_EditorClassIdentifier: 
+  droppedGoldAmount: 25
+  lootPoolList:
+  - {fileID: 11400000, guid: 948bc92231f605c4b9c6d1701e6b10ac, type: 2}
+  minDroppedItemsAmount: 0
+  maxDroppedItemsAmount: 1
