@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SteelPlateBoots
   m_EditorClassIdentifier: 
   itemName: Steel Plate Boots
-  itemImage: {fileID: 0}
+  itemImage: {fileID: 1803692800, guid: 85cd838d54f266942b9888ed89c3f3ac, type: 3}
   ItemPrice: 350
   ItemId: 0
   itemType: 1

@@ -21,10 +21,11 @@ MonoBehaviour:
   isStackable: 0
   MaxStackCount: 1
   isBareHands: 0
-  baseDamage: 30
+  baseDamage: 35
   baseAttackSpeed: 1.5
   baseKnockback: 0.5
   classRestriction: 1
+  weaponType: 0
   baseDamageType: 0
   isRangedWeapon: 0
   baseMaxAttackRange: 0

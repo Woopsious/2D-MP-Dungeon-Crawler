@@ -18,8 +18,7 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
-	public GameObject weapon;
-	public Collider2D weaponCollider;
+	public Weapons weapon;
 
 	private void Awake()
 	{
@@ -62,22 +61,9 @@ public class PlayerController : MonoBehaviour
 	/// </summary>
 
 	//player action
-	public bool canAttackAgain;
 	private void OnMainAttack()
 	{
-		if (!canAttackAgain) return;
-		Debug.Log("Attacking");
-
-		canAttackAgain = false;
-		weaponCollider.enabled = true;
-		StartCoroutine(weaponCooldown());
-	}
-	IEnumerator weaponCooldown()
-	{
-		yield return new WaitForSeconds(0.1f);
-		weaponCollider.enabled = false;
-		yield return new WaitForSeconds(weapon.GetComponent<Weapons>().weaponBaseRef.baseAttackSpeed - 0.1f);
-		canAttackAgain = true;
+		weapon.Attack();
 	}
 	private void OnCameraZoom()
 	{

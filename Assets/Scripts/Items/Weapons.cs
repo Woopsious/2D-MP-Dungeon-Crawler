@@ -8,11 +8,20 @@ public class Weapons : Items
 	public int damage;
 	public int bonusMana;
 	public bool isEquippedByPlayer;
+	public bool isEquippedByOther;
+
+	private bool canAttackAgain;
+	private BoxCollider2D boxCollider;
 
 	public void Start()
 	{
 		if (generateStatsOnStart)
 			SetItemStats(rarity, itemLevel);
+
+		boxCollider = gameObject.AddComponent<BoxCollider2D>();
+		boxCollider.enabled = false;
+		boxCollider.isTrigger = true;
+		canAttackAgain = true;
 	}
 
 	public override void SetItemStats(Rarity setRarity, int setLevel)
@@ -29,8 +38,24 @@ public class Weapons : Items
 
 	public void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<Damageable>() == null) return;
+		if (other.gameObject.GetComponent<Damageable>() == null || isEquippedByPlayer == false && isEquippedByOther == false) return;
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, isEquippedByPlayer);
+	}
+	public void Attack()
+	{
+		if (!canAttackAgain) return;
+		Debug.Log("Attacking");
+
+		canAttackAgain = false;
+		boxCollider.enabled = true;
+		StartCoroutine(weaponCooldown());
+	}
+	IEnumerator weaponCooldown()
+	{
+		yield return new WaitForSeconds(0.1f);
+		boxCollider.enabled = false;
+		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+		canAttackAgain = true;
 	}
 }
