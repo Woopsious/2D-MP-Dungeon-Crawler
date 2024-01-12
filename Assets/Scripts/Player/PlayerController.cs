@@ -78,4 +78,8 @@ public class PlayerController : MonoBehaviour
 	{
 		MainMenuManager.Instance.ShowHideMainMenu();
 	}
+	private void OnInventory()
+	{
+		InventoryUi.Instance.HideShowInventory();
+	}
 }

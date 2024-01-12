@@ -41,11 +41,15 @@ public class Weapons : Items
 		if (other.gameObject.GetComponent<Damageable>() == null || isEquippedByPlayer == false && isEquippedByOther == false) return;
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, isEquippedByPlayer);
+
+		Vector2 difference = other.transform.position - gameObject.transform.position;
+		difference = difference.normalized * weaponBaseRef.baseKnockback * 100;
+		Debug.LogWarning(difference.normalized);
+		other.GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
 	}
 	public void Attack()
 	{
 		if (!canAttackAgain) return;
-		Debug.Log("Attacking");
 
 		canAttackAgain = false;
 		boxCollider.enabled = true;

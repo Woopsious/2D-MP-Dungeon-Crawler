@@ -83,7 +83,6 @@ public class Items : MonoBehaviour
 	{
 		//called from Interactable Component script that adds item to inventory passing through necessary info
 		//in child classes pass through item type specific 
-
 		if (PlayerInventoryManager.Instance.CheckIfInventoryFull())
 		{
 			Debug.LogWarning("Inventory is full");

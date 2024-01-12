@@ -16,14 +16,14 @@ MonoBehaviour:
   itemImage: {fileID: 2082317017, guid: 90a480f821bd0654faa33e2d609f7b86, type: 3}
   ItemPrice: 200
   ItemId: 0
-  itemType: 2
+  itemType: 1
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
   isBareHands: 0
   baseDamage: 50
   baseAttackSpeed: 2
-  baseKnockback: 0.25
+  baseKnockback: 8
   classRestriction: 0
   weaponType: 0
   baseDamageType: 0

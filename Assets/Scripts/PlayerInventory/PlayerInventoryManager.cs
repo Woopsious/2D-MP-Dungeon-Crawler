@@ -113,6 +113,8 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		inventoryItem.itemLevel = item.itemLevel;
 		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
+		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.weaponBaseRef.classRestriction;
+		inventoryItem.weaponType = (InventoryItem.WeaponType)item.weaponBaseRef.weaponType;
 
 		inventoryItem.weaponBaseRef = item.weaponBaseRef;
 		inventoryItem.damage = (int)(item.weaponBaseRef.baseDamage * item.statModifier);
@@ -129,6 +131,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		inventoryItem.itemLevel = item.itemLevel;
 		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
+		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.armorBaseRef.classRestriction;
 
 		inventoryItem.armorBaseRef = item.armorBaseRef;
 		inventoryItem.bonusArmorHealth = (int)(item.armorBaseRef.baseBonusHealth * item.statModifier);

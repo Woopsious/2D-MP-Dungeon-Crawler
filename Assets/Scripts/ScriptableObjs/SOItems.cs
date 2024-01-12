@@ -13,7 +13,7 @@ public class SOItems : ScriptableObject
 	public ItemType itemType;
 	public enum ItemType
 	{
-		isConsumable, isArmor, isWeapon
+		isConsumable, isWeapon, isArmor
 	}
 	public bool isEquipable;
 
