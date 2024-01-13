@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Items : MonoBehaviour
 {
-	//[HideInInspector] public EntityEquipmentHandler entityEquipmentHandler;
+	[HideInInspector] public EntityEquipmentHandler entityEquipmentHandler;
 
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;
@@ -42,8 +42,10 @@ public class Items : MonoBehaviour
 		itemName = GetItemName();
 		name = itemName;
 		itemImage = GetItemImage();
-		GetComponent<SpriteRenderer>().sprite = itemImage;
 		ItemPrice = GetItemPrice();
+
+		if (GetComponent<SpriteRenderer>() == null) return;
+		GetComponent<SpriteRenderer>().sprite = itemImage;
 	}
 	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
 	{

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "EntityStatsScriptableObject", menuName = "Entities/Stats")]
@@ -17,4 +18,12 @@ public class SOEntityStats : ScriptableObject
 
 	[Header("Mana")]
 	public int maxMana;
+
+	[Header("Possible Weapons")]
+	public List<SOWeapons> possibleWeaponsList = new List<SOWeapons>();
+
+	[Header("Possible Armors")]
+	public List<SOArmors> possibleHelmetsList = new List<SOArmors>();
+	public List<SOArmors> possibleChestpiecesList = new List<SOArmors>();
+	public List<SOArmors> possibleLegsList = new List<SOArmors>();
 }

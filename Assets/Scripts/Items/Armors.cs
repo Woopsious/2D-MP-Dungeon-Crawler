@@ -42,7 +42,7 @@ public class Armors : Items
 		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * statModifier);
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * statModifier);
 
-		//if (entityEquipmentHandler != null) //for non player
-			//entityEquipmentHandler.OnArmorEquip(this);
+		if (entityEquipmentHandler != null) //for non player
+			entityEquipmentHandler.OnArmorEquip(this);
 	}
 }

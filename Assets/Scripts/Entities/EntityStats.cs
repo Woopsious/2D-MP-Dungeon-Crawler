@@ -7,6 +7,7 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
+	[HideInInspector] public EntityEquipmentHandler entityEquipment;
 	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
 	public float statModifier;
@@ -14,27 +15,16 @@ public class EntityStats : MonoBehaviour
 	[Header("Health")]
 	public int maxHealth;
 	public int currentHealth;
-	[Header("Total")]
-	public int totalMaxHealth;
-	public int totalCurrentHealth;
 
 	[Header("Mana")]
 	public int maxMana;
 	public int currentMana;
-	[Header("Total")]
-	public int totalMaxMana;
-	public int totalCurrentMana;
 
 	[Header("Resistances")]
 	public int physicalResistance;
 	public int poisonResistance;
 	public int fireResistance;
 	public int iceResistance;
-	[Header("Total")]
-	public int totalPhyicalResistance;
-	public int totalPoisonResistance;
-	public int totalFireResistance;
-	public int totalIceResistance;
 
 	public event Action<int, int> onRecieveDamageEvent;
 	public event Action<GameObject> onDeathEvent;
@@ -60,20 +50,16 @@ public class EntityStats : MonoBehaviour
 		float modifier = (entityLevel - 1f) / 20;  //get level modifier
 		statModifier = modifier += 1;
 
-		try
-		{
-			maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
-			currentHealth = (int)(entityBaseStats.maxHealth * statModifier);
-			physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
-			poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
-			fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
-			iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
-		}
-		catch
-		{
-			//throwing null ref here being thrown here even though all values get properly assigned
-			//debugging shows for some reason entityBaseStats ref returns null but entityBaseStats.maxHealth return 100
-		}
+		maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
+		currentHealth = (int)(entityBaseStats.maxHealth * statModifier);
+		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
+		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
+		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
+		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
+
+		if (entityEquipment == null) return;
+		entityEquipment.EquipRandomWeapon();
+		entityEquipment.EquipRandomArmor();
 	}
 
 	//health functions
