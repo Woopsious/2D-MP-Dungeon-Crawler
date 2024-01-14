@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ChainmailChespiece
   m_EditorClassIdentifier: 
   itemName: Chainmail Chestpiece
-  itemImage: {fileID: 1803692800, guid: 85cd838d54f266942b9888ed89c3f3ac, type: 3}
+  itemImage: {fileID: -2078815287, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
   ItemPrice: 250
   ItemId: 0
   itemType: 2

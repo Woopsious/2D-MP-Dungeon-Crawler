@@ -98,6 +98,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 				equippedHelmet.armorBaseRef = entityStats.entityBaseStats.possibleHelmetsList[index];
 				equippedHelmet.entityEquipmentHandler = this;
 				equippedHelmet.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedHelmet.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
 
@@ -116,6 +117,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 				equippedChestpiece.armorBaseRef = entityStats.entityBaseStats.possibleChestpiecesList[index];
 				equippedChestpiece.entityEquipmentHandler = this;
 				equippedChestpiece.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedChestpiece.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
 
@@ -134,6 +136,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 				equippedLegs.armorBaseRef = entityStats.entityBaseStats.possibleLegsList[index];
 				equippedLegs.entityEquipmentHandler = this;
 				equippedLegs.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedLegs.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
 	}

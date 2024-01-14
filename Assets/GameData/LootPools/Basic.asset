@@ -26,5 +26,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
   - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
   - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
-  minDroppedItemsAmount: 3
+  minDroppedItemsAmount: 10
   maxDroppedItemsAmount: 1

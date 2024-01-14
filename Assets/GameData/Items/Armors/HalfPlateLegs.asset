@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15125d2e4ec8c9f4d9fdc521f4911922, type: 3}
-  m_Name: PaddedCap
+  m_Name: HalfPlateLegs
   m_EditorClassIdentifier: 
-  itemName: Leather Cap
-  itemImage: {fileID: 1803692800, guid: 85cd838d54f266942b9888ed89c3f3ac, type: 3}
-  ItemPrice: 200
+  itemName: Half Plate Legs
+  itemImage: {fileID: -1066809626, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
+  ItemPrice: 275
   ItemId: 0
   itemType: 2
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
-  baseBonusHealth: 0
+  baseBonusHealth: 2
   baseBonusMana: 0
-  classRestriction: 0
-  armorSlot: 0
-  bonusPhysicalResistance: 1
-  bonusPoisonResistance: 1
-  bonusFireResistance: 1
-  bonusIceResistance: 1
+  classRestriction: 1
+  armorSlot: 2
+  bonusPhysicalResistance: 3
+  bonusPoisonResistance: 3
+  bonusFireResistance: 3
+  bonusIceResistance: 3
