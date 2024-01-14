@@ -6,6 +6,7 @@ using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
@@ -99,6 +100,8 @@ public class PlayerInventoryManager : MonoBehaviour
 				item.inventorySlotIndex = i;
 				item.transform.SetParent(inventorySlot.transform);
 				inventorySlot.itemInSlot = item;
+				inventorySlot.UpdateSlotSize();
+
 				return;
 			}
 		}

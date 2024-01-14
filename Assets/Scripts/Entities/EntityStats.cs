@@ -97,6 +97,8 @@ public class EntityStats : MonoBehaviour
 			damage = 2;
 
 		currentHealth -= damage;
+		RedFlashOnRecieveDamage();
+
 		onRecieveDamageEvent?.Invoke(maxHealth, currentHealth);
 
 		///
@@ -113,5 +115,15 @@ public class EntityStats : MonoBehaviour
 		}
 		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm
 		Debug.Log("health lost after resistance: " + damage + " | current health: " + currentHealth);
+	}
+	public void RedFlashOnRecieveDamage()
+	{
+		spriteRenderer.color = Color.red;
+		StartCoroutine(ResetRedFlashOnRecieveDamage());
+	}
+	IEnumerator ResetRedFlashOnRecieveDamage()
+	{
+		yield return new WaitForSeconds(0.1f);
+		spriteRenderer.color = Color.white;
 	}
 }

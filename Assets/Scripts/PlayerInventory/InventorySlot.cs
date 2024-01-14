@@ -8,6 +8,7 @@ using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IDropHandler
 {
@@ -48,6 +49,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 				itemInSlot.transform.SetParent(item.parentAfterDrag, false);
 				itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
 				item.parentAfterDrag.GetComponent<InventorySlot>().itemInSlot = itemInSlot;
+				item.parentAfterDrag.GetComponent<InventorySlot>().UpdateSlotSize();
 			}
 		}
 		else //set ref to null
@@ -59,9 +61,17 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
+		UpdateSlotSize();
 
 		if (slotType == SlotType.generic) return;
 		onItemEquip?.Invoke(item);
+	}
+	public void UpdateSlotSize()
+	{
+		if (itemInSlot.itemType == InventoryItem.ItemType.isWeapon)
+			GetComponent<GridLayoutGroup>().cellSize = new Vector2(60, 120);
+		else
+			GetComponent<GridLayoutGroup>().cellSize = new Vector2(120, 120);
 	}
 
 	public bool IsSlotEmpty()
