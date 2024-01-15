@@ -63,6 +63,10 @@ public class EntityStats : MonoBehaviour
 		entityEquipment.EquipRandomArmor();
 	}
 
+	/// <summary>
+	/// for MP when recieving damage as levels will no be synced, ill need to convert damage and healing recieved to a precentage 
+	/// when it comes to resistances ignoring the difference shouldnt matter as everything scales at the same rate
+	/// </summary>
 	//health functions
 	public virtual void RecieveHealing(int health)
 	{
@@ -103,7 +107,7 @@ public class EntityStats : MonoBehaviour
 		onRecieveDamageEvent?.Invoke(maxHealth, currentHealth);
 
 		///
-		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/knockback/ui health bar update
+		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
 		/// also could invoke a onEntityDeath that instead calls functions in scripts to disable them then and play death sounds/animations
 		/// this way if an entity does have a death sound but no death animation i dont need to run checks or hard code a reference
 		/// and a box for instance can just have a death sound and instead of a death animation has a death partical effect explosion
