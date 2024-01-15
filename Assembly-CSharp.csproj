@@ -8,7 +8,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace></RootNamespace>
+    <RootNamespace>
+    </RootNamespace>
     <ProjectGuid>{88D356BF-05E5-9D72-C3C9-95A6105972DF}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -63,7 +64,6 @@
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerExpirienceHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\PlayerInventory\InventoryUi.cs" />

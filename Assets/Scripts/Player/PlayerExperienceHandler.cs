@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerExpirienceHandler : MonoBehaviour
+public class PlayerExperienceHandler : MonoBehaviour
 {
 	private int maxLevel = 50;
 	private int maxExp = 1000;
