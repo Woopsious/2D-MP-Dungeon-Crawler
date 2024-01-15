@@ -72,9 +72,9 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	public void UpdateSlotSize()
 	{
 		if (itemInSlot.itemType == InventoryItem.ItemType.isWeapon)
-			GetComponent<GridLayoutGroup>().cellSize = new Vector2(60, 120);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 120);
 		else
-			GetComponent<GridLayoutGroup>().cellSize = new Vector2(120, 120);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(120, 120);
 	}
 
 	public bool IsSlotEmpty()

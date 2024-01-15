@@ -164,7 +164,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public void SetWeaponData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage.sprite = item.itemImage;
+		inventoryItem.itemImage = item.itemImage;
 		inventoryItem.itemType = (InventoryItem.ItemType)item.weaponBaseRef.itemType;
 
 		inventoryItem.itemLevel = item.itemLevel;
@@ -182,7 +182,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public void SetArmorData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage.sprite = item.itemImage;
+		inventoryItem.itemImage = item.itemImage;
 		inventoryItem.itemType = (InventoryItem.ItemType)item.armorBaseRef.itemType;
 
 		inventoryItem.itemLevel = item.itemLevel;
@@ -206,7 +206,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public void SetConsumableData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage.sprite = item.itemImage;
+		inventoryItem.itemImage = item.itemImage;
 		inventoryItem.consumableBaseRef = item.consumableBaseRef;
 
 		inventoryItem.healthRestoration = item.consumableBaseRef.healthRestoration;

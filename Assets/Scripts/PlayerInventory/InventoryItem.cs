@@ -20,7 +20,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 	[Header("Item Info")]
 	public string itemName;
-	public Image itemImage;
+	public Sprite itemImage;
 	public int itemPrice;
 	public int itemLevel;
 	public ItemType itemType;
@@ -154,7 +154,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	}
 	public void UpdateImage()
 	{
-		//no images for 3d version
+		uiItemImage.sprite = itemImage;
 	}
 	public void UpdateStackCounter()
 	{
