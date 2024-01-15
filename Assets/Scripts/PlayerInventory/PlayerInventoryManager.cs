@@ -7,16 +7,69 @@ using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
 public class PlayerInventoryManager : MonoBehaviour
 {
 	public static PlayerInventoryManager Instance;
 
+	[Header("Starting Items")]
+	public GameObject droppedItemPrefab;
+	public bool hasRecievedStartingItems;
+	public List<SOItems> startingItems = new List<SOItems>();
+
 	public void Awake()
 	{
 		Instance = this;
+	}
+	public void Start()
+	{
+		if(!hasRecievedStartingItems)
+			SpawnStartingItems();
+	}
+
+	public void SpawnStartingItems()
+	{
+		hasRecievedStartingItems = true;
+
+		for (int i = 0; i < startingItems.Count; i++) //spawn item from loot pool at death location
+		{
+			GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
+
+			if (startingItems[i].itemType == SOItems.ItemType.isWeapon)
+			{
+				Weapons weapon = go.AddComponent<Weapons>();
+				weapon.weaponBaseRef = (SOWeapons)startingItems[i];
+				weapon.currentStackCount = 1;
+			}
+
+			if (startingItems[i].itemType == SOItems.ItemType.isArmor)
+			{
+				Armors armor = go.AddComponent<Armors>();
+				armor.armorBaseRef = (SOArmors)startingItems[i];
+				armor.currentStackCount = 1;
+			}
+
+			if (startingItems[i].itemType == SOItems.ItemType.isConsumable)
+			{
+				Consumables consumables = go.AddComponent<Consumables>();
+				consumables.consumableBaseRef = (SOConsumables)startingItems[i];
+				consumables.currentStackCount = 3;
+			}
+
+			Items item = go.GetComponent<Items>();
+			item.gameObject.name = startingItems[i].name;
+			item.itemName = startingItems[i].name;
+			item.itemImage = startingItems[i].itemImage;
+			item.ItemPrice = startingItems[i].ItemPrice;
+
+			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
+			//im just not sure of a better way to do it atm
+			go.AddComponent<Interactables>(); //add interactables script. set randomized stats
+			go.GetComponent<Items>().SetItemStats(Items.Rarity.isCommon, 1);
+			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
+			collider.isTrigger = true;
+		}
 	}
 
 	//on item pickup

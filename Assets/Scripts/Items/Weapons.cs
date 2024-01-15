@@ -34,6 +34,8 @@ public class Weapons : Items
 
 		if (entityEquipmentHandler != null) //for non player
 			entityEquipmentHandler.OnWeaponEquip(this, false, true);
+		else if (playerEquipmentHandler != null)//for player
+			playerEquipmentHandler.OnWeaponEquip(this, true, false);
 	}
 
 	public void OnTriggerEnter2D(Collider2D other)

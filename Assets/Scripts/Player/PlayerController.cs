@@ -10,6 +10,7 @@ using UnityEngine.Windows;
 
 public class PlayerController : MonoBehaviour
 {
+	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	public Camera playerCamera;
 	private PlayerInputActions playerInputs;
 	private Rigidbody2D rb;
@@ -63,7 +64,8 @@ public class PlayerController : MonoBehaviour
 	//player action
 	private void OnMainAttack()
 	{
-		weapon.Attack();
+		if (playerEquipmentHandler.equippedWeapon == null) return;
+		playerEquipmentHandler.equippedWeapon.Attack();
 	}
 	private void OnCameraZoom()
 	{

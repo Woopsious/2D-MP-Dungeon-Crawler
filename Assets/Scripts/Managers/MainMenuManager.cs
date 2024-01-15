@@ -11,10 +11,6 @@ public class MainMenuManager : MonoBehaviour
 	{
 		Instance = this;
 	}
-	public void Update()
-	{
-		//ShowHideMainMenuKeybind();
-	}
 
 	//button actions
 

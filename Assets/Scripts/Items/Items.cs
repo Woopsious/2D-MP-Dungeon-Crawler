@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class Items : MonoBehaviour
 {
-	[HideInInspector] public EntityEquipmentHandler entityEquipmentHandler;
+	public EntityEquipmentHandler entityEquipmentHandler;
+	public PlayerEquipmentHandler playerEquipmentHandler;
 
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;

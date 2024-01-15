@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Utilities
 {
+	//return random number
 	public static int GetRandomNumber(int num)
 	{
 		return Random.Range(0, num);
@@ -16,6 +17,7 @@ public class Utilities
 			Random.Range(bounds.min.y, bounds.max.y),
 			Random.Range(bounds.min.z, bounds.max.z));
 	}
+
 	//return random rarity
 	public static Items.Rarity SetRarity()
 	{
@@ -30,6 +32,7 @@ public class Utilities
 		else
 			return Items.Rarity.isCommon;
 	}
+
 	//return random item lvl in range of player lvl +/- a max of 4
 	public static int SetItemLevel(int level)
 	{
@@ -41,4 +44,6 @@ public class Utilities
 			itemLvl = 5;
 		return itemLvl - 4;
 	}
+
+	//for item spawning
 }

@@ -44,5 +44,7 @@ public class Armors : Items
 
 		if (entityEquipmentHandler != null) //for non player
 			entityEquipmentHandler.OnArmorEquip(this);
+		if (playerEquipmentHandler != null) //for player
+			playerEquipmentHandler.OnArmorEquip(this);
 	}
 }

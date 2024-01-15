@@ -12,9 +12,7 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IDropHandler
 {
-	//public PlayerEquipmentHandler playerEquipmentHandler;
-
-	public static event Action<InventoryItem> onItemEquip;
+	public static event Action<InventoryItem, InventorySlot> onItemEquip;
 
 	public SlotType slotType;
 	public enum SlotType
@@ -50,11 +48,13 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 				itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
 				item.parentAfterDrag.GetComponent<InventorySlot>().itemInSlot = itemInSlot;
 				item.parentAfterDrag.GetComponent<InventorySlot>().UpdateSlotSize();
+				item.parentAfterDrag.GetComponent<InventorySlot>().CheckIfItemInEquipmentSlot();
 			}
 		}
 		else //set ref to null
 		{
 			item.parentAfterDrag.GetComponent<InventorySlot>().itemInSlot = null;
+			item.parentAfterDrag.GetComponent<InventorySlot>().CheckIfItemInEquipmentSlot();
 		}
 
 		//set new slot data
@@ -62,9 +62,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
 		UpdateSlotSize();
-
+		CheckIfItemInEquipmentSlot();
+	}
+	public void CheckIfItemInEquipmentSlot()
+	{
 		if (slotType == SlotType.generic) return;
-		onItemEquip?.Invoke(item);
+		onItemEquip?.Invoke(itemInSlot, this);
 	}
 	public void UpdateSlotSize()
 	{

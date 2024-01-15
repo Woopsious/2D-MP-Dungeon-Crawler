@@ -6,7 +6,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 {
 	public GameObject itemPrefab;
 
-	[HideInInspector] EntityStats entityStats;
+	[HideInInspector] public EntityStats entityStats;
 
 	[Header("Weapon")]
 	public GameObject weaponSlotContainer;

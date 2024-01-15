@@ -8,6 +8,7 @@ public class EntityStats : MonoBehaviour
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
 	[HideInInspector] public EntityEquipmentHandler entityEquipment;
+	[HideInInspector] public PlayerEquipmentHandler playerEquipment;
 	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
 	public float statModifier;
