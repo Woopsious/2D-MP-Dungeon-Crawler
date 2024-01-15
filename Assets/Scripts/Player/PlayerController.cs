@@ -19,8 +19,6 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
-	public Weapons weapon;
-
 	private void Awake()
 	{
 		playerInputs = new PlayerInputActions();
@@ -64,7 +62,7 @@ public class PlayerController : MonoBehaviour
 	//player action
 	private void OnMainAttack()
 	{
-		if (playerEquipmentHandler.equippedWeapon == null) return;
+		if (playerEquipmentHandler.equippedWeapon == null || InventoryUi.Instance.isActiveAndEnabled) return;
 		playerEquipmentHandler.equippedWeapon.Attack();
 	}
 	private void OnCameraZoom()

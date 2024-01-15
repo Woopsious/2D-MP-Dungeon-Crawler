@@ -55,6 +55,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equippedWeapon.weaponBaseRef = entityStats.entityBaseStats.possibleWeaponsList[index];
 			equippedWeapon.entityEquipmentHandler = this;
 			equippedWeapon.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+			equippedWeapon.isEquippedByOther = true;
 		}
 	}
 	public void OnWeaponUnequip(Weapons weapon)
@@ -67,10 +68,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 			entityStats.currentMana -= weapon.bonusMana;
 		}
 	}
-	public void OnWeaponEquip(Weapons weapon, bool equippedByPlayer, bool equippedByOther)
+	public void OnWeaponEquip(Weapons weapon)
 	{
-		weapon.isEquippedByPlayer = equippedByPlayer;
-		weapon.isEquippedByOther = equippedByOther;
 		bonusEquipmentMana += weapon.bonusMana;
 
 		entityStats.maxMana -= weapon.bonusMana;

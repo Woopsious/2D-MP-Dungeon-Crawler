@@ -55,29 +55,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			}
 		}
 	}
-	public void HandleEmptySlots(InventorySlot slot)
-	{
-		if (slot.slotType == InventorySlot.SlotType.weaponMain)
-		{
-			OnWeaponUnequip(equippedWeapon);
-			Destroy(equippedWeapon.gameObject);
-		}
-		if (slot.slotType == InventorySlot.SlotType.helmet)
-		{
-			OnArmorUnequip(equippedHelmet);
-			Destroy(equippedHelmet.gameObject);
-		}
-		if (slot.slotType == InventorySlot.SlotType.chestpiece)
-		{
-			OnArmorUnequip(equippedChestpiece);
-			Destroy(equippedChestpiece.gameObject);
-		}
-		if (slot.slotType == InventorySlot.SlotType.legs)
-		{
-			OnArmorUnequip(equippedLegs);
-			Destroy(equippedLegs.gameObject);
-		}
-	}
 
 	public void EquipWeapon(InventoryItem weaponToEquip, Weapons equippedWeaponRef)
 	{
@@ -93,8 +70,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
 		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel);
+		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeapon = equippedWeaponRef;
+		OnWeaponEquip(equippedWeaponRef);
 
 		/*
 		equippedWeaponRef.itemName = weaponToEquip.itemName;
@@ -106,8 +85,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef.damage = weaponToEquip.damage;
 		equippedWeaponRef.bonusMana = weaponToEquip.bonusWeaponMana;
 		*/
-
-		OnWeaponEquip(equippedWeaponRef, true, false);
 	}
 	public void EquipArmor(InventoryItem armorToEquip, Armors equippedArmorRef, GameObject slot)
 	{
@@ -130,6 +107,8 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
 			equippedLegs = equippedArmorRef;
 
+		OnArmorEquip(equippedArmorRef);
+
 		/*
 		equippedArmorRef.itemName = armorToEquip.itemName;
 		equippedArmorRef.itemImage = armorToEquip.itemImage.sprite;
@@ -145,7 +124,29 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedArmorRef.bonusFireResistance = armorToEquip.bonusFireResistance;
 		equippedArmorRef.bonusIceResistance = armorToEquip.bonusIceResistance;
 		*/
+	}
 
-		OnArmorEquip(equippedArmorRef);
+	public void HandleEmptySlots(InventorySlot slot)
+	{
+		if (slot.slotType == InventorySlot.SlotType.weaponMain)
+		{
+			OnWeaponUnequip(equippedWeapon);
+			Destroy(equippedWeapon.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.helmet)
+		{
+			OnArmorUnequip(equippedHelmet);
+			Destroy(equippedHelmet.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.chestpiece)
+		{
+			OnArmorUnequip(equippedChestpiece);
+			Destroy(equippedChestpiece.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.legs)
+		{
+			OnArmorUnequip(equippedLegs);
+			Destroy(equippedLegs.gameObject);
+		}
 	}
 }
