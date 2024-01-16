@@ -28,7 +28,7 @@ public class EntityStats : MonoBehaviour
 	public int iceResistance;
 
 	public event Action<int, int> onRecieveDamageEvent;
-	public event Action<GameObject> onDeathEvent;
+	public event Action<GameObject, PlayerController> onDeathEvent;
 
 	private void Start()
 	{
@@ -40,10 +40,16 @@ public class EntityStats : MonoBehaviour
 	private void OnEnable()
 	{
 		GetComponent<Damageable>().OnHit += RecieveDamage;
+
+		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+		onDeathEvent += playerExperienceHandler.AddExperience;
 	}
 	private void OnDisable()
 	{
 		GetComponent<Damageable>().OnHit -= RecieveDamage;
+
+		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+		onDeathEvent -= playerExperienceHandler.AddExperience;
 	}
 
 	public void SetStats()
@@ -115,7 +121,7 @@ public class EntityStats : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
-			onDeathEvent?.Invoke(gameObject);
+			onDeathEvent?.Invoke(gameObject, GetComponent<EntityBehaviour>().player);
 			Destroy(gameObject);
 		}
 		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm

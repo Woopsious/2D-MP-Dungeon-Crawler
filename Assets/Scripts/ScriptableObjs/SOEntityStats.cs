@@ -7,6 +7,8 @@ public class SOEntityStats : ScriptableObject
 	public string entityName;
 	public Sprite sprite;
 
+	public int expOnDeath;
+
 	[Header("health")]
 	public int maxHealth;
 
