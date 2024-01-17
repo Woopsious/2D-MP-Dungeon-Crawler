@@ -16,7 +16,7 @@ public class EntityLootSpawnHandler : MonoBehaviour
 	{
 		GetComponent<EntityStats>().onDeathEvent -= OnDeathEvent;
 	}
-	public void OnDeathEvent(GameObject obj)
+	public void OnDeathEvent(GameObject obj, PlayerController player)
 	{
 		for (int i = 0; i < lootPool.minDroppedItemsAmount; i++) //spawn item from loot pool at death location
 		{

@@ -6,9 +6,17 @@ using UnityEngine;
 public class Damageable : MonoBehaviour
 {
 	public bool isDestroyedInOneHit;
-	public bool CanOtherEntitiesDamageThis;
+	private bool CanOtherEntitiesDamageThis;
 
 	public event Action<int, IDamagable.DamageType, bool> OnHit;
+
+	private void Start()
+	{
+		if (GetComponent<PlayerController>() != null)
+			CanOtherEntitiesDamageThis = true;
+		else
+			CanOtherEntitiesDamageThis = false;
+	}
 
 	public void OnHitFromDamageSource(int damage, IDamagable.DamageType damageType, bool wasHitByPlayer)
 	{

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -179,5 +180,21 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.poisonResistance += armor.bonusPoisonResistance;
 		entityStats.fireResistance += armor.bonusFireResistance;
 		entityStats.iceResistance += armor.bonusIceResistance;
+	}
+
+	public void OnPlayerLevelUp(int newPlayerLevel)
+	{
+		if (entityStats.playerEquipment != null && entityStats.currentHealth <= 0) return; //only level up stats for non player entities
+		equippedWeapon.itemLevel = newPlayerLevel;
+		equippedWeapon.SetItemStats(equippedWeapon.rarity, equippedWeapon.itemLevel);
+
+		equippedHelmet.itemLevel = newPlayerLevel;
+		equippedHelmet.SetItemStats(equippedHelmet.rarity, equippedHelmet.itemLevel);
+
+		equippedChestpiece.itemLevel = newPlayerLevel;
+		equippedChestpiece.SetItemStats(equippedChestpiece.rarity, equippedChestpiece.itemLevel);
+
+		equippedLegs.itemLevel = newPlayerLevel;
+		equippedLegs.SetItemStats(equippedLegs.rarity, equippedLegs.itemLevel);
 	}
 }

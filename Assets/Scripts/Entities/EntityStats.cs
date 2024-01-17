@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class EntityStats : MonoBehaviour
@@ -42,14 +43,18 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+
 		onDeathEvent += playerExperienceHandler.AddExperience;
+		playerExperienceHandler.onPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
 	{
 		GetComponent<Damageable>().OnHit -= RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+
 		onDeathEvent -= playerExperienceHandler.AddExperience;
+		playerExperienceHandler.onPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
 	public void SetStats()
@@ -64,9 +69,25 @@ public class EntityStats : MonoBehaviour
 		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
 		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
 
-		if (entityEquipment == null) return;
-		entityEquipment.EquipRandomWeapon();
-		entityEquipment.EquipRandomArmor();
+		int numOfTries = 0;
+		StartCoroutine(SpawnEntityEquipment(numOfTries));
+	}
+	public IEnumerator SpawnEntityEquipment(int numOfTries)
+	{
+		if (numOfTries >= 5)
+			Debug.LogWarning("Unable to Spawn Entity Equipment");
+
+		else if (entityEquipment == null)
+		{
+			numOfTries += 1;
+			yield return new WaitForSeconds(0.1f);
+			StartCoroutine(SpawnEntityEquipment(numOfTries));
+		}
+		else
+		{
+			entityEquipment.EquipRandomWeapon();
+			entityEquipment.EquipRandomArmor();
+		}
 	}
 
 	/// <summary>
@@ -136,5 +157,28 @@ public class EntityStats : MonoBehaviour
 	{
 		yield return new WaitForSeconds(0.1f);
 		spriteRenderer.color = Color.white;
+	}
+
+	public void OnPlayerLevelUp(int newPlayerLevel)
+	{
+		entityLevel = newPlayerLevel;
+		float modifier = (entityLevel - 1f) / 1;  //get level modifier / 20
+		statModifier = modifier += 1;
+
+		maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
+		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
+		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
+		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
+		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
+
+		if (currentHealth <= 0) return;
+		try
+		{
+			entityEquipment.OnPlayerLevelUp(newPlayerLevel);
+		}
+		catch (Exception e)
+		{
+			Debug.LogException(e);
+		}
 	}
 }
