@@ -9,20 +9,19 @@ public class EntityBehaviour : MonoBehaviour
 	public NavMeshAgent navMeshAgent;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
+	private Animator animator;
 
 	public SOEntityBehaviour entityBehaviour;
 	private EnemyBaseState currentState;
 	private EnemyIdleState idleState = new EnemyIdleState();
 	private EnemyAttackState attackState = new EnemyAttackState();
 
-	[HideInInspector]
-	public Bounds idleBounds;
+	[HideInInspector] public Bounds idleBounds;
 	public Vector2 movePosition;
 	public bool HasReachedDestination;
 	public float idleTimer;
 
-	[HideInInspector]
-	public Bounds chaseBounds;
+	[HideInInspector] public Bounds chaseBounds;
 	public Vector2 playersLastKnownPosition;
 	public PlayerController player;
 	public CircleCollider2D viewRangeCollider;
@@ -30,8 +29,9 @@ public class EntityBehaviour : MonoBehaviour
 	public void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+		animator = GetComponent<Animator>();
 
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
 			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z - 3);
@@ -75,14 +75,22 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		currentState.UpdatePhysics(this);
 
-		FlipSprite();
+		UpdateSpriteDirection();
+		UpdateAnimationState();
 	}
-	public void FlipSprite()
+	public void UpdateSpriteDirection()
 	{
 		if (navMeshAgent.velocity.x < 0)
 			transform.eulerAngles = new Vector3(0, 0, 0);
 		else
 			transform.eulerAngles = new Vector3(0, 180, 0);
+	}
+	public void UpdateAnimationState()
+	{
+		if (navMeshAgent.velocity == new Vector3(0,0,0))
+			animator.SetBool("isIdle", true);
+		else
+			animator.SetBool("isIdle", false);
 	}
 
 	//idle + attack behaviour

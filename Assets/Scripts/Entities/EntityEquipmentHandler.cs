@@ -33,7 +33,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 	public virtual void Start()
 	{
-		entityStats = gameObject.GetComponentInParent<EntityStats>();
+		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
 		entityStats.entityEquipment = this;
 	}
 

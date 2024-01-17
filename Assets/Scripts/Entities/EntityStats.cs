@@ -33,7 +33,7 @@ public class EntityStats : MonoBehaviour
 
 	private void Start()
 	{
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
 
 		SetStats();

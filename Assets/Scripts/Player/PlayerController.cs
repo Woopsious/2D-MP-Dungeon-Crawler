@@ -15,6 +15,7 @@ public class PlayerController : MonoBehaviour
 	private PlayerInputActions playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
+	private Animator animator;
 
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
@@ -23,7 +24,8 @@ public class PlayerController : MonoBehaviour
 	{
 		playerInputs = new PlayerInputActions();
 		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponent<SpriteRenderer>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
 		playerCamera.transform.parent = null;
 	}
 
@@ -49,10 +51,23 @@ public class PlayerController : MonoBehaviour
 		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
 		rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
 
-		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
-			transform.eulerAngles = new Vector3(0,0,0);
-		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
+		UpdateSpriteDirection();
+		UpdateAnimationState();
+
+	}
+	public void UpdateSpriteDirection()
+	{
+		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
+			transform.eulerAngles = new Vector3(0, 0, 0);
+		else if (rb.velocity.x > -0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 180, 0);
+	}
+	public void UpdateAnimationState()
+	{
+		if (rb.velocity == new Vector2(0,0))
+			animator.SetBool("isIdle", true);
+		else
+			animator.SetBool("isIdle", false);
 	}
 
 	/// <summary>

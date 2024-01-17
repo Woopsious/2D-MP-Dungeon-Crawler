@@ -11,6 +11,8 @@ public class Weapons : Items
 	public bool isEquippedByOther;
 
 	private bool canAttackAgain;
+	private GameObject parentObj;
+	private Animator animator;
 	private BoxCollider2D boxCollider;
 
 	public void Start()
@@ -18,10 +20,13 @@ public class Weapons : Items
 		if (generateStatsOnStart)
 			SetItemStats(rarity, itemLevel);
 
+		parentObj = transform.parent.gameObject;
+		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
 		boxCollider.enabled = false;
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
+		animator.SetBool("isMeleeAttack", false);
 	}
 
 	public override void SetItemStats(Rarity setRarity, int setLevel)
@@ -48,6 +53,11 @@ public class Weapons : Items
 	{
 		if (!canAttackAgain) return;
 
+		Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+		parentObj.transform.LookAt(mousePos);
+
+		animator.SetBool("isMeleeAttack", true);
 		canAttackAgain = false;
 		boxCollider.enabled = true;
 		StartCoroutine(weaponCooldown());
@@ -56,7 +66,9 @@ public class Weapons : Items
 	{
 		yield return new WaitForSeconds(0.1f);
 		boxCollider.enabled = false;
+		animator.SetBool("isMeleeAttack", false);
 		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+		parentObj.transform.localEulerAngles = new Vector3(0, 0, 15);
 		canAttackAgain = true;
 	}
 }

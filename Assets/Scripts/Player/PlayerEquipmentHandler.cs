@@ -8,9 +8,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 	public override void Start()
 	{
-		entityStats = gameObject.GetComponentInParent<EntityStats>();
+		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
 		entityStats.playerEquipment = this;
-		playerController = gameObject.GetComponentInParent<PlayerController>();
+		playerController = gameObject.transform.parent.GetComponentInParent<PlayerController>();
 		playerController.playerEquipmentHandler = this;
 		//when loading/saving game, once inventory is loaded then load/instantiate equipped items based on loaded inventory
 	}
