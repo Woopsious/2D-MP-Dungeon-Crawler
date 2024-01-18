@@ -51,11 +51,8 @@ public class Weapons : Items
 	}
 	public void Attack()
 	{
+		MeleeDirectionToAttack();
 		if (!canAttackAgain) return;
-
-		Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-		parentObj.transform.LookAt(mousePos);
 
 		animator.SetBool("isMeleeAttack", true);
 		canAttackAgain = false;
@@ -68,7 +65,18 @@ public class Weapons : Items
 		boxCollider.enabled = false;
 		animator.SetBool("isMeleeAttack", false);
 		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
-		parentObj.transform.localEulerAngles = new Vector3(0, 0, 15);
 		canAttackAgain = true;
+	}
+	public void MeleeDirectionToAttack()
+	{
+		Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+		Vector3 direction = new Vector3(0, 0, parentObj.transform.parent.position.z - mousePos.z);
+
+		Debug.Log("mouse position: " + mousePos);
+
+		Debug.Log("angle: " + direction);
+
+		Debug.Log("obj position: " + parentObj.transform.parent.position);
 	}
 }
