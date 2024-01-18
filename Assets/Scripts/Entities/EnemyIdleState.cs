@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,7 +51,12 @@ public class EnemyIdleState : EnemyBaseState
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
 		entity.movePosition = entity.SampleNewMovePosition(randomMovePosition);
 
-		if (entity.CheckAndSetNewPath(entity.movePosition))
+		Debug.Log("random move position: " + entity.movePosition);
+		Debug.Log("move position: " + entity.movePosition);
+
+		if (Double.IsInfinity(entity.movePosition.x)) return;
+
+		if (entity.CheckAndSetNewPath(entity.movePosition)) //occasionally throws invalid target position (infinity, infinity, 0.0000)
 			return;
 		else
 			FindNewIdlePosition(entity);

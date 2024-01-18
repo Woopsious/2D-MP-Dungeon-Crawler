@@ -21,13 +21,13 @@ public class Utilities
 	//return random rarity
 	public static Items.Rarity SetRarity()
 	{
-		float percentage = GetRandomNumber(101); //3% for legendary | 15% for epic | 30% for rare | 52% for common
+		float percentage = GetRandomNumber(101); //3% for legendary | 10% for epic | 35% for rare | 57% for common
 
 		if (percentage >= 98)
 			return Items.Rarity.isLegendary;
-		else if (percentage >= 82 && percentage < 98)
+		else if (percentage >= 88 && percentage < 98)
 			return Items.Rarity.isEpic;
-		else if (percentage >= 52 && percentage < 82)
+		else if (percentage >= 57 && percentage < 88)
 			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
