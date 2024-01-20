@@ -16,6 +16,10 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
+
+	}
+	public override void UpdatePhysics(EntityBehaviour entity)
+	{
 		if (!entity.CheckIfPlayerVisible())
 		{
 			if (entity.CheckDistanceToDestination())
@@ -26,10 +30,6 @@ public class EnemyIdleState : EnemyBaseState
 		}
 		else if (entity.CheckIfPlayerVisible())
 			entity.ChangeStateAttack();
-	}
-	public override void UpdatePhysics(EntityBehaviour entity)
-	{
-
 	}
 
 	//idle behaviour
@@ -51,10 +51,7 @@ public class EnemyIdleState : EnemyBaseState
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
 		entity.movePosition = entity.SampleNewMovePosition(randomMovePosition);
 
-		Debug.Log("random move position: " + entity.movePosition);
-		Debug.Log("move position: " + entity.movePosition);
-
-		if (Double.IsInfinity(entity.movePosition.x)) return;
+		if (double.IsInfinity(entity.movePosition.x)) return;
 
 		if (entity.CheckAndSetNewPath(entity.movePosition)) //occasionally throws invalid target position (infinity, infinity, 0.0000)
 			return;

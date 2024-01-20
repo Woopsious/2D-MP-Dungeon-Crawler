@@ -5,6 +5,8 @@ using UnityEngine.AI;
 
 public class EntityBehaviour : MonoBehaviour
 {
+	[HideInInspector] public EntityStats entityStats;
+
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
 	private Rigidbody2D rb;
@@ -29,8 +31,9 @@ public class EntityBehaviour : MonoBehaviour
 	public void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		entityStats = GetComponent<EntityStats>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+		spriteRenderer.sprite = entityStats.entityBaseStats.sprite;
 		animator = GetComponent<Animator>();
 
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,

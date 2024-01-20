@@ -56,40 +56,48 @@ public class Weapons : Items
 		Debug.LogWarning(difference.normalized);
 		other.GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
 	}
-	public void Attack()
+	public void Attack(Vector3 positionOfThingToAttack)
 	{
 		if (!canAttackAgain) return;
 
-		idleWeaponSprite.enabled = false;
-		attackWeaponSprite.enabled = true;
-		MeleeDirectionToAttack();
-		animator.SetBool("isMeleeAttack", true);
-		canAttackAgain = false;
-		boxCollider.enabled = true;
+		MeleeDirectionToAttack(positionOfThingToAttack);
+		OnWeaponAttack();
 		StartCoroutine(weaponCooldown());
 	}
 	IEnumerator weaponCooldown()
 	{
 		yield return new WaitForSeconds(0.1f);
-		boxCollider.enabled = false;
-		animator.SetBool("isMeleeAttack", false);
-		idleWeaponSprite.enabled = true;
-		attackWeaponSprite.enabled = false;
-		parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0);
+		OnWeaponCooldown();
 		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
 		canAttackAgain = true;
 	}
-	public void MeleeDirectionToAttack()
+
+	public void OnWeaponAttack()
+	{
+		animator.SetBool("isMeleeAttack", true);
+		boxCollider.enabled = true;
+		idleWeaponSprite.enabled = false;
+		attackWeaponSprite.enabled = true;
+		canAttackAgain = false;
+	}
+	public void OnWeaponCooldown()
+	{
+		parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0); //reset attack direction
+		animator.SetBool("isMeleeAttack", false);
+		boxCollider.enabled = false;
+		idleWeaponSprite.enabled = true;
+		attackWeaponSprite.enabled = false;
+	}
+	public void MeleeDirectionToAttack(Vector3 positionOfThingToAttack)
 	{
 		/// <summary>
 		/// change rotation of weaponSlot (parent of this obj) based on direction of mouse from player depending on what vector is greater
 		/// 0.71 is the lowest ive ever managed to get when attacking diagonally from player pos, so for now vector needs to be greater then 0.7
 		/// </summary>
 
-		Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		mousePos.z = parentObj.transform.parent.position.z;
+		positionOfThingToAttack.z = parentObj.transform.parent.position.z;
 
-		Vector3 towardsMouseFromPlayer = mousePos - parentObj.transform.parent.position;
+		Vector3 towardsMouseFromPlayer = positionOfThingToAttack - parentObj.transform.parent.position;
 		Vector3 vectorAttack = towardsMouseFromPlayer.normalized;
 
 		if (vectorAttack.y >= 0.7)

@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.Windows;
 
 public class PlayerController : MonoBehaviour
 {
@@ -78,7 +77,7 @@ public class PlayerController : MonoBehaviour
 	private void OnMainAttack()
 	{
 		if (playerEquipmentHandler.equippedWeapon == null || InventoryUi.Instance.isActiveAndEnabled) return;
-		playerEquipmentHandler.equippedWeapon.Attack();
+		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
 	private void OnCameraZoom()
 	{
