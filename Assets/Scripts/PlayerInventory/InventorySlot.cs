@@ -17,7 +17,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	public SlotType slotType;
 	public enum SlotType
 	{
-		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables
+		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, necklace, ring, artifact, ability
 	}
 
 	public int slotIndex;
@@ -121,6 +121,14 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 			if (item.armorSlot == InventoryItem.ArmorSlot.chestpiece && slotType == SlotType.chestpiece)
 				return true;
 			if (item.armorSlot == InventoryItem.ArmorSlot.legs && slotType == SlotType.legs)
+				return true;
+			else return false;
+		}
+		else if (item.itemType == InventoryItem.ItemType.isAccessory)
+		{
+			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace)
+				return true;
+			else if (item.accessorySlot == InventoryItem.AccessorySlot.ring)
 				return true;
 			else return false;
 		}

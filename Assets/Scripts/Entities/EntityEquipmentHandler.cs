@@ -22,6 +22,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public Armors equippedChestpiece;
 	public Armors equippedLegs;
 
+	[Header("Accessories")]
+
 	[Header("Bonuses Provided By Equipment")]
 	public int bonusEquipmentHealth;
 	public int bonusEquipmentMana;
@@ -75,6 +77,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		entityStats.maxMana -= weapon.bonusMana;
 		entityStats.currentMana -= weapon.bonusMana;
+
+		weapon.GetComponent<SpriteRenderer>().enabled = false;
 	}
 
 	//armors
@@ -180,6 +184,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.poisonResistance += armor.bonusPoisonResistance;
 		entityStats.fireResistance += armor.bonusFireResistance;
 		entityStats.iceResistance += armor.bonusIceResistance;
+
+		armor.GetComponent<SpriteRenderer>().enabled = false;
 	}
 
 	public void OnPlayerLevelUp(int newPlayerLevel)

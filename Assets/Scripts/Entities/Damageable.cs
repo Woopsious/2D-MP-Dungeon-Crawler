@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Damageable : MonoBehaviour
 {
+	public bool DebugInvincible;
 	public bool isDestroyedInOneHit;
 	private bool CanOtherEntitiesDamageThis;
 
@@ -20,6 +21,7 @@ public class Damageable : MonoBehaviour
 
 	public void OnHitFromDamageSource(int damage, IDamagable.DamageType damageType, bool wasHitByPlayer)
 	{
+		if (DebugInvincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
 
 		OnHit?.Invoke(damage, damageType, isDestroyedInOneHit);

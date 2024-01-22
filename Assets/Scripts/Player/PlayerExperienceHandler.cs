@@ -33,6 +33,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	public void AddExperience(GameObject Obj, PlayerController playerInRange)
 	{
+		return; //disabled for now
 		if (playerController != playerInRange) return;
 
 		Debug.Log("current exp amount: " + currentExp);

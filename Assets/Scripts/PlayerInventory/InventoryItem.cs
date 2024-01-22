@@ -13,6 +13,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 	public TMP_Text uiItemName;
 	public Image uiItemImage;
+	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
 	private float timeToWait = 0.5f;
 
@@ -26,12 +27,12 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public ItemType itemType;
 	public enum ItemType
 	{
-		isConsumable, isWeapon, isArmor
+		isConsumable, isWeapon, isArmor, isAccessory
 	}
 	public Rarity rarity;
 	public enum Rarity
 	{
-		isCommon, isRare, isLegendary
+		isCommon, isRare, isEpic, isLegendary
 	}
 
 	[Header("Item Dynamic Info")]
@@ -50,7 +51,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	[Header("Weapon Info")]
 	public SOWeapons weaponBaseRef;
 	public int damage;
-	public int bonusWeaponMana;
 
 	[Header("Weapon Type")]
 	public WeaponType weaponType;
@@ -60,18 +60,43 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	}
 
 	[Header("Armor Info")]
-	public int bonusArmorHealth;
-	public int bonusArmorMana;
-
-	[Header("Armor Slot")]
 	public SOArmors armorBaseRef;
+	[Header("Armor Slot")]
 	public ArmorSlot armorSlot;
 	public enum ArmorSlot
 	{
 		helmet, chestpiece, legs
 	}
 
-	[Header("Armor Resistances")]
+	[Header("Accessory Info")]
+	public SOAccessories accessoryBaseRef;
+	[Header("Accessory Slot")]
+	public AccessorySlot accessorySlot;
+	public enum AccessorySlot
+	{
+		necklace, ring
+	}
+
+	[Header("Accessory Type")]
+	public AccessoryType accessoryType;
+	public enum AccessoryType
+	{
+		isWarding, isDamaging, isHealing
+	}
+
+	[Header("Accessory Damaging/healing")]
+	public int bonusPercentageValue;
+
+	public DamageTypeToBoost damageTypeToBoost;
+	public enum DamageTypeToBoost
+	{
+		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
+	}
+
+	[Header("Shared Bonus Stats")]
+	public int bonusHealth;
+	public int bonusMana;
+
 	public int bonusPhysicalResistance;
 	public int bonusPoisonResistance;
 	public int bonusFireResistance;
@@ -106,12 +131,12 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 				info += weaponBaseRef.baseMaxAttackRange;
 			else
 				info += "Melee";
-			info += "\n Attack Speed: " + weaponBaseRef.baseAttackSpeed + "\n Bonus Mana: " + bonusWeaponMana;
+			info += "\n Attack Speed: " + weaponBaseRef.baseAttackSpeed + "\n Bonus Mana: " + bonusMana;
 		}
 		if (itemType == ItemType.isArmor)
 		{
-			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Bonus Health: " + bonusArmorHealth + "\n Bonus Mana: " +
-				bonusArmorMana + "\n \n Physical Resistance: " + bonusPhysicalResistance + "\n Poison Resistance: " +
+			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Bonus Health: " + bonusHealth + "\n Bonus Mana: " +
+				bonusMana + "\n \n Physical Resistance: " + bonusPhysicalResistance + "\n Poison Resistance: " +
 				bonusPoisonResistance + "\n Fire Resistance: " + bonusFireResistance + "\n Ice Resistance: " + bonusIceResistance;
 		}
 		if (itemType == ItemType.isConsumable)
@@ -156,9 +181,32 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	{
 		uiItemImage.sprite = itemImage;
 	}
+	public void UpdateItemLevel()
+	{
+		uiItemLevel.text = "LVL: " + itemLevel;
+	}
 	public void UpdateStackCounter()
 	{
 		uiItemStackCount.text = currentStackCount.ToString();
 		if (currentStackCount <= 0) Destroy(gameObject);
+	}
+
+	//update Ui color based on rarity
+	public void SetTextColour()
+	{
+		if (rarity == InventoryItem.Rarity.isRare)
+			SetColour(Color.cyan);
+		else if (rarity == InventoryItem.Rarity.isEpic)
+			SetColour(Color.magenta);
+		else if (rarity == InventoryItem.Rarity.isLegendary)
+			SetColour(Color.red);
+		else
+			SetColour(Color.white);
+	}
+	public void SetColour(Color colour)
+	{
+		uiItemName.color = colour;
+		uiItemLevel.color = colour;
+		uiItemStackCount.color = colour;
 	}
 }

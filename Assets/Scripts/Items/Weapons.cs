@@ -49,6 +49,11 @@ public class Weapons : Items
 	{
 		if (other.gameObject.GetComponent<Damageable>() == null || isEquippedByPlayer == false && isEquippedByOther == false) return;
 
+		///<summery>
+		///check for damage modifiers (from accessories or class skill trees etc) here when attacking with main weapon
+		///then add it to the damage done and pass it onto Damageable script
+		///<summery>
+
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, isEquippedByPlayer);
 
 		Vector2 difference = other.transform.position - gameObject.transform.position;

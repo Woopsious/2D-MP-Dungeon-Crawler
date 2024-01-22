@@ -7,6 +7,7 @@ using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
 public class PlayerInventoryManager : MonoBehaviour
@@ -75,7 +76,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	//on item pickup
 	public InventoryItem ConvertPickupsToInventoryItem(Items item)
 	{
-		GameObject go = Instantiate(InventoryUi.Instance.ItemUiPrefab, gameObject.transform);
+		GameObject go = Instantiate(InventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem newItem = go.GetComponent<InventoryItem>();
 
 		if (item.weaponBaseRef != null)
@@ -84,11 +85,15 @@ public class PlayerInventoryManager : MonoBehaviour
 		if (item.armorBaseRef != null)
 			SetArmorData(newItem, item);
 
+		if (item.accessoryBaseRef != null)
+			SetAccessoryData(newItem, item);
+
 		if (item.consumableBaseRef != null)
 			SetConsumableData(newItem, item);
 
 		newItem.UpdateName();
 		newItem.UpdateImage();
+		newItem.UpdateItemLevel();
 		newItem.UpdateStackCounter();
 
 		return newItem;
@@ -152,6 +157,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			{
 				item.inventorySlotIndex = i;
 				item.transform.SetParent(inventorySlot.transform);
+				item.SetTextColour();
 				inventorySlot.itemInSlot = item;
 				inventorySlot.UpdateSlotSize();
 
@@ -174,7 +180,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		inventoryItem.weaponBaseRef = item.weaponBaseRef;
 		inventoryItem.damage = (int)(item.weaponBaseRef.baseDamage * item.statModifier);
-		inventoryItem.bonusWeaponMana = (int)(item.weaponBaseRef.baseBonusMana * item.statModifier);
+		inventoryItem.bonusMana = (int)(item.weaponBaseRef.baseBonusMana * item.statModifier);
 
 		inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
 		inventoryItem.currentStackCount = item.currentStackCount;
@@ -188,12 +194,12 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.itemLevel = item.itemLevel;
 		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
 		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.armorBaseRef.classRestriction;
+		inventoryItem.armorSlot = (InventoryItem.ArmorSlot)item.armorBaseRef.armorSlot;
 
 		inventoryItem.armorBaseRef = item.armorBaseRef;
-		inventoryItem.bonusArmorHealth = (int)(item.armorBaseRef.baseBonusHealth * item.statModifier);
-		inventoryItem.bonusArmorMana = (int)(item.armorBaseRef.baseBonusMana * item.statModifier);
+		inventoryItem.bonusHealth = (int)(item.armorBaseRef.baseBonusHealth * item.statModifier);
+		inventoryItem.bonusMana = (int)(item.armorBaseRef.baseBonusMana * item.statModifier);
 
-		inventoryItem.armorSlot = (InventoryItem.ArmorSlot)item.armorBaseRef.armorSlot;
 		inventoryItem.bonusPhysicalResistance = (int)(item.armorBaseRef.bonusPhysicalResistance * item.statModifier);
 		inventoryItem.bonusPoisonResistance = (int)(item.armorBaseRef.bonusPoisonResistance * item.statModifier);
 		inventoryItem.bonusFireResistance = (int)(item.armorBaseRef.bonusFireResistance * item.statModifier);
@@ -201,6 +207,41 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		inventoryItem.isStackable = item.isStackable;
 		inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
+		inventoryItem.currentStackCount = item.currentStackCount;
+	}
+	public void SetAccessoryData(InventoryItem inventoryItem, Items item)
+	{
+		inventoryItem.itemName = item.itemName;
+		inventoryItem.itemImage = item.itemImage;
+		inventoryItem.itemType = (InventoryItem.ItemType)item.accessoryBaseRef.itemType;
+
+		inventoryItem.itemLevel = item.itemLevel;
+		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
+		inventoryItem.classRestriction = InventoryItem.ClassRestriction.light;
+		inventoryItem.accessorySlot = (InventoryItem.AccessorySlot)item.accessoryBaseRef.accessorySlot;
+		inventoryItem.accessoryType = (InventoryItem.AccessoryType)item.accessoryBaseRef.accessoryType;
+		inventoryItem.damageTypeToBoost = (InventoryItem.DamageTypeToBoost)item.accessoryBaseRef.damageTypeToBoost;
+
+		inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
+		inventoryItem.bonusHealth = (int)(item.accessoryBaseRef.baseBonusHealth * item.statModifier);
+		inventoryItem.bonusMana = (int)(item.accessoryBaseRef.baseBonusMana * item.statModifier);
+
+		if (inventoryItem.rarity == InventoryItem.Rarity.isCommon)
+			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[0];
+		else if (inventoryItem.rarity == InventoryItem.Rarity.isRare)
+			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[1];
+		else if (inventoryItem.rarity == InventoryItem.Rarity.isEpic)
+			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[2];
+		else if (inventoryItem.rarity == InventoryItem.Rarity.isLegendary)
+			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[3];
+
+		inventoryItem.bonusPhysicalResistance = (int)(item.accessoryBaseRef.bonusPhysicalResistance * item.statModifier);
+		inventoryItem.bonusPoisonResistance = (int)(item.accessoryBaseRef.bonusPoisonResistance * item.statModifier);
+		inventoryItem.bonusFireResistance = (int)(item.accessoryBaseRef.bonusFireResistance * item.statModifier);
+		inventoryItem.bonusIceResistance = (int)(item.accessoryBaseRef.bonusIceResistance * item.statModifier);
+
+		inventoryItem.isStackable = item.isStackable;
+		inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
 		inventoryItem.currentStackCount = item.currentStackCount;
 	}
 	public void SetConsumableData(InventoryItem inventoryItem, Items item)

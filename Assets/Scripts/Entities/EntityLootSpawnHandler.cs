@@ -29,6 +29,9 @@ public class EntityLootSpawnHandler : MonoBehaviour
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isArmor)
 				SetUpArmorItem(go, index);
 
+			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isAccessory)
+				SetUpAccessory(go, index);
+
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isConsumable)
 				SetUpConsumableItem(go, index);
 
@@ -61,6 +64,13 @@ public class EntityLootSpawnHandler : MonoBehaviour
 		Armors armor = go.AddComponent<Armors>();
 		armor.armorBaseRef = (SOArmors)lootPool.lootPoolList[index];
 		armor.currentStackCount = 1;
+	}
+	public void SetUpAccessory(GameObject go, int index)
+	{
+		Accessories accessory = go.AddComponent<Accessories>();
+		accessory.accessoryBaseRef = (SOAccessories)lootPool.lootPoolList[index];
+		accessory.SetRandomDamageTypeOnDrop();
+		accessory.currentStackCount = 1;
 	}
 	public void SetUpConsumableItem(GameObject go, int index)
 	{

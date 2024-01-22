@@ -18,8 +18,19 @@ public class InventoryUi : MonoBehaviour
 	public GameObject chestpieceEquipmentSlot;
 	public GameObject legsEquipmentSlot;
 
+	public GameObject artifactSlot;
+	public GameObject necklassEquipmentSlot;
+	public GameObject ringEquipmentSlotOne;
+	public GameObject ringEquipmentSlotTwo;
+
 	public GameObject consumableSlotOne;
 	public GameObject consumableSlotTwo;
+
+	public GameObject abilitySlotOne;
+	public GameObject abilitySlotTwo;
+	public GameObject abilitySlotThree;
+	public GameObject abilitySlotFour;
+	public GameObject abilitySlotFive;
 
 	public void Awake()
 	{

@@ -26,6 +26,7 @@ public class Items : MonoBehaviour
 	[Header("Item Base Ref")]
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
+	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
 
 	[Header("Inventroy Dynamic Info")]
@@ -62,18 +63,21 @@ public class Items : MonoBehaviour
 	{
 		if (weaponBaseRef != null) return weaponBaseRef.itemName;
 		else if (armorBaseRef != null) return armorBaseRef.itemName;
+		else if (accessoryBaseRef != null) return accessoryBaseRef.itemName;
 		else return consumableBaseRef.itemName;
 	}
 	public Sprite GetItemImage()
 	{
 		if (weaponBaseRef != null) return weaponBaseRef.itemImage;
 		else if (armorBaseRef != null) return armorBaseRef.itemImage;
+		else if (accessoryBaseRef != null) return accessoryBaseRef.itemImage;
 		else return consumableBaseRef.itemImage;
 	}
 	public int GetItemPrice()
 	{
 		if (weaponBaseRef != null) return (int)(weaponBaseRef.ItemPrice * statModifier);
 		else if (armorBaseRef != null) return (int)(armorBaseRef.ItemPrice * statModifier);
+		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.ItemPrice * statModifier);
 		else return (int)(consumableBaseRef.ItemPrice * statModifier);
 	}
 

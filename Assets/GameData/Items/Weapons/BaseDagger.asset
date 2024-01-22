@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BaseDagger
   m_EditorClassIdentifier: 
   itemName: Dagger
-  itemImage: {fileID: -665695768, guid: 90a480f821bd0654faa33e2d609f7b86, type: 3}
+  itemImage: {fileID: 558724729, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   ItemPrice: 200
   ItemId: 0
   itemType: 1
