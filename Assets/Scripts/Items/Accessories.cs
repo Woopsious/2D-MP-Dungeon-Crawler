@@ -39,12 +39,12 @@ public class Accessories : Items
 	public void Start()
 	{
 		if (generateStatsOnStart)
-			SetItemStats(rarity, itemLevel);
+			SetItemStats(rarity, itemLevel, null);
 	}
 
-	public override void SetItemStats(Rarity setRarity, int setLevel)
+	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
 	{
-		base.SetItemStats(setRarity, setLevel);
+		base.SetItemStats(setRarity, setLevel, equipmentHandler);
 
 		if (rarity == Rarity.isCommon)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[0];

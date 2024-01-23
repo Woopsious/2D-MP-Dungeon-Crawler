@@ -5,6 +5,7 @@ public class SOWeapons : SOItems
 {
 	[Header("Weapon Info")]
 	public bool isBareHands;
+	public bool isShield;
 	public int baseDamage;
 	public float baseAttackSpeed;
 	public float baseKnockback;

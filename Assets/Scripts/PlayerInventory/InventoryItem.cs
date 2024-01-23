@@ -50,6 +50,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 	[Header("Weapon Info")]
 	public SOWeapons weaponBaseRef;
+	public bool isShield;
 	public int damage;
 
 	[Header("Weapon Type")]

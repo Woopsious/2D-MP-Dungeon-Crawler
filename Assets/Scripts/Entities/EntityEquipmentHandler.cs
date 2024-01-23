@@ -13,6 +13,9 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public GameObject weaponSlotContainer;
 	public Weapons equippedWeapon;
 
+	[Header("Offhand Weapon")]
+	private InventoryItem equippedOffhandItem;
+
 	[Header("Armor")]
 	public GameObject helmetSlotContainer;
 	public GameObject chestpieceSlotContainer;
@@ -23,6 +26,9 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public Armors equippedLegs;
 
 	[Header("Accessories")]
+	private InventoryItem equippedNecklaceItem;
+	private InventoryItem equippedRingOneItem;
+	private InventoryItem equippedRingTwoItem;
 
 	[Header("Bonuses Provided By Equipment")]
 	public int bonusEquipmentHealth;
@@ -56,19 +62,69 @@ public class EntityEquipmentHandler : MonoBehaviour
 		if (equippedWeapon != null)
 		{
 			equippedWeapon.weaponBaseRef = entityStats.entityBaseStats.possibleWeaponsList[index];
-			equippedWeapon.entityEquipmentHandler = this;
-			equippedWeapon.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+			equippedWeapon.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
 			equippedWeapon.isEquippedByOther = true;
 		}
 	}
+	public void EquipWeaponTest(InventoryItem weaponToEquip, Weapons equippedWeaponRef)
+	{
+		GameObject go;
+		OnWeaponUnequip(equippedWeaponRef);
+
+		if (weaponSlotContainer.transform.childCount == 0)
+		{
+			go = Instantiate(itemPrefab, weaponSlotContainer.transform);
+			go.AddComponent<Weapons>();
+			equippedWeaponRef = go.GetComponent<Weapons>();
+		}
+
+		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
+		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
+		equippedWeaponRef.isEquippedByPlayer = true;
+
+		equippedWeapon = equippedWeaponRef;
+		OnWeaponEquip(equippedWeaponRef);
+
+		/*
+		equippedWeaponRef.itemName = weaponToEquip.itemName;
+		equippedWeaponRef.itemImage = weaponToEquip.itemImage.sprite;
+		equippedWeaponRef.itemLevel = weaponToEquip.itemLevel;
+		equippedWeaponRef.rarity = (Items.Rarity)weaponToEquip.rarity;
+
+		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
+		equippedWeaponRef.damage = weaponToEquip.damage;
+		equippedWeaponRef.bonusMana = weaponToEquip.bonusWeaponMana;
+		*/
+	}
+
 	public void OnWeaponUnequip(Weapons weapon)
 	{
 		if (equippedWeapon != null)
 		{
-			bonusEquipmentMana -= weapon.bonusMana;
+			if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+			{
+				bonusEquipmentHealth -= weapon.damage;
 
-			entityStats.maxMana -= weapon.bonusMana;
-			entityStats.currentMana -= weapon.bonusMana;
+				bonusEquipmentPhysicalResistance -= weapon.damage;
+				bonusEquipmentPoisonResistance -= weapon.damage;
+				bonusEquipmentFireResistance -= weapon.damage;
+				bonusEquipmentIceResistance -= weapon.damage;
+
+				entityStats.physicalResistance -= weapon.damage;
+				entityStats.poisonResistance -= weapon.damage;
+				entityStats.fireResistance -= weapon.damage;
+				entityStats.iceResistance -= weapon.damage;
+
+				entityStats.maxHealth -= weapon.damage;
+				entityStats.currentHealth -= weapon.damage;
+			}
+			else
+			{
+				bonusEquipmentMana -= weapon.bonusMana;
+
+				entityStats.maxMana -= weapon.bonusMana;
+				entityStats.currentMana -= weapon.bonusMana;
+			}
 		}
 	}
 	public void OnWeaponEquip(Weapons weapon)
@@ -100,8 +156,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			if (equippedHelmet != null)
 			{
 				equippedHelmet.armorBaseRef = entityStats.entityBaseStats.possibleHelmetsList[index];
-				equippedHelmet.entityEquipmentHandler = this;
-				equippedHelmet.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedHelmet.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
 				equippedHelmet.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
@@ -119,8 +174,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			if (equippedChestpiece != null)
 			{
 				equippedChestpiece.armorBaseRef = entityStats.entityBaseStats.possibleChestpiecesList[index];
-				equippedChestpiece.entityEquipmentHandler = this;
-				equippedChestpiece.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedChestpiece.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
 				equippedChestpiece.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
@@ -138,8 +192,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			if (equippedLegs != null)
 			{
 				equippedLegs.armorBaseRef = entityStats.entityBaseStats.possibleLegsList[index];
-				equippedLegs.entityEquipmentHandler = this;
-				equippedLegs.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel);
+				equippedLegs.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
 				equippedLegs.GetComponent<SpriteRenderer>().enabled = false;
 			}
 		}
@@ -192,15 +245,15 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		if (entityStats.playerEquipment != null && entityStats.currentHealth <= 0) return; //only level up stats for non player entities
 		equippedWeapon.itemLevel = newPlayerLevel;
-		equippedWeapon.SetItemStats(equippedWeapon.rarity, equippedWeapon.itemLevel);
+		equippedWeapon.SetItemStats(equippedWeapon.rarity, equippedWeapon.itemLevel, this);
 
 		equippedHelmet.itemLevel = newPlayerLevel;
-		equippedHelmet.SetItemStats(equippedHelmet.rarity, equippedHelmet.itemLevel);
+		equippedHelmet.SetItemStats(equippedHelmet.rarity, equippedHelmet.itemLevel, this);
 
 		equippedChestpiece.itemLevel = newPlayerLevel;
-		equippedChestpiece.SetItemStats(equippedChestpiece.rarity, equippedChestpiece.itemLevel);
+		equippedChestpiece.SetItemStats(equippedChestpiece.rarity, equippedChestpiece.itemLevel, this);
 
 		equippedLegs.itemLevel = newPlayerLevel;
-		equippedLegs.SetItemStats(equippedLegs.rarity, equippedLegs.itemLevel);
+		equippedLegs.SetItemStats(equippedLegs.rarity, equippedLegs.itemLevel, this);
 	}
 }

@@ -21,7 +21,8 @@ MonoBehaviour:
   isStackable: 0
   MaxStackCount: 1
   isBareHands: 0
-  baseDamage: 30
+  isShield: 1
+  baseDamage: 5
   baseAttackSpeed: 0
   baseKnockback: 0
   classRestriction: 1

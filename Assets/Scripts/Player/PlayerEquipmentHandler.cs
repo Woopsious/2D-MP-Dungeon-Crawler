@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Analytics;
 using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
@@ -31,8 +32,15 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		else if (item.itemType == InventoryItem.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
-			EquipWeapon(item, equippedWeapon);
-			equippedWeapon = weaponSlotContainer.GetComponentInChildren<Weapons>();// add this for armor pieces
+			if (item.weaponType == InventoryItem.WeaponType.isMainHand)
+			{
+				EquipWeapon(item, equippedWeapon);
+				equippedWeapon = weaponSlotContainer.GetComponentInChildren<Weapons>();
+			}
+			else
+			{
+
+			}
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
 		{
@@ -54,6 +62,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 				equippedLegs = legsSlotContainer.GetComponentInChildren<Armors>();
 			}
 		}
+		else if (item.itemType == InventoryItem.ItemType.isAccessory)
+		{
+
+		}
 	}
 
 	public void EquipWeapon(InventoryItem weaponToEquip, Weapons equippedWeaponRef)
@@ -69,22 +81,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		}
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel);
+		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeapon = equippedWeaponRef;
-		OnWeaponEquip(equippedWeaponRef);
-
-		/*
-		equippedWeaponRef.itemName = weaponToEquip.itemName;
-		equippedWeaponRef.itemImage = weaponToEquip.itemImage.sprite;
-		equippedWeaponRef.itemLevel = weaponToEquip.itemLevel;
-		equippedWeaponRef.rarity = (Items.Rarity)weaponToEquip.rarity;
-
-		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.damage = weaponToEquip.damage;
-		equippedWeaponRef.bonusMana = weaponToEquip.bonusWeaponMana;
-		*/
 	}
 	public void EquipArmor(InventoryItem armorToEquip, Armors equippedArmorRef, GameObject slot)
 	{
@@ -98,7 +98,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			equippedArmorRef = go.GetComponent<Armors>();
 		}
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.SetItemStats((Items.Rarity)armorToEquip.rarity, armorToEquip.itemLevel);
+		equippedArmorRef.SetItemStats((Items.Rarity)armorToEquip.rarity, armorToEquip.itemLevel, this);
 
 		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.helmet)
 			equippedHelmet = equippedArmorRef;
@@ -106,24 +106,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			equippedChestpiece = equippedArmorRef;
 		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
 			equippedLegs = equippedArmorRef;
+	}
 
-		OnArmorEquip(equippedArmorRef);
-
-		/*
-		equippedArmorRef.itemName = armorToEquip.itemName;
-		equippedArmorRef.itemImage = armorToEquip.itemImage.sprite;
-		equippedArmorRef.itemLevel = armorToEquip.itemLevel;
-		equippedArmorRef.rarity = (Items.Rarity)armorToEquip.rarity;
-		equippedArmorRef.armorSlot = (Armors.ArmorSlot)armorToEquip.armorSlot;
-
-		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.bonusHealth = armorToEquip.bonusArmorHealth;
-		equippedArmorRef.bonusMana = armorToEquip.bonusArmorMana;
-		equippedArmorRef.bonusPhysicalResistance = armorToEquip.bonusPhysicalResistance;
-		equippedArmorRef.bonusPoisonResistance = armorToEquip.bonusPoisonResistance;
-		equippedArmorRef.bonusFireResistance = armorToEquip.bonusFireResistance;
-		equippedArmorRef.bonusIceResistance = armorToEquip.bonusIceResistance;
-		*/
+	public void EquipOffhandWeaponFromInventory(InventoryItem offhandWeaponToEquip)
+	{
+		//equippedOffhandItem = offhandWeaponToEquip;
 	}
 
 	public void HandleEmptySlots(InventorySlot slot)

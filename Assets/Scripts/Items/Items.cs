@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Items : MonoBehaviour
 {
-	public EntityEquipmentHandler entityEquipmentHandler;
-	public PlayerEquipmentHandler playerEquipmentHandler;
-
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;
 
@@ -35,7 +32,7 @@ public class Items : MonoBehaviour
 	public float statModifier;
 	public int inventroySlot;
 
-	public virtual void SetItemStats(Rarity setRarity, int setLevel)
+	public virtual void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
 	{
 		rarity = setRarity;
 		itemLevel = setLevel;
@@ -46,7 +43,7 @@ public class Items : MonoBehaviour
 		itemImage = GetItemImage();
 		ItemPrice = GetItemPrice();
 
-		if (GetComponent<SpriteRenderer>() == null) return;
+		//if (GetComponent<SpriteRenderer>() == null) return;
 		GetComponent<SpriteRenderer>().sprite = itemImage;
 	}
 	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)

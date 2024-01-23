@@ -5,6 +5,7 @@ using UnityEngine;
 public class Weapons : Items
 {
 	[Header("Weapon Info")]
+	public bool isShield;
 	public int damage;
 	public int bonusMana;
 	public bool isEquippedByPlayer;
@@ -20,7 +21,7 @@ public class Weapons : Items
 	public void Start()
 	{
 		if (generateStatsOnStart)
-			SetItemStats(rarity, itemLevel);
+			SetItemStats(rarity, itemLevel, null);
 
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
@@ -36,13 +37,17 @@ public class Weapons : Items
 		animator.SetBool("isMeleeAttack", false);
 	}
 
-	public override void SetItemStats(Rarity setRarity, int setLevel)
+	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
 	{
-		base.SetItemStats(setRarity, setLevel);
+		base.SetItemStats(setRarity, setLevel, equipmentHandler);
 
+		isShield = weaponBaseRef.isShield;
 		damage = (int)(weaponBaseRef.baseDamage * statModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * statModifier);
 		isStackable = weaponBaseRef.isStackable;
+
+		if (equipmentHandler == null) return;
+		equipmentHandler.OnWeaponEquip(this);
 	}
 
 	public void OnTriggerEnter2D(Collider2D other)
