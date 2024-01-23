@@ -31,6 +31,68 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5102322174771152128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1310451270515007633
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 105764084140997302}
+  m_Layer: 0
+  m_Name: EquippedRingOneSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &105764084140997302
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1310451270515007633}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5102322174771152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5069674291938480930
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8960607787267166893}
+  m_Layer: 0
+  m_Name: EquippedRingTwoSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8960607787267166893
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5069674291938480930}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5102322174771152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &5416546458074602293
 GameObject:
   m_ObjectHideFlags: 0
@@ -62,9 +124,13 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3417765376476175265}
+  - {fileID: 3870942818547823017}
   - {fileID: 3022615771678447099}
   - {fileID: 7144564237188672839}
   - {fileID: 474119181984850391}
+  - {fileID: 287526024646032093}
+  - {fileID: 105764084140997302}
+  - {fileID: 8960607787267166893}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &354921068388072207
@@ -83,18 +149,30 @@ MonoBehaviour:
   entityStats: {fileID: 0}
   weaponSlotContainer: {fileID: 8238258648843262616}
   equippedWeapon: {fileID: 0}
+  offhandWeaponSlotContainer: {fileID: 6821446468739883079}
+  equippedOffhandWeapon: {fileID: 0}
   helmetSlotContainer: {fileID: 7461447932250602724}
   chestpieceSlotContainer: {fileID: 6571303244161978118}
   legsSlotContainer: {fileID: 951793266696899331}
   equippedHelmet: {fileID: 0}
   equippedChestpiece: {fileID: 0}
   equippedLegs: {fileID: 0}
+  necklaceSlotContainer: {fileID: 7665860394829845737}
+  ringOneSlotContainer: {fileID: 1310451270515007633}
+  ringTwoSlotContainer: {fileID: 5069674291938480930}
+  equippedNecklace: {fileID: 0}
+  equippedRingOne: {fileID: 0}
+  equippedRingTwo: {fileID: 0}
   bonusEquipmentHealth: 0
   bonusEquipmentMana: 0
   bonusEquipmentPhysicalResistance: 0
   bonusEquipmentPoisonResistance: 0
   bonusEquipmentFireResistance: 0
   bonusEquipmentIceResistance: 0
+  bonusPhysicalDamagePercentage: 0
+  bonusPoisonDamagePercentage: 0
+  bonusFireDamagePercentage: 0
+  bonusIceDamagePercentage: 0
 --- !u!1 &6571303244161978118
 GameObject:
   m_ObjectHideFlags: 0
@@ -126,6 +204,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 5102322174771152128}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6821446468739883079
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3870942818547823017}
+  m_Layer: 0
+  m_Name: EquippedOffhandWeaponSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3870942818547823017
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6821446468739883079}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5102322174771152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7461447932250602724
 GameObject:
   m_ObjectHideFlags: 0
@@ -149,6 +258,37 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7461447932250602724}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5102322174771152128}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7665860394829845737
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 287526024646032093}
+  m_Layer: 0
+  m_Name: EquippedNecklaceSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &287526024646032093
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7665860394829845737}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}

@@ -28,6 +28,12 @@ public class EntityStats : MonoBehaviour
 	public int fireResistance;
 	public int iceResistance;
 
+	[Header("Percentage Damage Bonuses")]
+	public int bonusPhysicalDamagePercentage;
+	public int bonusPoisonDamagePercentage;
+	public int bonusFireDamagePercentage;
+	public int bonusIceDamagePercentage;
+
 	public event Action<int, int> onRecieveDamageEvent;
 	public event Action<GameObject, PlayerController> onDeathEvent;
 

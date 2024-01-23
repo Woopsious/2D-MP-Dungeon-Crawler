@@ -14,7 +14,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public Weapons equippedWeapon;
 
 	[Header("Offhand Weapon")]
-	private InventoryItem equippedOffhandItem;
+	public GameObject offhandWeaponSlotContainer;
+	public Weapons equippedOffhandWeapon;
 
 	[Header("Armor")]
 	public GameObject helmetSlotContainer;
@@ -26,9 +27,13 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public Armors equippedLegs;
 
 	[Header("Accessories")]
-	private InventoryItem equippedNecklaceItem;
-	private InventoryItem equippedRingOneItem;
-	private InventoryItem equippedRingTwoItem;
+	public GameObject necklaceSlotContainer;
+	public GameObject ringOneSlotContainer;
+	public GameObject ringTwoSlotContainer;
+
+	public Accessories equippedNecklace;
+	public Accessories equippedRingOne;
+	public Accessories equippedRingTwo;
 
 	[Header("Bonuses Provided By Equipment")]
 	public int bonusEquipmentHealth;
@@ -39,12 +44,18 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public int bonusEquipmentFireResistance;
 	public int bonusEquipmentIceResistance;
 
+	public int bonusPhysicalDamagePercentage;
+	public int bonusPoisonDamagePercentage;
+	public int bonusFireDamagePercentage;
+	public int bonusIceDamagePercentage;
+
 	public virtual void Start()
 	{
 		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
 		entityStats.entityEquipment = this;
 	}
 
+	//PHYSICALLY SPAWNED IN
 	//weapon
 	public void EquipRandomWeapon()
 	{
@@ -66,86 +77,72 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equippedWeapon.isEquippedByOther = true;
 		}
 	}
-	public void EquipWeaponTest(InventoryItem weaponToEquip, Weapons equippedWeaponRef)
-	{
-		GameObject go;
-		OnWeaponUnequip(equippedWeaponRef);
-
-		if (weaponSlotContainer.transform.childCount == 0)
-		{
-			go = Instantiate(itemPrefab, weaponSlotContainer.transform);
-			go.AddComponent<Weapons>();
-			equippedWeaponRef = go.GetComponent<Weapons>();
-		}
-
-		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
-		equippedWeaponRef.isEquippedByPlayer = true;
-
-		equippedWeapon = equippedWeaponRef;
-		OnWeaponEquip(equippedWeaponRef);
-
-		/*
-		equippedWeaponRef.itemName = weaponToEquip.itemName;
-		equippedWeaponRef.itemImage = weaponToEquip.itemImage.sprite;
-		equippedWeaponRef.itemLevel = weaponToEquip.itemLevel;
-		equippedWeaponRef.rarity = (Items.Rarity)weaponToEquip.rarity;
-
-		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.damage = weaponToEquip.damage;
-		equippedWeaponRef.bonusMana = weaponToEquip.bonusWeaponMana;
-		*/
-	}
-
 	public void OnWeaponUnequip(Weapons weapon)
 	{
-		if (equippedWeapon != null)
+		if (weapon == null) return;
+
+		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
 		{
-			if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
-			{
-				bonusEquipmentHealth -= weapon.damage;
+			bonusEquipmentHealth -= weapon.damage;
 
-				bonusEquipmentPhysicalResistance -= weapon.damage;
-				bonusEquipmentPoisonResistance -= weapon.damage;
-				bonusEquipmentFireResistance -= weapon.damage;
-				bonusEquipmentIceResistance -= weapon.damage;
+			bonusEquipmentPhysicalResistance -= weapon.damage;
+			bonusEquipmentPoisonResistance -= weapon.damage;
+			bonusEquipmentFireResistance -= weapon.damage;
+			bonusEquipmentIceResistance -= weapon.damage;
 
-				entityStats.physicalResistance -= weapon.damage;
-				entityStats.poisonResistance -= weapon.damage;
-				entityStats.fireResistance -= weapon.damage;
-				entityStats.iceResistance -= weapon.damage;
+			entityStats.physicalResistance -= weapon.damage;
+			entityStats.poisonResistance -= weapon.damage;
+			entityStats.fireResistance -= weapon.damage;
+			entityStats.iceResistance -= weapon.damage;
 
-				entityStats.maxHealth -= weapon.damage;
-				entityStats.currentHealth -= weapon.damage;
-			}
-			else
-			{
-				bonusEquipmentMana -= weapon.bonusMana;
+			entityStats.maxHealth -= weapon.damage;
+			entityStats.currentHealth -= weapon.damage;
+		}
+		else
+		{
+			bonusEquipmentMana -= weapon.bonusMana;
 
-				entityStats.maxMana -= weapon.bonusMana;
-				entityStats.currentMana -= weapon.bonusMana;
-			}
+			entityStats.maxMana -= weapon.bonusMana;
+			entityStats.currentMana -= weapon.bonusMana;
 		}
 	}
 	public void OnWeaponEquip(Weapons weapon)
 	{
-		bonusEquipmentMana += weapon.bonusMana;
+		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+		{
+			bonusEquipmentHealth += weapon.damage;
 
-		entityStats.maxMana -= weapon.bonusMana;
-		entityStats.currentMana -= weapon.bonusMana;
+			bonusEquipmentPhysicalResistance += weapon.damage;
+			bonusEquipmentPoisonResistance += weapon.damage;
+			bonusEquipmentFireResistance += weapon.damage;
+			bonusEquipmentIceResistance += weapon.damage;
 
-		weapon.GetComponent<SpriteRenderer>().enabled = false;
+			entityStats.physicalResistance += weapon.damage;
+			entityStats.poisonResistance += weapon.damage;
+			entityStats.fireResistance += weapon.damage;
+			entityStats.iceResistance += weapon.damage;
+
+			entityStats.maxHealth += weapon.damage;
+			entityStats.currentHealth += weapon.damage;
+		}
+		else
+		{
+			bonusEquipmentMana += weapon.bonusMana;
+
+			entityStats.maxMana += weapon.bonusMana;
+			entityStats.currentMana += weapon.bonusMana;
+		}
 	}
 
 	//armors
-	public virtual void EquipRandomArmor()
+	public void EquipRandomArmor()
 	{
 		GameObject go;
 		int index;
 
 		if (entityStats.entityBaseStats.possibleHelmetsList.Count != 0)
 		{
-			if (helmetSlotContainer.transform.childCount == 0)
+			if (equippedHelmet == null)
 			{
 				go = Instantiate(itemPrefab, helmetSlotContainer.transform);
 				go.AddComponent<Armors>();
@@ -153,17 +150,15 @@ public class EntityEquipmentHandler : MonoBehaviour
 			}
 
 			index = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleHelmetsList.Count);
-			if (equippedHelmet != null)
-			{
-				equippedHelmet.armorBaseRef = entityStats.entityBaseStats.possibleHelmetsList[index];
-				equippedHelmet.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
-				equippedHelmet.GetComponent<SpriteRenderer>().enabled = false;
-			}
+
+			equippedHelmet.armorBaseRef = entityStats.entityBaseStats.possibleHelmetsList[index];
+			equippedHelmet.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
+			equippedHelmet.GetComponent<SpriteRenderer>().enabled = false;
 		}
 
 		if (entityStats.entityBaseStats.possibleChestpiecesList.Count != 0)
 		{
-			if (chestpieceSlotContainer.transform.childCount == 0)
+			if (equippedChestpiece == null)
 			{
 				go = Instantiate(itemPrefab, chestpieceSlotContainer.transform);
 				go.AddComponent<Armors>();
@@ -171,53 +166,47 @@ public class EntityEquipmentHandler : MonoBehaviour
 			}
 
 			index = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleChestpiecesList.Count);
-			if (equippedChestpiece != null)
-			{
-				equippedChestpiece.armorBaseRef = entityStats.entityBaseStats.possibleChestpiecesList[index];
-				equippedChestpiece.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
-				equippedChestpiece.GetComponent<SpriteRenderer>().enabled = false;
-			}
+
+			equippedChestpiece.armorBaseRef = entityStats.entityBaseStats.possibleChestpiecesList[index];
+			equippedChestpiece.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
+			equippedChestpiece.GetComponent<SpriteRenderer>().enabled = false;
 		}
 
 		if (entityStats.entityBaseStats.possibleLegsList.Count != 0)
 		{
-			if (legsSlotContainer.transform.childCount == 0)
+			if (equippedLegs == null)
 			{
 				go = Instantiate(itemPrefab, legsSlotContainer.transform);
 				go.AddComponent<Armors>();
 				equippedLegs = go.GetComponent<Armors>();
 			}
-
 			index = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleLegsList.Count);
-			if (equippedLegs != null)
-			{
-				equippedLegs.armorBaseRef = entityStats.entityBaseStats.possibleLegsList[index];
-				equippedLegs.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
-				equippedLegs.GetComponent<SpriteRenderer>().enabled = false;
-			}
+
+			equippedLegs.armorBaseRef = entityStats.entityBaseStats.possibleLegsList[index];
+			equippedLegs.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
+			equippedLegs.GetComponent<SpriteRenderer>().enabled = false;
 		}
 	}
 	public void OnArmorUnequip(Armors armor)
 	{
-		if (armor != null)
-		{
-			bonusEquipmentHealth -= armor.bonusHealth;
-			bonusEquipmentMana -= armor.bonusMana;
-			bonusEquipmentPhysicalResistance -= armor.bonusPhysicalResistance;
-			bonusEquipmentPoisonResistance -= armor.bonusPoisonResistance;
-			bonusEquipmentFireResistance -= armor.bonusFireResistance;
-			bonusEquipmentIceResistance -= armor.bonusIceResistance;
+		if (armor == null) return;
 
-			entityStats.maxHealth -= armor.bonusHealth;
-			entityStats.currentHealth -= armor.bonusHealth;
-			entityStats.maxMana -= armor.bonusMana;
-			entityStats.currentMana -= armor.bonusMana;
+		bonusEquipmentHealth -= armor.bonusHealth;
+		bonusEquipmentMana -= armor.bonusMana;
+		bonusEquipmentPhysicalResistance -= armor.bonusPhysicalResistance;
+		bonusEquipmentPoisonResistance -= armor.bonusPoisonResistance;
+		bonusEquipmentFireResistance -= armor.bonusFireResistance;
+		bonusEquipmentIceResistance -= armor.bonusIceResistance;
 
-			entityStats.physicalResistance -= armor.bonusPhysicalResistance;
-			entityStats.poisonResistance -= armor.bonusPoisonResistance;
-			entityStats.fireResistance -= armor.bonusFireResistance;
-			entityStats.iceResistance -= armor.bonusIceResistance;
-		}
+		entityStats.maxHealth -= armor.bonusHealth;
+		entityStats.currentHealth -= armor.bonusHealth;
+		entityStats.maxMana -= armor.bonusMana;
+		entityStats.currentMana -= armor.bonusMana;
+
+		entityStats.physicalResistance -= armor.bonusPhysicalResistance;
+		entityStats.poisonResistance -= armor.bonusPoisonResistance;
+		entityStats.fireResistance -= armor.bonusFireResistance;
+		entityStats.iceResistance -= armor.bonusIceResistance;
 	}
 	public void OnArmorEquip(Armors armor)
 	{
@@ -237,8 +226,89 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.poisonResistance += armor.bonusPoisonResistance;
 		entityStats.fireResistance += armor.bonusFireResistance;
 		entityStats.iceResistance += armor.bonusIceResistance;
+	}
 
-		armor.GetComponent<SpriteRenderer>().enabled = false;
+	//NOT PHYSICALLY SPAWNED IN
+	//accessories
+	public void OnAccessoryUnequip(Accessories accessory)
+	{
+		if (accessory == null) return;
+
+		bonusEquipmentHealth -= accessory.bonusHealth;
+		bonusEquipmentMana -= accessory.bonusMana;
+		bonusEquipmentPhysicalResistance -= accessory.bonusPhysicalResistance;
+		bonusEquipmentPoisonResistance -= accessory.bonusPoisonResistance;
+		bonusEquipmentFireResistance -= accessory.bonusFireResistance;
+		bonusEquipmentIceResistance -= accessory.bonusIceResistance;
+
+		entityStats.maxHealth -= accessory.bonusHealth;
+		entityStats.currentHealth -= accessory.bonusHealth;
+		entityStats.maxMana -= accessory.bonusMana;
+		entityStats.currentHealth -= accessory.bonusMana;
+		entityStats.physicalResistance -= accessory.bonusPhysicalResistance;
+		entityStats.poisonResistance -= accessory.bonusPoisonResistance;
+		entityStats.fireResistance -= accessory.bonusFireResistance;
+		entityStats.iceResistance -= accessory.bonusIceResistance;
+
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
+		{
+			bonusPhysicalDamagePercentage -= accessory.bonusPercentageValue;
+			entityStats.bonusPhysicalDamagePercentage -= accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		{
+			bonusPhysicalDamagePercentage -= accessory.bonusPercentageValue;
+			entityStats.bonusPoisonDamagePercentage -= accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		{
+			bonusFireDamagePercentage -= accessory.bonusPercentageValue;
+			entityStats.bonusFireDamagePercentage -= accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		{
+			bonusIceDamagePercentage -= accessory.bonusPercentageValue;
+			entityStats.bonusIceDamagePercentage -= accessory.bonusPercentageValue;
+		}
+	}
+	public void OnAccessoryEquip(Accessories accessory)
+	{
+		bonusEquipmentHealth += accessory.bonusHealth;
+		bonusEquipmentMana += accessory.bonusMana;
+		bonusEquipmentPhysicalResistance += accessory.bonusPhysicalResistance;
+		bonusEquipmentPoisonResistance += accessory.bonusPoisonResistance;
+		bonusEquipmentFireResistance += accessory.bonusFireResistance;
+		bonusEquipmentIceResistance += accessory.bonusIceResistance;
+
+		entityStats.maxHealth += accessory.bonusHealth;
+		entityStats.currentHealth += accessory.bonusHealth;
+		entityStats.maxMana += accessory.bonusMana;
+		entityStats.currentHealth += accessory.bonusMana;
+		entityStats.physicalResistance += accessory.bonusPhysicalResistance;
+		entityStats.poisonResistance += accessory.bonusPoisonResistance;
+		entityStats.fireResistance += accessory.bonusFireResistance;
+		entityStats.iceResistance += accessory.bonusIceResistance;
+
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
+		{
+			bonusPhysicalDamagePercentage += accessory.bonusPercentageValue;
+			entityStats.bonusPhysicalDamagePercentage += accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		{
+			bonusPhysicalDamagePercentage += accessory.bonusPercentageValue;
+			entityStats.bonusPoisonDamagePercentage += accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		{
+			bonusFireDamagePercentage += accessory.bonusPercentageValue;
+			entityStats.bonusFireDamagePercentage += accessory.bonusPercentageValue;
+		}
+		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		{
+			bonusIceDamagePercentage += accessory.bonusPercentageValue;
+			entityStats.bonusIceDamagePercentage += accessory.bonusPercentageValue;
+		}
 	}
 
 	public void OnPlayerLevelUp(int newPlayerLevel)

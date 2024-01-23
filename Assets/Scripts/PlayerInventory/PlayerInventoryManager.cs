@@ -51,6 +51,13 @@ public class PlayerInventoryManager : MonoBehaviour
 				armor.currentStackCount = 1;
 			}
 
+			if (startingItems[i].itemType == SOItems.ItemType.isAccessory)
+			{
+				Accessories accessories = go.AddComponent<Accessories>();
+				accessories.accessoryBaseRef = (SOAccessories)startingItems[i];
+				accessories.currentStackCount = 1;
+			}
+
 			if (startingItems[i].itemType == SOItems.ItemType.isConsumable)
 			{
 				Consumables consumables = go.AddComponent<Consumables>();
@@ -228,13 +235,13 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.bonusMana = (int)(item.accessoryBaseRef.baseBonusMana * item.statModifier);
 
 		if (inventoryItem.rarity == InventoryItem.Rarity.isCommon)
-			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[0];
+			inventoryItem.bonusDamagePercentageValue = item.accessoryBaseRef.bonusPercentageValue[0];
 		else if (inventoryItem.rarity == InventoryItem.Rarity.isRare)
-			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[1];
+			inventoryItem.bonusDamagePercentageValue = item.accessoryBaseRef.bonusPercentageValue[1];
 		else if (inventoryItem.rarity == InventoryItem.Rarity.isEpic)
-			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[2];
+			inventoryItem.bonusDamagePercentageValue = item.accessoryBaseRef.bonusPercentageValue[2];
 		else if (inventoryItem.rarity == InventoryItem.Rarity.isLegendary)
-			inventoryItem.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[3];
+			inventoryItem.bonusDamagePercentageValue = item.accessoryBaseRef.bonusPercentageValue[3];
 
 		inventoryItem.bonusPhysicalResistance = (int)(item.accessoryBaseRef.bonusPhysicalResistance * item.statModifier);
 		inventoryItem.bonusPoisonResistance = (int)(item.accessoryBaseRef.bonusPoisonResistance * item.statModifier);

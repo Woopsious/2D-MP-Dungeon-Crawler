@@ -86,7 +86,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	}
 
 	[Header("Accessory Damaging/healing")]
-	public int bonusPercentageValue;
+	public int bonusDamagePercentageValue;
 
 	public DamageTypeToBoost damageTypeToBoost;
 	public enum DamageTypeToBoost

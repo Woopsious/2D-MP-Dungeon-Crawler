@@ -55,9 +55,6 @@ public class Accessories : Items
 		else if (rarity == Rarity.isLegendary)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[3];
 
-		Debug.Log("base mana: " + accessoryBaseRef.baseBonusMana);
-		Debug.Log("stat modifier: " + statModifier);
-
 		bonusHealth = (int)(accessoryBaseRef.baseBonusHealth * statModifier);
 		bonusMana = (int)(accessoryBaseRef.baseBonusMana * statModifier);
 		isStackable = accessoryBaseRef.isStackable;
@@ -70,12 +67,8 @@ public class Accessories : Items
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * statModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * statModifier);
 
-		/*
-		if (entityEquipmentHandler != null) //for non player
-			entityEquipmentHandler.OnArmorEquip(this);
-		if (playerEquipmentHandler != null) //for player
-			playerEquipmentHandler.OnArmorEquip(this);
-		*/
+		if (equipmentHandler == null) return;
+		equipmentHandler.OnAccessoryEquip(this);
 	}
 
 	public void SetRandomDamageTypeOnDrop()

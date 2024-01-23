@@ -43,7 +43,6 @@ public class Items : MonoBehaviour
 		itemImage = GetItemImage();
 		ItemPrice = GetItemPrice();
 
-		//if (GetComponent<SpriteRenderer>() == null) return;
 		GetComponent<SpriteRenderer>().sprite = itemImage;
 	}
 	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)

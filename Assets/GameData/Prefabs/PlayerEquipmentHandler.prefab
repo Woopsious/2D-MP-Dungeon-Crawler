@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &394437916200263996
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4606268547361333512}
+  m_Layer: 0
+  m_Name: EquippedRingOneSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4606268547361333512
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 394437916200263996}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6189334329086604794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1006295999662061739
 GameObject:
   m_ObjectHideFlags: 0
@@ -155,9 +186,13 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9078064059165678709}
+  - {fileID: 3864985959781011187}
   - {fileID: 6460147354471304895}
   - {fileID: 7936050411038702656}
   - {fileID: 4710933626284737212}
+  - {fileID: 1079484858226148073}
+  - {fileID: 4606268547361333512}
+  - {fileID: 4110170846487276051}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &5665425953647818607
@@ -176,15 +211,120 @@ MonoBehaviour:
   entityStats: {fileID: 0}
   weaponSlotContainer: {fileID: 1006295999662061739}
   equippedWeapon: {fileID: 0}
+  offhandWeaponSlotContainer: {fileID: 8931987935549676179}
+  equippedOffhandWeapon: {fileID: 0}
   helmetSlotContainer: {fileID: 3686988295468114751}
   chestpieceSlotContainer: {fileID: 5097207025390716603}
   legsSlotContainer: {fileID: 7261689993627060590}
   equippedHelmet: {fileID: 0}
   equippedChestpiece: {fileID: 0}
   equippedLegs: {fileID: 0}
+  necklaceSlotContainer: {fileID: 8315200724289611802}
+  ringOneSlotContainer: {fileID: 394437916200263996}
+  ringTwoSlotContainer: {fileID: 8514562873970250794}
+  equippedNecklace: {fileID: 0}
+  equippedRingOne: {fileID: 0}
+  equippedRingTwo: {fileID: 0}
   bonusEquipmentHealth: 0
   bonusEquipmentMana: 0
   bonusEquipmentPhysicalResistance: 0
   bonusEquipmentPoisonResistance: 0
   bonusEquipmentFireResistance: 0
   bonusEquipmentIceResistance: 0
+  bonusPhysicalDamagePercentage: 0
+  bonusPoisonDamagePercentage: 0
+  bonusFireDamagePercentage: 0
+  bonusIceDamagePercentage: 0
+--- !u!1 &8315200724289611802
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1079484858226148073}
+  m_Layer: 0
+  m_Name: EquippedNecklaceSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1079484858226148073
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8315200724289611802}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6189334329086604794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8514562873970250794
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4110170846487276051}
+  m_Layer: 0
+  m_Name: EquippedRingTwoSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4110170846487276051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8514562873970250794}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6189334329086604794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &8931987935549676179
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3864985959781011187}
+  m_Layer: 0
+  m_Name: EquippedOffhandWeaponSlot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3864985959781011187
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8931987935549676179}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6189334329086604794}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

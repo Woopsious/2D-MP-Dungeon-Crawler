@@ -19,7 +19,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	{
 		InventorySlot.onItemEquip += EquipItem;
 	}
-
 	private void OnDisable()
 	{
 		InventorySlot.onItemEquip -= EquipItem;
@@ -34,12 +33,13 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		{
 			if (item.weaponType == InventoryItem.WeaponType.isMainHand)
 			{
-				EquipWeapon(item, equippedWeapon);
+				EquipWeapon(item, equippedWeapon, true);
 				equippedWeapon = weaponSlotContainer.GetComponentInChildren<Weapons>();
 			}
 			else
 			{
-
+				EquipWeapon(item, equippedOffhandWeapon, false);
+				equippedOffhandWeapon = offhandWeaponSlotContainer.GetComponentInChildren<Weapons>();
 			}
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
@@ -64,18 +64,40 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		}
 		else if (item.itemType == InventoryItem.ItemType.isAccessory)
 		{
+			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace)
+			{
+				EquipAccessory(item, equippedNecklace, necklaceSlotContainer);
+				equippedNecklace = necklaceSlotContainer.GetComponentInChildren<Accessories>();
+			}
 
+			if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringOne)
+			{
+				EquipAccessory(item, equippedRingOne, ringOneSlotContainer);
+				equippedRingOne = ringOneSlotContainer.GetComponentInChildren<Accessories>();
+			}
+
+			if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringTwo)
+			{
+				EquipAccessory(item, equippedRingTwo, ringTwoSlotContainer);
+				equippedRingTwo = ringTwoSlotContainer.GetComponentInChildren<Accessories>();
+			}
 		}
 	}
 
-	public void EquipWeapon(InventoryItem weaponToEquip, Weapons equippedWeaponRef)
+	public void EquipWeapon(InventoryItem weaponToEquip, Weapons equippedWeaponRef, bool isMainHand)
 	{
 		GameObject go;
 		OnWeaponUnequip(equippedWeaponRef);
 
-		if (weaponSlotContainer.transform.childCount == 0)
+		if (isMainHand && weaponSlotContainer.transform.childCount == 0)
 		{
 			go = Instantiate(itemPrefab, weaponSlotContainer.transform);
+			go.AddComponent<Weapons>();
+			equippedWeaponRef = go.GetComponent<Weapons>();
+		}
+		else if (!isMainHand && offhandWeaponSlotContainer.transform.childCount == 0)
+		{
+			go = Instantiate(itemPrefab, offhandWeaponSlotContainer.transform);
 			go.AddComponent<Weapons>();
 			equippedWeaponRef = go.GetComponent<Weapons>();
 		}
@@ -84,7 +106,12 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
-		equippedWeapon = equippedWeaponRef;
+		if (isMainHand)
+			equippedWeapon = equippedWeaponRef;
+		else
+			equippedOffhandWeapon = equippedWeaponRef;
+
+		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
 	public void EquipArmor(InventoryItem armorToEquip, Armors equippedArmorRef, GameObject slot)
 	{
@@ -106,11 +133,29 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			equippedChestpiece = equippedArmorRef;
 		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
 			equippedLegs = equippedArmorRef;
-	}
 
-	public void EquipOffhandWeaponFromInventory(InventoryItem offhandWeaponToEquip)
+		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
+	}
+	public void EquipAccessory(InventoryItem accessoryToEquip, Accessories equippedAccessoryRef, GameObject slot)
 	{
-		//equippedOffhandItem = offhandWeaponToEquip;
+		GameObject go;
+		OnAccessoryUnequip(equippedAccessoryRef);
+
+		if (slot.transform.childCount == 0)
+		{
+			go = Instantiate(itemPrefab, slot.transform);
+			go.AddComponent<Accessories>();
+			equippedAccessoryRef = go.GetComponent<Accessories>();
+		}
+		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
+		equippedAccessoryRef.SetItemStats((Items.Rarity)accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
+
+		if (equippedAccessoryRef.accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.necklace)
+			equippedNecklace = equippedAccessoryRef;
+		if (equippedAccessoryRef.accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.ring)
+			equippedRingOne = equippedAccessoryRef;
+
+		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
 
 	public void HandleEmptySlots(InventorySlot slot)
@@ -119,6 +164,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		{
 			OnWeaponUnequip(equippedWeapon);
 			Destroy(equippedWeapon.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.weaponOffhand)
+		{
+			OnWeaponUnequip(equippedOffhandWeapon);
+			Destroy(equippedOffhandWeapon.gameObject);
 		}
 		if (slot.slotType == InventorySlot.SlotType.helmet)
 		{
@@ -134,6 +184,21 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		{
 			OnArmorUnequip(equippedLegs);
 			Destroy(equippedLegs.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.necklace)
+		{
+			OnAccessoryUnequip(equippedNecklace);
+			Destroy(equippedNecklace.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.ringOne)
+		{
+			OnAccessoryUnequip(equippedRingOne);
+			Destroy(equippedRingOne.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.ringTwo)
+		{
+			OnAccessoryUnequip(equippedRingTwo);
+			Destroy(equippedRingTwo.gameObject);
 		}
 	}
 }

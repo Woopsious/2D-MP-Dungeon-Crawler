@@ -17,7 +17,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	public SlotType slotType;
 	public enum SlotType
 	{
-		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, necklace, ring, artifact, ability
+		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, necklace, ringOne, ringTwo, artifact, ability
 	}
 
 	public int slotIndex;

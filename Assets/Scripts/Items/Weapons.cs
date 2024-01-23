@@ -25,9 +25,7 @@ public class Weapons : Items
 
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		attackWeaponSprite.enabled = false;
 		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite.enabled = true;
 		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
 		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
@@ -35,6 +33,9 @@ public class Weapons : Items
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
 		animator.SetBool("isMeleeAttack", false);
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			idleWeaponSprite.enabled = true;
 	}
 
 	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
