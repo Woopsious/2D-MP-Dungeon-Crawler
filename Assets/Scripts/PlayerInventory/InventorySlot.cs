@@ -38,6 +38,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	{
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItem item = droppeditem.GetComponent<InventoryItem>();
+		InventorySlot oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlot>();
 
 		if (!IsCorrectSlotType(item)) return;
 
@@ -48,19 +49,21 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 				PlayerInventoryManager.Instance.AddToStackCount(this, item);
 				if (item.currentStackCount > 0) return;
 			}
-			else
+			else //swapping items
 			{
+				if (!oldInventorySlot.IsCorrectSlotType(itemInSlot)) return; //stops swapping of equipped items when they are wrong type
+
 				itemInSlot.transform.SetParent(item.parentAfterDrag, false);
 				itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
-				item.parentAfterDrag.GetComponent<InventorySlot>().itemInSlot = itemInSlot;
-				item.parentAfterDrag.GetComponent<InventorySlot>().UpdateSlotSize();
-				item.parentAfterDrag.GetComponent<InventorySlot>().CheckIfItemInEquipmentSlot();
+				oldInventorySlot.itemInSlot = itemInSlot;
+				oldInventorySlot.UpdateSlotSize();
+				oldInventorySlot.CheckIfItemInEquipmentSlot();
 			}
 		}
-		else //set ref to null
+		else //set ref of old parent slot to null
 		{
-			item.parentAfterDrag.GetComponent<InventorySlot>().itemInSlot = null;
-			item.parentAfterDrag.GetComponent<InventorySlot>().CheckIfItemInEquipmentSlot();
+			oldInventorySlot.itemInSlot = null;
+			oldInventorySlot.CheckIfItemInEquipmentSlot();
 		}
 
 		//set new slot data
@@ -111,6 +114,8 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 			return true;
 		else if (item.itemType == InventoryItem.ItemType.isWeapon)
 		{
+			Debug.LogError("Weapon");
+
 			if (item.weaponType == InventoryItem.WeaponType.isMainHand && slotType == SlotType.weaponMain)
 				return true;
 			else if (item.weaponType == InventoryItem.WeaponType.isOffhand && slotType == SlotType.weaponOffhand)
@@ -122,6 +127,8 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
 		{
+			Debug.LogError("Armor");
+
 			if (item.armorSlot == InventoryItem.ArmorSlot.helmet && slotType == SlotType.helmet)
 				return true;
 			if (item.armorSlot == InventoryItem.ArmorSlot.chestpiece && slotType == SlotType.chestpiece)
@@ -132,11 +139,24 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItem.ItemType.isAccessory)
 		{
-			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace)
+			Debug.LogError("Accessory");
+
+			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace && slotType == SlotType.necklace)
+			{
+				Debug.LogError("1");
 				return true;
-			else if (item.accessorySlot == InventoryItem.AccessorySlot.ring)
+			}
+			else if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slotType == SlotType.ringOne ||
+			item.accessorySlot == InventoryItem.AccessorySlot.ring && slotType == SlotType.ringTwo)
+			{
+				Debug.LogError("2");
 				return true;
-			else return false;
+			}
+			else
+			{
+				Debug.LogError("3");
+				return false;
+			}
 		}
 		else return false;
 	}
