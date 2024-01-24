@@ -72,11 +72,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
-		if (slotToSpawnIn == weaponSlotContainer)
-			equippedWeapon = equippedWeaponRef;
-		else
-			equippedOffhandWeapon = equippedWeaponRef;
-
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
 	public void EquipArmor(InventoryItem armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
@@ -89,13 +84,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
 		equippedArmorRef.SetItemStats((Items.Rarity)armorToEquip.rarity, armorToEquip.itemLevel, this);
-
-		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.helmet)
-			equippedHelmet = equippedArmorRef;
-		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.chest)
-			equippedChestpiece = equippedArmorRef;
-		if (equippedArmorRef.armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
-			equippedLegs = equippedArmorRef;
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
@@ -110,24 +98,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
 		equippedAccessoryRef.SetItemStats((Items.Rarity)accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
 
-		if (equippedAccessoryRef.accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.necklace)
-			equippedNecklace = equippedAccessoryRef;
-		if (equippedAccessoryRef.accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.ring)
-			equippedRingOne = equippedAccessoryRef;
-
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
 
-	public GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
-	{
-		GameObject go;
-		if (slotToSpawnIn.transform.childCount == 0)
-		{
-			go = Instantiate(itemPrefab, slotToSpawnIn.transform);
-			return go;
-		}
-        else return slotToSpawnIn.transform.GetChild(0).gameObject;
-    }
 	public void HandleEmptySlots(InventorySlot slot)
 	{
 		if (slot.slotType == InventorySlot.SlotType.weaponMain)

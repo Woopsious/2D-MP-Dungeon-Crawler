@@ -91,8 +91,7 @@ public class EntityStats : MonoBehaviour
 		}
 		else
 		{
-			entityEquipment.EquipRandomWeapon();
-			entityEquipment.EquipRandomArmor();
+			entityEquipment.EquipRandomItems();
 		}
 	}
 

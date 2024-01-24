@@ -43,6 +43,6 @@ public class Armors : Items
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * statModifier);
 
 		if (equipmentHandler == null) return;
-		equipmentHandler.OnArmorEquip(this);
+		equipmentHandler.OnArmorEquip(this, transform.parent.gameObject);
 	}
 }

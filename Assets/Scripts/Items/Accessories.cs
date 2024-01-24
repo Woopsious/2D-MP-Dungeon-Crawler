@@ -68,7 +68,7 @@ public class Accessories : Items
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * statModifier);
 
 		if (equipmentHandler == null) return;
-		equipmentHandler.OnAccessoryEquip(this);
+		equipmentHandler.OnAccessoryEquip(this, transform.parent.gameObject);
 	}
 
 	public void SetRandomDamageTypeOnDrop()

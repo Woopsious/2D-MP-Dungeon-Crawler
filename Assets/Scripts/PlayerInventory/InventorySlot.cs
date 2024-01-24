@@ -28,6 +28,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		slotIndex = transform.GetSiblingIndex();
 	}
 
+	/// <summary>
+	/// swapping equipped item with an item in ur iventory will swap that item even if its a of the incorrect item type eg:
+	/// swapping an equipped sword with a chestpiece in your inventory will make you equip said chestpiece as a weapon
+	/// </summary>
+
+
 	public void OnDrop(PointerEventData eventData)
 	{
 		GameObject droppeditem = eventData.pointerDrag;

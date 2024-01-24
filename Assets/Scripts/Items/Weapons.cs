@@ -48,7 +48,7 @@ public class Weapons : Items
 		isStackable = weaponBaseRef.isStackable;
 
 		if (equipmentHandler == null) return;
-		equipmentHandler.OnWeaponEquip(this);
+		equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
 	}
 
 	public void OnTriggerEnter2D(Collider2D other)
