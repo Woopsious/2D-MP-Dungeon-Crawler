@@ -55,7 +55,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.entityEquipment = this;
 	}
 
-	//PHYSICALLY SPAWNED IN
 	//weapon
 	public void EquipRandomWeapon()
 	{
@@ -228,7 +227,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.iceResistance += armor.bonusIceResistance;
 	}
 
-	//NOT PHYSICALLY SPAWNED IN
 	//accessories
 	public void OnAccessoryUnequip(Accessories accessory)
 	{
