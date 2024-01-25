@@ -14,13 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Sword
   itemImage: {fileID: -1158384218, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
-  ItemPrice: 200
+  ItemPrice: 250
   ItemId: 0
   itemType: 1
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
   isBareHands: 0
+  isShield: 0
   baseDamage: 35
   baseAttackSpeed: 1.5
   baseKnockback: 10

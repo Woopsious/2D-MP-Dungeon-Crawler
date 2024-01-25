@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Chainmail Helmet
   itemImage: {fileID: 326533409, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
-  ItemPrice: 250
+  ItemPrice: 225
   ItemId: 0
   itemType: 2
   isEquipable: 1

@@ -103,10 +103,17 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public int bonusFireResistance;
 	public int bonusIceResistance;
 
-	[Header("Consumable Base Ref")]
+	[Header("Consumable Info")]
 	public SOConsumables consumableBaseRef;
-	public int healthRestoration;
-	public int manaRestoration;
+	[Header("Consumable Type")]
+	public ConsumableType consumableType;
+	public enum ConsumableType
+	{
+		healthRestoration, manaRestoration
+	}
+
+	[Header("Percentage Value")]
+	public int consumablePercentage;
 
 	//functions to display item info on mouse hover
 	public void OnPointerEnter(PointerEventData eventData)
@@ -142,7 +149,10 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		}
 		if (itemType == ItemType.isConsumable)
 		{
-			info += "\n \n Restores: " + healthRestoration + "% Health \n Restores: " + manaRestoration + "% Mana";
+			if (consumableType == ConsumableType.healthRestoration)
+				info += "\n \n Restores: " + consumablePercentage + "% Health";
+            else if (consumableType == ConsumableType.manaRestoration)
+				info += "\n \n Restores: " + consumablePercentage + "% Mana";
 		}
 
 		//HoverTipManager.OnMouseHover(info, Input.mousePosition);

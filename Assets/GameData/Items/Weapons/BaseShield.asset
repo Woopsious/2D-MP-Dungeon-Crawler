@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Shield
   itemImage: {fileID: -64806896, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
-  ItemPrice: 200
+  ItemPrice: 250
   ItemId: 0
   itemType: 1
   isEquipable: 1

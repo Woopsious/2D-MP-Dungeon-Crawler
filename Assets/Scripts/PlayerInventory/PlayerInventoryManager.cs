@@ -258,8 +258,8 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.itemImage = item.itemImage;
 		inventoryItem.consumableBaseRef = item.consumableBaseRef;
 
-		inventoryItem.healthRestoration = item.consumableBaseRef.healthRestoration;
-		inventoryItem.manaRestoration = item.consumableBaseRef.manaRestoration;
+		inventoryItem.consumableType = (InventoryItem.ConsumableType)item.consumableBaseRef.consumableType;
+		inventoryItem.consumablePercentage = item.consumableBaseRef.consumablePercentage;
 
 		inventoryItem.isStackable = item.isStackable;
 		inventoryItem.maxStackCount = item.consumableBaseRef.MaxStackCount;

@@ -5,8 +5,15 @@ using UnityEngine;
 public class Consumables : Items
 {
 	[Header("Consumable Info")]
-	public int healthRestoration;
-	public int manaRestoration;
+	[Header("Consumable Type")]
+	public ConsumableType consumableType;
+	public enum ConsumableType
+	{
+		healthRestoration, manaRestoration
+	}
+
+	[Header("Percentage Value")]
+	public int consumablePercentage;
 
 	public void Start()
 	{
@@ -18,8 +25,8 @@ public class Consumables : Items
 	{
 		base.SetItemStats(setRarity, setLevel, equipmentHandler);
 
-		healthRestoration = consumableBaseRef.healthRestoration;
-		manaRestoration = consumableBaseRef.manaRestoration;
+		consumableType = (ConsumableType)consumableBaseRef.consumableType;
+		consumablePercentage = consumableBaseRef.consumablePercentage;
 		isStackable = consumableBaseRef.isStackable;
 	}
 }
