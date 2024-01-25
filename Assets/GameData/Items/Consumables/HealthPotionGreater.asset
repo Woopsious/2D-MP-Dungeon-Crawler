@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: HealthPotionGreater
   m_EditorClassIdentifier: 
   itemName: Greater Health Potion
-  itemImage: {fileID: 0}
+  itemImage: {fileID: 74945407, guid: 76686699748622a48b566623ca98afc6, type: 3}
   ItemPrice: 350
   ItemId: 0
   itemType: 0

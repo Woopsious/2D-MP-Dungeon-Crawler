@@ -84,8 +84,6 @@ public class Items : MonoBehaviour
 	}
 	public virtual void PickUpItem()
 	{
-		//called from Interactable Component script that adds item to inventory passing through necessary info
-		//in child classes pass through item type specific 
 		if (PlayerInventoryManager.Instance.CheckIfInventoryFull())
 		{
 			Debug.LogWarning("Inventory is full");
@@ -94,5 +92,13 @@ public class Items : MonoBehaviour
 
 		PlayerInventoryManager.Instance.AddItemToPlayerInventory(this);
 		Destroy(gameObject);
+	}
+
+	public void GenerateStatsOnStart()
+	{
+		SetItemStats(rarity, itemLevel, null);
+		gameObject.AddComponent<Interactables>();
+		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
+		collider2D.isTrigger = true;
 	}
 }

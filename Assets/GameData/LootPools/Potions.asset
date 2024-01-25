@@ -14,8 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   droppedGoldAmount: 0
   lootPoolList:
-  - {fileID: 11400000, guid: 55dd00374a4b75e40856a2aa269bb404, type: 2}
-  - {fileID: 11400000, guid: 00123595220a5194eba5b6afb9c30f6e, type: 2}
-  - {fileID: 11400000, guid: f81d1027d20380e43a30e5d23cffdd23, type: 2}
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: e9042287f6170f2498ddecce97b2f4c9, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}
+  - {fileID: 11400000, guid: f2120e1d2bc3a334eb92b8f3fca90fe6, type: 2}
   minDroppedItemsAmount: 5
   maxDroppedItemsAmount: 5

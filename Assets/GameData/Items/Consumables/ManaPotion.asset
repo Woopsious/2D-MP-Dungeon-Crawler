@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: ManaPotion
   m_EditorClassIdentifier: 
   itemName: Mana Potion
-  itemImage: {fileID: 0}
+  itemImage: {fileID: -1782689878, guid: 76686699748622a48b566623ca98afc6, type: 3}
   ItemPrice: 225
   ItemId: 0
   itemType: 0

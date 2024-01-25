@@ -98,11 +98,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		if (item.consumableBaseRef != null)
 			SetConsumableData(newItem, item);
 
-		newItem.UpdateName();
-		newItem.UpdateImage();
-		newItem.UpdateItemLevel();
-		newItem.UpdateStackCounter();
-
+		newItem.UpdateUi();
 		return newItem;
 	}
 	public void AddItemToPlayerInventory(Items item)
@@ -139,12 +135,8 @@ public class PlayerInventoryManager : MonoBehaviour
 			//add to itemInSlot.CurrentStackCount till maxStackCountReached
 			for (int itemCount = itemInSlot.currentStackCount; itemCount < itemInSlot.maxStackCount; itemCount++)
 			{
-				if (newItem.currentStackCount <= 0) return; //stop adding
-
-				newItem.currentStackCount--;
-				newItem.UpdateStackCounter();
-				itemInSlot.currentStackCount++;
-				itemInSlot.UpdateStackCounter();
+				newItem.DecreaseStackCounter();
+				itemInSlot.IncreaseStackCounter();
 			}
 			if (newItem.currentStackCount != 0) //if stackcount still has more find next stackable item
 				return;

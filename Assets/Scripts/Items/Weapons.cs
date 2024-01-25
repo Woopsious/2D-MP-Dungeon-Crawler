@@ -21,7 +21,7 @@ public class Weapons : Items
 	public void Start()
 	{
 		if (generateStatsOnStart)
-			SetItemStats(rarity, itemLevel, null);
+			GenerateStatsOnStart();
 
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();

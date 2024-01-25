@@ -18,7 +18,7 @@ public class Consumables : Items
 	public void Start()
 	{
 		if (generateStatsOnStart)
-			SetItemStats(rarity, itemLevel, null);
+			GenerateStatsOnStart();
 	}
 
 	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)

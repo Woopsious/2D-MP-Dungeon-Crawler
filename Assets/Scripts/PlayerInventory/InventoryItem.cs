@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -183,23 +184,30 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	}
 
 	//update data
-	public void UpdateName()
+	public void UpdateUi()
 	{
 		gameObject.name = itemName;
 		uiItemName.text = itemName;
-	}
-	public void UpdateImage()
-	{
 		uiItemImage.sprite = itemImage;
-	}
-	public void UpdateItemLevel()
-	{
 		uiItemLevel.text = "LVL: " + itemLevel;
+		UpdateStackCount();
 	}
-	public void UpdateStackCounter()
+	public void UpdateStackCount()
 	{
 		uiItemStackCount.text = currentStackCount.ToString();
-		if (currentStackCount <= 0) Destroy(gameObject);
+	}
+	public void IncreaseStackCounter()
+	{
+		currentStackCount++;
+		uiItemStackCount.text = currentStackCount.ToString();
+	}
+	public void DecreaseStackCounter()
+	{
+		currentStackCount--;
+		uiItemStackCount.text = currentStackCount.ToString();
+
+		if (currentStackCount <= 0)
+			Destroy(gameObject);
 	}
 
 	//update Ui color based on rarity
