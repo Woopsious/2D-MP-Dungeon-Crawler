@@ -7,6 +7,17 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
 	PlayerController playerController;
 
+	[Header("equipped Consumables")]
+	public Consumables equippedConsumableOne;
+	public Consumables equippedConsumableTwo;
+
+	[Header("equipped Abilities")]
+	public Consumables equippedAbilityOne;
+	public Consumables equippedAbilityTwo;
+	public Consumables equippedAbilityThree;
+	public Consumables equippedAbilityFour;
+	public Consumables equippedAbilityFive;
+
 	public override void Start()
 	{
 		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();

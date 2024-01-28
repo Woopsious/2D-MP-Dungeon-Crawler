@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,7 @@ public class PlayerController : MonoBehaviour
 {
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	public Camera playerCamera;
+	private EntityStats playerStats;
 	private PlayerInputActions playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -73,7 +75,7 @@ public class PlayerController : MonoBehaviour
 	/// Below are all player actions
 	/// </summary>
 
-	//player action
+	//player actions
 	private void OnMainAttack()
 	{
 		if (playerEquipmentHandler.equippedWeapon == null || InventoryUi.Instance.isActiveAndEnabled) return;
@@ -87,7 +89,43 @@ public class PlayerController : MonoBehaviour
 			playerCamera.orthographicSize -= value / 480;
 	}
 
-	//ui action
+	//hotbar actions
+	private void OnConsumablesOne()
+	{
+		if (playerEquipmentHandler.equippedConsumableOne == null)
+		{
+			Debug.Log("consumable slot one empty"); return;
+		}
+	}
+	private void OnConsumablesTwo()
+	{
+		if (playerEquipmentHandler.equippedConsumableTwo == null)
+		{
+			Debug.Log("consumable slot two empty"); return;
+		}
+	}
+	private void OnAbilityOne()
+	{
+
+	}
+	private void OnAbilityTwo()
+	{
+
+	}
+	private void OnAbilityThree()
+	{
+
+	}
+	private void OnAbilityFour()
+	{
+
+	}
+	private void OnAbilityFive()
+	{
+
+	}
+
+	//ui actions
 	private void OnMainMenu()
 	{
 		MainMenuManager.Instance.ShowHideMainMenu();
