@@ -108,31 +108,37 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 			return true;
 		else if (item.itemType == InventoryItem.ItemType.isWeapon)
 		{
-			if (item.weaponType == InventoryItem.WeaponType.isMainHand && slotType == SlotType.weaponMain)
+			Debug.LogError("is weapon");
+			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
+			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
 				return true;
-			else if (item.weaponType == InventoryItem.WeaponType.isOffhand && slotType == SlotType.weaponOffhand)
+			else if (SOweapon.weaponType == SOWeapons.WeaponType.isOffhand && slotType == SlotType.weaponOffhand)
 				return true;
-			else if (item.weaponType == InventoryItem.WeaponType.isBoth)
+			else if (SOweapon.weaponType == SOWeapons.WeaponType.isBoth)
 				return true;
 			else
 				return false;
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
 		{
-			if (item.armorSlot == InventoryItem.ArmorSlot.helmet && slotType == SlotType.helmet)
+			Debug.LogError("is armor");
+			Armors armor = item.GetComponent<Armors>();
+			if (armor.armorSlot == Armors.ArmorSlot.helmet && slotType == SlotType.helmet)
 				return true;
-			if (item.armorSlot == InventoryItem.ArmorSlot.chestpiece && slotType == SlotType.chestpiece)
+			if (armor.armorSlot == Armors.ArmorSlot.chestpiece && slotType == SlotType.chestpiece)
 				return true;
-			if (item.armorSlot == InventoryItem.ArmorSlot.legs && slotType == SlotType.legs)
+			if (armor.armorSlot == Armors.ArmorSlot.legs && slotType == SlotType.legs)
 				return true;
 			else return false;
 		}
 		else if (item.itemType == InventoryItem.ItemType.isAccessory)
 		{
-			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace && slotType == SlotType.necklace)
+			Debug.LogError("is accessory");
+			Accessories accessory = item.GetComponent<Accessories>();
+			if (accessory.accessorySlot == Accessories.AccessorySlot.necklace && slotType == SlotType.necklace)
 				return true;
-			else if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slotType == SlotType.ringOne ||
-			item.accessorySlot == InventoryItem.AccessorySlot.ring && slotType == SlotType.ringTwo)
+			else if (accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringOne ||
+			accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringTwo)
 				return true;
 			else
 				return false;

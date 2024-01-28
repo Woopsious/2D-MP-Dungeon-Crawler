@@ -23,6 +23,8 @@ public class Weapons : Items
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
 
+		if (GetComponent<InventoryItem>() != null) return; //return as this is an item in inventory
+
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
 		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();

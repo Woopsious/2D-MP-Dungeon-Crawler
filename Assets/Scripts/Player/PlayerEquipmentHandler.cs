@@ -42,36 +42,39 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		else if (item.itemType == InventoryItem.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
-			if (item.weaponType == InventoryItem.WeaponType.isMainHand)
-				EquipWeapon(item, equippedWeapon, weaponSlotContainer);
+			Weapons weapon = item.GetComponent<Weapons>();
+			if (weapon.weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+				EquipWeapon(weapon, equippedWeapon, weaponSlotContainer);
 			else
-				EquipWeapon(item, equippedOffhandWeapon, offhandWeaponSlotContainer);
+				EquipWeapon(weapon, equippedOffhandWeapon, offhandWeaponSlotContainer);
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
 		{
-			if (item.armorSlot == InventoryItem.ArmorSlot.helmet)
-				EquipArmor(item, equippedHelmet, helmetSlotContainer);
+			Armors armor = item.GetComponent<Armors>();
+			if (armor.armorSlot == Armors.ArmorSlot.helmet)
+				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
 
-			if (item.armorSlot == InventoryItem.ArmorSlot.chestpiece)
-				EquipArmor(item, equippedChestpiece, chestpieceSlotContainer);
+			if (armor.armorSlot == Armors.ArmorSlot.chestpiece)
+				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
 
-			if (item.armorSlot == InventoryItem.ArmorSlot.legs)
-				EquipArmor(item, equippedLegs, legsSlotContainer);
+			if (armor.armorSlot == Armors.ArmorSlot.legs)
+				EquipArmor(armor, equippedLegs, legsSlotContainer);
 		}
 		else if (item.itemType == InventoryItem.ItemType.isAccessory)
 		{
-			if (item.accessorySlot == InventoryItem.AccessorySlot.necklace)
-				EquipAccessory(item, equippedNecklace, necklaceSlotContainer);
+			Accessories accessories = item.GetComponent<Accessories>();
+			if (accessories.accessorySlot == Accessories.AccessorySlot.necklace)
+				EquipAccessory(accessories, equippedNecklace, necklaceSlotContainer);
 
-			if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringOne)
-				EquipAccessory(item, equippedRingOne, ringOneSlotContainer);
+			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringOne)
+				EquipAccessory(accessories, equippedRingOne, ringOneSlotContainer);
 
-			if (item.accessorySlot == InventoryItem.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringTwo)
-				EquipAccessory(item, equippedRingTwo, ringTwoSlotContainer);
+			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringTwo)
+				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
 	}
 
-	public void EquipWeapon(InventoryItem weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	public void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnWeaponUnequip(equippedWeaponRef);
@@ -80,12 +83,12 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.SetItemStats((Items.Rarity)weaponToEquip.rarity, weaponToEquip.itemLevel, this);
+		equippedWeaponRef.SetItemStats(weaponToEquip.rarity, weaponToEquip.itemLevel, this);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
-	public void EquipArmor(InventoryItem armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
+	public void EquipArmor(Armors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnArmorUnequip(equippedArmorRef);
@@ -94,11 +97,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.SetItemStats((Items.Rarity)armorToEquip.rarity, armorToEquip.itemLevel, this);
+		equippedArmorRef.SetItemStats(armorToEquip.rarity, armorToEquip.itemLevel, this);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
-	public void EquipAccessory(InventoryItem accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
+	public void EquipAccessory(Accessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnAccessoryUnequip(equippedAccessoryRef);
@@ -107,7 +110,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef = go.AddComponent<Accessories>();
 
 		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
-		equippedAccessoryRef.SetItemStats((Items.Rarity)accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
+		equippedAccessoryRef.SetItemStats(accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 	}

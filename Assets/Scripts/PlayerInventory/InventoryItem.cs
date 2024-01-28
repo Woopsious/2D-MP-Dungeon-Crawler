@@ -49,73 +49,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		light, medium, heavy
 	}
 
-	[Header("Weapon Info")]
-	public SOWeapons weaponBaseRef;
-	public bool isShield;
-	public int damage;
-
-	[Header("Weapon Type")]
-	public WeaponType weaponType;
-	public enum WeaponType
-	{
-		isMainHand, isOffhand, isBoth
-	}
-
-	[Header("Armor Info")]
-	public SOArmors armorBaseRef;
-	[Header("Armor Slot")]
-	public ArmorSlot armorSlot;
-	public enum ArmorSlot
-	{
-		helmet, chestpiece, legs
-	}
-
-	[Header("Accessory Info")]
-	public SOAccessories accessoryBaseRef;
-	[Header("Accessory Slot")]
-	public AccessorySlot accessorySlot;
-	public enum AccessorySlot
-	{
-		necklace, ring
-	}
-
-	[Header("Accessory Type")]
-	public AccessoryType accessoryType;
-	public enum AccessoryType
-	{
-		isWarding, isDamaging, isHealing
-	}
-
-	[Header("Accessory Damaging/healing")]
-	public int bonusDamagePercentageValue;
-
-	public DamageTypeToBoost damageTypeToBoost;
-	public enum DamageTypeToBoost
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
-	}
-
-	[Header("Shared Bonus Stats")]
-	public int bonusHealth;
-	public int bonusMana;
-
-	public int bonusPhysicalResistance;
-	public int bonusPoisonResistance;
-	public int bonusFireResistance;
-	public int bonusIceResistance;
-
-	[Header("Consumable Info")]
-	public SOConsumables consumableBaseRef;
-	[Header("Consumable Type")]
-	public ConsumableType consumableType;
-	public enum ConsumableType
-	{
-		healthRestoration, manaRestoration
-	}
-
-	[Header("Percentage Value")]
-	public int consumablePercentage;
-
 	//functions to display item info on mouse hover
 	public void OnPointerEnter(PointerEventData eventData)
 	{
@@ -135,25 +68,29 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 		if (itemType == ItemType.isWeapon)
 		{
-			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Damage: " + damage + "\n Range: ";
-			if (weaponBaseRef.isRangedWeapon)
-				info += weaponBaseRef.baseMaxAttackRange;
+			Weapons weapon = GetComponent<Weapons>();
+			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Damage: " + weapon.damage + "\n Range: ";
+			if (weapon.weaponBaseRef.isRangedWeapon)
+				info += weapon.weaponBaseRef.baseMaxAttackRange;
 			else
 				info += "Melee";
-			info += "\n Attack Speed: " + weaponBaseRef.baseAttackSpeed + "\n Bonus Mana: " + bonusMana;
+			info += "\n Attack Speed: " + weapon.weaponBaseRef.baseAttackSpeed + "\n Bonus Mana: " + weapon.bonusMana;
 		}
 		if (itemType == ItemType.isArmor)
 		{
-			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Bonus Health: " + bonusHealth + "\n Bonus Mana: " +
-				bonusMana + "\n \n Physical Resistance: " + bonusPhysicalResistance + "\n Poison Resistance: " +
-				bonusPoisonResistance + "\n Fire Resistance: " + bonusFireResistance + "\n Ice Resistance: " + bonusIceResistance;
+			Armors armor = GetComponent<Armors>();
+			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Bonus Health: " + armor.bonusHealth + "\n Bonus Mana: " +
+				armor.bonusMana + "\n \n Physical Resistance: " + armor.bonusPhysicalResistance + "\n Poison Resistance: " +
+				armor.bonusPoisonResistance + "\n Fire Resistance: " + armor.bonusFireResistance + "\n Ice Resistance: " + 
+				armor.bonusIceResistance;
 		}
 		if (itemType == ItemType.isConsumable)
 		{
-			if (consumableType == ConsumableType.healthRestoration)
-				info += "\n \n Restores: " + consumablePercentage + "% Health";
-            else if (consumableType == ConsumableType.manaRestoration)
-				info += "\n \n Restores: " + consumablePercentage + "% Mana";
+			Consumables consumable = GetComponent<Consumables>();
+			if (consumable.consumableType == Consumables.ConsumableType.healthRestoration)
+				info += "\n \n Restores: " + consumable.consumablePercentage + "% Health";
+            else if (consumable.consumableType == Consumables.ConsumableType.manaRestoration)
+				info += "\n \n Restores: " + consumable.consumablePercentage + "% Mana";
 		}
 
 		//HoverTipManager.OnMouseHover(info, Input.mousePosition);
