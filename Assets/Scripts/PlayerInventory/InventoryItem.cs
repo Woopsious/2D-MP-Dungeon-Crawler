@@ -28,7 +28,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public ItemType itemType;
 	public enum ItemType
 	{
-		isConsumable, isWeapon, isArmor, isAccessory
+		isConsumable, isWeapon, isArmor, isAccessory, isAbility
 	}
 	public Rarity rarity;
 	public enum Rarity

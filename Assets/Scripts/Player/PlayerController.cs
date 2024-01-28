@@ -96,6 +96,7 @@ public class PlayerController : MonoBehaviour
 		{
 			Debug.Log("consumable slot one empty"); return;
 		}
+		playerEquipmentHandler.equippedConsumableOne.ConsumeItem(this);
 	}
 	private void OnConsumablesTwo()
 	{
@@ -103,6 +104,7 @@ public class PlayerController : MonoBehaviour
 		{
 			Debug.Log("consumable slot two empty"); return;
 		}
+		playerEquipmentHandler.equippedConsumableTwo.ConsumeItem(this);
 	}
 	private void OnAbilityOne()
 	{

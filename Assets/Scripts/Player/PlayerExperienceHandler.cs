@@ -31,10 +31,10 @@ public class PlayerExperienceHandler : MonoBehaviour
 	/// new skill/spells if applicable...
 	/// </summary>
 
-	public void AddExperience(GameObject Obj, PlayerController playerInRange)
+	public void AddExperience(GameObject Obj)
 	{
 		return; //disabled for now
-		if (playerController != playerInRange) return;
+		if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
 
 		Debug.Log("current exp amount: " + currentExp);
 		currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;

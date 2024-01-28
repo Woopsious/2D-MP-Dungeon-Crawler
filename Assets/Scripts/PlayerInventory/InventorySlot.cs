@@ -108,7 +108,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 			return true;
 		else if (item.itemType == InventoryItem.ItemType.isWeapon)
 		{
-			Debug.LogError("is weapon");
 			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
 			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
 				return true;
@@ -121,7 +120,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItem.ItemType.isArmor)
 		{
-			Debug.LogError("is armor");
 			Armors armor = item.GetComponent<Armors>();
 			if (armor.armorSlot == Armors.ArmorSlot.helmet && slotType == SlotType.helmet)
 				return true;
@@ -133,7 +131,6 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItem.ItemType.isAccessory)
 		{
-			Debug.LogError("is accessory");
 			Accessories accessory = item.GetComponent<Accessories>();
 			if (accessory.accessorySlot == Accessories.AccessorySlot.necklace && slotType == SlotType.necklace)
 				return true;

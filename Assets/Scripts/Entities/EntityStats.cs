@@ -34,8 +34,13 @@ public class EntityStats : MonoBehaviour
 	public int bonusFireDamagePercentage;
 	public int bonusIceDamagePercentage;
 
-	public event Action<int, int> onRecieveDamageEvent;
-	public event Action<GameObject, PlayerController> onDeathEvent;
+	public event Action<int, bool> onRecieveHealingEvent;
+	public event Action<int, IDamagable.DamageType> onRecieveDamageEvent;
+
+	public event Action<int, int> onHealthChangeEvent;
+	public event Action<int, int> onManaChangeEvent;
+
+	public event Action<GameObject> onDeathEvent;
 
 	private void Start()
 	{
@@ -46,7 +51,9 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		GetComponent<Damageable>().OnHit += RecieveDamage;
+		onRecieveHealingEvent += RecieveHealing;
+		GetComponent<Damageable>().OnHit += OnHit;
+		onRecieveDamageEvent += RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
@@ -55,7 +62,9 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		GetComponent<Damageable>().OnHit -= RecieveDamage;
+		onRecieveHealingEvent -= RecieveHealing;
+		GetComponent<Damageable>().OnHit -= OnHit;
+		onRecieveDamageEvent -= RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
@@ -100,13 +109,36 @@ public class EntityStats : MonoBehaviour
 	/// when it comes to resistances ignoring the difference shouldnt matter as everything scales at the same rate
 	/// </summary>
 	//health functions
-	public virtual void RecieveHealing(int health)
+	public void OnHeal(int healthValue, bool isPercentageValue)
 	{
-		currentHealth += health;
+		onRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
+	}
+	private void RecieveHealing(int healthValue, bool isPercentageValue)
+	{
+		if (isPercentageValue)
+		{
+			healthValue = maxHealth / 100 * healthValue;
+			currentHealth += healthValue;
+		}
+		else
+			currentHealth += healthValue;
+
 		if (currentHealth > maxHealth)
 			currentHealth = maxHealth;
+
+		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 	}
-	public void RecieveDamage(int damage, IDamagable.DamageType damageType, bool isDestroyedInOneHit)
+	public void OnHit(int damage, IDamagable.DamageType damageType, bool isDestroyedInOneHit)
+	{
+        if (isDestroyedInOneHit)
+        {
+			onDeathEvent.Invoke(gameObject);
+			return;
+        }
+
+		onRecieveDamageEvent?.Invoke(damage, damageType);
+	}
+	private void RecieveDamage(int damage, IDamagable.DamageType damageType)
 	{
 		Debug.Log(gameObject.name + " recieved :" + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
@@ -136,7 +168,7 @@ public class EntityStats : MonoBehaviour
 		currentHealth -= damage;
 		RedFlashOnRecieveDamage();
 
-		onRecieveDamageEvent?.Invoke(maxHealth, currentHealth);
+		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 
 		///
 		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
@@ -147,13 +179,13 @@ public class EntityStats : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
-			onDeathEvent?.Invoke(gameObject, GetComponent<EntityBehaviour>().player);
+			onDeathEvent?.Invoke(gameObject);
 			Destroy(gameObject);
 		}
 		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm
 		Debug.Log("health lost after resistance: " + damage + " | current health: " + currentHealth);
 	}
-	public void RedFlashOnRecieveDamage()
+	private void RedFlashOnRecieveDamage()
 	{
 		spriteRenderer.color = Color.red;
 		StartCoroutine(ResetRedFlashOnRecieveDamage());
@@ -164,7 +196,7 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer.color = Color.white;
 	}
 
-	public void OnPlayerLevelUp(int newPlayerLevel)
+	private void OnPlayerLevelUp(int newPlayerLevel)
 	{
 		entityLevel = newPlayerLevel;
 		float modifier = (entityLevel - 1f) / 1;  //get level modifier / 20

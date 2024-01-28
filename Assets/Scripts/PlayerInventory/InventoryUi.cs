@@ -9,8 +9,11 @@ public class InventoryUi : MonoBehaviour
 	public static InventoryUi Instance;
 
 	public GameObject ItemUiPrefab;
+	[Header("Inventory")]
+	public GameObject InventoryPanelUi;
 	public List<GameObject> InventorySlots = new List<GameObject>();
 
+	[Header("Equipment")]
 	public GameObject weaponEquipmentSlot;
 	public GameObject offHandEquipmentSlot;
 
@@ -23,6 +26,8 @@ public class InventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
 
+	[Header("Hotbar")]
+	public GameObject HotbarPanelUi;
 	public GameObject consumableSlotOne;
 	public GameObject consumableSlotTwo;
 

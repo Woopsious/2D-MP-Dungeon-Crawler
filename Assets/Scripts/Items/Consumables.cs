@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Analytics;
 using UnityEngine;
 
 public class Consumables : Items
@@ -28,5 +29,19 @@ public class Consumables : Items
 		consumableType = (ConsumableType)consumableBaseRef.consumableType;
 		consumablePercentage = consumableBaseRef.consumablePercentage;
 		isStackable = consumableBaseRef.isStackable;
+	}
+
+	public void ConsumeItem(PlayerController player)
+	{
+		if (consumableType == ConsumableType.healthRestoration)
+		{
+			player.GetComponent<EntityStats>().OnHeal(consumablePercentage, true);
+		}
+		else if (consumableType == ConsumableType.manaRestoration)
+		{
+			Debug.LogWarning("Mana restore function not implimented");
+		}
+
+		GetComponent<InventoryItem>().DecreaseStackCounter();
 	}
 }

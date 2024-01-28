@@ -72,8 +72,13 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringTwo)
 				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
+		else if (item.itemType == InventoryItem.ItemType.isConsumable)
+		{
+			EquipConsumables(item.GetComponent<Consumables>(), slot);
+		}
 	}
 
+	//physically spawned in to player
 	public void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
@@ -113,6 +118,19 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef.SetItemStats(accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
+	}
+
+	//not physically spawned in
+	public void EquipConsumables(Consumables consumableToEquip, InventorySlot slotEquippedTo)
+	{
+		if (slotEquippedTo.slotIndex == 0)
+		{
+			equippedConsumableOne = consumableToEquip;
+		}
+		else if (slotEquippedTo.slotIndex == 1)
+		{
+			equippedConsumableTwo = consumableToEquip;
+		}
 	}
 
 	public void HandleEmptySlots(InventorySlot slot)
@@ -156,6 +174,13 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		{
 			OnAccessoryUnequip(equippedRingTwo);
 			Destroy(equippedRingTwo.gameObject);
+		}
+		if (slot.slotType == InventorySlot.SlotType.consumables)
+		{
+			if (slot.slotIndex == 0)
+				equippedConsumableOne = null;
+			if (slot.slotIndex == 1)
+				equippedConsumableTwo = null;
 		}
 	}
 }
