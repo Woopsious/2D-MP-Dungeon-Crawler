@@ -179,6 +179,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		Weapons weaponData = inventoryItem.AddComponent<Weapons>();
 		weaponData.weaponBaseRef = item.weaponBaseRef;
+		weaponData.itemLevel = item.itemLevel;
 
 		weaponData.weaponBaseRef.weaponType = item.weaponBaseRef.weaponType;
 		weaponData.isShield = item.weaponBaseRef.isShield;
@@ -202,6 +203,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		Armors armorData = inventoryItem.AddComponent<Armors>();
 		armorData.armorBaseRef = item.armorBaseRef;
 		armorData.armorSlot = (Armors.ArmorSlot)item.armorBaseRef.armorSlot;
+		armorData.itemLevel = item.itemLevel;
 
 		armorData.bonusHealth = (int)(item.armorBaseRef.baseBonusHealth * item.statModifier);
 		armorData.bonusMana = (int)(item.armorBaseRef.baseBonusMana * item.statModifier);
@@ -228,6 +230,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		accessoryData.accessoryBaseRef = item.accessoryBaseRef;
 		accessoryData.accessorySlot = (Accessories.AccessorySlot)item.accessoryBaseRef.accessorySlot;
 		accessoryData.accessoryType = (Accessories.AccessoryType)item.accessoryBaseRef.accessoryType;
+		accessoryData.itemLevel = item.itemLevel;
 
 		accessoryData.damageTypeToBoost = (Accessories.DamageTypeToBoost)item.accessoryBaseRef.damageTypeToBoost;
 		accessoryData.bonusHealth = (int)(item.accessoryBaseRef.baseBonusHealth * item.statModifier);
@@ -258,7 +261,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		Consumables consumablesData = inventoryItem.AddComponent<Consumables>();
 		consumablesData.consumableBaseRef = item.consumableBaseRef;
-		consumablesData.consumableBaseRef = item.consumableBaseRef;
+		consumablesData.itemLevel = item.itemLevel;
 
 		consumablesData.consumableType = (Consumables.ConsumableType)item.consumableBaseRef.consumableType;
 		consumablesData.consumablePercentage = item.consumableBaseRef.consumablePercentage;
