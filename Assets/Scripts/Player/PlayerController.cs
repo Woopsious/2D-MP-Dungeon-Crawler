@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityOne()
 	{
-
+		GetComponent<EntityStats>().DecreaseMana(5, true);
 	}
 	private void OnAbilityTwo()
 	{

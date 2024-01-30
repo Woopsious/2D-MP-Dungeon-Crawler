@@ -39,7 +39,7 @@ public class Consumables : Items
 		}
 		else if (consumableType == ConsumableType.manaRestoration)
 		{
-			Debug.LogWarning("Mana restore function not implimented");
+			player.GetComponent<EntityStats>().IncreaseMana(consumablePercentage, true);
 		}
 
 		GetComponent<InventoryItem>().DecreaseStackCounter();

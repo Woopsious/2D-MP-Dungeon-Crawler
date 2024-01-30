@@ -72,6 +72,7 @@ public class EntityBehaviour : MonoBehaviour
 		/// 4. once there, if player is found return to step 2.
 		/// </summary>
 		/// 
+
 		currentState.UpdateLogic(this);
 	}
 	public void FixedUpdate()

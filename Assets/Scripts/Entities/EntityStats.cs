@@ -21,6 +21,8 @@ public class EntityStats : MonoBehaviour
 	[Header("Mana")]
 	public int maxMana;
 	public int currentMana;
+	public float manaRegenCooldown;
+	private float manaRegenTimer;
 
 	[Header("Resistances")]
 	public int physicalResistance;
@@ -72,6 +74,11 @@ public class EntityStats : MonoBehaviour
 		playerExperienceHandler.onPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
+	private void Update()
+	{
+		PassiveManaRegen();
+	}
+
 	public void SetStats()
 	{
 		float modifier = (entityLevel - 1f) / 20;  //get level modifier
@@ -79,6 +86,9 @@ public class EntityStats : MonoBehaviour
 
 		maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
 		currentHealth = (int)(entityBaseStats.maxHealth * statModifier);
+		maxMana = (int)(entityBaseStats.maxMana * statModifier);
+		currentMana = (int)(entityBaseStats.maxMana * statModifier);
+
 		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
 		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
 		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
@@ -116,17 +126,13 @@ public class EntityStats : MonoBehaviour
 	private void RecieveHealing(int healthValue, bool isPercentageValue)
 	{
 		if (isPercentageValue)
-		{
 			healthValue = maxHealth / 100 * healthValue;
-			currentHealth += healthValue;
-		}
-		else
-			currentHealth += healthValue;
+
+		currentHealth += healthValue;
+		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 
 		if (currentHealth > maxHealth)
 			currentHealth = maxHealth;
-
-		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 	}
 	public void OnHit(int damage, IDamagable.DamageType damageType, bool isDestroyedInOneHit)
 	{
@@ -194,6 +200,39 @@ public class EntityStats : MonoBehaviour
 	{
 		yield return new WaitForSeconds(0.1f);
 		spriteRenderer.color = Color.white;
+	}
+
+	//mana functions
+	public void PassiveManaRegen()
+	{
+		if (currentMana >= maxMana) return;
+
+		manaRegenTimer -= Time.deltaTime;
+
+		if (manaRegenTimer <= 0)
+		{
+			manaRegenTimer = manaRegenCooldown;
+			IncreaseMana(2, true);
+		}
+	}
+	public void IncreaseMana(int manaValue, bool isPercentageValue)
+	{
+		if (isPercentageValue)
+			manaValue = maxMana / 100 * manaValue;
+
+		currentMana += manaValue;
+		onManaChangeEvent?.Invoke(maxMana, currentMana);
+
+		if (currentMana > maxMana)
+			currentMana = maxMana;
+	}
+	public void DecreaseMana(int manaValue, bool isPercentageValue)
+	{
+		if (isPercentageValue)
+			manaValue = maxMana / 100 * manaValue;
+
+		currentMana -= manaValue;
+		onManaChangeEvent?.Invoke(maxMana, currentMana);
 	}
 
 	private void OnPlayerLevelUp(int newPlayerLevel)
