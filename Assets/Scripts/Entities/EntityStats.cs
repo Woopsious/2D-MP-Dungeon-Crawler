@@ -11,7 +11,7 @@ public class EntityStats : MonoBehaviour
 	[HideInInspector] public EntityEquipmentHandler entityEquipment;
 	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
-	public float statModifier;
+	public float levelModifier;
 
 	[Header("Health")]
 	public int maxHealth;
@@ -80,18 +80,20 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
 
-		float modifier = (entityLevel - 1f) / 20;  //get level modifier
-		statModifier = modifier += 1;
+		if (entityLevel == 1)  //get level modifier
+			levelModifier = 1;
+		else
+			levelModifier = 1 + (entityLevel / 10f);
 
-		maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
-		currentHealth = (int)(entityBaseStats.maxHealth * statModifier);
-		maxMana = (int)(entityBaseStats.maxMana * statModifier);
-		currentMana = (int)(entityBaseStats.maxMana * statModifier);
+		maxHealth = (int)(entityBaseStats.maxHealth * levelModifier);
+		currentHealth = (int)(entityBaseStats.maxHealth * levelModifier);
+		maxMana = (int)(entityBaseStats.maxMana * levelModifier);
+		currentMana = (int)(entityBaseStats.maxMana * levelModifier);
 
-		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
-		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
-		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
-		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
+		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier);
+		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier);
+		fireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier);
+		iceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier);
 
 		int numOfTries = 0;
 		entityEquipment.StartCoroutine(entityEquipment.SpawnEntityEquipment(numOfTries));
@@ -226,14 +228,14 @@ public class EntityStats : MonoBehaviour
 		int oldCurrentHealth = currentHealth;
         entityLevel = newPlayerLevel;
 		float modifier = (entityLevel - 1f) / 20;  //get level modifier / 20
-		statModifier = modifier += 1;
+		levelModifier = modifier += 1;
 
-		int newMaxHealth = (int)(entityBaseStats.maxHealth * statModifier) - maxHealth;
-		int newMaxMana = (int)(entityBaseStats.maxMana * statModifier) - maxMana;
-		int newPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier) - physicalResistance;
-		int newPoisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier) - poisonResistance;
-		int newFireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier) - fireResistance;
-		int newIceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier) - iceResistance;
+		int newMaxHealth = (int)(entityBaseStats.maxHealth * levelModifier) - maxHealth;
+		int newMaxMana = (int)(entityBaseStats.maxMana * levelModifier) - maxMana;
+		int newPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier) - physicalResistance;
+		int newPoisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier) - poisonResistance;
+		int newFireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier) - fireResistance;
+		int newIceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier) - iceResistance;
 
 		if (GetComponent<PlayerController>()  != null)
 		{

@@ -31,16 +31,16 @@ public class Armors : Items
 	{
 		base.Initilize(setRarity, setLevel, equipmentHandler);
 
-		bonusHealth = (int)(armorBaseRef.baseBonusHealth * statModifier);
-		bonusMana = (int)(armorBaseRef.baseBonusMana * statModifier);
+		bonusHealth = (int)(armorBaseRef.baseBonusHealth * levelModifier);
+		bonusMana = (int)(armorBaseRef.baseBonusMana * levelModifier);
 		isStackable = armorBaseRef.isStackable;
 
 		armorSlot = (ArmorSlot)armorBaseRef.armorSlot; // may not need this depending on what happens when i make proper inventroy
 
-		bonusPhysicalResistance = (int)(armorBaseRef.bonusPhysicalResistance * statModifier);
-		bonusPoisonResistance = (int)(armorBaseRef.bonusPoisonResistance * statModifier);
-		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * statModifier);
-		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * statModifier);
+		bonusPhysicalResistance = (int)(armorBaseRef.bonusPhysicalResistance * levelModifier);
+		bonusPoisonResistance = (int)(armorBaseRef.bonusPoisonResistance * levelModifier);
+		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * levelModifier);
+		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * levelModifier);
 
 		if (equipmentHandler == null) return;
 		equipmentHandler.OnArmorEquip(this, transform.parent.gameObject);

@@ -29,7 +29,7 @@ public class Items : MonoBehaviour
 	[Header("Inventroy Dynamic Info")]
 	public bool isStackable;
 	public int currentStackCount;
-	public float statModifier;
+	public float levelModifier;
 	public int inventroySlot;
 
 	public virtual void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
@@ -47,13 +47,15 @@ public class Items : MonoBehaviour
 	}
 	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
 	{
-		float modifier = 1f;
-		if (rarity == IGetStatModifier.Rarity.isLegendary) { modifier += 0.75f; } //get rarity modifier
-		if (rarity == IGetStatModifier.Rarity.isEpic) { modifier += 0.4f; } //get rarity modifier
-		if (rarity == IGetStatModifier.Rarity.isRare) { modifier += 0.15f; }
-		else { modifier += 0; }
+		if (level == 1)  //get level modifier
+			levelModifier = 1;
+		else
+			levelModifier = 1 + (level / 10f);
 
-		statModifier = modifier + (level - 1f) / 20;  //get level modifier
+		if (rarity == IGetStatModifier.Rarity.isLegendary) { levelModifier += 0.8f; } //get rarity modifier
+		if (rarity == IGetStatModifier.Rarity.isEpic) { levelModifier += 0.4f; }
+		if (rarity == IGetStatModifier.Rarity.isRare) { levelModifier += 0.2f; }
+		else { levelModifier += 0; }
 	}
 	public string GetItemName()
 	{
@@ -71,10 +73,10 @@ public class Items : MonoBehaviour
 	}
 	public int GetItemPrice()
 	{
-		if (weaponBaseRef != null) return (int)(weaponBaseRef.ItemPrice * statModifier);
-		else if (armorBaseRef != null) return (int)(armorBaseRef.ItemPrice * statModifier);
-		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.ItemPrice * statModifier);
-		else return (int)(consumableBaseRef.ItemPrice * statModifier);
+		if (weaponBaseRef != null) return (int)(weaponBaseRef.ItemPrice * levelModifier);
+		else if (armorBaseRef != null) return (int)(armorBaseRef.ItemPrice * levelModifier);
+		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.ItemPrice * levelModifier);
+		else return (int)(consumableBaseRef.ItemPrice * levelModifier);
 	}
 
 	public virtual void OnMouseOverItem()

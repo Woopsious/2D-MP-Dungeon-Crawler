@@ -183,8 +183,8 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		weaponData.weaponBaseRef.weaponType = item.weaponBaseRef.weaponType;
 		weaponData.isShield = item.weaponBaseRef.isShield;
-		weaponData.damage = (int)(item.weaponBaseRef.baseDamage * item.statModifier);
-		weaponData.bonusMana = (int)(item.weaponBaseRef.baseBonusMana * item.statModifier);
+		weaponData.damage = (int)(item.weaponBaseRef.baseDamage * item.levelModifier);
+		weaponData.bonusMana = (int)(item.weaponBaseRef.baseBonusMana * item.levelModifier);
 
 		inventoryItem.isStackable = item.isStackable;
 		inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
@@ -205,12 +205,12 @@ public class PlayerInventoryManager : MonoBehaviour
 		armorData.armorSlot = (Armors.ArmorSlot)item.armorBaseRef.armorSlot;
 		armorData.itemLevel = item.itemLevel;
 
-		armorData.bonusHealth = (int)(item.armorBaseRef.baseBonusHealth * item.statModifier);
-		armorData.bonusMana = (int)(item.armorBaseRef.baseBonusMana * item.statModifier);
-		armorData.bonusPhysicalResistance = (int)(item.armorBaseRef.bonusPhysicalResistance * item.statModifier);
-		armorData.bonusPoisonResistance = (int)(item.armorBaseRef.bonusPoisonResistance * item.statModifier);
-		armorData.bonusFireResistance = (int)(item.armorBaseRef.bonusFireResistance * item.statModifier);
-		armorData.bonusIceResistance = (int)(item.armorBaseRef.bonusIceResistance * item.statModifier);
+		armorData.bonusHealth = (int)(item.armorBaseRef.baseBonusHealth * item.levelModifier);
+		armorData.bonusMana = (int)(item.armorBaseRef.baseBonusMana * item.levelModifier);
+		armorData.bonusPhysicalResistance = (int)(item.armorBaseRef.bonusPhysicalResistance * item.levelModifier);
+		armorData.bonusPoisonResistance = (int)(item.armorBaseRef.bonusPoisonResistance * item.levelModifier);
+		armorData.bonusFireResistance = (int)(item.armorBaseRef.bonusFireResistance * item.levelModifier);
+		armorData.bonusIceResistance = (int)(item.armorBaseRef.bonusIceResistance * item.levelModifier);
 
 		inventoryItem.isStackable = item.isStackable;
 		inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
@@ -233,8 +233,8 @@ public class PlayerInventoryManager : MonoBehaviour
 		accessoryData.itemLevel = item.itemLevel;
 
 		accessoryData.damageTypeToBoost = (Accessories.DamageTypeToBoost)item.accessoryBaseRef.damageTypeToBoost;
-		accessoryData.bonusHealth = (int)(item.accessoryBaseRef.baseBonusHealth * item.statModifier);
-		accessoryData.bonusMana = (int)(item.accessoryBaseRef.baseBonusMana * item.statModifier);
+		accessoryData.bonusHealth = (int)(item.accessoryBaseRef.baseBonusHealth * item.levelModifier);
+		accessoryData.bonusMana = (int)(item.accessoryBaseRef.baseBonusMana * item.levelModifier);
 
 		if (accessoryData.rarity == Items.Rarity.isCommon)
 			accessoryData.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[0];
@@ -245,10 +245,10 @@ public class PlayerInventoryManager : MonoBehaviour
 		else if (accessoryData.rarity == Items.Rarity.isLegendary)
 			accessoryData.bonusPercentageValue = item.accessoryBaseRef.bonusPercentageValue[3];
 
-		accessoryData.bonusPhysicalResistance = (int)(item.accessoryBaseRef.bonusPhysicalResistance * item.statModifier);
-		accessoryData.bonusPoisonResistance = (int)(item.accessoryBaseRef.bonusPoisonResistance * item.statModifier);
-		accessoryData.bonusFireResistance = (int)(item.accessoryBaseRef.bonusFireResistance * item.statModifier);
-		accessoryData.bonusIceResistance = (int)(item.accessoryBaseRef.bonusIceResistance * item.statModifier);
+		accessoryData.bonusPhysicalResistance = (int)(item.accessoryBaseRef.bonusPhysicalResistance * item.levelModifier);
+		accessoryData.bonusPoisonResistance = (int)(item.accessoryBaseRef.bonusPoisonResistance * item.levelModifier);
+		accessoryData.bonusFireResistance = (int)(item.accessoryBaseRef.bonusFireResistance * item.levelModifier);
+		accessoryData.bonusIceResistance = (int)(item.accessoryBaseRef.bonusIceResistance * item.levelModifier);
 
 		inventoryItem.isStackable = item.isStackable;
 		inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;

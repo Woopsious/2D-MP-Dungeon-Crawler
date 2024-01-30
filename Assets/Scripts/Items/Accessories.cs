@@ -55,17 +55,17 @@ public class Accessories : Items
 		else if (rarity == Rarity.isLegendary)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[3];
 
-		bonusHealth = (int)(accessoryBaseRef.baseBonusHealth * statModifier);
-		bonusMana = (int)(accessoryBaseRef.baseBonusMana * statModifier);
+		bonusHealth = (int)(accessoryBaseRef.baseBonusHealth * levelModifier);
+		bonusMana = (int)(accessoryBaseRef.baseBonusMana * levelModifier);
 		isStackable = accessoryBaseRef.isStackable;
 
 		accessorySlot = (AccessorySlot)accessoryBaseRef.accessorySlot;
 		accessoryType = (AccessoryType)accessoryBaseRef.accessoryType;
 
-		bonusPhysicalResistance = (int)(accessoryBaseRef.bonusPhysicalResistance * statModifier);
-		bonusPoisonResistance = (int)(accessoryBaseRef.bonusPoisonResistance * statModifier);
-		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * statModifier);
-		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * statModifier);
+		bonusPhysicalResistance = (int)(accessoryBaseRef.bonusPhysicalResistance * levelModifier);
+		bonusPoisonResistance = (int)(accessoryBaseRef.bonusPoisonResistance * levelModifier);
+		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
+		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
 
 		if (equipmentHandler == null) return;
 		equipmentHandler.OnAccessoryEquip(this, transform.parent.gameObject);

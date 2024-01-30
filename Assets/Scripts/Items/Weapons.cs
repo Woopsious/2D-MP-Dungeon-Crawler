@@ -31,8 +31,8 @@ public class Weapons : Items
 		base.Initilize(setRarity, setLevel, equipmentHandler);
 
 		isShield = weaponBaseRef.isShield;
-		damage = (int)(weaponBaseRef.baseDamage * statModifier);
-		bonusMana = (int)(weaponBaseRef.baseBonusMana * statModifier);
+		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
+		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
 
 		if (equipmentHandler == null) return;
