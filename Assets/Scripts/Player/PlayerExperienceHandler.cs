@@ -33,7 +33,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	public void AddExperience(GameObject Obj)
 	{
-		return; //disabled for now
+		//return; //disabled for now
 		if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
 
 		Debug.Log("current exp amount: " + currentExp);

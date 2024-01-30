@@ -8,6 +8,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public GameObject itemPrefab;
 
 	[HideInInspector] public EntityStats entityStats;
+	[HideInInspector] public bool isPlayerEquipment;
 
 	[Header("Weapon")]
 	public GameObject weaponSlotContainer;
@@ -58,6 +59,23 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		entityStats = GetComponentInParent<EntityStats>();
 		entityStats.entityEquipment = this;
+		isPlayerEquipment = false;
+	}
+	public IEnumerator SpawnEntityEquipment(int numOfTries)
+	{
+		if (numOfTries >= 5 || isPlayerEquipment)
+			Debug.LogWarning("Unable to Spawn Entity Equipment");
+
+		else if (entityStats == null)
+		{
+			numOfTries += 1;
+			yield return new WaitForSeconds(0.1f);
+			StartCoroutine(SpawnEntityEquipment(numOfTries));
+		}
+		else
+		{
+			EquipRandomItems();
+		}
 	}
 
 	//for entitys other then player to randomly equip items when they spawn in
@@ -116,13 +134,12 @@ public class EntityEquipmentHandler : MonoBehaviour
 			bonusEquipmentFireResistance -= weapon.damage;
 			bonusEquipmentIceResistance -= weapon.damage;
 
+			entityStats.maxHealth -= weapon.damage;
+			entityStats.currentHealth -= weapon.damage;
 			entityStats.physicalResistance -= weapon.damage;
 			entityStats.poisonResistance -= weapon.damage;
 			entityStats.fireResistance -= weapon.damage;
 			entityStats.iceResistance -= weapon.damage;
-
-			entityStats.maxHealth -= weapon.damage;
-			entityStats.currentHealth -= weapon.damage;
 		}
 		else
 		{
@@ -260,7 +277,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		entityStats.maxHealth += accessory.bonusHealth;
 		entityStats.currentHealth += accessory.bonusHealth;
 		entityStats.maxMana += accessory.bonusMana;
-		entityStats.currentHealth += accessory.bonusMana;
+		entityStats.currentMana += accessory.bonusMana;
 		entityStats.physicalResistance += accessory.bonusPhysicalResistance;
 		entityStats.poisonResistance += accessory.bonusPoisonResistance;
 		entityStats.fireResistance += accessory.bonusFireResistance;
@@ -290,20 +307,19 @@ public class EntityEquipmentHandler : MonoBehaviour
 		AssignItemRefOnEquip(accessory, slotItemIsIn);
 	}
 
-	public void OnPlayerLevelUp(int newPlayerLevel)
+	public void ReapplyStatsAfterEntityLevelUp()
 	{
-		if (entityStats.playerEquipment != null && entityStats.currentHealth <= 0) return; //only level up stats for non player entities
-		equippedWeapon.itemLevel = newPlayerLevel;
-		equippedWeapon.Initilize(equippedWeapon.rarity, equippedWeapon.itemLevel, this);
-
-		equippedHelmet.itemLevel = newPlayerLevel;
-		equippedHelmet.Initilize(equippedHelmet.rarity, equippedHelmet.itemLevel, this);
-
-		equippedChestpiece.itemLevel = newPlayerLevel;
-		equippedChestpiece.Initilize(equippedChestpiece.rarity, equippedChestpiece.itemLevel, this);
-
-		equippedLegs.itemLevel = newPlayerLevel;
-		equippedLegs.Initilize(equippedLegs.rarity, equippedLegs.itemLevel, this);
+		entityStats.maxHealth = bonusEquipmentHealth;
+		entityStats.maxMana = bonusEquipmentMana;
+		entityStats.physicalResistance = bonusEquipmentPhysicalResistance;
+		entityStats.poisonResistance = bonusEquipmentPoisonResistance;
+		entityStats.fireResistance = bonusEquipmentFireResistance;
+		entityStats.iceResistance = bonusEquipmentIceResistance;
+	}
+	public void ReapplyEquipmentStats(Items equippedItem)
+	{
+		if (equippedItem == null) return;
+		equippedItem.Initilize(equippedItem.rarity, equippedItem.itemLevel, this);
 	}
 
 	public GameObject SpawnItemPrefab(GameObject slotToSpawnIn)

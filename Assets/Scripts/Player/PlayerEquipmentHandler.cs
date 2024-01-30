@@ -35,9 +35,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	public override void Initilize()
 	{
 		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
-		entityStats.playerEquipment = this;
+		entityStats.entityEquipment = this;
 		playerController = gameObject.transform.parent.GetComponentInParent<PlayerController>();
 		playerController.playerEquipmentHandler = this;
+		isPlayerEquipment = true;
 	}
 
 	public void EquipItem(InventoryItem item, InventorySlot slot)

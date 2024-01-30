@@ -9,7 +9,6 @@ public class EntityStats : MonoBehaviour
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
 	[HideInInspector] public EntityEquipmentHandler entityEquipment;
-	[HideInInspector] public PlayerEquipmentHandler playerEquipment;
 	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
 	public float statModifier;
@@ -95,23 +94,7 @@ public class EntityStats : MonoBehaviour
 		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
 
 		int numOfTries = 0;
-		StartCoroutine(SpawnEntityEquipment(numOfTries));
-	}
-	public IEnumerator SpawnEntityEquipment(int numOfTries)
-	{
-		if (numOfTries >= 5)
-			Debug.LogWarning("Unable to Spawn Entity Equipment");
-
-		else if (entityEquipment == null)
-		{
-			numOfTries += 1;
-			yield return new WaitForSeconds(0.1f);
-			StartCoroutine(SpawnEntityEquipment(numOfTries));
-		}
-		else
-		{
-			entityEquipment.EquipRandomItems();
-		}
+		entityEquipment.StartCoroutine(entityEquipment.SpawnEntityEquipment(numOfTries));
 	}
 
 	/// <summary>
@@ -237,24 +220,42 @@ public class EntityStats : MonoBehaviour
 
 	private void OnPlayerLevelUp(int newPlayerLevel)
 	{
-		entityLevel = newPlayerLevel;
-		float modifier = (entityLevel - 1f) / 1;  //get level modifier / 20
+		if (currentHealth <= 0) return;
+
+		int oldMaxHealth = maxHealth;
+		int oldCurrentHealth = currentHealth;
+        entityLevel = newPlayerLevel;
+		float modifier = (entityLevel - 1f) / 20;  //get level modifier / 20
 		statModifier = modifier += 1;
 
-		maxHealth = (int)(entityBaseStats.maxHealth * statModifier);
-		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier);
-		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier);
-		fireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier);
-		iceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier);
+		int newMaxHealth = (int)(entityBaseStats.maxHealth * statModifier) - maxHealth;
+		int newMaxMana = (int)(entityBaseStats.maxMana * statModifier) - maxMana;
+		int newPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * statModifier) - physicalResistance;
+		int newPoisonResistance = (int)(entityBaseStats.poisonDamageResistance * statModifier) - poisonResistance;
+		int newFireResistance = (int)(entityBaseStats.fireDamageResistance * statModifier) - fireResistance;
+		int newIceResistance = (int)(entityBaseStats.iceDamageResistance * statModifier) - iceResistance;
 
-		if (currentHealth <= 0) return;
-		try
+		if (GetComponent<PlayerController>()  != null)
 		{
-			entityEquipment.OnPlayerLevelUp(newPlayerLevel);
+			Debug.LogError("new max health: " + newMaxHealth);
+			Debug.LogError("new max physical: " + newPhysicalResistance);
 		}
-		catch (Exception e)
-		{
-			Debug.LogException(e);
-		}
+
+		maxHealth += newMaxHealth;
+		maxMana += newMaxMana;
+		physicalResistance += newPhysicalResistance;
+		poisonResistance += newPoisonResistance;
+		fireResistance += newFireResistance;
+		iceResistance += newIceResistance;
+
+
+		if (GetComponent<PlayerController>() == null && oldMaxHealth == oldCurrentHealth) //if not player or taken damage full heal entity
+			currentHealth = maxHealth;
+		else
+			currentHealth = oldCurrentHealth;
+
+		/// <summary>
+		/// when class trees are made and have additional bonuses ill reapply them here
+		/// </summary>
 	}
 }

@@ -22,6 +22,8 @@ public class Weapons : Items
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
+
+		WeaponInitilization();
 	}
 
 	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
@@ -35,7 +37,9 @@ public class Weapons : Items
 
 		if (equipmentHandler == null) return;
 		equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
-
+	}
+	public void WeaponInitilization()
+	{
 		if (GetComponent<InventoryItem>() != null) return; //return as this is an item in inventory
 
 		parentObj = transform.parent.gameObject;
