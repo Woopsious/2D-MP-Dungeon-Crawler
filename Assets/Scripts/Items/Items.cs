@@ -32,7 +32,7 @@ public class Items : MonoBehaviour
 	public float statModifier;
 	public int inventroySlot;
 
-	public virtual void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public virtual void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
 	{
 		rarity = setRarity;
 		itemLevel = setLevel;
@@ -96,7 +96,7 @@ public class Items : MonoBehaviour
 
 	public void GenerateStatsOnStart()
 	{
-		SetItemStats(rarity, itemLevel, null);
+		Initilize(rarity, itemLevel, null);
 		gameObject.AddComponent<Interactables>();
 		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
 		collider2D.isTrigger = true;

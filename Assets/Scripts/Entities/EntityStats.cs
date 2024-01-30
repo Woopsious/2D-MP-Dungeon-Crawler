@@ -46,10 +46,7 @@ public class EntityStats : MonoBehaviour
 
 	private void Start()
 	{
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
-
-		SetStats();
+		Initilize();
 	}
 	private void OnEnable()
 	{
@@ -79,8 +76,11 @@ public class EntityStats : MonoBehaviour
 		PassiveManaRegen();
 	}
 
-	public void SetStats()
+	public void Initilize()
 	{
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+
 		float modifier = (entityLevel - 1f) / 20;  //get level modifier
 		statModifier = modifier += 1;
 

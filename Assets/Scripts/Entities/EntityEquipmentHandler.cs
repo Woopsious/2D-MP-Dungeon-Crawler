@@ -49,7 +49,12 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public int bonusFireDamagePercentage;
 	public int bonusIceDamagePercentage;
 
-	public virtual void Start()
+	private void Start()
+	{
+		Initilize();
+	}
+
+	public virtual void Initilize()
 	{
 		entityStats = GetComponentInParent<EntityStats>();
 		entityStats.entityEquipment = this;
@@ -77,7 +82,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = listOfPossibleWeapons[index];
-		equippedWeaponRef.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
+		equippedWeaponRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel, this);
 		equippedWeaponRef.isEquippedByOther = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
@@ -92,7 +97,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = listOfPossibleArmors[index];
-		equippedArmorRef.SetItemStats(Items.Rarity.isCommon, entityStats.entityLevel, this);
+		equippedArmorRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel, this);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
@@ -289,16 +294,16 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		if (entityStats.playerEquipment != null && entityStats.currentHealth <= 0) return; //only level up stats for non player entities
 		equippedWeapon.itemLevel = newPlayerLevel;
-		equippedWeapon.SetItemStats(equippedWeapon.rarity, equippedWeapon.itemLevel, this);
+		equippedWeapon.Initilize(equippedWeapon.rarity, equippedWeapon.itemLevel, this);
 
 		equippedHelmet.itemLevel = newPlayerLevel;
-		equippedHelmet.SetItemStats(equippedHelmet.rarity, equippedHelmet.itemLevel, this);
+		equippedHelmet.Initilize(equippedHelmet.rarity, equippedHelmet.itemLevel, this);
 
 		equippedChestpiece.itemLevel = newPlayerLevel;
-		equippedChestpiece.SetItemStats(equippedChestpiece.rarity, equippedChestpiece.itemLevel, this);
+		equippedChestpiece.Initilize(equippedChestpiece.rarity, equippedChestpiece.itemLevel, this);
 
 		equippedLegs.itemLevel = newPlayerLevel;
-		equippedLegs.SetItemStats(equippedLegs.rarity, equippedLegs.itemLevel, this);
+		equippedLegs.Initilize(equippedLegs.rarity, equippedLegs.itemLevel, this);
 	}
 
 	public GameObject SpawnItemPrefab(GameObject slotToSpawnIn)

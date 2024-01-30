@@ -22,6 +22,19 @@ public class Weapons : Items
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
+	}
+
+	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	{
+		base.Initilize(setRarity, setLevel, equipmentHandler);
+
+		isShield = weaponBaseRef.isShield;
+		damage = (int)(weaponBaseRef.baseDamage * statModifier);
+		bonusMana = (int)(weaponBaseRef.baseBonusMana * statModifier);
+		isStackable = weaponBaseRef.isStackable;
+
+		if (equipmentHandler == null) return;
+		equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
 
 		if (GetComponent<InventoryItem>() != null) return; //return as this is an item in inventory
 
@@ -38,19 +51,6 @@ public class Weapons : Items
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
-	}
-
-	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
-	{
-		base.SetItemStats(setRarity, setLevel, equipmentHandler);
-
-		isShield = weaponBaseRef.isShield;
-		damage = (int)(weaponBaseRef.baseDamage * statModifier);
-		bonusMana = (int)(weaponBaseRef.baseBonusMana * statModifier);
-		isStackable = weaponBaseRef.isStackable;
-
-		if (equipmentHandler == null) return;
-		equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
 	}
 
 	public void OnTriggerEnter2D(Collider2D other)

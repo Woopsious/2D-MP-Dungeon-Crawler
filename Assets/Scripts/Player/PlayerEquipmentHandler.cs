@@ -18,13 +18,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	public Consumables equippedAbilityFour;
 	public Consumables equippedAbilityFive;
 
-	public override void Start()
+	private void Start()
 	{
-		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
-		entityStats.playerEquipment = this;
-		playerController = gameObject.transform.parent.GetComponentInParent<PlayerController>();
-		playerController.playerEquipmentHandler = this;
 		//when loading/saving game, once inventory is loaded then load/instantiate equipped items based on loaded inventory
+		Initilize();
 	}
 	private void OnEnable()
 	{
@@ -33,6 +30,14 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void OnDisable()
 	{
 		InventorySlot.onItemEquip -= EquipItem;
+	}
+
+	public override void Initilize()
+	{
+		entityStats = gameObject.transform.parent.GetComponentInParent<EntityStats>();
+		entityStats.playerEquipment = this;
+		playerController = gameObject.transform.parent.GetComponentInParent<PlayerController>();
+		playerController.playerEquipmentHandler = this;
 	}
 
 	public void EquipItem(InventoryItem item, InventorySlot slot)
@@ -88,7 +93,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.SetItemStats(weaponToEquip.rarity, weaponToEquip.itemLevel, this);
+		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, this);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
@@ -102,7 +107,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.SetItemStats(armorToEquip.rarity, armorToEquip.itemLevel, this);
+		equippedArmorRef.Initilize(armorToEquip.rarity, armorToEquip.itemLevel, this);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 	}
@@ -115,7 +120,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef = go.AddComponent<Accessories>();
 
 		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
-		equippedAccessoryRef.SetItemStats(accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
+		equippedAccessoryRef.Initilize(accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 	}

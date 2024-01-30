@@ -27,9 +27,9 @@ public class Armors : Items
 			GenerateStatsOnStart();
 	}
 
-	public override void SetItemStats(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
 	{
-		base.SetItemStats(setRarity, setLevel, equipmentHandler);
+		base.Initilize(setRarity, setLevel, equipmentHandler);
 
 		bonusHealth = (int)(armorBaseRef.baseBonusHealth * statModifier);
 		bonusMana = (int)(armorBaseRef.baseBonusMana * statModifier);

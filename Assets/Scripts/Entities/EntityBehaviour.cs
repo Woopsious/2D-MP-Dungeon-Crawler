@@ -30,6 +30,32 @@ public class EntityBehaviour : MonoBehaviour
 
 	public void Start()
 	{
+		Initilize();
+	}
+	public void Update()
+	{
+		/// <summary>
+		/// LOGIC FOR ENTITY BEHAVIOUR
+		/// 1. idle and randomly move around the map within bounds of where they spawned
+		/// 2. when play enters agro range, chase player endless till they escape max chase range
+		/// 2A. if they escape max chase range move to last know position
+		/// 2B. if player moves out of visible range move to last know position
+		/// 3. once there, if player not found go back to step 1.
+		/// 4. once there, if player is found return to step 2.
+		/// </summary>
+		/// 
+
+		currentState.UpdateLogic(this);
+	}
+	public void FixedUpdate()
+	{
+		currentState.UpdatePhysics(this);
+
+		UpdateSpriteDirection();
+		UpdateAnimationState();
+	}
+	public void Initilize()
+	{
 		rb = GetComponent<Rigidbody2D>();
 		entityStats = GetComponent<EntityStats>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -60,28 +86,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		ChangeStateIdle();
 	}
-	public void Update()
-	{
-		/// <summary>
-		/// LOGIC FOR ENTITY BEHAVIOUR
-		/// 1. idle and randomly move around the map within bounds of where they spawned
-		/// 2. when play enters agro range, chase player endless till they escape max chase range
-		/// 2A. if they escape max chase range move to last know position
-		/// 2B. if player moves out of visible range move to last know position
-		/// 3. once there, if player not found go back to step 1.
-		/// 4. once there, if player is found return to step 2.
-		/// </summary>
-		/// 
 
-		currentState.UpdateLogic(this);
-	}
-	public void FixedUpdate()
-	{
-		currentState.UpdatePhysics(this);
-
-		UpdateSpriteDirection();
-		UpdateAnimationState();
-	}
 	public void UpdateSpriteDirection()
 	{
 		if (navMeshAgent.velocity.x < 0)
