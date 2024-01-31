@@ -56,14 +56,14 @@ public class PlayerController : MonoBehaviour
 		UpdateAnimationState();
 
 	}
-	public void UpdateSpriteDirection()
+	private void UpdateSpriteDirection()
 	{
 		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 0, 0);
 		else if (rb.velocity.x > -0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
-	public void UpdateAnimationState()
+	private void UpdateAnimationState()
 	{
 		if (rb.velocity == new Vector2(0,0))
 			animator.SetBool("isIdle", true);

@@ -25,11 +25,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	}
 	private void OnEnable()
 	{
-		InventorySlot.onItemEquip += EquipItem;
+		InventorySlot.OnItemEquip += EquipItem;
 	}
 	private void OnDisable()
 	{
-		InventorySlot.onItemEquip -= EquipItem;
+		InventorySlot.OnItemEquip -= EquipItem;
 	}
 
 	public override void Initilize()

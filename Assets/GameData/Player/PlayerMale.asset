@@ -14,9 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Player
   sprite: {fileID: -683263113, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  expOnDeath: 0
   maxHealth: 100
   physicalDamageResistance: 5
   poisonDamageResistance: 5
   fireDamageResistance: 5
   iceDamageResistance: 5
   maxMana: 100
+  manaRegenPercentage: 2
+  manaRegenCooldown: 3
+  possibleWeaponsList: []
+  possibleHelmetsList: []
+  possibleChestpiecesList: []
+  possibleLegsList: []

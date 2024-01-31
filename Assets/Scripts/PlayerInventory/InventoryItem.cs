@@ -95,7 +95,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 		//HoverTipManager.OnMouseHover(info, Input.mousePosition);
 	}
-	public IEnumerator StartTimer()
+	private IEnumerator StartTimer()
 	{
 		yield return new WaitForSeconds(timeToWait);
 		ShowMessage();
@@ -159,7 +159,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		else
 			SetColour(Color.white);
 	}
-	public void SetColour(Color colour)
+	private void SetColour(Color colour)
 	{
 		uiItemName.color = colour;
 		uiItemLevel.color = colour;

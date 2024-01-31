@@ -12,7 +12,7 @@ using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour, IDropHandler
 {
-	public static event Action<InventoryItem, InventorySlot> onItemEquip;
+	public static event Action<InventoryItem, InventorySlot> OnItemEquip;
 
 	public SlotType slotType;
 	public enum SlotType
@@ -70,7 +70,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	public void CheckIfItemInEquipmentSlot()
 	{
 		if (slotType == SlotType.generic) return;
-		onItemEquip?.Invoke(itemInSlot, this);
+		OnItemEquip?.Invoke(itemInSlot, this);
 	}
 	public void UpdateSlotSize()
 	{

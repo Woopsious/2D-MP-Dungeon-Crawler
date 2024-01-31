@@ -42,13 +42,13 @@ public class EntityStats : MonoBehaviour
 	public int fireDamageModifier;
 	public int iceDamageModifier;
 
-	public event Action<int, bool> onRecieveHealingEvent;
-	public event Action<int, IDamagable.DamageType> onRecieveDamageEvent;
+	public event Action<int, bool> OnRecieveHealingEvent;
+	public event Action<int, IDamagable.DamageType> OnRecieveDamageEvent;
 
-	public event Action<int, int> onHealthChangeEvent;
-	public event Action<int, int> onManaChangeEvent;
+	public event Action<int, int> OnHealthChangeEvent;
+	public event Action<int, int> OnManaChangeEvent;
 
-	public event Action<GameObject> onDeathEvent;
+	public event Action<GameObject> OnDeathEvent;
 
 	private void Start()
 	{
@@ -56,25 +56,25 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		onRecieveHealingEvent += RecieveHealing;
+		OnRecieveHealingEvent += RecieveHealing;
 		GetComponent<Damageable>().OnHit += OnHit;
-		onRecieveDamageEvent += RecieveDamage;
+		OnRecieveDamageEvent += RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
-		onDeathEvent += playerExperienceHandler.AddExperience;
-		playerExperienceHandler.onPlayerLevelUpEvent += OnPlayerLevelUp;
+		OnDeathEvent += playerExperienceHandler.AddExperience;
+		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
 	{
-		onRecieveHealingEvent -= RecieveHealing;
+		OnRecieveHealingEvent -= RecieveHealing;
 		GetComponent<Damageable>().OnHit -= OnHit;
-		onRecieveDamageEvent -= RecieveDamage;
+		OnRecieveDamageEvent -= RecieveDamage;
 
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
-		onDeathEvent -= playerExperienceHandler.AddExperience;
-		playerExperienceHandler.onPlayerLevelUpEvent -= OnPlayerLevelUp;
+		OnDeathEvent -= playerExperienceHandler.AddExperience;
+		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
 	private void Update()
@@ -89,9 +89,6 @@ public class EntityStats : MonoBehaviour
 
 		CalculateStats();
 
-		currentHealth = entityMaxHealth + entityEquipment.equipmentHealth; //current values only set on start
-		currentMana = entityMaxMana + entityEquipment.equipmentMana;
-
 		int numOfTries = 0;
 		entityEquipment.StartCoroutine(entityEquipment.SpawnEntityEquipment(numOfTries));
 	}
@@ -103,7 +100,7 @@ public class EntityStats : MonoBehaviour
 	//health functions
 	public void OnHeal(int healthValue, bool isPercentageValue)
 	{
-		onRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
+		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
 	}
 	private void RecieveHealing(int healthValue, bool isPercentageValue)
 	{
@@ -111,7 +108,7 @@ public class EntityStats : MonoBehaviour
 			healthValue = maxHealth / 100 * healthValue;
 
 		currentHealth += healthValue;
-		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
+		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 
 		if (currentHealth > maxHealth)
 			currentHealth = maxHealth;
@@ -120,11 +117,11 @@ public class EntityStats : MonoBehaviour
 	{
         if (isDestroyedInOneHit)
         {
-			onDeathEvent.Invoke(gameObject);
+			OnDeathEvent.Invoke(gameObject);
 			return;
         }
 
-		onRecieveDamageEvent?.Invoke(damage, damageType);
+		OnRecieveDamageEvent?.Invoke(damage, damageType);
 	}
 	private void RecieveDamage(int damage, IDamagable.DamageType damageType)
 	{
@@ -156,7 +153,7 @@ public class EntityStats : MonoBehaviour
 		currentHealth -= damage;
 		RedFlashOnRecieveDamage();
 
-		onHealthChangeEvent?.Invoke(maxHealth, currentHealth);
+		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 
 		///
 		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
@@ -167,7 +164,7 @@ public class EntityStats : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
-			onDeathEvent?.Invoke(gameObject);
+			OnDeathEvent?.Invoke(gameObject);
 			Destroy(gameObject);
 		}
 		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm
@@ -203,7 +200,7 @@ public class EntityStats : MonoBehaviour
 			manaValue = maxMana / 100 * manaValue;
 
 		currentMana += manaValue;
-		onManaChangeEvent?.Invoke(maxMana, currentMana);
+		OnManaChangeEvent?.Invoke(maxMana, currentMana);
 
 		if (currentMana > maxMana)
 			currentMana = maxMana;
@@ -214,50 +211,36 @@ public class EntityStats : MonoBehaviour
 			manaValue = maxMana / 100 * manaValue;
 
 		currentMana -= manaValue;
-		onManaChangeEvent?.Invoke(maxMana, currentMana);
+		OnManaChangeEvent?.Invoke(maxMana, currentMana);
 	}
 
 	private void OnPlayerLevelUp(int newPlayerLevel)
 	{
 		if (currentHealth <= 0) return;
 
-		int oldMaxHealth = maxHealth;
-		int oldCurrentHealth = currentHealth;
-        entityLevel = newPlayerLevel;
-		float modifier = (entityLevel - 1f) / 20;  //get level modifier / 20
-		levelModifier = modifier += 1;
+		entityLevel = newPlayerLevel;
+		bool wasDamaged = true;
 
-		int newMaxHealth = (int)(entityBaseStats.maxHealth * levelModifier) - maxHealth;
-		int newMaxMana = (int)(entityBaseStats.maxMana * levelModifier) - maxMana;
-		int newPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier) - physicalResistance;
-		int newPoisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier) - poisonResistance;
-		int newFireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier) - fireResistance;
-		int newIceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier) - iceResistance;
+		if (maxHealth == currentHealth)
+			wasDamaged = false;
 
-		if (GetComponent<PlayerController>()  != null)
-		{
-			Debug.LogError("new max health: " + newMaxHealth);
-			Debug.LogError("new max physical: " + newPhysicalResistance);
-		}
+		int oldMaxHP = entityMaxHealth;
+		int oldCurrentHP = currentHealth;
+		int oldcurrentMana = currentMana;
+		CalculateStats();
 
-		maxHealth += newMaxHealth;
-		maxMana += newMaxMana;
-		physicalResistance += newPhysicalResistance;
-		poisonResistance += newPoisonResistance;
-		fireResistance += newFireResistance;
-		iceResistance += newIceResistance;
-
-
-		if (GetComponent<PlayerController>() == null && oldMaxHealth == oldCurrentHealth) //if not player or taken damage full heal entity
+		if (GetComponent<PlayerController>() == null && !wasDamaged) //if not player or taken damage full heal entity
 			currentHealth = maxHealth;
 		else
-			currentHealth = oldCurrentHealth;
-
-		/// <summary>
-		/// when class trees are made and have additional bonuses ill reapply them here
-		/// </summary>
+			currentHealth = oldCurrentHP + (entityMaxHealth - oldMaxHP); //else return health + extra health from new level/modifiers
 	}
 
+	/// <summary>
+	/// recalculate all stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for
+	/// example changes a piece of armor etc so stats are consistant
+	/// hard numbers added so far: equipment values, 
+	/// percentage numbers added so far: level modifier, 
+	/// </summary>
 	public void CalculateStats()
 	{
 		if (entityLevel == 1)  //get level modifier

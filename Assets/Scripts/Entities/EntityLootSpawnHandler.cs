@@ -10,11 +10,11 @@ public class EntityLootSpawnHandler : MonoBehaviour
 	//invoked from event
 	private void OnEnable()
 	{
-		GetComponent<EntityStats>().onDeathEvent += OnDeathEvent;
+		GetComponent<EntityStats>().OnDeathEvent += OnDeathEvent;
 	}
 	private void OnDisable()
 	{
-		GetComponent<EntityStats>().onDeathEvent -= OnDeathEvent;
+		GetComponent<EntityStats>().OnDeathEvent -= OnDeathEvent;
 	}
 	private void OnDeathEvent(GameObject obj)
 	{
