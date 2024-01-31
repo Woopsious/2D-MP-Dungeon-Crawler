@@ -21,7 +21,7 @@ public class Armors : Items
 	public int bonusFireResistance;
 	public int bonusIceResistance;
 
-	public void Start()
+	private void Start()
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
@@ -42,7 +42,7 @@ public class Armors : Items
 		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * levelModifier);
 
-		if (equipmentHandler == null) return;
-		equipmentHandler.OnArmorEquip(this, transform.parent.gameObject);
+		//if (equipmentHandler == null) return;
+		//equipmentHandler.OnArmorEquip(this, transform.parent.gameObject);
 	}
 }

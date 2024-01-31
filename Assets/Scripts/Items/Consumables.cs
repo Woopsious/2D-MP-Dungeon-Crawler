@@ -16,7 +16,7 @@ public class Consumables : Items
 	[Header("Percentage Value")]
 	public int consumablePercentage;
 
-	public void Start()
+	private void Start()
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();

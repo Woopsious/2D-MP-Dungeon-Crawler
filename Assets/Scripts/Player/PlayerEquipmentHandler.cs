@@ -41,7 +41,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		isPlayerEquipment = true;
 	}
 
-	public void EquipItem(InventoryItem item, InventorySlot slot)
+	private void EquipItem(InventoryItem item, InventorySlot slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
@@ -85,7 +85,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	}
 
 	//physically spawned in to player
-	public void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	private void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnWeaponUnequip(equippedWeaponRef);
@@ -98,8 +98,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
 	}
-	public void EquipArmor(Armors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
+	private void EquipArmor(Armors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnArmorUnequip(equippedArmorRef);
@@ -111,8 +112,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedArmorRef.Initilize(armorToEquip.rarity, armorToEquip.itemLevel, this);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
-	public void EquipAccessory(Accessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
+	private void EquipAccessory(Accessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		OnAccessoryUnequip(equippedAccessoryRef);
@@ -124,10 +126,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef.Initilize(accessoryToEquip.rarity, accessoryToEquip.itemLevel, this);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);
 	}
 
 	//not physically spawned in
-	public void EquipConsumables(Consumables consumableToEquip, InventorySlot slotEquippedTo)
+	private void EquipConsumables(Consumables consumableToEquip, InventorySlot slotEquippedTo)
 	{
 		if (slotEquippedTo.slotIndex == 0)
 		{
@@ -139,7 +142,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		}
 	}
 
-	public void HandleEmptySlots(InventorySlot slot)
+	private void HandleEmptySlots(InventorySlot slot)
 	{
 		if (slot.slotType == InventorySlot.SlotType.weaponMain)
 		{
@@ -188,5 +191,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (slot.slotIndex == 1)
 				equippedConsumableTwo = null;
 		}
+		entityStats.CalculateStats();
 	}
 }

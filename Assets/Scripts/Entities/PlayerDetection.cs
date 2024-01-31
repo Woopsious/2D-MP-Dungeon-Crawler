@@ -5,15 +5,10 @@ using UnityEngine;
 public class PlayerDetection : MonoBehaviour
 {
 	//set in entitybehaviour script on start
-	public EntityBehaviour entityBehaviourRef;
-
-	public void SetBehaviourRef(EntityBehaviour behaviour)
-	{
-		entityBehaviourRef = behaviour;
-	}
+	[HideInInspector] public EntityBehaviour entityBehaviourRef;
 
 	//in Mp will need to be modified to handle multiple players
-	public void OnTriggerEnter2D(Collider2D other)
+	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.GetComponent<PlayerController>() == null) return;
 

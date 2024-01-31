@@ -35,10 +35,10 @@ public class Weapons : Items
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
 
-		if (equipmentHandler == null) return;
-		equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
+		//if (equipmentHandler == null) return;
+		//equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
 	}
-	public void WeaponInitilization()
+	private void WeaponInitilization()
 	{
 		if (GetComponent<InventoryItem>() != null) return; //return as this is an item in inventory
 
@@ -57,7 +57,7 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = true;
 	}
 
-	public void OnTriggerEnter2D(Collider2D other)
+	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.GetComponent<Damageable>() == null || isEquippedByPlayer == false && isEquippedByOther == false) return;
 
@@ -81,7 +81,7 @@ public class Weapons : Items
 		OnWeaponAttack();
 		StartCoroutine(weaponCooldown());
 	}
-	IEnumerator weaponCooldown()
+	private IEnumerator weaponCooldown()
 	{
 		yield return new WaitForSeconds(0.1f);
 		OnWeaponCooldown();
@@ -89,7 +89,7 @@ public class Weapons : Items
 		canAttackAgain = true;
 	}
 
-	public void OnWeaponAttack()
+	private void OnWeaponAttack()
 	{
 		animator.SetBool("isMeleeAttack", true);
 		boxCollider.enabled = true;
@@ -97,7 +97,7 @@ public class Weapons : Items
 		attackWeaponSprite.enabled = true;
 		canAttackAgain = false;
 	}
-	public void OnWeaponCooldown()
+	private void OnWeaponCooldown()
 	{
 		parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0); //reset attack direction
 		animator.SetBool("isMeleeAttack", false);
@@ -105,7 +105,7 @@ public class Weapons : Items
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;
 	}
-	public void MeleeDirectionToAttack(Vector3 positionOfThingToAttack)
+	private void MeleeDirectionToAttack(Vector3 positionOfThingToAttack)
 	{
 		/// <summary>
 		/// change rotation of weaponSlot (parent of this obj) based on direction of mouse from player depending on what vector is greater

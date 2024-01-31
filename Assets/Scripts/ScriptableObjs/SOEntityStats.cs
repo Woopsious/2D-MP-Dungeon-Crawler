@@ -20,6 +20,8 @@ public class SOEntityStats : ScriptableObject
 
 	[Header("Mana")]
 	public int maxMana;
+	public int manaRegenPercentage;
+	public float manaRegenCooldown;
 
 	[Header("Possible Weapons")]
 	public List<SOWeapons> possibleWeaponsList = new List<SOWeapons>();

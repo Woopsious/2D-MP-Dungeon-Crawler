@@ -79,7 +79,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	}
 
 	//for entitys other then player to randomly equip items when they spawn in
-	public void EquipRandomItems()
+	private void EquipRandomItems()
 	{
 		EquipRandomWeapon(entityStats.entityBaseStats.possibleWeaponsList, equippedWeapon, weaponSlotContainer);			//main weapon
 		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);			//offhand weapon
@@ -90,7 +90,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		//Accessory functions here if/when i decide to add it
 	}
-	public void EquipRandomWeapon(List<SOWeapons> listOfPossibleWeapons, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	private void EquipRandomWeapon(List<SOWeapons> listOfPossibleWeapons, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		int index;
@@ -104,8 +104,9 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedWeaponRef.isEquippedByOther = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
 	}
-	public void EquipRandomArmor(List<SOArmors> listOfPossibleArmors, Armors equippedArmorRef, GameObject slotToSpawnIn)
+	private void EquipRandomArmor(List<SOArmors> listOfPossibleArmors, Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		int index;
@@ -118,10 +119,11 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedArmorRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel, this);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
 
 	//weapons
-	public void OnWeaponUnequip(Weapons weapon)
+	protected void OnWeaponUnequip(Weapons weapon)
 	{
 		if (weapon == null) return;
 
@@ -136,7 +138,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana -= weapon.bonusMana;
 	}
-	public void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
+	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
 	{
 		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
 		{
@@ -150,23 +152,24 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equipmentMana += weapon.bonusMana;
 
 		AssignItemRefOnEquip(weapon, slotItemIsIn);
+		entityStats.CalculateStats();
 	}
 
 	//armors
-	public void OnArmorUnequip(Armors armor)
+	protected void OnArmorUnequip(Armors armor)
 	{
 		if (armor == null) return;
 
-		equipmentHealth -= armor.bonusPhysicalResistance;
+		equipmentHealth -= armor.bonusHealth;
 		equipmentMana -= armor.bonusMana;
 		equipmentPhysicalResistance -= armor.bonusPhysicalResistance;
 		equipmentPoisonResistance -= armor.bonusPoisonResistance;
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
 	}
-	public void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
+	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
 	{
-		equipmentHealth += armor.bonusPhysicalResistance;
+		equipmentHealth += armor.bonusHealth;
 		equipmentMana += armor.bonusMana;
 		equipmentPhysicalResistance += armor.bonusPhysicalResistance;
 		equipmentPoisonResistance += armor.bonusPoisonResistance;
@@ -174,10 +177,11 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentIceResistance += armor.bonusIceResistance;
 
 		AssignItemRefOnEquip(armor, slotItemIsIn);
+		entityStats.CalculateStats();
 	}
 
 	//accessories
-	public void OnAccessoryUnequip(Accessories accessory)
+	protected void OnAccessoryUnequip(Accessories accessory)
 	{
 		if (accessory == null) return;
 
@@ -197,7 +201,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 	}
-	public void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)
+	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)
 	{
 		equipmentHealth += accessory.bonusHealth;
 		equipmentMana += accessory.bonusMana;
@@ -216,14 +220,10 @@ public class EntityEquipmentHandler : MonoBehaviour
 			iceDamagePercentage += accessory.bonusPercentageValue;
 
 		AssignItemRefOnEquip(accessory, slotItemIsIn);
-	}
-	public void ReapplyEquipmentStats(Items equippedItem)
-	{
-		if (equippedItem == null) return;
-		equippedItem.Initilize(equippedItem.rarity, equippedItem.itemLevel, this);
+		entityStats.CalculateStats();
 	}
 
-	public GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
+	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
 	{
 		GameObject go;
 		if (slotToSpawnIn.transform.childCount == 0)
@@ -233,7 +233,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		}
 		else return slotToSpawnIn.transform.GetChild(0).gameObject;
 	}
-	public Items AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
+	private Items AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
 	{
 		if (SlotItemIsIn == weaponSlotContainer)
 			equippedWeapon = (Weapons)itemToAssign;

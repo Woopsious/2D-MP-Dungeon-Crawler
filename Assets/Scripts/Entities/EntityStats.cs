@@ -14,26 +14,33 @@ public class EntityStats : MonoBehaviour
 	public float levelModifier;
 
 	[Header("Health")]
+	private int entityMaxHealth;
 	public int maxHealth;
 	public int currentHealth;
 
 	[Header("Mana")]
+	private int entityMaxMana;
 	public int maxMana;
 	public int currentMana;
-	public float manaRegenCooldown;
+	private int manaRegenPercentage;
+	private float manaRegenCooldown;
 	private float manaRegenTimer;
 
 	[Header("Resistances")]
+	private int entityPhysicalResistance;
+	private int entityPoisonlResistance;
+	private int entityFireResistance;
+	private int entityIceResistance;
 	public int physicalResistance;
 	public int poisonResistance;
 	public int fireResistance;
 	public int iceResistance;
 
 	[Header("Percentage Damage Bonuses")]
-	public int bonusPhysicalDamagePercentage;
-	public int bonusPoisonDamagePercentage;
-	public int bonusFireDamagePercentage;
-	public int bonusIceDamagePercentage;
+	public int physicalDamageModifier;
+	public int poisonDamageModifier;
+	public int fireDamageModifier;
+	public int iceDamageModifier;
 
 	public event Action<int, bool> onRecieveHealingEvent;
 	public event Action<int, IDamagable.DamageType> onRecieveDamageEvent;
@@ -80,20 +87,10 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
 
-		if (entityLevel == 1)  //get level modifier
-			levelModifier = 1;
-		else
-			levelModifier = 1 + (entityLevel / 10f);
+		CalculateStats();
 
-		maxHealth = (int)(entityBaseStats.maxHealth * levelModifier);
-		currentHealth = (int)(entityBaseStats.maxHealth * levelModifier);
-		maxMana = (int)(entityBaseStats.maxMana * levelModifier);
-		currentMana = (int)(entityBaseStats.maxMana * levelModifier);
-
-		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier);
-		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier);
-		fireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier);
-		iceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier);
+		currentHealth = entityMaxHealth + entityEquipment.equipmentHealth; //current values only set on start
+		currentMana = entityMaxMana + entityEquipment.equipmentMana;
 
 		int numOfTries = 0;
 		entityEquipment.StartCoroutine(entityEquipment.SpawnEntityEquipment(numOfTries));
@@ -197,7 +194,7 @@ public class EntityStats : MonoBehaviour
 		if (manaRegenTimer <= 0)
 		{
 			manaRegenTimer = manaRegenCooldown;
-			IncreaseMana(2, true);
+			IncreaseMana(manaRegenPercentage, true);
 		}
 	}
 	public void IncreaseMana(int manaValue, bool isPercentageValue)
@@ -259,5 +256,32 @@ public class EntityStats : MonoBehaviour
 		/// <summary>
 		/// when class trees are made and have additional bonuses ill reapply them here
 		/// </summary>
+	}
+
+	public void CalculateStats()
+	{
+		if (entityLevel == 1)  //get level modifier
+			levelModifier = 1;
+		else
+			levelModifier = 1 + (entityLevel / 10f);
+
+		entityMaxHealth = (int)(entityBaseStats.maxHealth * levelModifier);
+		entityMaxMana = (int)(entityBaseStats.maxMana * levelModifier);
+		entityPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier);
+		entityPoisonlResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier);
+		entityFireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier);
+		entityIceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier);
+
+		maxHealth = entityMaxHealth + entityEquipment.equipmentHealth;
+		currentHealth = entityMaxHealth + entityEquipment.equipmentHealth;
+		maxMana = entityMaxMana + entityEquipment.equipmentMana;
+		currentMana = entityMaxMana + entityEquipment.equipmentMana;
+		manaRegenPercentage = entityBaseStats.manaRegenPercentage;
+		manaRegenCooldown = entityBaseStats.manaRegenCooldown;
+
+		physicalResistance = entityPhysicalResistance + entityEquipment.equipmentPhysicalResistance;
+		poisonResistance = entityPoisonlResistance + entityEquipment.equipmentPoisonResistance;
+		fireResistance = entityFireResistance + entityEquipment.equipmentFireResistance;
+		iceResistance = entityIceResistance + entityEquipment.equipmentIceResistance;
 	}
 }

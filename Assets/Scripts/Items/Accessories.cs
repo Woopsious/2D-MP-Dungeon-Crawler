@@ -36,7 +36,7 @@ public class Accessories : Items
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
-	public void Start()
+	private void Start()
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
@@ -67,8 +67,8 @@ public class Accessories : Items
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
 
-		if (equipmentHandler == null) return;
-		equipmentHandler.OnAccessoryEquip(this, transform.parent.gameObject);
+		//if (equipmentHandler == null) return;
+		//equipmentHandler.OnAccessoryEquip(this, transform.parent.gameObject);
 	}
 
 	public void SetRandomDamageTypeOnDrop()

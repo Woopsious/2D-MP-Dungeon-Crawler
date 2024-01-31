@@ -45,7 +45,7 @@ public class Items : MonoBehaviour
 
 		GetComponent<SpriteRenderer>().sprite = itemImage;
 	}
-	public void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
+	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
 	{
 		if (level == 1)  //get level modifier
 			levelModifier = 1;
@@ -57,21 +57,21 @@ public class Items : MonoBehaviour
 		if (rarity == IGetStatModifier.Rarity.isRare) { levelModifier += 0.2f; }
 		else { levelModifier += 0; }
 	}
-	public string GetItemName()
+	private string GetItemName()
 	{
 		if (weaponBaseRef != null) return weaponBaseRef.itemName;
 		else if (armorBaseRef != null) return armorBaseRef.itemName;
 		else if (accessoryBaseRef != null) return accessoryBaseRef.itemName;
 		else return consumableBaseRef.itemName;
 	}
-	public Sprite GetItemImage()
+	private Sprite GetItemImage()
 	{
 		if (weaponBaseRef != null) return weaponBaseRef.itemImage;
 		else if (armorBaseRef != null) return armorBaseRef.itemImage;
 		else if (accessoryBaseRef != null) return accessoryBaseRef.itemImage;
 		else return consumableBaseRef.itemImage;
 	}
-	public int GetItemPrice()
+	private int GetItemPrice()
 	{
 		if (weaponBaseRef != null) return (int)(weaponBaseRef.ItemPrice * levelModifier);
 		else if (armorBaseRef != null) return (int)(armorBaseRef.ItemPrice * levelModifier);
@@ -96,7 +96,7 @@ public class Items : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	public void GenerateStatsOnStart()
+	protected void GenerateStatsOnStart()
 	{
 		Initilize(rarity, itemLevel, null);
 		gameObject.AddComponent<Interactables>();
