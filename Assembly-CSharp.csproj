@@ -58,15 +58,16 @@
     <Analyzer Include="E:\Unity\2022.3.9f1\Editor\Data\Tools\Unity.SourceGenerators\Unity.Properties.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Inventories\InventoryItem.cs" />
     <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyIdleState.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
+    <Compile Include="Assets\Scripts\Inventories\InventorySlot.cs" />
+    <Compile Include="Assets\Scripts\Inventories\PlayerInventoryManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
-    <Compile Include="Assets\Scripts\PlayerInventory\InventoryUi.cs" />
-    <Compile Include="Assets\Scripts\PlayerInventory\InventoryItem.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerDetection.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
@@ -77,6 +78,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
@@ -89,13 +91,12 @@
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
-    <Compile Include="Assets\Scripts\PlayerInventory\InventorySlot.cs" />
-    <Compile Include="Assets\Scripts\PlayerInventory\PlayerInventoryManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>
   <ItemGroup>

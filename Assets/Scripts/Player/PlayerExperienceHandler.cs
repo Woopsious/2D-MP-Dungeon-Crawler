@@ -22,6 +22,16 @@ public class PlayerExperienceHandler : MonoBehaviour
 		playerStats = GetComponent<EntityStats>();
 	}
 
+	public void OnEnable()
+	{
+		OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange;
+	}
+
+	public void OnDisable()
+	{
+		OnAddExperienceEvent -= PlayerHotbarUi.Instance.OnExperienceChange;
+	}
+
 	/// <summary>
 	/// on enemy death event, add experience to this player if they are in range of enemy aggro range
 	/// for mp loop through every player in range (PlayerController playerInRange will be a list when implamenting MP)
@@ -40,7 +50,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
 		Debug.Log("exp added: " + Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath + "\nnew exp amount: " + currentExp);
 
-		OnAddExperienceEvent?.Invoke(currentExp, maxExp);
+		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
 
 		if (!CheckIfPLayerCanLevelUp()) return;
 
@@ -52,7 +62,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		int r = currentExp % maxExp;
 		currentExp = r;
 
-		OnAddExperienceEvent?.Invoke(currentExp, maxExp);
+		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
 		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
 	}
 

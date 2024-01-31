@@ -23,11 +23,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
-		playerInputs = new PlayerInputActions();
-		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		animator = GetComponent<Animator>();
-		playerCamera.transform.parent = null;
+		Initilize();
 	}
 
 	private void OnEnable()
@@ -35,11 +31,17 @@ public class PlayerController : MonoBehaviour
 		if (playerInputs == null)
 			playerInputs = new PlayerInputActions();
 		playerInputs.Enable();
+
+		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange;
+		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 	}
 
 	private void OnDisable()
 	{
 		playerInputs.Disable();
+
+		playerStats.OnHealthChangeEvent -= PlayerHotbarUi.Instance.OnHealthChange;
+		playerStats.OnManaChangeEvent -= PlayerHotbarUi.Instance.OnManaChange;
 	}
 
 	private void Update()
@@ -54,8 +56,18 @@ public class PlayerController : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-
 	}
+
+	public void Initilize()
+	{
+		playerInputs = new PlayerInputActions();
+		playerStats = GetComponent<EntityStats>();
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
+		playerCamera.transform.parent = null;
+	}
+
 	private void UpdateSpriteDirection()
 	{
 		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
@@ -78,7 +90,7 @@ public class PlayerController : MonoBehaviour
 	//player actions
 	private void OnMainAttack()
 	{
-		if (playerEquipmentHandler.equippedWeapon == null || InventoryUi.Instance.isActiveAndEnabled) return;
+		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.InventoryPanelUi.activeSelf) return;
 		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
 	private void OnCameraZoom()
@@ -134,6 +146,6 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInventory()
 	{
-		InventoryUi.Instance.HideShowInventory();
+		PlayerInventoryUi.Instance.HideShowInventory();
 	}
 }

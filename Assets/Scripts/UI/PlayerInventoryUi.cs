@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public class InventoryUi : MonoBehaviour
+public class PlayerInventoryUi : MonoBehaviour
 {
-	public static InventoryUi Instance;
+	public static PlayerInventoryUi Instance;
 
 	public GameObject ItemUiPrefab;
 	[Header("Inventory")]
@@ -26,32 +26,21 @@ public class InventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
 
-	[Header("Hotbar")]
-	public GameObject HotbarPanelUi;
-	public GameObject consumableSlotOne;
-	public GameObject consumableSlotTwo;
-
-	public GameObject abilitySlotOne;
-	public GameObject abilitySlotTwo;
-	public GameObject abilitySlotThree;
-	public GameObject abilitySlotFour;
-	public GameObject abilitySlotFive;
-
-	public void Awake()
+	private void Awake()
 	{
 		Instance = this;
 	}
 
-	public void Start()
+	private void Start()
 	{
-		gameObject.SetActive(false);
+		InventoryPanelUi.gameObject.SetActive(false);
 	}
 
 	public void HideShowInventory()
 	{
-		if (gameObject.activeInHierarchy)
-			gameObject.SetActive(false);
+		if (InventoryPanelUi.gameObject.activeInHierarchy)
+			InventoryPanelUi.gameObject.SetActive(false);
 		else
-			gameObject.SetActive(true);
+			InventoryPanelUi.gameObject.SetActive(true);
 	}
 }

@@ -82,9 +82,9 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 
 	//on item pickup
-	public InventoryItem ConvertPickupsToInventoryItem(Items item)
+	private InventoryItem ConvertPickupsToInventoryItem(Items item)
 	{
-		GameObject go = Instantiate(InventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem newItem = go.GetComponent<InventoryItem>();
 
 		if (item.weaponBaseRef != null)
@@ -111,11 +111,11 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 
 	//item stacking
-	public void TryStackItem(InventoryItem newItem)
+	private void TryStackItem(InventoryItem newItem)
 	{
-		for (int i = 0; i < InventoryUi.Instance.InventorySlots.Count; i++)
+		for (int i = 0; i < PlayerInventoryUi.Instance.InventorySlots.Count; i++)
 		{
-			InventorySlot inventroySlot = InventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
+			InventorySlot inventroySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
 
 			if (!inventroySlot.IsSlotEmpty())
 			{
@@ -147,11 +147,11 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 
 	//adding new item
-	public void SpawnNewItemInInventory(InventoryItem item)
+	private void SpawnNewItemInInventory(InventoryItem item)
 	{
-		for (int i = 0; i < InventoryUi.Instance.InventorySlots.Count; i++)
+		for (int i = 0; i < PlayerInventoryUi.Instance.InventorySlots.Count; i++)
 		{
-			InventorySlot inventorySlot = InventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
+			InventorySlot inventorySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
 
 			if (inventorySlot.IsSlotEmpty())
 			{
@@ -167,7 +167,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 
 	//set specific item data on pickup
-	public void SetWeaponData(InventoryItem inventoryItem, Items item)
+	private void SetWeaponData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
 		inventoryItem.itemImage = item.itemImage;
@@ -190,7 +190,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
 		inventoryItem.currentStackCount = item.currentStackCount;
 	}
-	public void SetArmorData(InventoryItem inventoryItem, Items item)
+	private void SetArmorData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
 		inventoryItem.itemImage = item.itemImage;
@@ -216,7 +216,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
 		inventoryItem.currentStackCount = item.currentStackCount;
 	}
-	public void SetAccessoryData(InventoryItem inventoryItem, Items item)
+	private void SetAccessoryData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
 		inventoryItem.itemImage = item.itemImage;
@@ -254,7 +254,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
 		inventoryItem.currentStackCount = item.currentStackCount;
 	}
-	public void SetConsumableData(InventoryItem inventoryItem, Items item)
+	private void SetConsumableData(InventoryItem inventoryItem, Items item)
 	{
 		inventoryItem.itemName = item.itemName;
 		inventoryItem.itemImage = item.itemImage;
@@ -276,7 +276,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		int numOfFilledSlots = 0;
 
-		foreach (GameObject obj in InventoryUi.Instance.InventorySlots)
+		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
 		{
 			InventorySlot inventorySlot = obj.GetComponent<InventorySlot>();
 
@@ -284,7 +284,7 @@ public class PlayerInventoryManager : MonoBehaviour
 				numOfFilledSlots++;
 		}
 
-		if (numOfFilledSlots == InventoryUi.Instance.InventorySlots.Count)
+		if (numOfFilledSlots == PlayerInventoryUi.Instance.InventorySlots.Count)
 			return true;
 		else return false;
 	}

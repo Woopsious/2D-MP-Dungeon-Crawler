@@ -233,6 +233,9 @@ public class EntityStats : MonoBehaviour
 			currentHealth = maxHealth;
 		else
 			currentHealth = oldCurrentHP + (entityMaxHealth - oldMaxHP); //else return health + extra health from new level/modifiers
+
+		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana, currentMana);
 	}
 
 	/// <summary>
@@ -266,5 +269,8 @@ public class EntityStats : MonoBehaviour
 		poisonResistance = entityPoisonlResistance + entityEquipment.equipmentPoisonResistance;
 		fireResistance = entityFireResistance + entityEquipment.equipmentFireResistance;
 		iceResistance = entityIceResistance + entityEquipment.equipmentIceResistance;
+
+		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana, currentMana);
 	}
 }
