@@ -51,7 +51,7 @@ public class InventoryData
 {
 	public bool hasRecievedStartingItems;
 
-	public List<ItemData> InventoryItems = new List<ItemData>();
+	public List<InventoryItemData> InventoryItems = new List<InventoryItemData>();
 }
 
 [System.Serializable]
@@ -60,7 +60,7 @@ public class EquipmentData
 	public List<InventoryItem> EquipmentItems = new List<InventoryItem>();
 }
 
-public class ItemData
+public class InventoryItemData
 {
 	public List<InventoryItem> InventoryItems = new List<InventoryItem>();
 

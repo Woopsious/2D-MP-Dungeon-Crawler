@@ -6,8 +6,8 @@ public class SOItems : ScriptableObject
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemImage;
-	public int ItemPrice;
-	public int ItemId;
+	public int itemPrice;
+	public int itemId;
 
 	[Header("Item Type")]
 	public ItemType itemType;

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class PlayerHotbarUi : MonoBehaviour
 {
+	[SerializeField]
 	public static PlayerHotbarUi Instance;
 
 	[Header("Hotbar")]
@@ -28,7 +29,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	[Header("ManaBar")]
 	public Image manaBarFiller;
 
-	private void Awake()
+	public void Awake()
 	{
 		Instance = this;
 	}

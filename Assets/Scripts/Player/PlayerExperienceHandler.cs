@@ -16,18 +16,20 @@ public class PlayerExperienceHandler : MonoBehaviour
 	public event Action<int, int> OnAddExperienceEvent;
 	public event Action<int> OnPlayerLevelUpEvent;
 
-	public void Start()
+	private void Start()
 	{
 		playerController = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
+
+		OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange; //would be in OnEnable but i get null ref
 	}
 
-	public void OnEnable()
+	private void OnEnable()
 	{
-		OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange;
+		//OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange;
 	}
 
-	public void OnDisable()
+	private void OnDisable()
 	{
 		OnAddExperienceEvent -= PlayerHotbarUi.Instance.OnExperienceChange;
 	}
@@ -65,7 +67,6 @@ public class PlayerExperienceHandler : MonoBehaviour
 		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
 		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
 	}
-
 	private bool CheckIfPLayerCanLevelUp()
 	{
 		if (playerStats.entityLevel >= maxLevel ) return false;

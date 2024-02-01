@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Warding Ring
   itemImage: {fileID: 324201234, guid: 7d542bad9d144414691ef0d5ffb019cf, type: 3}
-  ItemPrice: 175
-  ItemId: 0
+  itemPrice: 150
+  itemId: 0
   itemType: 3
   isEquipable: 1
   isStackable: 0

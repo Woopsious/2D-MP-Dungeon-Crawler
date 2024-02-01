@@ -10,10 +10,18 @@ public class Items : MonoBehaviour
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemImage;
-	public int ItemPrice;
-	public int ItemId;
+	public int itemPrice;
+	public int itemId;
+
+	public ItemType itemType;
+	public enum ItemType
+	{
+		isConsumable, isWeapon, isArmor, isAccessory, isAbility
+	}
 
 	public int itemLevel;
+	public float levelModifier;
+
 	public Rarity rarity;
 	public enum Rarity
 	{
@@ -29,7 +37,6 @@ public class Items : MonoBehaviour
 	[Header("Inventroy Dynamic Info")]
 	public bool isStackable;
 	public int currentStackCount;
-	public float levelModifier;
 	public int inventroySlot;
 
 	public virtual void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
@@ -41,7 +48,8 @@ public class Items : MonoBehaviour
 		itemName = GetItemName();
 		name = itemName;
 		itemImage = GetItemImage();
-		ItemPrice = GetItemPrice();
+		itemPrice = GetItemPrice();
+		itemType = GetItemType();
 
 		if (GetComponent<InventoryItem>() != null) return; //is inventoryItem so doesnt need this ref
 		GetComponent<SpriteRenderer>().sprite = itemImage;
@@ -74,10 +82,17 @@ public class Items : MonoBehaviour
 	}
 	private int GetItemPrice()
 	{
-		if (weaponBaseRef != null) return (int)(weaponBaseRef.ItemPrice * levelModifier);
-		else if (armorBaseRef != null) return (int)(armorBaseRef.ItemPrice * levelModifier);
-		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.ItemPrice * levelModifier);
-		else return (int)(consumableBaseRef.ItemPrice * levelModifier);
+		if (weaponBaseRef != null) return (int)(weaponBaseRef.itemPrice * levelModifier);
+		else if (armorBaseRef != null) return (int)(armorBaseRef.itemPrice * levelModifier);
+		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.itemPrice * levelModifier);
+		else return (int)(consumableBaseRef.itemPrice);
+	}
+	private ItemType GetItemType()
+	{
+		if (weaponBaseRef != null) return (ItemType)weaponBaseRef.itemType;
+		else if (armorBaseRef != null) return (ItemType)armorBaseRef.itemType;
+		else if (accessoryBaseRef != null) return (ItemType)accessoryBaseRef.itemType;
+		else return (ItemType)consumableBaseRef.itemType;
 	}
 
 	public virtual void OnMouseOverItem()

@@ -51,7 +51,7 @@ public class EntityLootSpawnHandler : MonoBehaviour
 		item.gameObject.name = lootPool.lootPoolList[index].name;
 		item.itemName = lootPool.lootPoolList[index].name;
 		item.itemImage = lootPool.lootPoolList[index].itemImage;
-		item.ItemPrice = lootPool.lootPoolList[index].ItemPrice;
+		item.itemPrice = lootPool.lootPoolList[index].itemPrice;
 	}
 	private void SetUpWeaponItem(GameObject go, int index)
 	{

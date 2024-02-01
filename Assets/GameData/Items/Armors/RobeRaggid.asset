@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Ragged Robe
   itemImage: {fileID: -233030381, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
-  ItemPrice: 200
-  ItemId: 0
+  itemPrice: 200
+  itemId: 0
   itemType: 2
   isEquipable: 1
   isStackable: 0

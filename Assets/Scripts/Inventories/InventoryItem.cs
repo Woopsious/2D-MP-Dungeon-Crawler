@@ -18,6 +18,12 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public TMP_Text uiItemStackCount;
 	private float timeToWait = 0.5f;
 
+	[Header("Item Base Ref")]
+	public SOWeapons weaponBaseRef;
+	public SOArmors armorBaseRef;
+	public SOAccessories accessoryBaseRef;
+	public SOConsumables consumableBaseRef;
+
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemImage;
@@ -34,11 +40,12 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		isCommon, isRare, isEpic, isLegendary
 	}
 
-	[Header("Item Base Ref")]
-	public SOWeapons weaponBaseRef;
-	public SOArmors armorBaseRef;
-	public SOAccessories accessoryBaseRef;
-	public SOConsumables consumableBaseRef;
+	[Header("Class Restriction")]
+	public ClassRestriction classRestriction;
+	public enum ClassRestriction
+	{
+		light, medium, heavy
+	}
 
 	[Header("Item Dynamic Info")]
 	public int inventorySlotIndex;
@@ -46,11 +53,43 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public int maxStackCount;
 	public int currentStackCount;
 
-	[Header("Class Restriction")]
-	public ClassRestriction classRestriction;
-	public enum ClassRestriction
+	public void Initilize(Items item)
 	{
-		light, medium, heavy
+		name = item.itemName;
+		itemName = item.itemName;
+		itemImage = item.itemImage;
+		itemPrice = item.itemPrice;
+		itemLevel = item.itemLevel;
+		rarity = (Rarity)item.rarity;
+		itemType = (ItemType)item.itemType;
+		classRestriction = GetClassRestriction();
+
+		isStackable = IsStackable();
+		maxStackCount = GetMaxStackCount();
+		currentStackCount = item.currentStackCount;
+
+		UpdateUi();
+	}
+	private ClassRestriction GetClassRestriction()
+	{
+		if (weaponBaseRef != null) return (ClassRestriction)weaponBaseRef.classRestriction;
+		else if (armorBaseRef != null) return (ClassRestriction)armorBaseRef.classRestriction;
+		else if (accessoryBaseRef != null) return ClassRestriction.light;
+		else return ClassRestriction.light;
+	}
+	private bool IsStackable()
+	{
+		if (weaponBaseRef != null) return weaponBaseRef.isStackable;
+		else if (armorBaseRef != null) return armorBaseRef.isStackable;
+		else if (accessoryBaseRef != null) return accessoryBaseRef.isStackable;
+		else return consumableBaseRef.isStackable;
+	}
+	private int GetMaxStackCount()
+	{
+		if (weaponBaseRef != null) return weaponBaseRef.MaxStackCount;
+		else if (armorBaseRef != null) return armorBaseRef.MaxStackCount;
+		else if (accessoryBaseRef != null) return accessoryBaseRef.MaxStackCount;
+		else return consumableBaseRef.MaxStackCount;
 	}
 
 	//functions to display item info on mouse hover
@@ -59,7 +98,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		StopAllCoroutines();
 		//StartCoroutine(StartTimer());
 	}
-
 	public void OnPointerExit(PointerEventData eventData)
 	{
 		StopAllCoroutines();
@@ -117,7 +155,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	{
 		transform.position = Input.mousePosition;
 	}
-
 	public void OnEndDrag(PointerEventData eventData)
 	{
 		transform.SetParent(parentAfterDrag);

@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Mace
   itemImage: {fileID: 507154337, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
-  ItemPrice: 250
-  ItemId: 0
+  itemPrice: 250
+  itemId: 0
   itemType: 1
   isEquipable: 1
   isStackable: 0

@@ -21,19 +21,18 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
-	private void Awake()
+	private void Start()
 	{
 		Initilize();
+
+		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange; //would be in OnEnable but i get null ref
+		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 	}
 
 	private void OnEnable()
 	{
-		if (playerInputs == null)
-			playerInputs = new PlayerInputActions();
+		playerInputs ??= new PlayerInputActions();
 		playerInputs.Enable();
-
-		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange;
-		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 	}
 
 	private void OnDisable()
@@ -124,7 +123,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityTwo()
 	{
-
+		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange;
+		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 	}
 	private void OnAbilityThree()
 	{
