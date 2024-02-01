@@ -18,8 +18,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public TMP_Text uiItemStackCount;
 	private float timeToWait = 0.5f;
 
-	public int inventorySlotIndex;
-
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemImage;
@@ -36,11 +34,17 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		isCommon, isRare, isEpic, isLegendary
 	}
 
+	[Header("Item Base Ref")]
+	public SOWeapons weaponBaseRef;
+	public SOArmors armorBaseRef;
+	public SOAccessories accessoryBaseRef;
+	public SOConsumables consumableBaseRef;
+
 	[Header("Item Dynamic Info")]
+	public int inventorySlotIndex;
 	public bool isStackable;
 	public int maxStackCount;
 	public int currentStackCount;
-	public int inventroySlot;
 
 	[Header("Class Restriction")]
 	public ClassRestriction classRestriction;
@@ -53,7 +57,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		StopAllCoroutines();
-		StartCoroutine(StartTimer());
+		//StartCoroutine(StartTimer());
 	}
 
 	public void OnPointerExit(PointerEventData eventData)

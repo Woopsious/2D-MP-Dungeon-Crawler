@@ -43,6 +43,7 @@ public class Items : MonoBehaviour
 		itemImage = GetItemImage();
 		ItemPrice = GetItemPrice();
 
+		if (GetComponent<InventoryItem>() != null) return; //is inventoryItem so doesnt need this ref
 		GetComponent<SpriteRenderer>().sprite = itemImage;
 	}
 	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
@@ -96,7 +97,7 @@ public class Items : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	protected void GenerateStatsOnStart()
+	public void GenerateStatsOnStart()
 	{
 		Initilize(rarity, itemLevel, null);
 		gameObject.AddComponent<Interactables>();

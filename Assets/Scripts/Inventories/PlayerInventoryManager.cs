@@ -95,10 +95,13 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		for (int i = 0; i < SaveManager.Instance.InventoryData.InventoryItems.Count; i++) //spawn item from loot pool at death location
 		{
-			GameObject go = Instantiate(SaveManager.Instance.InventoryData.InventoryItems[i]);
+			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
 
-			int slotIndex = go.GetComponent<InventorySlot>().slotIndex;
-			go.transform.parent = PlayerInventoryUi.Instance.InventorySlots[slotIndex].transform;
+			//foreach (InventoryItem inventoryitem in SaveManager.Instance.InventoryData.InventoryItems)
+				//newInventoryItem = inventoryitem;
+
+			SetItemData(newInventoryItem, newInventoryItem);
 		}
 	}
 
@@ -108,6 +111,11 @@ public class PlayerInventoryManager : MonoBehaviour
 		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem newItem = go.GetComponent<InventoryItem>();
 
+		SetItemData(newItem, item);
+		newItem.UpdateUi();
+		return newItem;
+
+		/*
 		if (item.weaponBaseRef != null)
 			SetWeaponData(newItem, item);
 
@@ -119,9 +127,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		if (item.consumableBaseRef != null)
 			SetConsumableData(newItem, item);
-
-		newItem.UpdateUi();
-		return newItem;
+		*/
 	}
 	public void AddItemToPlayerInventory(Items item)
 	{
@@ -186,45 +192,160 @@ public class PlayerInventoryManager : MonoBehaviour
 			}
 		}
 	}
-
-	//set specific item data on pickup
-	private void SetWeaponData(InventoryItem inventoryItem, Items item)
+	private void SetItemData(InventoryItem inventoryItem, Items item)
 	{
-		inventoryItem.itemName = item.itemName;
+		inventoryItem.itemName = item.name;
 		inventoryItem.itemImage = item.itemImage;
-		inventoryItem.itemType = (InventoryItem.ItemType)item.weaponBaseRef.itemType;
-
+		inventoryItem.itemPrice = item.ItemPrice;
 		inventoryItem.itemLevel = item.itemLevel;
 		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
+		inventoryItem.isStackable = item.isStackable;
+		inventoryItem.currentStackCount = item.currentStackCount;
+
+		if (item.weaponBaseRef != null)
+		{
+			Weapons weapon = inventoryItem.AddComponent<Weapons>();
+			weapon.weaponBaseRef = item.weaponBaseRef;
+			inventoryItem.weaponBaseRef = item.weaponBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.weaponBaseRef.itemType;
+			inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
+			weapon.itemLevel = item.itemLevel;
+			weapon.rarity = item.rarity;
+			weapon.Initilize(weapon.rarity, weapon.itemLevel, null);
+		}
+		if (item.armorBaseRef != null)
+		{
+			Armors armor = inventoryItem.AddComponent<Armors>();
+			armor.armorBaseRef = item.armorBaseRef;
+			inventoryItem.armorBaseRef = item.armorBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.armorBaseRef.itemType;
+			inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
+			armor.itemLevel = item.itemLevel;
+			armor.rarity = item.rarity;
+			armor.Initilize(armor.rarity, armor.itemLevel, null);
+		}
+		if (item.accessoryBaseRef != null)
+		{
+			Accessories accessory = inventoryItem.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = item.accessoryBaseRef;
+			inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.accessoryBaseRef.itemType;
+			inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
+			accessory.itemLevel = item.itemLevel;
+			accessory.rarity = item.rarity;
+			accessory.Initilize(accessory.rarity, accessory.itemLevel, null);
+		}
+		if (item.consumableBaseRef != null)
+		{
+			Consumables consumable = inventoryItem.AddComponent<Consumables>();
+			consumable.consumableBaseRef = item.consumableBaseRef;
+			inventoryItem.consumableBaseRef = item.consumableBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.consumableBaseRef.itemType;
+			inventoryItem.maxStackCount = item.consumableBaseRef.MaxStackCount;
+			consumable.itemLevel = item.itemLevel;
+			consumable.rarity = item.rarity;
+			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
+		}
+	}
+	private void SetItemData(InventoryItem inventoryItem, InventoryItem item)
+	{
+		inventoryItem.itemName = item.name;
+		inventoryItem.itemImage = item.itemImage;
+		inventoryItem.itemPrice = item.itemPrice;
+		inventoryItem.itemLevel = item.itemLevel;
+		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
+		inventoryItem.isStackable = item.isStackable;
+		inventoryItem.currentStackCount = item.currentStackCount;
+
+		if (item.weaponBaseRef != null)
+		{
+			Weapons weapon = inventoryItem.AddComponent<Weapons>();
+			weapon.weaponBaseRef = item.weaponBaseRef;
+			inventoryItem.weaponBaseRef = item.weaponBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.weaponBaseRef.itemType;
+			inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
+			weapon.itemLevel = item.itemLevel;
+			weapon.rarity = (Items.Rarity)item.rarity;
+			weapon.Initilize(weapon.rarity, weapon.itemLevel, null);
+		}
+		if (item.armorBaseRef != null)
+		{
+			Armors armor = inventoryItem.AddComponent<Armors>();
+			armor.armorBaseRef = item.armorBaseRef;
+			inventoryItem.armorBaseRef = item.armorBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.armorBaseRef.itemType;
+			inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
+			armor.itemLevel = item.itemLevel;
+			armor.rarity = (Items.Rarity)item.rarity;
+			armor.Initilize(armor.rarity, armor.itemLevel, null);
+		}
+		if (item.accessoryBaseRef != null)
+		{
+			Accessories accessory = inventoryItem.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = item.accessoryBaseRef;
+			inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.accessoryBaseRef.itemType;
+			inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
+			accessory.itemLevel = item.itemLevel;
+			accessory.rarity = (Items.Rarity)item.rarity;
+			accessory.Initilize(accessory.rarity, accessory.itemLevel, null);
+		}
+		if (item.consumableBaseRef != null)
+		{
+			Consumables consumable = inventoryItem.AddComponent<Consumables>();
+			consumable.consumableBaseRef = item.consumableBaseRef;
+			inventoryItem.consumableBaseRef = item.consumableBaseRef;
+			inventoryItem.itemType = (InventoryItem.ItemType)item.consumableBaseRef.itemType;
+			inventoryItem.maxStackCount = item.consumableBaseRef.MaxStackCount;
+			consumable.itemLevel = item.itemLevel;
+			consumable.rarity = (Items.Rarity)item.rarity;
+			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
+		}
+	}
+
+	//set specific item data on pickup
+	/*
+	private void SetWeaponData(InventoryItem inventoryItem, Items item)
+	{
+		Weapons weaponData = inventoryItem.AddComponent<Weapons>();
+		weaponData.itemName = item.name;
+		weaponData.itemImage = item.itemImage;
+		weaponData.ItemPrice = item.ItemPrice;
+		weaponData.itemLevel = item.itemLevel;
+
+		weaponData.weaponBaseRef = item.weaponBaseRef;
+		inventoryItem.weaponBaseRef = item.weaponBaseRef;
+		inventoryItem.itemType = (InventoryItem.ItemType)item.weaponBaseRef.itemType;
 		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.weaponBaseRef.classRestriction;
 
-		Weapons weaponData = inventoryItem.AddComponent<Weapons>();
-		weaponData.weaponBaseRef = item.weaponBaseRef;
-		weaponData.itemLevel = item.itemLevel;
+		weaponData.isStackable = item.isStackable;
+		weaponData.currentStackCount = item.currentStackCount;
+		weaponData.inventroySlot = item.inventroySlot;
+		inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
 
 		weaponData.weaponBaseRef.weaponType = item.weaponBaseRef.weaponType;
 		weaponData.isShield = item.weaponBaseRef.isShield;
 		weaponData.damage = (int)(item.weaponBaseRef.baseDamage * item.levelModifier);
 		weaponData.bonusMana = (int)(item.weaponBaseRef.baseBonusMana * item.levelModifier);
-
-		inventoryItem.isStackable = item.isStackable;
-		inventoryItem.maxStackCount = item.weaponBaseRef.MaxStackCount;
-		inventoryItem.currentStackCount = item.currentStackCount;
 	}
 	private void SetArmorData(InventoryItem inventoryItem, Items item)
 	{
-		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage = item.itemImage;
-		inventoryItem.itemType = (InventoryItem.ItemType)item.armorBaseRef.itemType;
-
-		inventoryItem.itemLevel = item.itemLevel;
-		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
-		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.armorBaseRef.classRestriction;
-
 		Armors armorData = inventoryItem.AddComponent<Armors>();
-		armorData.armorBaseRef = item.armorBaseRef;
-		armorData.armorSlot = (Armors.ArmorSlot)item.armorBaseRef.armorSlot;
+		armorData.itemName = item.name;
+		armorData.itemImage = item.itemImage;
+		armorData.ItemPrice = item.ItemPrice;
 		armorData.itemLevel = item.itemLevel;
+
+		armorData.armorBaseRef = item.armorBaseRef;
+		inventoryItem.armorBaseRef = item.armorBaseRef;
+		inventoryItem.itemType = (InventoryItem.ItemType)item.armorBaseRef.itemType;
+		inventoryItem.classRestriction = (InventoryItem.ClassRestriction)item.armorBaseRef.classRestriction;
+		armorData.armorSlot = (Armors.ArmorSlot)item.armorBaseRef.armorSlot;
+
+		armorData.isStackable = item.isStackable;
+		armorData.currentStackCount = item.currentStackCount;
+		armorData.inventroySlot = item.inventroySlot;
+		inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
 
 		armorData.bonusHealth = (int)(item.armorBaseRef.baseBonusHealth * item.levelModifier);
 		armorData.bonusMana = (int)(item.armorBaseRef.baseBonusMana * item.levelModifier);
@@ -232,26 +353,25 @@ public class PlayerInventoryManager : MonoBehaviour
 		armorData.bonusPoisonResistance = (int)(item.armorBaseRef.bonusPoisonResistance * item.levelModifier);
 		armorData.bonusFireResistance = (int)(item.armorBaseRef.bonusFireResistance * item.levelModifier);
 		armorData.bonusIceResistance = (int)(item.armorBaseRef.bonusIceResistance * item.levelModifier);
-
-		inventoryItem.isStackable = item.isStackable;
-		inventoryItem.maxStackCount = item.armorBaseRef.MaxStackCount;
-		inventoryItem.currentStackCount = item.currentStackCount;
 	}
 	private void SetAccessoryData(InventoryItem inventoryItem, Items item)
 	{
-		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage = item.itemImage;
-		inventoryItem.itemType = (InventoryItem.ItemType)item.accessoryBaseRef.itemType;
-
-		inventoryItem.itemLevel = item.itemLevel;
-		inventoryItem.rarity = (InventoryItem.Rarity)item.rarity;
-		inventoryItem.classRestriction = InventoryItem.ClassRestriction.light;
-
 		Accessories accessoryData = inventoryItem.AddComponent<Accessories>();
+		accessoryData.itemName = item.name;
+		accessoryData.itemImage = item.itemImage;
+		accessoryData.ItemPrice = item.ItemPrice;
+		accessoryData.itemLevel = item.itemLevel;
+
 		accessoryData.accessoryBaseRef = item.accessoryBaseRef;
+		inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
+		inventoryItem.itemType = (InventoryItem.ItemType)item.accessoryBaseRef.itemType;
 		accessoryData.accessorySlot = (Accessories.AccessorySlot)item.accessoryBaseRef.accessorySlot;
 		accessoryData.accessoryType = (Accessories.AccessoryType)item.accessoryBaseRef.accessoryType;
-		accessoryData.itemLevel = item.itemLevel;
+
+		accessoryData.isStackable = item.isStackable;
+		accessoryData.currentStackCount = item.currentStackCount;
+		accessoryData.inventroySlot = item.inventroySlot;
+		inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
 
 		accessoryData.damageTypeToBoost = (Accessories.DamageTypeToBoost)item.accessoryBaseRef.damageTypeToBoost;
 		accessoryData.bonusHealth = (int)(item.accessoryBaseRef.baseBonusHealth * item.levelModifier);
@@ -270,27 +390,28 @@ public class PlayerInventoryManager : MonoBehaviour
 		accessoryData.bonusPoisonResistance = (int)(item.accessoryBaseRef.bonusPoisonResistance * item.levelModifier);
 		accessoryData.bonusFireResistance = (int)(item.accessoryBaseRef.bonusFireResistance * item.levelModifier);
 		accessoryData.bonusIceResistance = (int)(item.accessoryBaseRef.bonusIceResistance * item.levelModifier);
-
-		inventoryItem.isStackable = item.isStackable;
-		inventoryItem.maxStackCount = item.accessoryBaseRef.MaxStackCount;
-		inventoryItem.currentStackCount = item.currentStackCount;
 	}
 	private void SetConsumableData(InventoryItem inventoryItem, Items item)
 	{
-		inventoryItem.itemName = item.itemName;
-		inventoryItem.itemImage = item.itemImage;
-
 		Consumables consumablesData = inventoryItem.AddComponent<Consumables>();
-		consumablesData.consumableBaseRef = item.consumableBaseRef;
+		consumablesData.itemName = item.name;
+		consumablesData.itemImage = item.itemImage;
+		consumablesData.ItemPrice = item.ItemPrice;
 		consumablesData.itemLevel = item.itemLevel;
+
+		consumablesData.consumableBaseRef = item.consumableBaseRef;
+		inventoryItem.consumableBaseRef = item.consumableBaseRef;
+		inventoryItem.itemType = (InventoryItem.ItemType)item.consumableBaseRef.itemType;
+
+		consumablesData.isStackable = item.isStackable;
+		consumablesData.currentStackCount = item.currentStackCount;
+		consumablesData.inventroySlot = item.inventroySlot;
+		inventoryItem.maxStackCount = item.consumableBaseRef.MaxStackCount;
 
 		consumablesData.consumableType = (Consumables.ConsumableType)item.consumableBaseRef.consumableType;
 		consumablesData.consumablePercentage = item.consumableBaseRef.consumablePercentage;
-
-		inventoryItem.isStackable = item.isStackable;
-		inventoryItem.maxStackCount = item.consumableBaseRef.MaxStackCount;
-		inventoryItem.currentStackCount = item.currentStackCount;
 	}
+	*/
 
 	//bool check before item pickup
 	public bool CheckIfInventoryFull()

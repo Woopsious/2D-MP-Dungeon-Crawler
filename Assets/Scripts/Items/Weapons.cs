@@ -34,13 +34,11 @@ public class Weapons : Items
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
-
-		//if (equipmentHandler == null) return;
-		//equipmentHandler.OnWeaponEquip(this, transform.parent.gameObject);
 	}
 	private void WeaponInitilization()
 	{
-		if (GetComponent<InventoryItem>() != null) return; //return as this is an item in inventory
+		if (GetComponent<InventoryItem>() != null) return;  //return as this is an item in inventory
+		if (transform.parent == null) return;				//weapon is not equipped
 
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();

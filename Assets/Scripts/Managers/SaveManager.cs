@@ -22,23 +22,23 @@ public class SaveManager : MonoBehaviour
 
 		foreach (GameObject slot in PlayerInventoryUi.Instance.InventorySlots)
 		{
-			InventorySlot inventorySlot = slot.GetComponent<InventorySlot>();
-			if (inventorySlot.IsSlotEmpty()) continue;
+			if (slot.GetComponent<InventorySlot>().IsSlotEmpty()) continue;
 			else
 			{
-				InventoryData.InventoryItems.Add(inventorySlot.itemInSlot.gameObject);
+				InventoryItem inventoryItem = slot.GetComponent<InventorySlot>().itemInSlot;
+				//InventoryData.InventoryItems.Add(inventoryItem);
 			}
 		}
 
 		string inventoryData = JsonUtility.ToJson(InventoryData);
-		string filePath = Application.persistentDataPath + "/PlayerData/InventoryData.json";
+		string filePath = Application.persistentDataPath + "/InventoryData.json";
 		System.IO.File.WriteAllText(filePath, inventoryData);
 
 		Debug.Log(filePath);
 	}
 	public void LoadDataToJson()
 	{
-		string filePath = Application.persistentDataPath + "/PlayerData/InventoryData.json";
+		string filePath = Application.persistentDataPath + "/InventoryData.json";
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		InventoryData = JsonUtility.FromJson<InventoryData>(inventoryData);
 
@@ -46,14 +46,56 @@ public class SaveManager : MonoBehaviour
 	}
 }
 
+[System.Serializable]
 public class InventoryData
 {
 	public bool hasRecievedStartingItems;
 
-	public List<GameObject> InventoryItems = new List<GameObject>();
+	public List<ItemData> InventoryItems = new List<ItemData>();
 }
 
+[System.Serializable]
 public class EquipmentData
 {
 	public List<InventoryItem> EquipmentItems = new List<InventoryItem>();
+}
+
+public class ItemData
+{
+	public List<InventoryItem> InventoryItems = new List<InventoryItem>();
+
+	[Header("Item Info")]
+	public string itemName;
+	public Sprite itemImage;
+	public int itemPrice;
+	public int itemLevel;
+	public ItemType itemType;
+	public enum ItemType
+	{
+		isConsumable, isWeapon, isArmor, isAccessory, isAbility
+	}
+	public Rarity rarity;
+	public enum Rarity
+	{
+		isCommon, isRare, isEpic, isLegendary
+	}
+
+	[Header("Item Base Ref")]
+	public SOWeapons weaponBaseRef;
+	public SOArmors armorBaseRef;
+	public SOAccessories accessoryBaseRef;
+	public SOConsumables consumableBaseRef;
+
+	[Header("Item Dynamic Info")]
+	public int inventorySlotIndex;
+	public bool isStackable;
+	public int maxStackCount;
+	public int currentStackCount;
+
+	[Header("Class Restriction")]
+	public ClassRestriction classRestriction;
+	public enum ClassRestriction
+	{
+		light, medium, heavy
+	}
 }

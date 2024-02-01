@@ -10,7 +10,6 @@ public class MainMenuManager : MonoBehaviour
 	public void Start()
 	{
 		Instance = this;
-		Time.timeScale = 0f;
 	}
 
 	//button actions
