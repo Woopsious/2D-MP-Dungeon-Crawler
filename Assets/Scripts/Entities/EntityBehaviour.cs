@@ -28,11 +28,11 @@ public class EntityBehaviour : MonoBehaviour
 	public PlayerController player;
 	public CircleCollider2D viewRangeCollider;
 
-	public void Start()
+	private void Start()
 	{
 		Initilize();
 	}
-	public void Update()
+	private void Update()
 	{
 		/// <summary>
 		/// LOGIC FOR ENTITY BEHAVIOUR
@@ -47,7 +47,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		currentState.UpdateLogic(this);
 	}
-	public void FixedUpdate()
+	private void FixedUpdate()
 	{
 		currentState.UpdatePhysics(this);
 
@@ -87,14 +87,14 @@ public class EntityBehaviour : MonoBehaviour
 		ChangeStateIdle();
 	}
 
-	public void UpdateSpriteDirection()
+	private void UpdateSpriteDirection()
 	{
 		if (navMeshAgent.velocity.x < 0)
 			transform.eulerAngles = new Vector3(0, 0, 0);
 		else
 			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
-	public void UpdateAnimationState()
+	private void UpdateAnimationState()
 	{
 		if (navMeshAgent.velocity == new Vector3(0,0,0))
 			animator.SetBool("isIdle", true);

@@ -10,9 +10,14 @@ public class MainMenuManager : MonoBehaviour
 	public void Start()
 	{
 		Instance = this;
+		Time.timeScale = 0f;
 	}
 
 	//button actions
+	public void ButtonFunctionNotSetUp()
+	{
+		Debug.LogWarning("Button function not yet set up");
+	}
 
 	public void QuiteGameButton()
 	{
@@ -26,7 +31,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 
 	//show/hide main menu
-	public void ShowHideMainMenu()
+	public void ShowHideMainMenuKeybind()
 	{
 		if (!mainMenuObj.activeInHierarchy)
 			ShowMainMenu();

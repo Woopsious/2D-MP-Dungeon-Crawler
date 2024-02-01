@@ -15,8 +15,10 @@ public class PlayerInventoryManager : MonoBehaviour
 {
 	public static PlayerInventoryManager Instance;
 
-	[Header("Starting Items")]
+	public GameObject ItemUiPrefab;
 	public GameObject droppedItemPrefab;
+
+	[Header("Starting Items")]
 	public bool hasRecievedStartingItems;
 	public List<SOItems> startingItems = new List<SOItems>();
 
@@ -30,7 +32,16 @@ public class PlayerInventoryManager : MonoBehaviour
 			SpawnStartingItems();
 	}
 
-	public void SpawnStartingItems()
+	private void OnEnable()
+	{
+		SaveManager.OnGameLoad += ReloadPlayerInventory;
+	}
+	private void OnDisable()
+	{
+		SaveManager.OnGameLoad -= ReloadPlayerInventory;
+	}
+
+	private void SpawnStartingItems()
 	{
 		hasRecievedStartingItems = true;
 
@@ -78,6 +89,16 @@ public class PlayerInventoryManager : MonoBehaviour
 			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, 1, null);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
+		}
+	}
+	private void ReloadPlayerInventory()
+	{
+		for (int i = 0; i < SaveManager.Instance.InventoryData.InventoryItems.Count; i++) //spawn item from loot pool at death location
+		{
+			GameObject go = Instantiate(SaveManager.Instance.InventoryData.InventoryItems[i]);
+
+			int slotIndex = go.GetComponent<InventorySlot>().slotIndex;
+			go.transform.parent = PlayerInventoryUi.Instance.InventorySlots[slotIndex].transform;
 		}
 	}
 

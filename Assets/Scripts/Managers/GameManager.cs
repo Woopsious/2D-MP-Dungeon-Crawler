@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
@@ -7,7 +8,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    void Start()
+	public static event Action OnSceneChange;
+
+	void Start()
     {
         Instance = this;
     }

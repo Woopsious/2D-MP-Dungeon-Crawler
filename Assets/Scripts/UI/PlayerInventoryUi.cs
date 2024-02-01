@@ -9,11 +9,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	public static PlayerInventoryUi Instance;
 
 	public GameObject ItemUiPrefab;
-	[Header("Inventory")]
 	public GameObject InventoryPanelUi;
-	public List<GameObject> InventorySlots = new List<GameObject>();
 
 	[Header("Equipment")]
+	public GameObject EquipmentUi;
 	public GameObject weaponEquipmentSlot;
 	public GameObject offHandEquipmentSlot;
 
@@ -26,6 +25,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
 
+	[Header("Inventory")]
+	public GameObject InventoryUi;
+	public List<GameObject> InventorySlots = new List<GameObject>();
+
 	private void Awake()
 	{
 		Instance = this;
@@ -36,7 +39,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		InventoryPanelUi.gameObject.SetActive(false);
 	}
 
-	public void HideShowInventory()
+	public void ShowHideInventoryKeybind()
 	{
 		if (InventoryPanelUi.gameObject.activeInHierarchy)
 			InventoryPanelUi.gameObject.SetActive(false);

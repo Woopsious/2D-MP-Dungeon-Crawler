@@ -88,6 +88,7 @@
     <Compile Include="Assets\Scripts\Interactables.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
+    <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />

@@ -239,8 +239,8 @@ public class EntityStats : MonoBehaviour
 	}
 
 	/// <summary>
-	/// recalculate all stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for
-	/// example changes a piece of armor etc so stats are consistant
+	/// recalculate stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for example
+	/// changes a piece of armor etc, so stats are consistant in how they are applied, especially when percentage modifiers are included
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier, 
 	/// </summary>

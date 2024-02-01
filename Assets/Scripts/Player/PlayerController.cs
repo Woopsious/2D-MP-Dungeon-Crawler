@@ -142,10 +142,10 @@ public class PlayerController : MonoBehaviour
 	//ui actions
 	private void OnMainMenu()
 	{
-		MainMenuManager.Instance.ShowHideMainMenu();
+		MainMenuManager.Instance.ShowHideMainMenuKeybind();
 	}
 	private void OnInventory()
 	{
-		PlayerInventoryUi.Instance.HideShowInventory();
+		PlayerInventoryUi.Instance.ShowHideInventoryKeybind();
 	}
 }
