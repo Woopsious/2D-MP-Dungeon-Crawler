@@ -94,6 +94,10 @@ public class Items : MonoBehaviour
 		else if (accessoryBaseRef != null) return (ItemType)accessoryBaseRef.itemType;
 		else return (ItemType)consumableBaseRef.itemType;
 	}
+	public void SetCurrentStackCount(int count)
+	{
+		currentStackCount = count;
+	}
 
 	public virtual void OnMouseOverItem()
 	{
@@ -108,7 +112,7 @@ public class Items : MonoBehaviour
 			return;
 		}
 
-		PlayerInventoryManager.Instance.AddItemToPlayerInventory(this);
+		PlayerInventoryManager.Instance.AddNewItemToPlayerInventory(this);
 		Destroy(gameObject);
 	}
 

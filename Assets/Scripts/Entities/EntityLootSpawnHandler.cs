@@ -57,26 +57,26 @@ public class EntityLootSpawnHandler : MonoBehaviour
 	{
 		Weapons weapon = go.AddComponent<Weapons>();
 		weapon.weaponBaseRef = (SOWeapons)lootPool.lootPoolList[index];
-		weapon.currentStackCount = 1;
+		weapon.SetCurrentStackCount(1);
 	}
 	private void SetUpArmorItem(GameObject go, int index)
 	{
 		Armors armor = go.AddComponent<Armors>();
 		armor.armorBaseRef = (SOArmors)lootPool.lootPoolList[index];
-		armor.currentStackCount = 1;
+		armor.SetCurrentStackCount(1);
 	}
 	private void SetUpAccessory(GameObject go, int index)
 	{
 		Accessories accessory = go.AddComponent<Accessories>();
 		accessory.accessoryBaseRef = (SOAccessories)lootPool.lootPoolList[index];
 		accessory.SetRandomDamageTypeOnDrop();
-		accessory.currentStackCount = 1;
+		accessory.SetCurrentStackCount(1);
 	}
 	private void SetUpConsumableItem(GameObject go, int index)
 	{
 		Consumables consumables = go.AddComponent<Consumables>();
 		consumables.consumableBaseRef = (SOConsumables)lootPool.lootPoolList[index];
-		consumables.currentStackCount = 3;
+		consumables.SetCurrentStackCount(3);
 	}
 
 	private bool WillDropExtraloot()

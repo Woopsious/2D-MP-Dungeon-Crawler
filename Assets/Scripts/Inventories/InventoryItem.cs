@@ -179,11 +179,13 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	{
 		currentStackCount++;
 		uiItemStackCount.text = currentStackCount.ToString();
+		GetComponent<Items>().currentStackCount = currentStackCount;
 	}
 	public void DecreaseStackCounter()
 	{
 		currentStackCount--;
 		uiItemStackCount.text = currentStackCount.ToString();
+		GetComponent<Items>().currentStackCount = currentStackCount;
 
 		if (currentStackCount <= 0)
 			Destroy(gameObject);
