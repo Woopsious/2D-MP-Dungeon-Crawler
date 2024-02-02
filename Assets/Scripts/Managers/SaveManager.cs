@@ -26,7 +26,23 @@ public class SaveManager : MonoBehaviour
 			else
 			{
 				InventoryItem inventoryItem = slot.GetComponent<InventorySlot>().itemInSlot;
-				//InventoryData.InventoryItems.Add(inventoryItem);
+				InventoryItemData itemData = new()
+				{
+					weaponBaseRef = inventoryItem.weaponBaseRef,
+					armorBaseRef = inventoryItem.armorBaseRef,
+					accessoryBaseRef = inventoryItem.accessoryBaseRef,
+					consumableBaseRef = inventoryItem.consumableBaseRef,
+
+					itemLevel = inventoryItem.itemLevel,
+					rarity = (InventoryItemData.Rarity)inventoryItem.rarity,
+
+					inventorySlotIndex = inventoryItem.inventorySlotIndex,
+					isStackable = inventoryItem.isStackable,
+					maxStackCount = inventoryItem.maxStackCount,
+					currentStackCount = inventoryItem.currentStackCount
+				};
+
+				InventoryData.InventoryItems.Add(itemData);
 			}
 		}
 
@@ -60,42 +76,26 @@ public class EquipmentData
 	public List<InventoryItem> EquipmentItems = new List<InventoryItem>();
 }
 
+[System.Serializable]
 public class InventoryItemData
 {
-	public List<InventoryItem> InventoryItems = new List<InventoryItem>();
-
-	[Header("Item Info")]
-	public string itemName;
-	public Sprite itemImage;
-	public int itemPrice;
-	public int itemLevel;
-	public ItemType itemType;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
-	public Rarity rarity;
-	public enum Rarity
-	{
-		isCommon, isRare, isEpic, isLegendary
-	}
-
 	[Header("Item Base Ref")]
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
 
+	[Header("Item Info")]
+	public int itemLevel;
+	public Rarity rarity;
+	public enum Rarity
+	{
+		isCommon, isRare, isEpic, isLegendary
+	}
+
 	[Header("Item Dynamic Info")]
 	public int inventorySlotIndex;
 	public bool isStackable;
 	public int maxStackCount;
 	public int currentStackCount;
-
-	[Header("Class Restriction")]
-	public ClassRestriction classRestriction;
-	public enum ClassRestriction
-	{
-		light, medium, heavy
-	}
 }

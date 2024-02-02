@@ -53,8 +53,9 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public int maxStackCount;
 	public int currentStackCount;
 
-	public void Initilize(Items item)
+	public void Initilize()
 	{
+		Items item = GetComponent<Items>();
 		name = item.itemName;
 		itemName = item.itemName;
 		itemImage = item.itemImage;

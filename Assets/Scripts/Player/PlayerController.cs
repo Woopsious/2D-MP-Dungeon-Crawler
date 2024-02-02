@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
 	{
 		playerInputs ??= new PlayerInputActions();
 		playerInputs.Enable();
+		Debug.Log(playerInputs);
 	}
 
 	private void OnDisable()

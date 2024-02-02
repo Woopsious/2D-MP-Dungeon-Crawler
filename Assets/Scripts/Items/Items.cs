@@ -7,6 +7,12 @@ public class Items : MonoBehaviour
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;
 
+	[Header("Item Base Ref")]
+	public SOWeapons weaponBaseRef;
+	public SOArmors armorBaseRef;
+	public SOAccessories accessoryBaseRef;
+	public SOConsumables consumableBaseRef;
+
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemImage;
@@ -27,12 +33,6 @@ public class Items : MonoBehaviour
 	{
 		isCommon, isRare, isEpic, isLegendary
 	}
-
-	[Header("Item Base Ref")]
-	public SOWeapons weaponBaseRef;
-	public SOArmors armorBaseRef;
-	public SOAccessories accessoryBaseRef;
-	public SOConsumables consumableBaseRef;
 
 	[Header("Inventroy Dynamic Info")]
 	public bool isStackable;

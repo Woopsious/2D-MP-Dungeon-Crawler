@@ -93,15 +93,23 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void ReloadPlayerInventory()
 	{
-		for (int i = 0; i < SaveManager.Instance.InventoryData.InventoryItems.Count; i++) //spawn item from loot pool at death location
+		foreach (InventoryItemData itemData in SaveManager.Instance.InventoryData.InventoryItems) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
 
-			//foreach (InventoryItem inventoryitem in SaveManager.Instance.InventoryData.InventoryItems)
-				//newInventoryItem = inventoryitem;
+			SetItemData(newInventoryItem, itemData);
+			InventorySlot inventorySlot = PlayerInventoryUi.Instance.InventorySlots[itemData.inventorySlotIndex].GetComponent<InventorySlot>();
 
-			//SetItemData(newInventoryItem, newInventoryItem);
+			newInventoryItem.transform.SetParent(inventorySlot.transform);
+			inventorySlot.itemInSlot = newInventoryItem;
+			newInventoryItem.inventorySlotIndex = itemData.inventorySlotIndex;
+			newInventoryItem.maxStackCount = itemData.maxStackCount;
+			newInventoryItem.currentStackCount = itemData.currentStackCount;
+
+			newInventoryItem.SetTextColour();
+			inventorySlot.UpdateSlotSize();
+			newInventoryItem.Initilize();
 		}
 	}
 
@@ -112,7 +120,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		InventoryItem newItem = go.GetComponent<InventoryItem>();
 
 		SetItemData(newItem, item);
-		newItem.Initilize(item);
+		newItem.Initilize();
 		return newItem;
 	}
 	public void AddItemToPlayerInventory(Items item)
@@ -178,6 +186,45 @@ public class PlayerInventoryManager : MonoBehaviour
 			consumable.consumableBaseRef = item.consumableBaseRef;
 			consumable.itemLevel = item.itemLevel;
 			consumable.rarity = item.rarity;
+			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
+		}
+	}
+	private void SetItemData(InventoryItem inventoryItem, InventoryItemData item)
+	{
+		if (item.weaponBaseRef != null)
+		{
+			inventoryItem.weaponBaseRef = item.weaponBaseRef;
+			Weapons weapon = inventoryItem.AddComponent<Weapons>();
+			weapon.weaponBaseRef = item.weaponBaseRef;
+			weapon.itemLevel = item.itemLevel;
+			weapon.rarity = (Items.Rarity)item.rarity;
+			weapon.Initilize(weapon.rarity, weapon.itemLevel, null);
+		}
+		if (item.armorBaseRef != null)
+		{
+			inventoryItem.armorBaseRef = item.armorBaseRef;
+			Armors armor = inventoryItem.AddComponent<Armors>();
+			armor.armorBaseRef = item.armorBaseRef;
+			armor.itemLevel = item.itemLevel;
+			armor.rarity = (Items.Rarity)item.rarity;
+			armor.Initilize(armor.rarity, armor.itemLevel, null);
+		}
+		if (item.accessoryBaseRef != null)
+		{
+			inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
+			Accessories accessory = inventoryItem.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = item.accessoryBaseRef;
+			accessory.itemLevel = item.itemLevel;
+			accessory.rarity = (Items.Rarity)item.rarity;
+			accessory.Initilize(accessory.rarity, accessory.itemLevel, null);
+		}
+		if (item.consumableBaseRef != null)
+		{
+			inventoryItem.consumableBaseRef = item.consumableBaseRef;
+			Consumables consumable = inventoryItem.AddComponent<Consumables>();
+			consumable.consumableBaseRef = item.consumableBaseRef;
+			consumable.itemLevel = item.itemLevel;
+			consumable.rarity = (Items.Rarity)item.rarity;
 			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
 		}
 	}
