@@ -13,9 +13,10 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	[Header("Equipment")]
 	public GameObject EquipmentUi;
+	public List<GameObject> EquipmentSlots = new List<GameObject>();
+
 	public GameObject weaponEquipmentSlot;
 	public GameObject offHandEquipmentSlot;
-
 	public GameObject helmetEquipmentSlot;
 	public GameObject chestpieceEquipmentSlot;
 	public GameObject legsEquipmentSlot;

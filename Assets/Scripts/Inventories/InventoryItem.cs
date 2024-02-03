@@ -170,6 +170,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		uiItemImage.sprite = itemImage;
 		uiItemLevel.text = "LVL: " + itemLevel;
 		UpdateStackCount();
+		SetTextColour();
 	}
 	public void UpdateStackCount()
 	{

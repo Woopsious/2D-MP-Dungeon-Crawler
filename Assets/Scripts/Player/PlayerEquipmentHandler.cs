@@ -26,10 +26,12 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void OnEnable()
 	{
 		InventorySlot.OnItemEquip += EquipItem;
+		SaveManager.OnGameLoad += ReEquipItems;
 	}
 	private void OnDisable()
 	{
 		InventorySlot.OnItemEquip -= EquipItem;
+		SaveManager.OnGameLoad -= ReEquipItems;
 	}
 
 	public override void Initilize()
@@ -39,6 +41,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		playerController = gameObject.transform.parent.GetComponentInParent<PlayerController>();
 		playerController.playerEquipmentHandler = this;
 		isPlayerEquipment = true;
+	}
+	public void ReEquipItems()
+	{
+
 	}
 
 	private void EquipItem(InventoryItem item, InventorySlot slot)

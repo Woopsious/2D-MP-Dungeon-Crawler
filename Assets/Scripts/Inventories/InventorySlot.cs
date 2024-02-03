@@ -28,10 +28,15 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		slotIndex = transform.GetSiblingIndex();
 	}
 
+	//item equipping for on drop and via events/code
 	public void OnDrop(PointerEventData eventData)
 	{
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItem item = droppeditem.GetComponent<InventoryItem>();
+		DragEquipItemToSlot(item);
+	}
+	public void DragEquipItemToSlot(InventoryItem item)
+	{
 		InventorySlot oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlot>();
 
 		if (!IsCorrectSlotType(item)) return;
@@ -67,6 +72,16 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot();
 	}
+	public void EquipItemToSlot(InventoryItem item)
+	{
+		//set new slot data
+		item.parentAfterDrag = transform;
+		item.inventorySlotIndex = slotIndex;
+		itemInSlot = item;
+		UpdateSlotSize();
+		CheckIfItemInEquipmentSlot();
+	}
+
 	public void CheckIfItemInEquipmentSlot()
 	{
 		if (slotType == SlotType.generic) return;
@@ -80,6 +95,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
 	}
 
+	//bool checks
 	public bool IsSlotEmpty()
 	{
 		if (GetComponentInChildren<InventoryItem>() == null)
