@@ -43,6 +43,11 @@ public class PlayerExperienceHandler : MonoBehaviour
 	/// new skill/spells if applicable...
 	/// </summary>
 
+	public void ReloadExperienceLevel(int exp)
+	{
+		currentExp = exp;
+		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
+	}
 	public void AddExperience(GameObject Obj)
 	{
 		//return; //disabled for now

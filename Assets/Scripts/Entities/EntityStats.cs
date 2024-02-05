@@ -108,10 +108,11 @@ public class EntityStats : MonoBehaviour
 			healthValue = maxHealth / 100 * healthValue;
 
 		currentHealth += healthValue;
-		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 
 		if (currentHealth > maxHealth)
 			currentHealth = maxHealth;
+
+		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 	}
 	public void OnHit(int damage, IDamagable.DamageType damageType, bool isDestroyedInOneHit)
 	{
@@ -200,10 +201,10 @@ public class EntityStats : MonoBehaviour
 			manaValue = maxMana / 100 * manaValue;
 
 		currentMana += manaValue;
-		OnManaChangeEvent?.Invoke(maxMana, currentMana);
-
 		if (currentMana > maxMana)
 			currentMana = maxMana;
+
+		OnManaChangeEvent?.Invoke(maxMana, currentMana);
 	}
 	public void DecreaseMana(int manaValue, bool isPercentageValue)
 	{

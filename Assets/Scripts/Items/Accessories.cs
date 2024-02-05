@@ -66,9 +66,6 @@ public class Accessories : Items
 		bonusPoisonResistance = (int)(accessoryBaseRef.bonusPoisonResistance * levelModifier);
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
-
-		//if (equipmentHandler == null) return;
-		//equipmentHandler.OnAccessoryEquip(this, transform.parent.gameObject);
 	}
 
 	public void SetRandomDamageTypeOnDrop()

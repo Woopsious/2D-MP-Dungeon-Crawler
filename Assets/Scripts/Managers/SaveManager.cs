@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class SaveManager : MonoBehaviour
 {
@@ -9,10 +12,14 @@ public class SaveManager : MonoBehaviour
 
 	public static event Action OnGameLoad;
 
-	[SerializeReference] public InventoryData InventoryData = new InventoryData();
+	[SerializeReference] public GameData GameData = new GameData();
 
-	private string gameDataPath;
+	public GameObject saveSlotContainer;
+	public GameObject saveSlotCardPrefab;
+
 	private string playerDataPath;
+	private string gameDataPath;
+	private string directoryForCurrentGame;
 
 	private void Awake()
 	{
@@ -20,45 +27,114 @@ public class SaveManager : MonoBehaviour
 	}
 	private void Start()
 	{
-		gameDataPath = Application.persistentDataPath + "/GameData";
 		playerDataPath = Application.persistentDataPath + "/PlayerData";
+		gameDataPath = Application.persistentDataPath + "/GameData/Save";
 	}
 
-	public void SaveDataToJson()
+	public void ReloadSaveSlots()
 	{
-		SavePlayerInventoryData();
-		SavePlayerEquipmentData();
+		foreach (Transform child in saveSlotContainer.transform)
+			Destroy(child.gameObject);
 
-		if (DoesDirectoryExist(gameDataPath))
+		int saveSlotsCount = GetGameSaveCount();
+
+		for (int i = 0; i < saveSlotsCount; i++)
 		{
-			if (DoesFileExist(gameDataPath, "/InventoryData.json"))
-				System.IO.File.Delete(gameDataPath + "/InventoryData.json");
+			LoadDataToJson(GrabSaveSlotDirectory(i));
+			GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
+			SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
+			saveSlot.Name = GameData.name;
+			saveSlot.Level = GameData.level;
+			saveSlot.Date = GameData.date;
+			saveSlot.Initilize(GrabSaveSlotDirectory(i));
+		}
+	}
+
+	/// <summary>
+	/// public methods are called from buttons on ui that pass in corrisponding directory path, run checks,
+	/// then save/load Json data to disk, or delete Json data
+	/// </summary>
+	public void CreateNewGameSave()
+	{
+		int numOfDirectories = GetGameSaveCount();
+
+		GameData.name = Utilities.GetRandomNumber(1000).ToString();
+		GameData.level = Utilities.GetRandomNumber(50).ToString();
+		GameData.date = System.DateTime.Now.ToString();
+
+		SaveGameData(gameDataPath + numOfDirectories);
+	}
+	public void SaveGameData(string directory)
+	{
+		if (DoesDirectoryExist(directory))
+		{
+			if (DoesFileExist(directory, "/GameData.json"))
+				System.IO.File.Delete(directory + "/GameData.json");
 		}
 		else
-			System.IO.Directory.CreateDirectory(gameDataPath);
+			System.IO.Directory.CreateDirectory(directory);
 
-		string inventoryData = JsonUtility.ToJson(InventoryData);
-		string filePath = gameDataPath + "/InventoryData.json";
-		System.IO.File.WriteAllText(filePath, inventoryData);
+		directoryForCurrentGame = directory;
+
+		SaveDataToJson(directoryForCurrentGame);
+	}
+	public void LoadGameData(string directory)
+	{
+		if (!DoesDirectoryExist(directory)) return;
+		if (!DoesFileExist(directory, "/GameData.json")) return;
+
+		directoryForCurrentGame = directory;
+
+		LoadDataToJson(directoryForCurrentGame);
+	}
+	public void DeleteGameData(string directory)
+	{
+		if (!DoesDirectoryExist(directory)) return;
+		if (!DoesFileExist(directory, "/GameData.json")) return;
+
+		DeleteJsonFile(directory);
+	}
+
+	private void SaveDataToJson(string directory)
+	{
+		//SavePlayerInfoData();
+		//SavePlayerInventoryData();
+		//SavePlayerEquipmentData();
+
+		string filePath = directory + "/GameData.json";
+		string inventoryData = JsonUtility.ToJson(GameData);
+        System.IO.File.WriteAllText(filePath, inventoryData);
 
 		Debug.Log(filePath);
+		ReloadSaveSlots();
 	}
-	public void LoadDataToJson()
+	private void LoadDataToJson(string directory)
 	{
-		if (!DoesDirectoryExist(gameDataPath)) return;
-		if (!DoesFileExist(gameDataPath, "/InventoryData.json")) return;
-
-		string filePath = gameDataPath + "/InventoryData.json";
+		string filePath = directory + "/GameData.json";
 		string inventoryData = System.IO.File.ReadAllText(filePath);
-		InventoryData = JsonUtility.FromJson<InventoryData>(inventoryData);
+		GameData = JsonUtility.FromJson<GameData>(inventoryData);
 
 		OnGameLoad?.Invoke();
 	}
+	private void DeleteJsonFile(string directory)
+	{
+		System.IO.File.Delete(directory + "/GameData.json");
+		System.IO.Directory.Delete(directory);
+	}
 
 	//data to save to disk
+	private void SavePlayerInfoData()
+	{
+		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
+
+		GameData.playerLevel = playerStats.entityLevel;
+		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
+		GameData.playerCurrenthealth = playerStats.currentHealth;
+		GameData.playerCurrentMana = playerStats.currentMana;
+	}
 	private void SavePlayerInventoryData()
 	{
-		InventoryData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
+		GameData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
 
 		foreach (GameObject slot in PlayerInventoryUi.Instance.InventorySlots)
 		{
@@ -82,7 +158,7 @@ public class SaveManager : MonoBehaviour
 					currentStackCount = inventoryItem.currentStackCount
 				};
 
-				InventoryData.inventoryItems.Add(itemData);
+				GameData.inventoryItems.Add(itemData);
 			}
 		}
 	}
@@ -110,9 +186,24 @@ public class SaveManager : MonoBehaviour
 					currentStackCount = inventoryItem.currentStackCount
 				};
 
-				InventoryData.equipmentItems.Add(itemData);
+				GameData.equipmentItems.Add(itemData);
 			}
 		}
+	}
+
+	//utility
+	private int GetGameSaveCount()
+	{
+		if (!DoesDirectoryExist(gameDataPath))
+			System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/GameData");
+
+		string[] directories = System.IO.Directory.GetDirectories(Application.persistentDataPath + "/GameData");
+		return directories.Length;
+	}
+	private string GrabSaveSlotDirectory(int index)
+	{
+		string[] directories = System.IO.Directory.GetDirectories(Application.persistentDataPath + "/GameData");
+		return directories[index];
 	}
 
 	//bool checks
@@ -137,10 +228,25 @@ public class SaveManager : MonoBehaviour
 		}
 	}
 }
+[System.Serializable]
+public class PlayerData
+{
+	//keybinds settings
+	//audio settings
+}
 
 [System.Serializable]
-public class InventoryData
+public class GameData
 {
+	public string name;
+	public string level;
+	public string date;
+
+	public int playerLevel;
+	public int playerCurrentExp;
+	public int playerCurrenthealth;
+	public int playerCurrentMana;
+
 	public bool hasRecievedStartingItems;
 
 	public List<InventoryItemData> inventoryItems = new List<InventoryItemData>();

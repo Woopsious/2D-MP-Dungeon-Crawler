@@ -37,6 +37,8 @@ public class PlayerController : MonoBehaviour
 		if (playerInputs == null)
 			playerInputs = new PlayerInputActions();
 		playerInputs.Enable();
+
+		SaveManager.OnGameLoad += ReloadPlayerInfo;
 	}
 
 	private void OnDisable()
@@ -45,6 +47,7 @@ public class PlayerController : MonoBehaviour
 
 		playerStats.OnHealthChangeEvent -= PlayerHotbarUi.Instance.OnHealthChange;
 		playerStats.OnManaChangeEvent -= PlayerHotbarUi.Instance.OnManaChange;
+		SaveManager.OnGameLoad -= ReloadPlayerInfo;
 	}
 
 	private void Update()
@@ -69,6 +72,13 @@ public class PlayerController : MonoBehaviour
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
 		playerCamera.transform.parent = null;
+	}
+
+	public void ReloadPlayerInfo()
+	{
+		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
+		GetComponent<PlayerExperienceHandler>().ReloadExperienceLevel(SaveManager.Instance.GameData.playerCurrentExp);
+		playerStats.CalculateStats();
 	}
 
 	private void UpdateSpriteDirection()

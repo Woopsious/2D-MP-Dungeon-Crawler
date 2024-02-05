@@ -95,7 +95,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void ReloadPlayerInventory()
 	{
-		foreach (InventoryItemData itemData in SaveManager.Instance.InventoryData.inventoryItems) //spawn item from loot pool at death location
+		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.inventoryItems) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
@@ -111,7 +111,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void ReloadPlayerEquipment()
 	{
-		foreach (InventoryItemData itemData in SaveManager.Instance.InventoryData.equipmentItems) //spawn item from loot pool at death location
+		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.equipmentItems) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();

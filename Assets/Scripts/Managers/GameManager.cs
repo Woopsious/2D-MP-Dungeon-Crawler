@@ -10,10 +10,11 @@ public class GameManager : MonoBehaviour
 
 	public static event Action OnSceneChange;
 
-	void Start()
-    {
-        Instance = this;
-    }
+	private void Awake()
+	{
+		Instance = this;
+	}
+
 	public void Update()
 	{
 		//Debug.Log(Time.timeScale);
