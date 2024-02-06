@@ -763,6 +763,12 @@ MonoBehaviour:
   folderDirectory: 
   saveSlotCountText: {fileID: 4192221684839153115}
   saveSlotInfoText: {fileID: 1771833860271443582}
+  saveButtonObj: {fileID: 2785569190741771769}
+  loadButtonObj: {fileID: 250892570921709594}
+  deleteButtonObj: {fileID: 6068421936611281843}
+  Name: 
+  Level: 
+  Date: 
 --- !u!1 &7425513283087554759
 GameObject:
   m_ObjectHideFlags: 0
@@ -989,8 +995,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 25
-  m_fontSizeBase: 25
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

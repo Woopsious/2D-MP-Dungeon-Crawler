@@ -17,6 +17,7 @@ public class SaveManager : MonoBehaviour
 	public GameObject saveSlotContainer;
 	public GameObject saveSlotCardPrefab;
 
+	private int maxSaveSlots = 20;
 	private string playerDataPath;
 	private string gameDataPath;
 	private string directoryForCurrentGame;
@@ -36,17 +37,26 @@ public class SaveManager : MonoBehaviour
 		foreach (Transform child in saveSlotContainer.transform)
 			Destroy(child.gameObject);
 
-		int saveSlotsCount = GetGameSaveCount();
-
-		for (int i = 0; i < saveSlotsCount; i++)
+		for (int i = 0; i < maxSaveSlots; i++)
 		{
-			LoadDataToJson(GrabSaveSlotDirectory(i));
 			GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
 			SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
-			saveSlot.Name = GameData.name;
-			saveSlot.Level = GameData.level;
-			saveSlot.Date = GameData.date;
-			saveSlot.Initilize(GrabSaveSlotDirectory(i));
+
+			if (DoesDirectoryExist(gameDataPath + i))
+			{
+				LoadDataToJson(gameDataPath + i);
+				saveSlot.Name = GameData.name;
+				saveSlot.Level = GameData.level;
+				saveSlot.Date = GameData.date;
+				saveSlot.Initilize(gameDataPath + i, false);
+			}
+			else
+			{
+				saveSlot.Name = "Empty";
+				saveSlot.Level = "Empty";
+				saveSlot.Date = "Empty";
+				saveSlot.Initilize(gameDataPath + i, true);
+			}
 		}
 	}
 
@@ -56,13 +66,9 @@ public class SaveManager : MonoBehaviour
 	/// </summary>
 	public void CreateNewGameSave()
 	{
-		int numOfDirectories = GetGameSaveCount();
-
 		GameData.name = Utilities.GetRandomNumber(1000).ToString();
 		GameData.level = Utilities.GetRandomNumber(50).ToString();
 		GameData.date = System.DateTime.Now.ToString();
-
-		SaveGameData(gameDataPath + numOfDirectories);
 	}
 	public void SaveGameData(string directory)
 	{
@@ -75,7 +81,6 @@ public class SaveManager : MonoBehaviour
 			System.IO.Directory.CreateDirectory(directory);
 
 		directoryForCurrentGame = directory;
-
 		SaveDataToJson(directoryForCurrentGame);
 	}
 	public void LoadGameData(string directory)
@@ -84,7 +89,6 @@ public class SaveManager : MonoBehaviour
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
 		directoryForCurrentGame = directory;
-
 		LoadDataToJson(directoryForCurrentGame);
 	}
 	public void DeleteGameData(string directory)
@@ -105,7 +109,6 @@ public class SaveManager : MonoBehaviour
 		string inventoryData = JsonUtility.ToJson(GameData);
         System.IO.File.WriteAllText(filePath, inventoryData);
 
-		Debug.Log(filePath);
 		ReloadSaveSlots();
 	}
 	private void LoadDataToJson(string directory)
@@ -120,6 +123,8 @@ public class SaveManager : MonoBehaviour
 	{
 		System.IO.File.Delete(directory + "/GameData.json");
 		System.IO.Directory.Delete(directory);
+
+		ReloadSaveSlots();
 	}
 
 	//data to save to disk
@@ -191,41 +196,20 @@ public class SaveManager : MonoBehaviour
 		}
 	}
 
-	//utility
-	private int GetGameSaveCount()
-	{
-		if (!DoesDirectoryExist(gameDataPath))
-			System.IO.Directory.CreateDirectory(Application.persistentDataPath + "/GameData");
-
-		string[] directories = System.IO.Directory.GetDirectories(Application.persistentDataPath + "/GameData");
-		return directories.Length;
-	}
-	private string GrabSaveSlotDirectory(int index)
-	{
-		string[] directories = System.IO.Directory.GetDirectories(Application.persistentDataPath + "/GameData");
-		return directories[index];
-	}
-
 	//bool checks
 	private bool DoesDirectoryExist(string path)
 	{
 		if (System.IO.Directory.Exists(path))
 			return true;
 		else
-		{
-			Debug.LogError("Directory Doesnt Exist");
 			return false;
-		}
 	}
 	private bool DoesFileExist(string path, string file)
 	{
 		if (System.IO.File.Exists(path + file))
 			return true;
 		else
-		{
-			Debug.LogError("File Doesnt Exist");
 			return false;
-		}
 	}
 }
 [System.Serializable]

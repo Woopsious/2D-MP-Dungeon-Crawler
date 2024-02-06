@@ -19,7 +19,7 @@ MonoBehaviour:
     width: 1920
     height: 1037
   m_ShowMode: 4
-  m_Title: Game
+  m_Title: Console
   m_RootView: {fileID: 8}
   m_MinSize: {x: 875, y: 300}
   m_MaxSize: {x: 10000, y: 10000}
@@ -942,7 +942,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 0
+    m_HadKeyboardFocusLastEvent: 1
     m_ExpandedInstanceIDs: c623000000000000b284000046860000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1010,7 +1010,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: a0840000
       m_LastClickedID: 33952
-      m_ExpandedIDs: 16fbffff
+      m_ExpandedIDs: 16fbfffff4ffffffd0830000188400003684000040840000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1098,7 +1098,7 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 0, y: 0}
+      snapOffset: {x: 0, y: 25}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       id: unity-scene-view-toolbar
@@ -1124,7 +1124,7 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 0, y: 0}
+      snapOffset: {x: 0, y: 25}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 0
       id: unity-transform-toolbar
@@ -1418,7 +1418,7 @@ MonoBehaviour:
   m_Position:
     m_Target: {x: 1247.5284, y: 611.1825, z: -2.8113067}
     speed: 2
-    m_Value: {x: 1247.5284, y: 611.1825, z: -2.8113067}
+    m_Value: {x: 0, y: -50, z: 0}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1470,7 +1470,7 @@ MonoBehaviour:
   m_Size:
     m_Target: 534.2653
     speed: 2
-    m_Value: 534.2653
+    m_Value: 403.11288
   m_Ortho:
     m_Target: 1
     speed: 2
