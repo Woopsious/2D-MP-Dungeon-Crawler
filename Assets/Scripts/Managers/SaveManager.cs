@@ -64,7 +64,7 @@ public class SaveManager : MonoBehaviour
 	/// public methods are called from buttons on ui that pass in corrisponding directory path, run checks,
 	/// then save/load Json data to disk, or delete Json data
 	/// </summary>
-	public void CreateNewGameSave()
+	public void CreateNewGameSave() //temporary test function
 	{
 		GameData.name = Utilities.GetRandomNumber(1000).ToString();
 		GameData.level = Utilities.GetRandomNumber(50).ToString();
@@ -127,7 +127,7 @@ public class SaveManager : MonoBehaviour
 		ReloadSaveSlots();
 	}
 
-	//data to save to disk
+	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
 	private void SavePlayerInfoData()
 	{
 		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
