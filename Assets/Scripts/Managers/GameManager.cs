@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -10,14 +11,41 @@ public class GameManager : MonoBehaviour
 
 	public static event Action OnSceneChange;
 
+	private string mainMenuName = "MainMenu";
+	private string hubAreaName = "HubArea";
+
 	private void Awake()
 	{
-		Instance = this;
+		if (Instance != null && Instance != this)
+			Destroy(gameObject);
+		else
+		{
+			Instance = this;
+			DontDestroyOnLoad(this.gameObject);
+		}
 	}
 
 	public void Update()
 	{
 		//Debug.Log(Time.timeScale);
+	}
+
+	//saving and loading scenes
+	public void LoadMainMenu()
+	{
+		StartCoroutine(LoadNewSceneAsync(mainMenuName));
+	}
+	public void LoadHubArea()
+	{
+		StartCoroutine(LoadNewSceneAsync(hubAreaName));
+	}
+	private IEnumerator LoadNewSceneAsync(string sceneToLoad)
+	{
+		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
+
+		while (!asyncLoad.isDone)
+			yield return null;
+		OnSceneChange?.Invoke();
 	}
 
 	public void PauseGame()

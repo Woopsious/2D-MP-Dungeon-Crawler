@@ -10,11 +10,10 @@ public class SaveManager : MonoBehaviour
 {
 	public static SaveManager Instance;
 
-	public static event Action OnGameLoad;
+	public static event Action OnGameLoad; //event for data that needs to be restored
 
 	[SerializeReference] public GameData GameData = new GameData();
 
-	public GameObject saveSlotContainer;
 	public GameObject saveSlotCardPrefab;
 
 	private int maxSaveSlots = 20;
@@ -32,7 +31,20 @@ public class SaveManager : MonoBehaviour
 		gameDataPath = Application.persistentDataPath + "/GameData/Save";
 	}
 
-	public void ReloadSaveSlots()
+	private void OnEnable()
+	{
+		GameManager.OnSceneChange += OnGameReLoad;
+	}
+	private void OnDisable()
+	{
+		GameManager.OnSceneChange -= OnGameReLoad;
+	}
+	private void OnGameReLoad()
+	{
+		OnGameLoad?.Invoke();
+	}
+
+	public void ReloadSaveSlots(GameObject saveSlotContainer)
 	{
 		foreach (Transform child in saveSlotContainer.transform)
 			Destroy(child.gameObject);
@@ -109,7 +121,7 @@ public class SaveManager : MonoBehaviour
 		string inventoryData = JsonUtility.ToJson(GameData);
         System.IO.File.WriteAllText(filePath, inventoryData);
 
-		ReloadSaveSlots();
+		MainMenuManager.Instance.ReloadSaveSlots();
 	}
 	private void LoadDataToJson(string directory)
 	{
@@ -124,7 +136,7 @@ public class SaveManager : MonoBehaviour
 		System.IO.File.Delete(directory + "/GameData.json");
 		System.IO.Directory.Delete(directory);
 
-		ReloadSaveSlots();
+		MainMenuManager.Instance.ReloadSaveSlots();
 	}
 
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)

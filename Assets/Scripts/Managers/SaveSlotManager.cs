@@ -60,6 +60,7 @@ public class SaveSlotManager : MonoBehaviour
 	public void LoadGame()
 	{
 		SaveManager.Instance.LoadGameData(folderDirectory);
+		GameManager.Instance.LoadHubArea();
 	}
 	public void DeleteGame()
 	{
