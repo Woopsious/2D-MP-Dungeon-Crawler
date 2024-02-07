@@ -13,13 +13,14 @@ public class SaveManager : MonoBehaviour
 	public static event Action OnGameLoad; //event for data that needs to be restored
 
 	[SerializeReference] public GameData GameData = new GameData();
+	[SerializeReference] public SlotData SlotData = new SlotData();
 
 	public GameObject saveSlotCardPrefab;
 
 	private int maxSaveSlots = 20;
-	private string playerDataPath;
-	private string gameDataPath;
-	private string directoryForCurrentGame;
+	[SerializeReference] private string playerDataPath;
+	[SerializeReference] private string gameDataPath;
+	[SerializeReference] private string directoryForCurrentGame;
 
 	private void Awake()
 	{
@@ -56,12 +57,12 @@ public class SaveManager : MonoBehaviour
 			GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
 			SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
 
-			if (DoesDirectoryExist(gameDataPath + i))
+			if (DoesDirectoryExist(Application.persistentDataPath + "/GameData/Save" + i))
 			{
 				GrabJsonSlotData(Application.persistentDataPath + "/GameData/Save" + i);
-				saveSlot.Name = GameData.name;
-				saveSlot.Level = GameData.level;
-				saveSlot.Date = GameData.date;
+				saveSlot.Name = SlotData.name;
+				saveSlot.Level = SlotData.level;
+				saveSlot.Date = SlotData.date;
 				saveSlot.Initilize(gameDataPath + i, false);
 			}
 			else
@@ -72,8 +73,6 @@ public class SaveManager : MonoBehaviour
 				saveSlot.Initilize(gameDataPath + i, true);
 			}
 		}
-		LoadDataToJson(directoryForCurrentGame);
-		//reload data for save player is currently on
 	}
 
 	/// <summary>
@@ -82,9 +81,9 @@ public class SaveManager : MonoBehaviour
 	/// </summary>
 	public void CreateNewGameSave() //temporary test function
 	{
-		GameData.name = Utilities.GetRandomNumber(1000).ToString();
-		GameData.level = Utilities.GetRandomNumber(50).ToString();
-		GameData.date = System.DateTime.Now.ToString();
+		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
+		SlotData.level = Utilities.GetRandomNumber(50).ToString();
+		SlotData.date = System.DateTime.Now.ToString();
 	}
 	public void SaveGameData(string directory)
 	{
@@ -125,6 +124,10 @@ public class SaveManager : MonoBehaviour
 		string inventoryData = JsonUtility.ToJson(GameData);
         System.IO.File.WriteAllText(filePath, inventoryData);
 
+		string slotPath = directory + "/SlotData.json";
+		string slotData = JsonUtility.ToJson(SlotData);
+		System.IO.File.WriteAllText(slotPath, slotData);
+
 		MainMenuManager.Instance.ReloadSaveSlots();
 	}
 	private void LoadDataToJson(string directory)
@@ -138,6 +141,7 @@ public class SaveManager : MonoBehaviour
 	private void DeleteJsonFile(string directory)
 	{
 		System.IO.File.Delete(directory + "/GameData.json");
+		System.IO.File.Delete(directory + "/SlotData.json");
 		System.IO.Directory.Delete(directory);
 
 		MainMenuManager.Instance.ReloadSaveSlots();
@@ -146,10 +150,9 @@ public class SaveManager : MonoBehaviour
 	//grab slot data for Ui
 	private void GrabJsonSlotData(string directory)
 	{
-		string filePath = directory + "/GameData.json";
-		Debug.Log(filePath);
-		string inventoryData = System.IO.File.ReadAllText(filePath);
-		GameData = JsonUtility.FromJson<GameData>(inventoryData);
+		string slotPath = directory + "/SlotData.json";
+		string slotData = System.IO.File.ReadAllText(slotPath);
+		SlotData = JsonUtility.FromJson<SlotData>(slotData);
 	}
 
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
@@ -157,9 +160,9 @@ public class SaveManager : MonoBehaviour
 	{
 		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
 
-		GameData.name = Utilities.GetRandomNumber(1000).ToString();
-		GameData.level = playerStats.entityLevel.ToString();
-		GameData.date = DateTime.Now.ToString();
+		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
+		SlotData.level = playerStats.entityLevel.ToString();
+		SlotData.date = DateTime.Now.ToString();
 
 		GameData.playerLevel = playerStats.entityLevel;
 		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
@@ -169,6 +172,7 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerInventoryData()
 	{
 		GameData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
+		GameData.inventoryItems.Clear();
 
 		foreach (GameObject slot in PlayerInventoryUi.Instance.InventorySlots)
 		{
@@ -191,13 +195,14 @@ public class SaveManager : MonoBehaviour
 					maxStackCount = inventoryItem.maxStackCount,
 					currentStackCount = inventoryItem.currentStackCount
 				};
-
 				GameData.inventoryItems.Add(itemData);
 			}
 		}
 	}
 	private void SavePlayerEquipmentData()
 	{
+		GameData.equipmentItems.Clear();
+
 		foreach (GameObject slot in PlayerInventoryUi.Instance.EquipmentSlots)
 		{
 			if (slot.GetComponent<InventorySlot>().IsSlotEmpty()) continue;
@@ -219,7 +224,6 @@ public class SaveManager : MonoBehaviour
 					maxStackCount = inventoryItem.maxStackCount,
 					currentStackCount = inventoryItem.currentStackCount
 				};
-
 				GameData.equipmentItems.Add(itemData);
 			}
 		}
@@ -247,14 +251,17 @@ public class PlayerData
 	//keybinds settings
 	//audio settings
 }
-
 [System.Serializable]
-public class GameData
+public class SlotData
 {
 	public string name;
 	public string level;
 	public string date;
+}
 
+[System.Serializable]
+public class GameData
+{
 	public int playerLevel;
 	public int playerCurrentExp;
 	public int playerCurrenthealth;
