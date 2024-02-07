@@ -41,6 +41,8 @@ public class SaveManager : MonoBehaviour
 	}
 	private void OnGameReLoad()
 	{
+		//may need checks here to see if data does need to be reloaded but
+		//might not need to due to it being event based and refs arnt hard coded
 		OnGameLoad?.Invoke();
 	}
 
@@ -56,7 +58,7 @@ public class SaveManager : MonoBehaviour
 
 			if (DoesDirectoryExist(gameDataPath + i))
 			{
-				LoadDataToJson(gameDataPath + i);
+				GrabJsonSlotData(Application.persistentDataPath + "/GameData/Save" + i);
 				saveSlot.Name = GameData.name;
 				saveSlot.Level = GameData.level;
 				saveSlot.Date = GameData.date;
@@ -70,6 +72,8 @@ public class SaveManager : MonoBehaviour
 				saveSlot.Initilize(gameDataPath + i, true);
 			}
 		}
+		LoadDataToJson(directoryForCurrentGame);
+		//reload data for save player is currently on
 	}
 
 	/// <summary>
@@ -113,9 +117,9 @@ public class SaveManager : MonoBehaviour
 
 	private void SaveDataToJson(string directory)
 	{
-		//SavePlayerInfoData();
-		//SavePlayerInventoryData();
-		//SavePlayerEquipmentData();
+		SavePlayerInfoData();
+		SavePlayerInventoryData();
+		SavePlayerEquipmentData();
 
 		string filePath = directory + "/GameData.json";
 		string inventoryData = JsonUtility.ToJson(GameData);
@@ -139,10 +143,23 @@ public class SaveManager : MonoBehaviour
 		MainMenuManager.Instance.ReloadSaveSlots();
 	}
 
+	//grab slot data for Ui
+	private void GrabJsonSlotData(string directory)
+	{
+		string filePath = directory + "/GameData.json";
+		Debug.Log(filePath);
+		string inventoryData = System.IO.File.ReadAllText(filePath);
+		GameData = JsonUtility.FromJson<GameData>(inventoryData);
+	}
+
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
 	private void SavePlayerInfoData()
 	{
 		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
+
+		GameData.name = Utilities.GetRandomNumber(1000).ToString();
+		GameData.level = playerStats.entityLevel.ToString();
+		GameData.date = DateTime.Now.ToString();
 
 		GameData.playerLevel = playerStats.entityLevel;
 		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;

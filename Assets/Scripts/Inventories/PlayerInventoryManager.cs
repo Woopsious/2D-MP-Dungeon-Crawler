@@ -28,8 +28,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		if(!hasRecievedStartingItems)
-			SpawnStartingItems();
+
 	}
 
 	private void OnEnable()
@@ -95,6 +94,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void ReloadPlayerInventory()
 	{
+		Debug.LogError("Reloading Player Inventory");
+
 		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.inventoryItems) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
@@ -108,9 +109,16 @@ public class PlayerInventoryManager : MonoBehaviour
 			newInventoryItem.parentAfterDrag = PlayerInventoryUi.Instance.InventorySlots[0].transform;
 			inventorySlot.EquipItemToSlot(newInventoryItem);
 		}
+
+		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
+
+		if (!hasRecievedStartingItems)
+			SpawnStartingItems();
 	}
 	private void ReloadPlayerEquipment()
 	{
+		Debug.LogError("Reloading Player Equipment");
+
 		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.equipmentItems) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);

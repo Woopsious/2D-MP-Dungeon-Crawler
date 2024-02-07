@@ -15,15 +15,6 @@ public class MainMenuManager : MonoBehaviour
 		Instance = this;
 	}
 
-	private void OnEnable()
-	{
-		GameManager.OnSceneChange += ReloadSaveSlots;
-	}
-	private void OnDisable()
-	{
-		GameManager.OnSceneChange -= ReloadSaveSlots;
-	}
-
 	//button actions
 	public void ButtonFunctionNotSetUp()
 	{
@@ -52,13 +43,14 @@ public class MainMenuManager : MonoBehaviour
 	//show/hide save slots menu
 	public void ShowSaveSlotsMenu()
 	{
+		ReloadSaveSlots();
 		saveSlotsMenuObj.SetActive(true);
 		GameManager.Instance.PauseGame();
 	}
 	public void HideSaveSlotsMenu()
 	{
 		saveSlotsMenuObj.SetActive(false);
-		GameManager.Instance.UnPauseGame();
+		GameManager.Instance.PauseGame();
 	}
 
 	//show/hide main menu
