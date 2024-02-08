@@ -21,12 +21,15 @@ public class SaveSlotManager : MonoBehaviour
 	public string Level;
 	public string Date;
 
-	public void Initilize(string directory, bool isEmpty)
+	public void Initilize(string directory, bool isAutoSaveSlot , bool isEmpty)
 	{
 		folderDirectory = directory;
 
 		saveSlotInfoText.text = $"Player Name: {Name} \n Player Level: {Level} \n Date: {Date}";
 		saveSlotCountText.text = GrabSaveSlotNumber(directory);
+
+		if (isAutoSaveSlot)
+			saveSlotInfoText.text = "Auto Save Slot";
 
 		if (isEmpty)
 		{
@@ -38,6 +41,10 @@ public class SaveSlotManager : MonoBehaviour
 			loadButtonObj.SetActive(true);
 			deleteButtonObj.SetActive(true);
 		}
+		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName))
+			saveButtonObj.SetActive(false);
+		else
+			saveButtonObj.SetActive(true);
 	}
 	private string GrabSaveSlotNumber(string directory)
 	{

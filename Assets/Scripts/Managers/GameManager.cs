@@ -11,8 +11,8 @@ public class GameManager : MonoBehaviour
 
 	public static event Action OnSceneChange;
 
-	private string mainMenuName = "MainMenu";
-	private string hubAreaName = "HubArea";
+	public readonly string mainMenuName = "MainMenu";
+	public readonly string hubAreaName = "HubArea";
 
 	private void Awake()
 	{

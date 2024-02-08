@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Utilities
 {
@@ -45,5 +46,13 @@ public class Utilities
 		return itemLvl - 4;
 	}
 
-	//for item spawning
+	//check if current active scene == this scene name
+	public static bool GetCurrentlyActiveScene(string sceneName)
+	{
+		Scene currentScene = SceneManager.GetActiveScene();
+		if (currentScene.name == sceneName)
+			return true;
+		else
+			return false;
+	}
 }

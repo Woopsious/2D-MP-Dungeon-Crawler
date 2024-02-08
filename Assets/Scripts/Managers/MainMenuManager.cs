@@ -8,6 +8,7 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject saveSlotsMenuObj;
 	public static MainMenuManager Instance;
 
+	public GameObject autoSaveContainer;
 	public GameObject saveSlotContainer;
 
 	public void Start()
@@ -77,6 +78,7 @@ public class MainMenuManager : MonoBehaviour
 
 	public void ReloadSaveSlots()
 	{
+		SaveManager.Instance.ReloadAutoSaveSlot(autoSaveContainer);
 		SaveManager.Instance.ReloadSaveSlots(saveSlotContainer);
 	}
 }

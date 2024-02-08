@@ -62,15 +62,39 @@ public class SaveManager : MonoBehaviour
 				saveSlot.Name = SlotData.name;
 				saveSlot.Level = SlotData.level;
 				saveSlot.Date = SlotData.date;
-				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, false);
+				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, false, false);
 			}
 			else
 			{
 				saveSlot.Name = "Empty";
 				saveSlot.Level = "Empty";
 				saveSlot.Date = "Empty";
-				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, true);
+				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, false, true);
 			}
+		}
+	}
+	public void ReloadAutoSaveSlot(GameObject saveSlotContainer)
+	{
+		foreach (Transform child in saveSlotContainer.transform)
+			Destroy(child.gameObject);
+
+		GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
+		SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
+
+		if (DoesDirectoryExist(Application.persistentDataPath + "/GameData/AutoSave"))
+		{
+			GrabJsonSlotData(Application.persistentDataPath + "/GameData/AutoSave");
+			saveSlot.Name = SlotData.name;
+			saveSlot.Level = SlotData.level;
+			saveSlot.Date = SlotData.date;
+			saveSlot.Initilize(Application.persistentDataPath + "/GameData/AutoSave", true, false);
+		}
+		else
+		{
+			saveSlot.Name = "Empty";
+			saveSlot.Level = "Empty";
+			saveSlot.Date = "Empty";
+			saveSlot.Initilize(Application.persistentDataPath + "/GameData/AutoSave", true, true);
 		}
 	}
 
