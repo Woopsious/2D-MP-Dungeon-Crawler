@@ -34,12 +34,10 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
-		SaveManager.OnGameLoad += ReloadPlayerEquipment;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
-		SaveManager.OnGameLoad -= ReloadPlayerEquipment;
 	}
 
 	private void SpawnStartingItems()
@@ -96,36 +94,25 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		Debug.LogError("Reloading Player Inventory");
 
-		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.inventoryItems) //spawn item from loot pool at death location
-		{
-			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
-
-			SetItemData(newInventoryItem, itemData);
-			InventorySlot inventorySlot = PlayerInventoryUi.Instance.InventorySlots[itemData.inventorySlotIndex].GetComponent<InventorySlot>();
-
-			newInventoryItem.Initilize();
-			newInventoryItem.transform.SetParent(inventorySlot.transform);
-			newInventoryItem.parentAfterDrag = PlayerInventoryUi.Instance.InventorySlots[0].transform;
-			inventorySlot.EquipItemToSlot(newInventoryItem);
-		}
+		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerInventoryUi.Instance.AbilitySlots);
 
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 
 		if (!hasRecievedStartingItems)
 			SpawnStartingItems();
 	}
-	private void ReloadPlayerEquipment()
+	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
-		Debug.LogError("Reloading Player Equipment");
-
-		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.equipmentItems) //spawn item from loot pool at death location
+		foreach (InventoryItemData itemData in itemDataList) //spawn item from loot pool at death location
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
 
 			SetItemData(newInventoryItem, itemData);
-			InventorySlot inventorySlot = PlayerInventoryUi.Instance.EquipmentSlots[itemData.inventorySlotIndex].GetComponent<InventorySlot>();
+			InventorySlot inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlot>();
 
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);

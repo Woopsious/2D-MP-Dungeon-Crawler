@@ -11,7 +11,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject ItemUiPrefab;
 	public GameObject InventoryPanelUi;
 
-	[Header("Equipment")]
+	[Header("Inventory items")]
+	public GameObject InventoryUi;
+	public List<GameObject> InventorySlots = new List<GameObject>();
+
+	[Header("Equipment items")]
 	public GameObject EquipmentUi;
 	public List<GameObject> EquipmentSlots = new List<GameObject>();
 
@@ -26,9 +30,12 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
 
-	[Header("Inventory")]
-	public GameObject InventoryUi;
-	public List<GameObject> InventorySlots = new List<GameObject>();
+	[Header("Hotbar items")]
+	public GameObject ConsumablesUi;
+	public List<GameObject> ConsumableSlots = new List<GameObject>();
+
+	public GameObject AbilitiesUi;
+	public List<GameObject> AbilitySlots = new List<GameObject>();
 
 	private void Awake()
 	{

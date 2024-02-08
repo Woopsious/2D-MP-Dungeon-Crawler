@@ -20,7 +20,7 @@ public class SaveManager : MonoBehaviour
 	private int maxSaveSlots = 20;
 	[SerializeReference] private string playerDataPath;
 	[SerializeReference] private string gameDataPath;
-	[SerializeReference] private string directoryForCurrentGame;
+	[SerializeReference] private string autoSaveDataPath;
 
 	private void Awake()
 	{
@@ -30,6 +30,7 @@ public class SaveManager : MonoBehaviour
 	{
 		playerDataPath = Application.persistentDataPath + "/PlayerData";
 		gameDataPath = Application.persistentDataPath + "/GameData/Save";
+		autoSaveDataPath = Application.persistentDataPath + "/GameData/AutoSave";
 	}
 
 	private void OnEnable()
@@ -76,8 +77,9 @@ public class SaveManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// public methods are called from buttons on ui that pass in corrisponding directory path, run checks,
-	/// then save/load Json data to disk, or delete Json data
+	/// public funcs called from ui buttons etc, pass in corrisponding directory path run bool checks, then call private func that save/load 
+	/// Json data to disk, or delete Json data and files
+	/// auto save is normal save but only has 1 slot and cant be called by player (may add keybind later)
 	/// </summary>
 	public void CreateNewGameSave() //temporary test function
 	{
@@ -85,6 +87,11 @@ public class SaveManager : MonoBehaviour
 		SlotData.level = Utilities.GetRandomNumber(50).ToString();
 		SlotData.date = System.DateTime.Now.ToString();
 	}
+	public void AutoSaveData()
+	{
+		SaveGameData(autoSaveDataPath);
+	}
+	//directory checks/creation
 	public void SaveGameData(string directory)
 	{
 		if (DoesDirectoryExist(directory))
@@ -95,16 +102,14 @@ public class SaveManager : MonoBehaviour
 		else
 			System.IO.Directory.CreateDirectory(directory);
 
-		directoryForCurrentGame = directory;
-		SaveDataToJson(directoryForCurrentGame);
+		SaveDataToJson(directory);
 	}
 	public void LoadGameData(string directory)
 	{
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
-		directoryForCurrentGame = directory;
-		LoadDataToJson(directoryForCurrentGame);
+		LoadDataToJson(directory);
 	}
 	public void DeleteGameData(string directory)
 	{
@@ -114,11 +119,12 @@ public class SaveManager : MonoBehaviour
 		DeleteJsonFile(directory);
 	}
 
+	//saving/loading/deleting json file
 	private void SaveDataToJson(string directory)
 	{
 		SavePlayerInfoData();
 		SavePlayerInventoryData();
-		SavePlayerEquipmentData();
+		//SavePlayerEquipmentData();
 
 		string filePath = directory + "/GameData.json";
 		string inventoryData = JsonUtility.ToJson(GameData);
@@ -172,38 +178,17 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerInventoryData()
 	{
 		GameData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
-		GameData.inventoryItems.Clear();
 
-		foreach (GameObject slot in PlayerInventoryUi.Instance.InventorySlots)
-		{
-			if (slot.GetComponent<InventorySlot>().IsSlotEmpty()) continue;
-			else
-			{
-				InventoryItem inventoryItem = slot.GetComponent<InventorySlot>().itemInSlot;
-				InventoryItemData itemData = new()
-				{
-					weaponBaseRef = inventoryItem.weaponBaseRef,
-					armorBaseRef = inventoryItem.armorBaseRef,
-					accessoryBaseRef = inventoryItem.accessoryBaseRef,
-					consumableBaseRef = inventoryItem.consumableBaseRef,
-
-					itemLevel = inventoryItem.itemLevel,
-					rarity = (InventoryItemData.Rarity)inventoryItem.rarity,
-
-					inventorySlotIndex = inventoryItem.inventorySlotIndex,
-					isStackable = inventoryItem.isStackable,
-					maxStackCount = inventoryItem.maxStackCount,
-					currentStackCount = inventoryItem.currentStackCount
-				};
-				GameData.inventoryItems.Add(itemData);
-			}
-		}
+		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
+		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
+		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);
+		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerInventoryUi.Instance.AbilitySlots);
 	}
-	private void SavePlayerEquipmentData()
+	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
-		GameData.equipmentItems.Clear();
+		itemDataList.Clear();
 
-		foreach (GameObject slot in PlayerInventoryUi.Instance.EquipmentSlots)
+		foreach (GameObject slot in gameObjects)
 		{
 			if (slot.GetComponent<InventorySlot>().IsSlotEmpty()) continue;
 			else
@@ -224,7 +209,7 @@ public class SaveManager : MonoBehaviour
 					maxStackCount = inventoryItem.maxStackCount,
 					currentStackCount = inventoryItem.currentStackCount
 				};
-				GameData.equipmentItems.Add(itemData);
+				itemDataList.Add(itemData);
 			}
 		}
 	}
@@ -271,6 +256,8 @@ public class GameData
 
 	public List<InventoryItemData> inventoryItems = new List<InventoryItemData>();
 	public List<InventoryItemData> equipmentItems = new List<InventoryItemData>();
+	public List<InventoryItemData> consumableItems = new List<InventoryItemData>();
+	public List<InventoryItemData> abilityItems = new List<InventoryItemData>();
 }
 
 [System.Serializable]

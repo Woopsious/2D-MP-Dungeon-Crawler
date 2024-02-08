@@ -38,7 +38,6 @@ public class MainMenuManager : MonoBehaviour
 	public void StartNewGameButton()
 	{
 		GameManager.Instance.LoadHubArea();
-		//start autosave directory here
 	}
 
 	//show/hide save slots menu
