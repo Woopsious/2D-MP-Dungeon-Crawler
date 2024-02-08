@@ -92,8 +92,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void ReloadPlayerInventory()
 	{
-		Debug.LogError("Reloading Player Inventory");
-
 		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);

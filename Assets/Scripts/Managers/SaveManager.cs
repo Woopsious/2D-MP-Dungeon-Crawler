@@ -18,19 +18,17 @@ public class SaveManager : MonoBehaviour
 	public GameObject saveSlotCardPrefab;
 
 	private int maxSaveSlots = 20;
-	[SerializeReference] private string playerDataPath;
-	[SerializeReference] private string gameDataPath;
-	[SerializeReference] private string autoSaveDataPath;
+
+	/// <summary>
+	/// DIRECTORIES FOR DATA
+	/// Application.persistentDataPath + "/PlayerData";
+	/// Application.persistentDataPath + "/GameData/Save";
+	/// Application.persistentDataPath + "/GameData/AutoSave";
+	/// </summary>
 
 	private void Awake()
 	{
 		Instance = this;
-	}
-	private void Start()
-	{
-		playerDataPath = Application.persistentDataPath + "/PlayerData";
-		gameDataPath = Application.persistentDataPath + "/GameData/Save";
-		autoSaveDataPath = Application.persistentDataPath + "/GameData/AutoSave";
 	}
 
 	private void OnEnable()
@@ -64,14 +62,14 @@ public class SaveManager : MonoBehaviour
 				saveSlot.Name = SlotData.name;
 				saveSlot.Level = SlotData.level;
 				saveSlot.Date = SlotData.date;
-				saveSlot.Initilize(gameDataPath + i, false);
+				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, false);
 			}
 			else
 			{
 				saveSlot.Name = "Empty";
 				saveSlot.Level = "Empty";
 				saveSlot.Date = "Empty";
-				saveSlot.Initilize(gameDataPath + i, true);
+				saveSlot.Initilize(Application.persistentDataPath + "/GameData/Save" + i, true);
 			}
 		}
 	}
@@ -89,7 +87,7 @@ public class SaveManager : MonoBehaviour
 	}
 	public void AutoSaveData()
 	{
-		SaveGameData(autoSaveDataPath);
+		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	//directory checks/creation
 	public void SaveGameData(string directory)
@@ -106,6 +104,8 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadGameData(string directory)
 	{
+		Debug.Log("loading data");
+
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
@@ -124,7 +124,6 @@ public class SaveManager : MonoBehaviour
 	{
 		SavePlayerInfoData();
 		SavePlayerInventoryData();
-		//SavePlayerEquipmentData();
 
 		string filePath = directory + "/GameData.json";
 		string inventoryData = JsonUtility.ToJson(GameData);
