@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 033d642619f066f47932f5d8986b3241, type: 3}
+  m_Name: RogueClass
+  m_EditorClassIdentifier: 
+  className: Rogue
+  classDescription: Rogues are a good at dealing and can be very versatile in multiple
+    situations. Keep in mind though they are weak to most attacks but do have some
+    options for self healing besides health potions.
+  canUseSpells: 1
+  classRestriction: 0
