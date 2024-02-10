@@ -18,6 +18,7 @@ public class SOAbilities : ScriptableObject
 	public string abilityDescription;
 
 	public bool isSpell;
+	public bool hasAOE;
 
 	[Header("Damage Type")]
 	public DamageType baseDamageType;

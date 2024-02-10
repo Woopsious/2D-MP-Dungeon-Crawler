@@ -33,6 +33,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	{
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItem item = droppeditem.GetComponent<InventoryItem>();
+
 		DragEquipItemToSlot(item);
 	}
 	public void DragEquipItemToSlot(InventoryItem item)
@@ -40,6 +41,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		InventorySlot oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlot>();
 
 		if (!IsCorrectSlotType(item)) return;
+
+		if (slotType == SlotType.ability)
+		{
+			EquipAbilityItem(item);
+			return;
+		}
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
@@ -80,6 +87,10 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot();
+	}
+	public void EquipAbilityItem(InventoryItem item)
+	{
+		Destroy(itemInSlot.gameObject);
 	}
 
 	public void CheckIfItemInEquipmentSlot()
@@ -155,6 +166,10 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 				return true;
 			else
 				return false;
+		}
+		else if (item.itemType == InventoryItem.ItemType.isAbility)
+		{
+			return true;
 		}
 		else return false;
 	}
