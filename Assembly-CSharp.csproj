@@ -66,9 +66,11 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Inventories\InventorySlot.cs" />
     <Compile Include="Assets\Scripts\Inventories\PlayerInventoryManager.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveSlotManager.cs" />
+    <Compile Include="Assets\Scripts\Player\Classes\KnightClassSkill.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerDetection.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
