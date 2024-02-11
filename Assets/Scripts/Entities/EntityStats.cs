@@ -252,6 +252,14 @@ public class EntityStats : MonoBehaviour
 		else
 			levelModifier = 1 + (entityLevel / 10f);
 
+		float currenthealthPercentage = 100;
+		if (currentHealth != 0 && maxHealth != 0)//remove divide by 0 error
+			currenthealthPercentage = (float)currentHealth / maxHealth * 100;
+
+		float currentmanaPercentage = 100;
+		if (currentHealth != 0 && maxHealth != 0)//remove divide by 0 error
+			currentmanaPercentage = (float)currentMana / maxMana * 100;
+
 		entityMaxHealth = (int)(entityBaseStats.maxHealth * levelModifier);
 		entityMaxMana = (int)(entityBaseStats.maxMana * levelModifier);
 		entityPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier);
@@ -260,9 +268,9 @@ public class EntityStats : MonoBehaviour
 		entityIceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier);
 
 		maxHealth = entityMaxHealth + entityEquipment.equipmentHealth;
-		currentHealth = entityMaxHealth + entityEquipment.equipmentHealth;
+		currentHealth = (int)Mathf.Ceil(currenthealthPercentage / 100 * maxHealth);
 		maxMana = entityMaxMana + entityEquipment.equipmentMana;
-		currentMana = entityMaxMana + entityEquipment.equipmentMana;
+		currentMana = (int)Mathf.Ceil(currentmanaPercentage / 100 * maxMana);
 		manaRegenPercentage = entityBaseStats.manaRegenPercentage;
 		manaRegenCooldown = entityBaseStats.manaRegenCooldown;
 
