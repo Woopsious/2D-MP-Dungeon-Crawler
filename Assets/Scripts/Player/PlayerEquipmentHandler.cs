@@ -186,6 +186,5 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (slot.slotIndex == 1)
 				equippedConsumableTwo = null;
 		}
-		entityStats.CalculateStats();
 	}
 }

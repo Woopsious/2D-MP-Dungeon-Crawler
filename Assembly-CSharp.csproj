@@ -103,6 +103,7 @@
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
+    <Compile Include="Assets\Scripts\Entities\Stat.cs" />
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>

@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
 		GetComponent<PlayerExperienceHandler>().ReloadExperienceLevel(SaveManager.Instance.GameData.playerCurrentExp);
-		playerStats.CalculateStats();
+		playerStats.CalculateBaseStats();
 	}
 
 	private void UpdateSpriteDirection()

@@ -27,7 +27,7 @@ public class SOAccessories : SOItems
 
 	[Header("Accessory Damaging/healing")]
 	public int baseBonusMana;
-	public int[] bonusPercentageValue = {0, 2, 4, 8};
+	public float[] bonusPercentageValue = {0, 0.02f, 0.04f, 0.08f};
 
 	public DamageTypeToBoost damageTypeToBoost;
 	public enum DamageTypeToBoost

@@ -28,5 +28,9 @@ MonoBehaviour:
   bonusFireResistance: 2
   bonusIceResistance: 2
   baseBonusMana: 0
-  bonusPercentageValue: 00000000010000000200000004000000
+  bonusPercentageValue:
+  - 0
+  - 0
+  - 0
+  - 0
   damageTypeToBoost: 0

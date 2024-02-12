@@ -45,12 +45,12 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public int equipmentFireResistance;
 	public int equipmentIceResistance;
 
-	public int physicalDamagePercentage;
-	public int poisonDamagePercentage;
-	public int fireDamagePercentage;
-	public int iceDamagePercentage;
+	public float physicalDamagePercentage;
+	public float poisonDamagePercentage;
+	public float fireDamagePercentage;
+	public float iceDamagePercentage;
 
-	public event Action<EntityEquipmentHandler> OnEquipmentChange;
+	public event Action<EntityEquipmentHandler> OnEquipmentChanges;
 
 	private void Start()
 	{
@@ -138,6 +138,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 		}
 		else
 			equipmentMana -= weapon.bonusMana;
+
+		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
 	{
@@ -153,7 +155,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equipmentMana += weapon.bonusMana;
 
 		AssignItemRefOnEquip(weapon, slotItemIsIn);
-		entityStats.CalculateStats();
+		OnEquipmentChanges?.Invoke(this);
 	}
 
 	//armors
@@ -167,6 +169,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentPoisonResistance -= armor.bonusPoisonResistance;
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
+
+		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
 	{
@@ -178,7 +182,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentIceResistance += armor.bonusIceResistance;
 
 		AssignItemRefOnEquip(armor, slotItemIsIn);
-		entityStats.CalculateStats();
+		OnEquipmentChanges?.Invoke(this);
 	}
 
 	//accessories
@@ -201,6 +205,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 			fireDamagePercentage -= accessory.bonusPercentageValue;
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
+
+		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)
 	{
@@ -221,7 +227,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			iceDamagePercentage += accessory.bonusPercentageValue;
 
 		AssignItemRefOnEquip(accessory, slotItemIsIn);
-		entityStats.CalculateStats();
+		OnEquipmentChanges?.Invoke(this);
 	}
 
 	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)

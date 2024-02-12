@@ -61,13 +61,13 @@ public class Weapons : Items
 			damage += offHandWeapon.damage;
 
 		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType)
-			damage *= entityStats.physicalDamagePercentageModifier;
+			damage *= entityStats.physicalDamagePercentageModifier.finalValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			damage *= entityStats.poisonDamagePercentageModifier;
+			damage *= entityStats.poisonDamagePercentageModifier.finalValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			damage *= entityStats.fireDamagePercentageModifier;
+			damage *= entityStats.fireDamagePercentageModifier.finalValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			damage *= entityStats.iceDamagePercentageModifier;
+			damage *= entityStats.iceDamagePercentageModifier.finalValue;
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

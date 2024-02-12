@@ -28,7 +28,7 @@ public class Accessories : Items
 
 	[Header("Accessory Damaging/healing")]
 	public int bonusMana;
-	public int bonusPercentageValue;
+	public float bonusPercentageValue;
 
 	public DamageTypeToBoost damageTypeToBoost;
 	public enum DamageTypeToBoost
