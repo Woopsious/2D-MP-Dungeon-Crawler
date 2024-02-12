@@ -8,7 +8,8 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
-	[HideInInspector] public EntityEquipmentHandler entityEquipment;
+	[HideInInspector] public EntityClassHandler classHandler;
+	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
 	public int entityLevel;
 	public float levelModifier;
@@ -28,7 +29,7 @@ public class EntityStats : MonoBehaviour
 
 	[Header("Resistances")]
 	private int entityPhysicalResistance;
-	private int entityPoisonlResistance;
+	private int entityPoisonResistance;
 	private int entityFireResistance;
 	private int entityIceResistance;
 	public int physicalResistance;
@@ -36,11 +37,22 @@ public class EntityStats : MonoBehaviour
 	public int fireResistance;
 	public int iceResistance;
 
-	[Header("Percentage Damage Bonuses")]
-	public int physicalDamageModifier;
-	public int poisonDamageModifier;
-	public int fireDamageModifier;
-	public int iceDamageModifier;
+	[Header("Basic Stat Modifiers")]
+	public int maxHealthModifier;
+	public int maxManaModifier;
+	public int manaRegenPercentageModifier;
+
+	[Header("Percentage Resistance Modifiers")]
+	public int physicalResistanceModifier;
+	public int poisonResistanceModifier;
+	public int fireResistanceModifier;
+	public int iceResistanceModifier;
+
+	[Header("Percentage Damage Modifiers")]
+	public int physicalDamagePercentageModifier;
+	public int poisonDamagePercentageModifier;
+	public int fireDamagePercentageModifier;
+	public int iceDamagePercentageModifier;
 
 	public event Action<int, bool> OnRecieveHealingEvent;
 	public event Action<int, IDamagable.DamageType> OnRecieveDamageEvent;
@@ -60,6 +72,7 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 
+		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
 		OnDeathEvent += playerExperienceHandler.AddExperience;
@@ -71,6 +84,7 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
 
+		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
 
 		OnDeathEvent -= playerExperienceHandler.AddExperience;
@@ -84,13 +98,13 @@ public class EntityStats : MonoBehaviour
 
 	public void Initilize()
 	{
+		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
 
 		CalculateStats();
-
 		int numOfTries = 0;
-		entityEquipment.StartCoroutine(entityEquipment.SpawnEntityEquipment(numOfTries));
+		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
 	}
 
 	/// <summary>
@@ -263,23 +277,27 @@ public class EntityStats : MonoBehaviour
 		entityMaxHealth = (int)(entityBaseStats.maxHealth * levelModifier);
 		entityMaxMana = (int)(entityBaseStats.maxMana * levelModifier);
 		entityPhysicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier);
-		entityPoisonlResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier);
+		entityPoisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier);
 		entityFireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier);
 		entityIceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier);
 
-		maxHealth = entityMaxHealth + entityEquipment.equipmentHealth;
-		currentHealth = (int)Mathf.Ceil(currenthealthPercentage / 100 * maxHealth);
-		maxMana = entityMaxMana + entityEquipment.equipmentMana;
-		currentMana = (int)Mathf.Ceil(currentmanaPercentage / 100 * maxMana);
-		manaRegenPercentage = entityBaseStats.manaRegenPercentage;
-		manaRegenCooldown = entityBaseStats.manaRegenCooldown;
+		maxHealth = (int)(entityBaseStats.maxHealth * levelModifier + equipmentHandler.equipmentHealth);
+		maxMana = (int)(entityBaseStats.maxMana * levelModifier + equipmentHandler.equipmentMana);
+		physicalResistance = (int)(entityBaseStats.physicalDamageResistance * levelModifier + equipmentHandler.equipmentPhysicalResistance);
+		poisonResistance = (int)(entityBaseStats.poisonDamageResistance * levelModifier + equipmentHandler.equipmentPoisonResistance);
+		fireResistance = (int)(entityBaseStats.fireDamageResistance * levelModifier + equipmentHandler.equipmentFireResistance);
+		iceResistance = (int)(entityBaseStats.iceDamageResistance * levelModifier + equipmentHandler.equipmentIceResistance);
 
-		physicalResistance = entityPhysicalResistance + entityEquipment.equipmentPhysicalResistance;
-		poisonResistance = entityPoisonlResistance + entityEquipment.equipmentPoisonResistance;
-		fireResistance = entityFireResistance + entityEquipment.equipmentFireResistance;
-		iceResistance = entityIceResistance + entityEquipment.equipmentIceResistance;
+		if (equipmentHandler.equippedWeapon != null)
+			equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
 
 		OnHealthChangeEvent?.Invoke(maxHealth, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana, currentMana);
+	}
+
+	public int GetStatNum(int baseNum, int equipmentNum, float modifierNum)
+	{
+		baseNum = (int)(baseNum + equipmentNum * modifierNum);
+		return baseNum;
 	}
 }

@@ -26,9 +26,9 @@ public class Weapons : Items
 		WeaponInitilization();
 	}
 
-	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public override void Initilize(Rarity setRarity, int setLevel)
 	{
-		base.Initilize(setRarity, setLevel, equipmentHandler);
+		base.Initilize(setRarity, setLevel);
 
 		isShield = weaponBaseRef.isShield;
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
@@ -53,6 +53,21 @@ public class Weapons : Items
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
+
+	}
+	public void UpdateWeaponDamage(EntityStats entityStats, Weapons offHandWeapon)
+	{
+		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
+			damage += offHandWeapon.damage;
+
+		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType)
+			damage *= entityStats.physicalDamagePercentageModifier;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
+			damage *= entityStats.poisonDamagePercentageModifier;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
+			damage *= entityStats.fireDamagePercentageModifier;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
+			damage *= entityStats.iceDamagePercentageModifier;
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -77,9 +92,9 @@ public class Weapons : Items
 
 		MeleeDirectionToAttack(positionOfThingToAttack);
 		OnWeaponAttack();
-		StartCoroutine(weaponCooldown());
+		StartCoroutine(WeaponCooldown());
 	}
-	private IEnumerator weaponCooldown()
+	private IEnumerator WeaponCooldown()
 	{
 		yield return new WaitForSeconds(0.1f);
 		OnWeaponCooldown();

@@ -27,9 +27,9 @@ public class Armors : Items
 			GenerateStatsOnStart();
 	}
 
-	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public override void Initilize(Rarity setRarity, int setLevel)
 	{
-		base.Initilize(setRarity, setLevel, equipmentHandler);
+		base.Initilize(setRarity, setLevel);
 
 		bonusHealth = (int)(armorBaseRef.baseBonusHealth * levelModifier);
 		bonusMana = (int)(armorBaseRef.baseBonusMana * levelModifier);
@@ -41,8 +41,5 @@ public class Armors : Items
 		bonusPoisonResistance = (int)(armorBaseRef.bonusPoisonResistance * levelModifier);
 		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * levelModifier);
-
-		//if (equipmentHandler == null) return;
-		//equipmentHandler.OnArmorEquip(this, transform.parent.gameObject);
 	}
 }

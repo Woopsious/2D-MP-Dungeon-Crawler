@@ -39,7 +39,7 @@ public class Items : MonoBehaviour
 	public int currentStackCount;
 	public int inventroySlot;
 
-	public virtual void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public virtual void Initilize(Rarity setRarity, int setLevel)
 	{
 		rarity = setRarity;
 		itemLevel = setLevel;
@@ -118,7 +118,7 @@ public class Items : MonoBehaviour
 
 	public void GenerateStatsOnStart()
 	{
-		Initilize(rarity, itemLevel, null);
+		Initilize(rarity, itemLevel);
 		gameObject.AddComponent<Interactables>();
 		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
 		collider2D.isTrigger = true;

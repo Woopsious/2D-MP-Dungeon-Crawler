@@ -85,7 +85,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
 			//im just not sure of a better way to do it atm
 			go.AddComponent<Interactables>(); //add interactables script. set randomized stats
-			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, 1, null);
+			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, 1);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}
@@ -145,7 +145,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			weapon.weaponBaseRef = item.weaponBaseRef;
 			weapon.itemLevel = item.itemLevel;
 			weapon.rarity = item.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel, null);
+			weapon.Initilize(weapon.rarity, weapon.itemLevel);
 			weapon.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.armorBaseRef != null)
@@ -155,7 +155,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			armor.armorBaseRef = item.armorBaseRef;
 			armor.itemLevel = item.itemLevel;
 			armor.rarity = item.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel, null);
+			armor.Initilize(armor.rarity, armor.itemLevel);
 			armor.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.accessoryBaseRef != null)
@@ -165,7 +165,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			accessory.accessoryBaseRef = item.accessoryBaseRef;
 			accessory.itemLevel = item.itemLevel;
 			accessory.rarity = item.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel, null);
+			accessory.Initilize(accessory.rarity, accessory.itemLevel);
 			accessory.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.consumableBaseRef != null)
@@ -175,7 +175,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			consumable.consumableBaseRef = item.consumableBaseRef;
 			consumable.itemLevel = item.itemLevel;
 			consumable.rarity = item.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
+			consumable.Initilize(consumable.rarity, consumable.itemLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
 		}
 	}
@@ -188,7 +188,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			weapon.weaponBaseRef = itemData.weaponBaseRef;
 			weapon.itemLevel = itemData.itemLevel;
 			weapon.rarity = (Items.Rarity)itemData.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel, null);
+			weapon.Initilize(weapon.rarity, weapon.itemLevel);
 			weapon.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.armorBaseRef != null)
@@ -198,7 +198,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			armor.armorBaseRef = itemData.armorBaseRef;
 			armor.itemLevel = itemData.itemLevel;
 			armor.rarity = (Items.Rarity)itemData.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel, null);
+			armor.Initilize(armor.rarity, armor.itemLevel);
 			armor.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.accessoryBaseRef != null)
@@ -208,7 +208,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			accessory.accessoryBaseRef = itemData.accessoryBaseRef;
 			accessory.itemLevel = itemData.itemLevel;
 			accessory.rarity = (Items.Rarity)itemData.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel, null);
+			accessory.Initilize(accessory.rarity, accessory.itemLevel);
 			accessory.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.consumableBaseRef != null)
@@ -218,7 +218,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			consumable.consumableBaseRef = itemData.consumableBaseRef;
 			consumable.itemLevel = itemData.itemLevel;
 			consumable.rarity = (Items.Rarity)itemData.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel, null);
+			consumable.Initilize(consumable.rarity, consumable.itemLevel);
 			consumable.SetCurrentStackCount(itemData.currentStackCount);
 		}
 	}

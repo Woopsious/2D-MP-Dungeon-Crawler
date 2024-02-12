@@ -7,7 +7,7 @@ public class SOPlayerClasses : ScriptableObject
 	/// <summary>
 	/// CLASSES can be changed for free, when player changes class, remove all abilities from hotbar and either
 	/// unequip equipment back to inventory, or if not possible leave it on but dont let player leave hub area until its fixed and
-	/// check check all player equipment is valid before leaving (for mp check all players)
+	/// check all player equipment is valid before leaving (for mp check all players)
 	/// </summary>
 
 	[Header("Class Info")]

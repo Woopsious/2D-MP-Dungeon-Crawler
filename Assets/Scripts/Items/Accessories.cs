@@ -42,9 +42,9 @@ public class Accessories : Items
 			GenerateStatsOnStart();
 	}
 
-	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public override void Initilize(Rarity setRarity, int setLevel)
 	{
-		base.Initilize(setRarity, setLevel, equipmentHandler);
+		base.Initilize(setRarity, setLevel);
 
 		if (rarity == Rarity.isCommon)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[0];

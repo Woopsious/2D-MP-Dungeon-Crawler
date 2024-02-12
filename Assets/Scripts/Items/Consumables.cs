@@ -22,9 +22,9 @@ public class Consumables : Items
 			GenerateStatsOnStart();
 	}
 
-	public override void Initilize(Rarity setRarity, int setLevel, EntityEquipmentHandler equipmentHandler)
+	public override void Initilize(Rarity setRarity, int setLevel)
 	{
-		base.Initilize(setRarity, setLevel, equipmentHandler);
+		base.Initilize(setRarity, setLevel);
 
 		consumableType = (ConsumableType)consumableBaseRef.consumableType;
 		consumablePercentage = consumableBaseRef.consumablePercentage;

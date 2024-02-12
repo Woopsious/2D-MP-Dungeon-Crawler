@@ -50,6 +50,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public int fireDamagePercentage;
 	public int iceDamagePercentage;
 
+	public event Action<EntityEquipmentHandler> OnEquipmentChange;
+
 	private void Start()
 	{
 		Initilize();
@@ -58,7 +60,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public virtual void Initilize()
 	{
 		entityStats = GetComponentInParent<EntityStats>();
-		entityStats.entityEquipment = this;
 		isPlayerEquipment = false;
 	}
 	public IEnumerator SpawnEntityEquipment(int numOfTries)
@@ -100,7 +101,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = listOfPossibleWeapons[index];
-		equippedWeaponRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel, this);
+		equippedWeaponRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel);
 		equippedWeaponRef.isEquippedByOther = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
@@ -116,7 +117,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = listOfPossibleArmors[index];
-		equippedArmorRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel, this);
+		equippedArmorRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);

@@ -10,9 +10,10 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	public Camera playerCamera;
 	private EntityStats playerStats;
+	private EntityClassHandler playerClassHandler;
+	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	private PlayerInputActions playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -68,6 +69,8 @@ public class PlayerController : MonoBehaviour
 	{
 		playerInputs = new PlayerInputActions();
 		playerStats = GetComponent<EntityStats>();
+		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
