@@ -11,9 +11,23 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject autoSaveContainer;
 	public GameObject saveSlotContainer;
 
-	public void Start()
+	private void Start()
 	{
 		Instance = this;
+	}
+
+	private void OnEnable()
+	{
+		GameManager.OnSceneChange += ShowClassSelectionOnNewGameStart;
+	}
+	private void OnDisable()
+	{
+		GameManager.OnSceneChange -= ShowClassSelectionOnNewGameStart;
+	}
+
+	private void ShowClassSelectionOnNewGameStart(bool isNewGame)
+	{
+		//PlayerClassesUi.Instance.gameObject
 	}
 
 	//button actions
@@ -28,7 +42,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void QuiteToMainMenuButton()
 	{
-		GameManager.Instance.LoadMainMenu();
+		GameManager.Instance.LoadMainMenu(false);
 	}
 
 	public void PlayGameButton()
@@ -38,7 +52,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void StartNewGameButton()
 	{
-		GameManager.Instance.LoadHubArea();
+		GameManager.Instance.LoadHubArea(true);
 	}
 
 	//show/hide save slots menu

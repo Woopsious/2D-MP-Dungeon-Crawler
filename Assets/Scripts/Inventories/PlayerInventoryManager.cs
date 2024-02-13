@@ -85,7 +85,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
 			//im just not sure of a better way to do it atm
 			go.AddComponent<Interactables>(); //add interactables script. set randomized stats
-			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, 1);
+			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}

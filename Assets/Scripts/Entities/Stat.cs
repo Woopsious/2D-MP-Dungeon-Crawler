@@ -12,6 +12,12 @@ public class Stat
 	public float equipmentPercentageValue;
 	public List<float> percentageBonuses = new List<float>();
 
+	public void SetBaseValue(int value)
+	{
+		baseValue = value;
+		CalcFinalValue();
+	}
+
 	public void UpdateEquipmentValue(int modifier)
 	{
 		equipmentValue = modifier;
@@ -23,11 +29,26 @@ public class Stat
 		CalcFinalValue();
 	}
 
+	public void AddPercentageValue(float modifier)
+	{
+		if (modifier != 0)
+			percentageBonuses.Add(modifier);
+
+		CalcFinalValue();
+	}
+	public void RemovePercentageValue(float modifier)
+	{
+		if (modifier != 0)
+			percentageBonuses.Remove(modifier);
+
+		CalcFinalValue();
+	}
+
 	public void CalcFinalValue()
 	{
 		float percentageValue = equipmentPercentageValue + 1;
 		percentageBonuses.ForEach(x => percentageValue += x);
 
-		finalValue = (int)(baseValue + equipmentValue * percentageValue);
+		finalValue = (int)((baseValue + equipmentValue) * percentageValue);
 	}
 }

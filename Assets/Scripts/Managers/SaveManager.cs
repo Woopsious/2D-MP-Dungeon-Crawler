@@ -39,7 +39,7 @@ public class SaveManager : MonoBehaviour
 	{
 		GameManager.OnSceneChange -= OnGameReLoad;
 	}
-	private void OnGameReLoad()
+	private void OnGameReLoad(bool isNewGame)
 	{
 		//may need checks here to see if data does need to be reloaded but
 		//might not need to due to it being event based and refs arnt hard coded

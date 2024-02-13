@@ -9,7 +9,7 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-	public static event Action OnSceneChange;
+	public static event Action<bool> OnSceneChange;
 
 	public readonly string mainMenuName = "MainMenu";
 	public readonly string hubAreaName = "HubArea";
@@ -31,21 +31,21 @@ public class GameManager : MonoBehaviour
 	}
 
 	//saving and loading scenes
-	public void LoadMainMenu()
+	public void LoadMainMenu(bool isNewGame)
 	{
-		StartCoroutine(LoadNewSceneAsync(mainMenuName));
+		StartCoroutine(LoadNewSceneAsync(mainMenuName, isNewGame));
 	}
-	public void LoadHubArea()
+	public void LoadHubArea(bool isNewGame)
 	{
-		StartCoroutine(LoadNewSceneAsync(hubAreaName));
+		StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
 	}
-	private IEnumerator LoadNewSceneAsync(string sceneToLoad)
+	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
 
 		while (!asyncLoad.isDone)
 			yield return null;
-		OnSceneChange?.Invoke();
+		OnSceneChange?.Invoke(isNewGame);
 	}
 
 	public void PauseGame()

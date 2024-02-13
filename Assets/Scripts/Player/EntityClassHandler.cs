@@ -5,12 +5,11 @@ using UnityEngine;
 
 public class EntityClassHandler : MonoBehaviour
 {
+	[HideInInspector] public EntityStats entityStats;
+
 	public SOPlayerClasses currentEntityClass;
 
 	public GameObject itemPrefab;
-
-	[HideInInspector] private EntityStats entityStats;
-	[HideInInspector] public bool isPlayerEquipment;
 
 	[Header("Bonuses Provided By Class")]
 	public int classHealth;
@@ -35,7 +34,7 @@ public class EntityClassHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-
+		PlayerClassesUi.OnClassChange += OnClassChange;
 	}
 	private void OnDisable()
 	{
@@ -44,10 +43,20 @@ public class EntityClassHandler : MonoBehaviour
 
 	private void Initilize()
 	{
+		entityStats = GetComponent<EntityStats>();
+	}
+
+	public void OnNewClassTreeUnlock()
+	{
 
 	}
 
-	public void ChangePlayerClass(SOPlayerClasses newPlayerClass)
+	public void OnClassReset()
+	{
+
+	}
+
+	public void OnClassChanges(SOPlayerClasses newPlayerClass)
 	{
 		OnClassChange?.Invoke(newPlayerClass);
 	}

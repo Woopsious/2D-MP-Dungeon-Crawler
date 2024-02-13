@@ -41,6 +41,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		InventorySlot oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlot>();
 
 		if (!IsCorrectSlotType(item)) return;
+		if (IsNewSlotSameAsOldSlot(item)) return;
 
 		if (slotType == SlotType.ability)
 		{
@@ -63,13 +64,13 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 				itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
 				oldInventorySlot.itemInSlot = itemInSlot;
 				oldInventorySlot.UpdateSlotSize();
-				oldInventorySlot.CheckIfItemInEquipmentSlot();
+				oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 			}
 		}
 		else //set ref of old parent slot to null
 		{
 			oldInventorySlot.itemInSlot = null;
-			oldInventorySlot.CheckIfItemInEquipmentSlot();
+			oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 		}
 
 		//set new slot data
@@ -77,7 +78,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
 		UpdateSlotSize();
-		CheckIfItemInEquipmentSlot();
+		CheckIfItemInEquipmentSlot(item);
 	}
 	public void EquipItemToSlot(InventoryItem item)
 	{
@@ -86,17 +87,17 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
 		UpdateSlotSize();
-		CheckIfItemInEquipmentSlot();
+		CheckIfItemInEquipmentSlot(item);
 	}
 	public void EquipAbilityItem(InventoryItem item)
 	{
 		Destroy(itemInSlot.gameObject);
 	}
 
-	public void CheckIfItemInEquipmentSlot()
+	public void CheckIfItemInEquipmentSlot(InventoryItem item)
 	{
 		if (slotType == SlotType.generic) return;
-		OnItemEquip?.Invoke(itemInSlot, this);
+		OnItemEquip?.Invoke(item, this);
 	}
 	public void UpdateSlotSize()
 	{
@@ -107,6 +108,12 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	}
 
 	//bool checks
+	public bool IsNewSlotSameAsOldSlot(InventoryItem item)
+	{
+		if (item.parentAfterDrag == this)
+			return true;
+		else return false;
+	}
 	public bool IsSlotEmpty()
 	{
 		if (GetComponentInChildren<InventoryItem>() == null)
