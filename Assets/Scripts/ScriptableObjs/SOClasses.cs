@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[CreateAssetMenu(fileName = "PlayerClassesScriptableObject", menuName = "PlayerClasses")]
-public class SOPlayerClasses : ScriptableObject
+[CreateAssetMenu(fileName = "ClassesScriptableObject", menuName = "Classes")]
+public class SOClasses : ScriptableObject
 {
 	/// <summary>
 	/// CLASSES can be changed for free, when player changes class, remove all abilities from hotbar and either

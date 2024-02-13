@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
+  m_Name: MagicDamageBoost
+  m_EditorClassIdentifier: 
+  Name: Damage Boost
+  Description: Gives a permanent damage boost to Posion, FIre and Ice
+  playerLevelRequirement: 1
+  preRequisites: []
+  exclusions: []
+  isHealthBoost: 0
+  isManaBoost: 0
+  isManaRegenBoost: 0
+  isPhysicalResistanceBoost: 0
+  isPoisonResistanceBoost: 0
+  isFireResistanceBoost: 0
+  isIceResistanceBoost: 0
+  isPhysicalDamageBoost: 0
+  isPosionDamageBoost: 1
+  isFireDamageBoost: 1
+  isIceDamageBoost: 1
+  percentageValue: 5

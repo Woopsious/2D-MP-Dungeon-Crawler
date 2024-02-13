@@ -7,8 +7,10 @@ public class EntityClassHandler : MonoBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
 
-	public SOPlayerClasses currentEntityClass;
-
+	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
+	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
+	
+	public SOClasses currentEntityClass;
 	public GameObject itemPrefab;
 
 	[Header("Bonuses Provided By Class")]
@@ -25,7 +27,7 @@ public class EntityClassHandler : MonoBehaviour
 	public int fireDamagePercentage;
 	public int iceDamagePercentage;
 
-	public event Action<SOPlayerClasses> OnClassChange;
+	public event Action<SOClasses> OnClassChange;
 
 	private void Start()
 	{
@@ -56,7 +58,7 @@ public class EntityClassHandler : MonoBehaviour
 
 	}
 
-	public void OnClassChanges(SOPlayerClasses newPlayerClass)
+	public void OnClassChanges(SOClasses newPlayerClass)
 	{
 		OnClassChange?.Invoke(newPlayerClass);
 	}

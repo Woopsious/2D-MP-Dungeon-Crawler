@@ -11,31 +11,31 @@ public class PlayerClassesUi : MonoBehaviour
 	public GameObject playerClassesPanel;
 
 	[Header("knight Class")]
-	public SOPlayerClasses knightClass;
+	public SOClasses knightClass;
 	public GameObject knightClassPanel;
 	public Button playAsKnightButton;
 
 	[Header("Warrior Class")]
-	public SOPlayerClasses warriorClass;
+	public SOClasses warriorClass;
 	public GameObject warriorClassPanel;
 	public Button playAsWarriorButton;
 
 	[Header("Rogue Class")]
-	public SOPlayerClasses rogueClass;
+	public SOClasses rogueClass;
 	public GameObject rogueClassPanel;
 	public Button playAsRogueButton;
 
 	[Header("Ranger Class")]
-	public SOPlayerClasses rangerClass;
+	public SOClasses rangerClass;
 	public GameObject rangerClassPanel;
 	public Button playAsRangerButton;
 
 	[Header("Mage Class")]
-	public SOPlayerClasses mageClass;
+	public SOClasses mageClass;
 	public GameObject MageClassPanel;
 	public Button playAsMageButton;
 
-	public static event Action<SOPlayerClasses> OnClassChange;
+	public static event Action<SOClasses> OnClassChange;
 
 	/// <summary> (NEW IDEA)
 	/// have generic ClassSkillItem Scriptable Object that every class uses, make classSkillUI Item that i either build from ui or have premade
