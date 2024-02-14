@@ -62,6 +62,7 @@ public class EntityStats : MonoBehaviour
 		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 
 		GetComponent<EntityEquipmentHandler>().OnEquipmentChanges += OnEquipmentChanges;
+		GetComponent<EntityClassHandler>().OnClassChange += OnClassChanges;
 	}
 	private void OnDisable()
 	{
@@ -76,6 +77,7 @@ public class EntityStats : MonoBehaviour
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 
 		GetComponent<EntityEquipmentHandler>().OnEquipmentChanges -= OnEquipmentChanges;
+		GetComponent<EntityClassHandler>().OnClassChange -= OnClassChanges;
 	}
 
 	private void Update()
@@ -264,13 +266,18 @@ public class EntityStats : MonoBehaviour
 		currentMana = maxMana.finalValue - maxMana.equipmentValue;
 		manaRegenPercentage.baseValue = entityBaseStats.manaRegenPercentage;
 
-		if (equipmentHandler.equippedWeapon != null)
-			equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		physicalDamagePercentageModifier.SetBaseValue(0);
+		poisonDamagePercentageModifier.SetBaseValue(0);
+		fireDamagePercentageModifier.SetBaseValue(0);
+		iceDamagePercentageModifier.SetBaseValue(0);
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-	}
 
+		if (equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalValue, poisonDamagePercentageModifier.finalValue
+		, fireDamagePercentageModifier.finalValue, iceDamagePercentageModifier.finalValue, equipmentHandler.equippedOffhandWeapon);
+	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
 		maxHealth.UpdateEquipmentValue(equipmentHandler.equipmentHealth);
@@ -284,6 +291,114 @@ public class EntityStats : MonoBehaviour
 		poisonDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.poisonDamagePercentage);
 		fireDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.fireDamagePercentage);
 		iceDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.iceDamagePercentage);
+
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+
+		if (equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalValue, poisonDamagePercentageModifier.finalValue
+		, fireDamagePercentageModifier.finalValue, iceDamagePercentageModifier.finalValue, equipmentHandler.equippedOffhandWeapon);
+	}
+	public void OnClassChanges(EntityClassHandler classHandler)
+	{
+		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
+		{
+			if (statBoost.isHealthBoost)
+			{
+				maxHealth.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isManaBoost)
+			{
+				maxMana.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isPhysicalResistanceBoost)
+			{
+				physicalResistance.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isPoisonResistanceBoost)
+			{
+				poisonResistance.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isFireResistanceBoost)
+			{
+				fireResistance.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isIceResistanceBoost)
+			{
+				iceResistance.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isPhysicalDamageBoost)
+			{
+				physicalDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isPosionDamageBoost)
+			{
+				poisonDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isFireDamageBoost)
+			{
+				fireDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
+			}
+			if (statBoost.isIceDamageBoost)
+			{
+				iceDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
+			}
+		}
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+
+		if (equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalValue, poisonDamagePercentageModifier.finalValue
+		, fireDamagePercentageModifier.finalValue, iceDamagePercentageModifier.finalValue, equipmentHandler.equippedOffhandWeapon);
+	}
+	public void OnStatUnlock(SOClassStatBonuses statBoost)
+	{
+		if (statBoost.isHealthBoost)
+		{
+			maxHealth.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isManaBoost)
+		{
+			maxMana.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isPhysicalResistanceBoost)
+		{
+			physicalResistance.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isPoisonResistanceBoost)
+		{
+			poisonResistance.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isFireResistanceBoost)
+		{
+			fireResistance.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isIceResistanceBoost)
+		{
+			iceResistance.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isPhysicalDamageBoost)
+		{
+			physicalDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isPosionDamageBoost)
+		{
+			poisonDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isFireDamageBoost)
+		{
+			fireDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
+		}
+		if (statBoost.isIceDamageBoost)
+		{
+			iceDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
+		}
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+
+		if (equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalValue, poisonDamagePercentageModifier.finalValue
+		, fireDamagePercentageModifier.finalValue, iceDamagePercentageModifier.finalValue, equipmentHandler.equippedOffhandWeapon);
 	}
 
 	public int GetStatNum(int baseNum, int equipmentNum, float modifierNum)

@@ -55,19 +55,19 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = true;
 
 	}
-	public void UpdateWeaponDamage(EntityStats entityStats, Weapons offHandWeapon)
+	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod, Weapons offHandWeapon)
 	{
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
 			damage += offHandWeapon.damage;
 
 		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType)
-			damage *= entityStats.physicalDamagePercentageModifier.finalValue;
+			damage = (int)(damage * phyMod);
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			damage *= entityStats.poisonDamagePercentageModifier.finalValue;
+			damage = (int)(damage * poiMod);
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			damage *= entityStats.fireDamagePercentageModifier.finalValue;
+			damage = (int)(damage * fireMod);
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			damage *= entityStats.iceDamagePercentageModifier.finalValue;
+			damage = (int)(damage * iceMod);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

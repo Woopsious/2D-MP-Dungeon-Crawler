@@ -8,6 +8,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public GameObject itemPrefab;
 
 	[HideInInspector] public EntityStats entityStats;
+	[HideInInspector] public EntityClassHandler entityClassHandler;
 	[HideInInspector] public bool isPlayerEquipment;
 
 	[Header("Weapon")]
@@ -77,6 +78,11 @@ public class EntityEquipmentHandler : MonoBehaviour
 		{
 			EquipRandomItems();
 		}
+	}
+
+	public void OnClassChanges()
+	{
+
 	}
 
 	//for entitys other then player to randomly equip items when they spawn in

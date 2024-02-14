@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EntityClassHandler : MonoBehaviour
@@ -9,7 +10,7 @@ public class EntityClassHandler : MonoBehaviour
 
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
-	
+
 	public SOClasses currentEntityClass;
 	public GameObject itemPrefab;
 
@@ -27,7 +28,9 @@ public class EntityClassHandler : MonoBehaviour
 	public int fireDamagePercentage;
 	public int iceDamagePercentage;
 
-	public event Action<SOClasses> OnClassChange;
+	public event Action<EntityClassHandler> OnClassChange;
+	public event Action<SOClassStatBonuses> OnStatUnlock;
+	public event Action<SOClassAbilities> OnAbilityUnlock;
 
 	private void Start()
 	{
@@ -36,11 +39,11 @@ public class EntityClassHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		PlayerClassesUi.OnClassChange += OnClassChange;
+		PlayerClassesUi.OnClassChange += OnClassChanges;
 	}
 	private void OnDisable()
 	{
-		
+		PlayerClassesUi.OnClassChange -= OnClassChanges;
 	}
 
 	private void Initilize()
@@ -48,18 +51,55 @@ public class EntityClassHandler : MonoBehaviour
 		entityStats = GetComponent<EntityStats>();
 	}
 
-	public void OnNewClassTreeUnlock()
+	///	<summery>
+	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
+	///	then clear unlockedLists
+	///	
+	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
+	///	<summery>
+	public void OnClassChanges(SOClasses newPlayerClass)
 	{
+		OnClassChange?.Invoke(this);
 
+		unlockedAbilitiesList.Clear();
+		unlockedStatBoostList.Clear();
+
+		currentEntityClass = newPlayerClass;
 	}
-
+	///	<summery>
+	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
+	///	then clear unlockedLists
+	///	<summery>
 	public void OnClassReset()
 	{
 
 	}
 
-	public void OnClassChanges(SOClasses newPlayerClass)
+	public void UnlockStatBoost(SOClassStatBonuses classStatBoost)
 	{
-		OnClassChange?.Invoke(newPlayerClass);
+		unlockedStatBoostList.Add(classStatBoost);
+		OnStatUnlock?.Invoke(classStatBoost);
+	}
+	public void UnlockAbility(SOClassAbilities classAbility)
+	{
+		unlockedAbilitiesList.Add(classAbility);
+		OnAbilityUnlock?.Invoke(classAbility);
+	}
+
+	public void AddStatBonuses(SOClassStatBonuses statBoost)
+	{
+
+	}
+	public void RemoveStatBonuses(SOClassStatBonuses statBoost)
+	{
+
+	}
+	public void AddAbilities()
+	{
+
+	}
+	public void RemoveAbilities()
+	{
+
 	}
 }
