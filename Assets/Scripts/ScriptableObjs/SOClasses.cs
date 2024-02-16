@@ -15,6 +15,9 @@ public class SOClasses : ScriptableObject
 	[TextArea(3, 10)]
 	public string classDescription;
 
+	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
+	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();
+
 	public bool canUseSpells;
 
 	[Header("Class Restriction")]

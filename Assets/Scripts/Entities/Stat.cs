@@ -5,8 +5,10 @@ using UnityEngine;
 [System.Serializable]
 public class Stat
 {
+	public bool isPercentageStat;
 	public int baseValue;
 	public int finalValue;
+	public float finalPercentageValue;
 
 	public int equipmentValue;
 	public float equipmentPercentageValue;
@@ -46,9 +48,18 @@ public class Stat
 
 	public void CalcFinalValue()
 	{
-		float percentageValue = equipmentPercentageValue + 1;
-		percentageBonuses.ForEach(x => percentageValue += x);
-
-		finalValue = (int)((baseValue + equipmentValue) * percentageValue);
+		if (isPercentageStat)
+		{
+			float percentageValue = equipmentPercentageValue + baseValue;
+			percentageBonuses.ForEach(x => percentageValue += x);
+			Debug.LogWarning("value: " + percentageValue);
+			finalPercentageValue = equipmentPercentageValue + percentageValue;
+		}
+		else
+		{
+			float percentageValue = equipmentPercentageValue + 1;
+			percentageBonuses.ForEach(x => percentageValue += x);
+			finalValue = (int)((baseValue + equipmentValue) * percentageValue);
+		}
 	}
 }

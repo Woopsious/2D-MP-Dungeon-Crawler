@@ -16,5 +16,11 @@ MonoBehaviour:
   classDescription: Knights excel at resisting and taking damage as well as being
     decent enough in dishing out there own damage. They do however have limited utility
     and self healing unless you have plenty of health potions.
+  statBonusLists:
+  - {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+  - {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
+  - {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
+  - {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+  abilityLists: []
   canUseSpells: 0
   classRestriction: 2

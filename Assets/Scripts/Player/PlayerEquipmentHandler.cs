@@ -23,11 +23,11 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	}
 	private void OnEnable()
 	{
-		InventorySlot.OnItemEquip += EquipItem;
+		InventorySlotUi.OnItemEquip += EquipItem;
 	}
 	private void OnDisable()
 	{
-		InventorySlot.OnItemEquip -= EquipItem;
+		InventorySlotUi.OnItemEquip -= EquipItem;
 	}
 
 	public override void Initilize()
@@ -36,7 +36,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		isPlayerEquipment = true;
 	}
 
-	private void EquipItem(InventoryItem item, InventorySlot slot)
+	private void EquipItem(InventoryItem item, InventorySlotUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
@@ -67,10 +67,10 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (accessories.accessorySlot == Accessories.AccessorySlot.necklace)
 				EquipAccessory(accessories, equippedNecklace, necklaceSlotContainer);
 
-			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringOne)
+			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlotUi.SlotType.ringOne)
 				EquipAccessory(accessories, equippedRingOne, ringOneSlotContainer);
 
-			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlot.SlotType.ringTwo)
+			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlotUi.SlotType.ringTwo)
 				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
 		else if (item.itemType == InventoryItem.ItemType.isConsumable)
@@ -125,7 +125,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	}
 
 	//not physically spawned in
-	private void EquipConsumables(Consumables consumableToEquip, InventorySlot slotEquippedTo)
+	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
 	{
 		if (slotEquippedTo.slotIndex == 0)
 		{
@@ -137,49 +137,49 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		}
 	}
 
-	private void HandleEmptySlots(InventorySlot slot)
+	private void HandleEmptySlots(InventorySlotUi slot)
 	{
-		if (slot.slotType == InventorySlot.SlotType.weaponMain)
+		if (slot.slotType == InventorySlotUi.SlotType.weaponMain)
 		{
 			OnWeaponUnequip(equippedWeapon);
 			Destroy(equippedWeapon.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.weaponOffhand)
+		if (slot.slotType == InventorySlotUi.SlotType.weaponOffhand)
 		{
 			OnWeaponUnequip(equippedOffhandWeapon);
 			Destroy(equippedOffhandWeapon.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.helmet)
+		if (slot.slotType == InventorySlotUi.SlotType.helmet)
 		{
 			OnArmorUnequip(equippedHelmet);
 			Destroy(equippedHelmet.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.chestpiece)
+		if (slot.slotType == InventorySlotUi.SlotType.chestpiece)
 		{
 			OnArmorUnequip(equippedChestpiece);
 			Destroy(equippedChestpiece.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.legs)
+		if (slot.slotType == InventorySlotUi.SlotType.legs)
 		{
 			OnArmorUnequip(equippedLegs);
 			Destroy(equippedLegs.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.necklace)
+		if (slot.slotType == InventorySlotUi.SlotType.necklace)
 		{
 			OnAccessoryUnequip(equippedNecklace);
 			Destroy(equippedNecklace.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.ringOne)
+		if (slot.slotType == InventorySlotUi.SlotType.ringOne)
 		{
 			OnAccessoryUnequip(equippedRingOne);
 			Destroy(equippedRingOne.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.ringTwo)
+		if (slot.slotType == InventorySlotUi.SlotType.ringTwo)
 		{
 			OnAccessoryUnequip(equippedRingTwo);
 			Destroy(equippedRingTwo.gameObject);
 		}
-		if (slot.slotType == InventorySlot.SlotType.consumables)
+		if (slot.slotType == InventorySlotUi.SlotType.consumables)
 		{
 			if (slot.slotIndex == 0)
 				equippedConsumableOne = null;

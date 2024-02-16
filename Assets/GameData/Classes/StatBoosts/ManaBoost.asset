@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
-  m_Name: HealthBoost
+  m_Name: ManaBoost
   m_EditorClassIdentifier: 
-  Name: Health Boost
-  Description: Gives a permanent health boost
+  Name: Mana Boost
+  Description: Gives a permanent Mana boost
   playerLevelRequirement: 1
   preRequisites: []
   exclusions: []
-  isHealthBoost: 1
-  isManaBoost: 0
+  isHealthBoost: 0
+  isManaBoost: 1
   isManaRegenBoost: 0
   isPhysicalResistanceBoost: 0
   isPoisonResistanceBoost: 0

@@ -110,7 +110,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
 
 			SetItemData(newInventoryItem, itemData);
-			InventorySlot inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlot>();
+			InventorySlotUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotUi>();
 
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);
@@ -228,7 +228,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		for (int i = 0; i < PlayerInventoryUi.Instance.InventorySlots.Count; i++)
 		{
-			InventorySlot inventorySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
+			InventorySlotUi inventorySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlotUi>();
 
 			if (inventorySlot.IsSlotEmpty())
 			{
@@ -248,7 +248,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		for (int i = 0; i < PlayerInventoryUi.Instance.InventorySlots.Count; i++)
 		{
-			InventorySlot inventroySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlot>();
+			InventorySlotUi inventroySlot = PlayerInventoryUi.Instance.InventorySlots[i].GetComponent<InventorySlotUi>();
 
 			if (!inventroySlot.IsSlotEmpty())
 			{
@@ -261,7 +261,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			}
 		}
 	}
-	public void AddToStackCount(InventorySlot inventroySlot, InventoryItem newItem)
+	public void AddToStackCount(InventorySlotUi inventroySlot, InventoryItem newItem)
 	{
 		InventoryItem itemInSlot = inventroySlot.GetComponentInChildren<InventoryItem>();
 		if (inventroySlot.IsItemInSlotSameAs(newItem) && itemInSlot.currentStackCount < itemInSlot.maxStackCount)
@@ -286,7 +286,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
 		{
-			InventorySlot inventorySlot = obj.GetComponent<InventorySlot>();
+			InventorySlotUi inventorySlot = obj.GetComponent<InventorySlotUi>();
 
 			if (!inventorySlot.IsSlotEmpty())
 				numOfFilledSlots++;

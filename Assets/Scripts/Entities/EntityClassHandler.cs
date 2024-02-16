@@ -8,25 +8,15 @@ public class EntityClassHandler : MonoBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
 
-	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
-	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
+	[Header("Current Class")]
+	public List<SOClasses> possibleClassesList = new List<SOClasses>();
 
+	[Header("Current Class")]
 	public SOClasses currentEntityClass;
 	public GameObject itemPrefab;
 
-	[Header("Bonuses Provided By Class")]
-	public int classHealth;
-	public int classMana;
-
-	public int classPhysicalResistance;
-	public int classPoisonResistance;
-	public int classFireResistance;
-	public int classIceResistance;
-
-	public int physicalDamagePercentage;
-	public int poisonDamagePercentage;
-	public int fireDamagePercentage;
-	public int iceDamagePercentage;
+	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
+	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
 
 	public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
@@ -37,18 +27,48 @@ public class EntityClassHandler : MonoBehaviour
 		Initilize();
 	}
 
-	private void OnEnable()
-	{
-		PlayerClassesUi.OnClassChange += OnClassChanges;
-	}
-	private void OnDisable()
-	{
-		PlayerClassesUi.OnClassChange -= OnClassChanges;
-	}
-
-	private void Initilize()
+	protected void Initilize()
 	{
 		entityStats = GetComponent<EntityStats>();
+
+		if (GetComponent<PlayerController>() == null)
+			SetRandomClass();
+	}
+	public void SetRandomClass()
+	{
+		int num = Utilities.GetRandomNumber(possibleClassesList.Count);
+		currentEntityClass = possibleClassesList[num];
+
+		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
+		{
+			if (entityStats.entityLevel < statBonuses.playerLevelRequirement) continue;
+
+			unlockedStatBoostList.Add(statBonuses);
+			AddStatBonuses(statBonuses);
+		}
+		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
+		{
+			if (entityStats.entityLevel < ability.playerLevelRequirement) continue;
+
+			unlockedAbilitiesList.Add(ability);
+		}
+	}
+
+	public void AddStatBonuses(SOClassStatBonuses statBoost)
+	{
+		OnStatUnlock?.Invoke(statBoost);
+	}
+	public void RemoveStatBonuses(SOClassStatBonuses statBoost)
+	{
+
+	}
+	public void AddAbilities()
+	{
+
+	}
+	public void RemoveAbilities()
+	{
+
 	}
 
 	///	<summery>
@@ -72,7 +92,7 @@ public class EntityClassHandler : MonoBehaviour
 	///	<summery>
 	public void OnClassReset()
 	{
-
+		OnClassChanges(currentEntityClass);
 	}
 
 	public void UnlockStatBoost(SOClassStatBonuses classStatBoost)
@@ -84,22 +104,5 @@ public class EntityClassHandler : MonoBehaviour
 	{
 		unlockedAbilitiesList.Add(classAbility);
 		OnAbilityUnlock?.Invoke(classAbility);
-	}
-
-	public void AddStatBonuses(SOClassStatBonuses statBoost)
-	{
-
-	}
-	public void RemoveStatBonuses(SOClassStatBonuses statBoost)
-	{
-
-	}
-	public void AddAbilities()
-	{
-
-	}
-	public void RemoveAbilities()
-	{
-
 	}
 }

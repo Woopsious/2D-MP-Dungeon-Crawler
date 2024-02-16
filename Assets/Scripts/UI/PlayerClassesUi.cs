@@ -8,7 +8,7 @@ public class PlayerClassesUi : MonoBehaviour
 {
 	public static PlayerClassesUi Instance;
 
-	public GameObject playerClassesPanel;
+	public GameObject playerClassSelectionPanel;
 
 	[Header("knight Class")]
 	public SOClasses knightClass;
@@ -53,31 +53,63 @@ public class PlayerClassesUi : MonoBehaviour
 
 	public void PlayAsKnight()
 	{
-
+		OnClassChange?.Invoke(knightClass);
+		ShowClassSkillTree(knightClass);
+		HidePlayerClassSelection();
 	}
 	public void PlayAsWarrior()
 	{
-
+		OnClassChange?.Invoke(warriorClass);
+		ShowClassSkillTree(warriorClass);
+		HidePlayerClassSelection();
 	}
 	public void PlayAsRogue()
 	{
-		
+		OnClassChange?.Invoke(rogueClass);
+		ShowClassSkillTree(rogueClass);
+		HidePlayerClassSelection();
 	}
 	public void PlayAsRanger()
 	{
-
+		OnClassChange?.Invoke(rangerClass);
+		ShowClassSkillTree(rangerClass);
+		HidePlayerClassSelection();
 	}
 	public void PlayAsMage()
 	{
-
+		OnClassChange?.Invoke(mageClass);
+		ShowClassSkillTree(mageClass);
+		HidePlayerClassSelection();
 	}
 
-	public void ShowPlayerClasses()
+	private void ShowClassSkillTree(SOClasses thisClass)
 	{
-		playerClassesPanel.SetActive(true);
+		if (thisClass == knightClass)
+			knightClassPanel.SetActive(true);
+		if (thisClass == warriorClass)
+			warriorClassPanel.SetActive(true);
+		if (thisClass == rogueClass)
+			rogueClassPanel.SetActive(true);
+		if (thisClass == rangerClass)
+			rangerClassPanel.SetActive(true);
+		if (thisClass == mageClass)
+			MageClassPanel.SetActive(true);
 	}
-	public void HidePlayerClasses()
+	private void HideClassSkillTree()
 	{
-		playerClassesPanel.SetActive(false);
+		knightClassPanel.SetActive(false);
+		warriorClassPanel.SetActive(false);
+		rogueClassPanel.SetActive(false);
+		rangerClassPanel.SetActive(false);
+		MageClassPanel.SetActive(false);
+	}
+
+	public void ShowPlayerClassSelection()
+	{
+		playerClassSelectionPanel.SetActive(true);
+	}
+	public void HidePlayerClassSelection()
+	{
+		playerClassSelectionPanel.SetActive(false);
 	}
 }

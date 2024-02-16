@@ -10,20 +10,20 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
-  m_Name: HealthBoost
+  m_Name: ResistanceBoost
   m_EditorClassIdentifier: 
-  Name: Health Boost
-  Description: Gives a permanent health boost
-  playerLevelRequirement: 1
+  Name: Resistance Boost
+  Description: Gives a permanent Resistance boost to Physical, Posion, FIre and Ice
+  playerLevelRequirement: 10
   preRequisites: []
   exclusions: []
-  isHealthBoost: 1
+  isHealthBoost: 0
   isManaBoost: 0
   isManaRegenBoost: 0
-  isPhysicalResistanceBoost: 0
-  isPoisonResistanceBoost: 0
-  isFireResistanceBoost: 0
-  isIceResistanceBoost: 0
+  isPhysicalResistanceBoost: 1
+  isPoisonResistanceBoost: 1
+  isFireResistanceBoost: 1
+  isIceResistanceBoost: 1
   isPhysicalDamageBoost: 0
   isPosionDamageBoost: 0
   isFireDamageBoost: 0

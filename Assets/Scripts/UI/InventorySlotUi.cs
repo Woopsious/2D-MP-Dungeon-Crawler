@@ -10,9 +10,9 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlot : MonoBehaviour, IDropHandler
+public class InventorySlotUi : MonoBehaviour, IDropHandler
 {
-	public static event Action<InventoryItem, InventorySlot> OnItemEquip;
+	public static event Action<InventoryItem, InventorySlotUi> OnItemEquip;
 
 	public SlotType slotType;
 	public enum SlotType
@@ -38,7 +38,7 @@ public class InventorySlot : MonoBehaviour, IDropHandler
 	}
 	public void DragEquipItemToSlot(InventoryItem item)
 	{
-		InventorySlot oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlot>();
+		InventorySlotUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotUi>();
 
 		if (!IsCorrectSlotType(item)) return;
 		if (IsNewSlotSameAsOldSlot(item)) return;

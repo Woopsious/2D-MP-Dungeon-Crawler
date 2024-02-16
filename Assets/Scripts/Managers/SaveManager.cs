@@ -211,10 +211,10 @@ public class SaveManager : MonoBehaviour
 
 		foreach (GameObject slot in gameObjects)
 		{
-			if (slot.GetComponent<InventorySlot>().IsSlotEmpty()) continue;
+			if (slot.GetComponent<InventorySlotUi>().IsSlotEmpty()) continue;
 			else
 			{
-				InventoryItem inventoryItem = slot.GetComponent<InventorySlot>().itemInSlot;
+				InventoryItem inventoryItem = slot.GetComponent<InventorySlotUi>().itemInSlot;
 				InventoryItemData itemData = new()
 				{
 					weaponBaseRef = inventoryItem.weaponBaseRef,
