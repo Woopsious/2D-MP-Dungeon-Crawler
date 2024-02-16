@@ -32,7 +32,6 @@ public class Weapons : Items
 
 		isShield = weaponBaseRef.isShield;
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
-		Debug.Log("initial damage: " + damage);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
 	}
@@ -58,14 +57,8 @@ public class Weapons : Items
 	}
 	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod, Weapons offHandWeapon)
 	{
-		Debug.Log("old damage: " + damage);
-
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
 			damage += offHandWeapon.damage;
-
-		Debug.Log("physical damage modifier" + phyMod);
-
-		Debug.Log("damage + offhand weapon: " + damage);
 
 		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType)
 			damage = (int)(damage * phyMod);
@@ -75,8 +68,6 @@ public class Weapons : Items
 			damage = (int)(damage * fireMod);
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
 			damage = (int)(damage * iceMod);
-
-		Debug.Log("new damage: " + damage);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

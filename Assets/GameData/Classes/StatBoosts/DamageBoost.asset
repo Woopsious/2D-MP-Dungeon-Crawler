@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
-  m_Name: ResistanceBoost
+  m_Name: DamageBoost
   m_EditorClassIdentifier: 
-  Name: Resistance Boost
-  Description: Gives a permanent Resistance boost to Physical, Posion, FIre and Ice
+  Name: Damage Boost
+  Description: Gives a permanent physical damage
   playerLevelRequirement: 3
   preRequisites: []
   exclusions: []
   healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0
-  physicalResistanceBoostValue: 0.05
-  poisonResistanceBoostValue: 0.05
-  fireResistanceBoostValue: 0.05
-  iceResistanceBoostValue: 0.05
-  physicalDamageBoostValue: 0
+  physicalResistanceBoostValue: 0
+  poisonResistanceBoostValue: 0
+  fireResistanceBoostValue: 0
+  iceResistanceBoostValue: 0
+  physicalDamageBoostValue: 0.05
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0

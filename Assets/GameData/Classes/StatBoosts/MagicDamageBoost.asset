@@ -14,18 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Damage Boost
   Description: Gives a permanent damage boost to Posion, FIre and Ice
-  playerLevelRequirement: 8
+  playerLevelRequirement: 3
   preRequisites: []
   exclusions: []
-  isHealthBoost: 0
-  isManaBoost: 0
-  isManaRegenBoost: 0
-  isPhysicalResistanceBoost: 0
-  isPoisonResistanceBoost: 0
-  isFireResistanceBoost: 0
-  isIceResistanceBoost: 0
-  isPhysicalDamageBoost: 0
-  isPosionDamageBoost: 1
-  isFireDamageBoost: 1
-  isIceDamageBoost: 1
-  percentageValue: 0.05
+  healthBoostValue: 0
+  manaBoostValue: 0
+  manaRegenBoostValue: 0
+  physicalResistanceBoostValue: 0
+  poisonResistanceBoostValue: 0
+  fireResistanceBoostValue: 0
+  iceResistanceBoostValue: 0
+  physicalDamageBoostValue: 0
+  posionDamageBoostValue: 0.05
+  fireDamageBoostValue: 0.05
+  iceDamageBoostValue: 0.05

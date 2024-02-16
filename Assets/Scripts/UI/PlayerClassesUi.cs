@@ -8,6 +8,8 @@ public class PlayerClassesUi : MonoBehaviour
 {
 	public static PlayerClassesUi Instance;
 
+	public SOClasses currentPlayerClass;
+
 	public GameObject playerClassSelectionPanel;
 
 	[Header("knight Class")]
@@ -36,6 +38,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsMageButton;
 
 	public static event Action<SOClasses> OnClassChange;
+	public static event Action<SOClasses> OnClassReset;
 
 	/// <summary> (NEW IDEA)
 	/// have generic ClassSkillItem Scriptable Object that every class uses, make classSkillUI Item that i either build from ui or have premade
@@ -51,35 +54,37 @@ public class PlayerClassesUi : MonoBehaviour
 		Instance = this;
 	}
 
-	public void PlayAsKnight()
+	public void PlayAsKnightButton()
 	{
-		OnClassChange?.Invoke(knightClass);
-		ShowClassSkillTree(knightClass);
+		SetNewClass(knightClass);
+	}
+	public void PlayAsWarriorButton()
+	{
+		SetNewClass(warriorClass);
+	}
+	public void PlayAsRogueButton()
+	{
+		SetNewClass(rogueClass);
+	}
+	public void PlayAsRangerButton()
+	{
+		SetNewClass(rangerClass);
+	}
+	public void PlayAsMageButton()
+	{
+		SetNewClass(mageClass);
+	}
+	public void SetNewClass(SOClasses newClass)
+	{
+		OnClassChange?.Invoke(newClass);
+		currentPlayerClass = newClass;
+		ShowClassSkillTree(newClass);
 		HidePlayerClassSelection();
 	}
-	public void PlayAsWarrior()
+
+	public void ResetCurrentClassButton()
 	{
-		OnClassChange?.Invoke(warriorClass);
-		ShowClassSkillTree(warriorClass);
-		HidePlayerClassSelection();
-	}
-	public void PlayAsRogue()
-	{
-		OnClassChange?.Invoke(rogueClass);
-		ShowClassSkillTree(rogueClass);
-		HidePlayerClassSelection();
-	}
-	public void PlayAsRanger()
-	{
-		OnClassChange?.Invoke(rangerClass);
-		ShowClassSkillTree(rangerClass);
-		HidePlayerClassSelection();
-	}
-	public void PlayAsMage()
-	{
-		OnClassChange?.Invoke(mageClass);
-		ShowClassSkillTree(mageClass);
-		HidePlayerClassSelection();
+		OnClassReset?.Invoke(currentPlayerClass);
 	}
 
 	private void ShowClassSkillTree(SOClasses thisClass)

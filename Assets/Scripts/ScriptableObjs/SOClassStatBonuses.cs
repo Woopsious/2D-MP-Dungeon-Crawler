@@ -6,19 +6,19 @@ using UnityEngine;
 public class SOClassStatBonuses : SOClassUnlocks
 {
 	[Header("Stat Info")]
-	public bool isHealthBoost;
-	public bool isManaBoost;
-	public bool isManaRegenBoost;
+	public float healthBoostValue;
+	public float manaBoostValue;
+	public float manaRegenBoostValue;
 
-	public bool isPhysicalResistanceBoost;
-	public bool isPoisonResistanceBoost;
-	public bool isFireResistanceBoost;
-	public bool isIceResistanceBoost;
+	[Header("Resistance Boosts")]
+	public float physicalResistanceBoostValue;
+	public float poisonResistanceBoostValue;
+	public float fireResistanceBoostValue;
+	public float iceResistanceBoostValue;
 
-	public bool isPhysicalDamageBoost;
-	public bool isPosionDamageBoost;
-	public bool isFireDamageBoost;
-	public bool isIceDamageBoost;
-
-	public float percentageValue;
+	[Header("Damage boosts")]
+	public float physicalDamageBoostValue;
+	public float posionDamageBoostValue;
+	public float fireDamageBoostValue;
+	public float iceDamageBoostValue;
 }

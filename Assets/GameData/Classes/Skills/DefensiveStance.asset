@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Defensive Stance
   Description: Take a defence stance to temporarily boost your defences
-  playerLevelRequirement: 1
+  playerLevelRequirement: 5
   preRequisites: []
   exclusions: []
   isSpell: 0
   isDOT: 0
   isAOE: 0
-  abilityDuration: 0
-  abilityCooldown: 0
+  abilityDuration: 10
+  abilityCooldown: 30
   isHealing: 0
   percentageBased: 1
   value: 0

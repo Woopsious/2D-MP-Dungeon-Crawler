@@ -14,18 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Health Boost
   Description: Gives a permanent health boost
-  playerLevelRequirement: 1
+  playerLevelRequirement: 3
   preRequisites: []
   exclusions: []
-  isHealthBoost: 1
-  isManaBoost: 0
-  isManaRegenBoost: 0
-  isPhysicalResistanceBoost: 0
-  isPoisonResistanceBoost: 0
-  isFireResistanceBoost: 0
-  isIceResistanceBoost: 0
-  isPhysicalDamageBoost: 0
-  isPosionDamageBoost: 0
-  isFireDamageBoost: 0
-  isIceDamageBoost: 0
-  percentageValue: 0.05
+  healthBoostValue: 0.05
+  manaBoostValue: 0
+  manaRegenBoostValue: 0
+  physicalResistanceBoostValue: 0
+  poisonResistanceBoostValue: 0
+  fireResistanceBoostValue: 0
+  iceResistanceBoostValue: 0
+  physicalDamageBoostValue: 0
+  posionDamageBoostValue: 0
+  fireDamageBoostValue: 0
+  iceDamageBoostValue: 0

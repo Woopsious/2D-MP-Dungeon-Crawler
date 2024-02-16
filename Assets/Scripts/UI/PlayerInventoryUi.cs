@@ -44,14 +44,14 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	private void Start()
 	{
-		InventoryPanelUi.gameObject.SetActive(false);
+		InventoryPanelUi.SetActive(false);
 	}
 
 	public void ShowHideInventoryKeybind()
 	{
-		if (InventoryPanelUi.gameObject.activeInHierarchy)
-			InventoryPanelUi.gameObject.SetActive(false);
+		if (InventoryPanelUi.activeInHierarchy)
+			InventoryPanelUi.SetActive(false);
 		else
-			InventoryPanelUi.gameObject.SetActive(true);
+			InventoryPanelUi.SetActive(true);
 	}
 }

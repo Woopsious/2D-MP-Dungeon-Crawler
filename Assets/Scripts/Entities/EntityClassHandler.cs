@@ -18,9 +18,9 @@ public class EntityClassHandler : MonoBehaviour
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
 
-	public event Action<EntityClassHandler> OnClassChange;
-	public event Action<SOClassStatBonuses> OnStatUnlock;
-	public event Action<SOClassAbilities> OnAbilityUnlock;
+	public event Action<EntityClassHandler> OnClassChange; //scripts subbed: Entity stats to update stats 
+	public event Action<SOClassStatBonuses> OnStatUnlock; //scripts subbed: Entity stats to update stats 
+	public event Action<SOClassAbilities> OnAbilityUnlock; //scripts subbed: A Ui script that will add ability to skill/spell book
 
 	private void Start()
 	{
@@ -34,7 +34,7 @@ public class EntityClassHandler : MonoBehaviour
 		if (GetComponent<PlayerController>() == null)
 			SetRandomClass();
 	}
-	public void SetRandomClass()
+	private void SetRandomClass()
 	{
 		int num = Utilities.GetRandomNumber(possibleClassesList.Count);
 		currentEntityClass = possibleClassesList[num];
@@ -42,33 +42,13 @@ public class EntityClassHandler : MonoBehaviour
 		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
 		{
 			if (entityStats.entityLevel < statBonuses.playerLevelRequirement) continue;
-
-			unlockedStatBoostList.Add(statBonuses);
-			AddStatBonuses(statBonuses);
+			UnlockStatBoost(statBonuses);
 		}
 		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
 		{
 			if (entityStats.entityLevel < ability.playerLevelRequirement) continue;
-
-			unlockedAbilitiesList.Add(ability);
+			UnlockAbility(ability);
 		}
-	}
-
-	public void AddStatBonuses(SOClassStatBonuses statBoost)
-	{
-		OnStatUnlock?.Invoke(statBoost);
-	}
-	public void RemoveStatBonuses(SOClassStatBonuses statBoost)
-	{
-
-	}
-	public void AddAbilities()
-	{
-
-	}
-	public void RemoveAbilities()
-	{
-
 	}
 
 	///	<summery>
@@ -77,7 +57,7 @@ public class EntityClassHandler : MonoBehaviour
 	///	
 	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
 	///	<summery>
-	public void OnClassChanges(SOClasses newPlayerClass)
+	protected void OnClassChanges(SOClasses newPlayerClass)
 	{
 		OnClassChange?.Invoke(this);
 
@@ -90,17 +70,17 @@ public class EntityClassHandler : MonoBehaviour
 	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
 	///	then clear unlockedLists
 	///	<summery>
-	public void OnClassReset()
+	protected void OnClassReset(SOClasses currentClass)
 	{
 		OnClassChanges(currentEntityClass);
 	}
 
-	public void UnlockStatBoost(SOClassStatBonuses classStatBoost)
+	private void UnlockStatBoost(SOClassStatBonuses classStatBoost)
 	{
 		unlockedStatBoostList.Add(classStatBoost);
 		OnStatUnlock?.Invoke(classStatBoost);
 	}
-	public void UnlockAbility(SOClassAbilities classAbility)
+	private void UnlockAbility(SOClassAbilities classAbility)
 	{
 		unlockedAbilitiesList.Add(classAbility);
 		OnAbilityUnlock?.Invoke(classAbility);

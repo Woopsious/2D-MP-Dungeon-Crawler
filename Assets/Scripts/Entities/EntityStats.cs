@@ -265,20 +265,20 @@ public class EntityStats : MonoBehaviour
 
 		maxHealth.SetBaseValue((int)(entityBaseStats.maxHealth * levelModifier));
 		maxMana.SetBaseValue((int)(entityBaseStats.maxMana * levelModifier));
+		manaRegenPercentage.SetBaseValue(entityBaseStats.manaRegenPercentage);
+		manaRegenCooldown = entityBaseStats.manaRegenCooldown;
 		physicalResistance.SetBaseValue((int)(entityBaseStats.physicalDamageResistance * levelModifier));
 		poisonResistance.SetBaseValue((int)(entityBaseStats.poisonDamageResistance * levelModifier));
 		fireResistance.SetBaseValue((int)(entityBaseStats.fireDamageResistance * levelModifier));
 		iceResistance.SetBaseValue((int)(entityBaseStats.iceDamageResistance * levelModifier));
-
-		currentHealth = maxHealth.finalValue - maxHealth.equipmentValue;
-		currentMana = maxMana.finalValue - maxMana.equipmentValue;
-		manaRegenPercentage.baseValue = entityBaseStats.manaRegenPercentage;
 
 		physicalDamagePercentageModifier.SetBaseValue(1);
 		poisonDamagePercentageModifier.SetBaseValue(1);
 		fireDamagePercentageModifier.SetBaseValue(1);
 		iceDamagePercentageModifier.SetBaseValue(1);
 
+		currentHealth = maxHealth.finalValue - maxHealth.equipmentValue;
+		currentMana = maxMana.finalValue - maxMana.equipmentValue;
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
@@ -289,6 +289,10 @@ public class EntityStats : MonoBehaviour
 	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
 		maxHealth.UpdateEquipmentValue(equipmentHandler.equipmentHealth);
 		maxMana.UpdateEquipmentValue(equipmentHandler.equipmentMana);
 		physicalResistance.UpdateEquipmentValue(equipmentHandler.equipmentPhysicalResistance);
@@ -301,61 +305,7 @@ public class EntityStats : MonoBehaviour
 		fireDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.fireDamagePercentage);
 		iceDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.iceDamagePercentage);
 
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-
-		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
-		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
-		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
-	}
-	public void OnClassChanges(EntityClassHandler classHandler)
-	{
-		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
-		{
-			if (statBoost.isHealthBoost)
-			{
-				maxHealth.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isManaBoost)
-			{
-				maxMana.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isPhysicalResistanceBoost)
-			{
-				physicalResistance.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isPoisonResistanceBoost)
-			{
-				poisonResistance.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isFireResistanceBoost)
-			{
-				fireResistance.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isIceResistanceBoost)
-			{
-				iceResistance.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isPhysicalDamageBoost)
-			{
-				physicalDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isPosionDamageBoost)
-			{
-				poisonDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isFireDamageBoost)
-			{
-				fireDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
-			}
-			if (statBoost.isIceDamageBoost)
-			{
-				iceDamagePercentageModifier.RemovePercentageValue(statBoost.percentageValue);
-			}
-		}
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -364,59 +314,64 @@ public class EntityStats : MonoBehaviour
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
 	{
-		if (statBoost.isHealthBoost)
-		{
-			maxHealth.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isManaBoost)
-		{
-			maxMana.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isPhysicalResistanceBoost)
-		{
-			physicalResistance.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isPoisonResistanceBoost)
-		{
-			poisonResistance.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isFireResistanceBoost)
-		{
-			fireResistance.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isIceResistanceBoost)
-		{
-			iceResistance.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isPhysicalDamageBoost)
-		{
-			physicalDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isPosionDamageBoost)
-		{
-			poisonDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isFireDamageBoost)
-		{
-			fireDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
-		}
-		if (statBoost.isIceDamageBoost)
-		{
-			iceDamagePercentageModifier.AddPercentageValue(statBoost.percentageValue);
-		}
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
 
+		maxHealth.AddPercentageValue(statBoost.healthBoostValue);
+		maxMana.AddPercentageValue(statBoost.manaBoostValue);
+		physicalResistance.AddPercentageValue(statBoost.physicalResistanceBoostValue);
+		poisonResistance.AddPercentageValue(statBoost.poisonResistanceBoostValue);
+		fireResistance.AddPercentageValue(statBoost.fireResistanceBoostValue);
+		iceResistance.AddPercentageValue(statBoost.iceResistanceBoostValue);
+		physicalDamagePercentageModifier.AddPercentageValue(statBoost.physicalDamageBoostValue);
+		poisonDamagePercentageModifier.AddPercentageValue(statBoost.posionDamageBoostValue);
+		fireDamagePercentageModifier.AddPercentageValue(statBoost.fireDamageBoostValue);
+		iceDamagePercentageModifier.AddPercentageValue(statBoost.iceDamageBoostValue);
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
 		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
 	}
-
-	public int GetStatNum(int baseNum, int equipmentNum, float modifierNum)
+	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
 	{
-		baseNum = (int)(baseNum + equipmentNum * modifierNum);
-		return baseNum;
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
+		{
+			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
+			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
+			physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
+			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
+			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
+			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
+			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.posionDamageBoostValue);
+			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
+			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
+		}
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
+		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
+		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
+	}
+	//function will full heal entity if not player and at full health when stat changes
+	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
+	{
+		if (GetComponent<PlayerController>() == null && oldCurrentHealthEqualToOldMaxHealth)
+		{
+			currentHealth = maxHealth.finalValue;
+			currentMana = maxMana.finalValue;
+		}
+
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
 }

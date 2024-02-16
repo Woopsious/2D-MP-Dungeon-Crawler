@@ -28,7 +28,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-
+		if (!hasRecievedStartingItems)
+			SpawnStartingItems();
 	}
 
 	private void OnEnable()

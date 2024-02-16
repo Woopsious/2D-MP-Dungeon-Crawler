@@ -21,7 +21,7 @@ MonoBehaviour:
   isDOT: 0
   isAOE: 0
   abilityDuration: 0
-  abilityCooldown: 0
+  abilityCooldown: 5
   isHealing: 0
   percentageBased: 0
   value: 18

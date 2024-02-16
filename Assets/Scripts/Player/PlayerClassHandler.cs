@@ -11,10 +11,19 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void OnEnable()
 	{
+		SaveManager.OnGameLoad += ReloadPlayerClass;
 		PlayerClassesUi.OnClassChange += OnClassChanges;
+		PlayerClassesUi.OnClassReset += OnClassReset;
 	}
 	private void OnDisable()
 	{
+		SaveManager.OnGameLoad -= ReloadPlayerClass;
 		PlayerClassesUi.OnClassChange -= OnClassChanges;
+		PlayerClassesUi.OnClassReset -= OnClassReset;
+	}
+
+	private void ReloadPlayerClass()
+	{
+
 	}
 }
