@@ -75,12 +75,12 @@ public class EntityClassHandler : MonoBehaviour
 		OnClassChanges(currentEntityClass);
 	}
 
-	private void UnlockStatBoost(SOClassStatBonuses classStatBoost)
+	protected void UnlockStatBoost(SOClassStatBonuses classStatBoost)
 	{
 		unlockedStatBoostList.Add(classStatBoost);
 		OnStatUnlock?.Invoke(classStatBoost);
 	}
-	private void UnlockAbility(SOClassAbilities classAbility)
+	protected void UnlockAbility(SOClassAbilities classAbility)
 	{
 		unlockedAbilitiesList.Add(classAbility);
 		OnAbilityUnlock?.Invoke(classAbility);

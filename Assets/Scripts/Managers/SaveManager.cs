@@ -146,6 +146,7 @@ public class SaveManager : MonoBehaviour
 	{
 		SavePlayerInfoData();
 		SavePlayerInventoryData();
+		SavePlayerClassData();
 
 		string filePath = directory + "/GameData.json";
 		string inventoryData = JsonUtility.ToJson(GameData);
@@ -204,6 +205,14 @@ public class SaveManager : MonoBehaviour
 		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
 		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);
 		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerInventoryUi.Instance.AbilitySlots);
+	}
+	private void SavePlayerClassData()
+	{
+		PlayerClassHandler playerClass = FindObjectOfType<PlayerController>().GetComponent<PlayerClassHandler>();
+
+		GameData.currentPlayerClass = playerClass.currentEntityClass;
+		GameData.currentUnlockedStatBonuses = playerClass.unlockedStatBoostList;
+		GameData.currentUnlockedAbilities = playerClass.unlockedAbilitiesList;
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
@@ -274,6 +283,10 @@ public class GameData
 	public int playerCurrentMana;
 
 	public bool hasRecievedStartingItems;
+
+	public SOClasses currentPlayerClass;
+	public List<SOClassStatBonuses> currentUnlockedStatBonuses = new List<SOClassStatBonuses>();
+	public List<SOClassAbilities> currentUnlockedAbilities = new List<SOClassAbilities>();
 
 	public List<InventoryItemData> inventoryItems = new List<InventoryItemData>();
 	public List<InventoryItemData> equipmentItems = new List<InventoryItemData>();

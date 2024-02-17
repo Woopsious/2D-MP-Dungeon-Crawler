@@ -50,8 +50,20 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void ShowHideInventoryKeybind()
 	{
 		if (InventoryPanelUi.activeInHierarchy)
-			InventoryPanelUi.SetActive(false);
+			HideInventory();
 		else
-			InventoryPanelUi.SetActive(true);
+			ShowInventory();
+	}
+	public void ShowInventory()
+	{
+		InventoryPanelUi.SetActive(true);
+	}
+	public void CloseInventoryButton()
+	{
+		HideInventory();
+	}
+	public void HideInventory()
+	{
+		InventoryPanelUi.SetActive(false);
 	}
 }

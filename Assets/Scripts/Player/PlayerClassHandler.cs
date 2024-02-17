@@ -24,6 +24,12 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void ReloadPlayerClass()
 	{
+		currentEntityClass = SaveManager.Instance.GameData.currentPlayerClass;
 
+		foreach (SOClassStatBonuses statBonus in SaveManager.Instance.GameData.currentUnlockedStatBonuses)
+			UnlockStatBoost(statBonus);
+
+		foreach (SOClassAbilities ability in SaveManager.Instance.GameData.currentUnlockedAbilities)
+			UnlockAbility(ability);
 	}
 }

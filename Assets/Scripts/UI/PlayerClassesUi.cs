@@ -9,8 +9,8 @@ public class PlayerClassesUi : MonoBehaviour
 	public static PlayerClassesUi Instance;
 
 	public SOClasses currentPlayerClass;
-
 	public GameObject playerClassSelectionPanel;
+	public GameObject closeClassSkillTreeButtonObj;
 
 	[Header("knight Class")]
 	public SOClasses knightClass;
@@ -37,8 +37,13 @@ public class PlayerClassesUi : MonoBehaviour
 	public GameObject MageClassPanel;
 	public Button playAsMageButton;
 
+	public GameObject resetPlayerClassButtonObj;
+
 	public static event Action<SOClasses> OnClassChange;
 	public static event Action<SOClasses> OnClassReset;
+
+	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
+	public static event Action<SOClassAbilities> OnNewAbilityUnlock;
 
 	/// <summary> (NEW IDEA)
 	/// have generic ClassSkillItem Scriptable Object that every class uses, make classSkillUI Item that i either build from ui or have premade
@@ -87,8 +92,11 @@ public class PlayerClassesUi : MonoBehaviour
 		OnClassReset?.Invoke(currentPlayerClass);
 	}
 
-	private void ShowClassSkillTree(SOClasses thisClass)
+	public void ShowClassSkillTree(SOClasses thisClass)
 	{
+		if (currentPlayerClass == null) return;
+
+		closeClassSkillTreeButtonObj.SetActive(true);
 		if (thisClass == knightClass)
 			knightClassPanel.SetActive(true);
 		if (thisClass == warriorClass)
@@ -100,8 +108,13 @@ public class PlayerClassesUi : MonoBehaviour
 		if (thisClass == mageClass)
 			MageClassPanel.SetActive(true);
 	}
-	private void HideClassSkillTree()
+	public void CloseClassSkillTreeButton()
 	{
+		HideClassSkillTree();
+	}
+	public void HideClassSkillTree()
+	{
+		closeClassSkillTreeButtonObj.SetActive(false);
 		knightClassPanel.SetActive(false);
 		warriorClassPanel.SetActive(false);
 		rogueClassPanel.SetActive(false);
@@ -112,6 +125,10 @@ public class PlayerClassesUi : MonoBehaviour
 	public void ShowPlayerClassSelection()
 	{
 		playerClassSelectionPanel.SetActive(true);
+	}
+	public void CloseClassSelectionButton()
+	{
+		HidePlayerClassSelection();
 	}
 	public void HidePlayerClassSelection()
 	{

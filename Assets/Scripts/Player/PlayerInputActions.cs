@@ -73,6 +73,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""SkillTree"",
+                    ""type"": ""Button"",
+                    ""id"": ""17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""ConsumablesOne"",
                     ""type"": ""Button"",
                     ""id"": ""dfbbab13-27dd-4958-98d4-5cb5b92f4477"",
@@ -228,7 +237,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""e62cd66a-895b-45aa-bdd0-b4100aff3007"",
-                    ""path"": ""<Keyboard>/i"",
+                    ""path"": ""<Keyboard>/e"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -312,6 +321,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""AbilityFive"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""8a59e2ad-78c5-4930-b9cc-bc86d8271618"",
+                    ""path"": ""<Keyboard>/q"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""SkillTree"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -325,6 +345,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_MainAttack = m_Player.FindAction("MainAttack", throwIfNotFound: true);
         m_Player_MainMenu = m_Player.FindAction("MainMenu", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+        m_Player_SkillTree = m_Player.FindAction("SkillTree", throwIfNotFound: true);
         m_Player_ConsumablesOne = m_Player.FindAction("ConsumablesOne", throwIfNotFound: true);
         m_Player_ConsumablesTwo = m_Player.FindAction("ConsumablesTwo", throwIfNotFound: true);
         m_Player_AbilityOne = m_Player.FindAction("AbilityOne", throwIfNotFound: true);
@@ -398,6 +419,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_MainAttack;
     private readonly InputAction m_Player_MainMenu;
     private readonly InputAction m_Player_Inventory;
+    private readonly InputAction m_Player_SkillTree;
     private readonly InputAction m_Player_ConsumablesOne;
     private readonly InputAction m_Player_ConsumablesTwo;
     private readonly InputAction m_Player_AbilityOne;
@@ -414,6 +436,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @MainAttack => m_Wrapper.m_Player_MainAttack;
         public InputAction @MainMenu => m_Wrapper.m_Player_MainMenu;
         public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
+        public InputAction @SkillTree => m_Wrapper.m_Player_SkillTree;
         public InputAction @ConsumablesOne => m_Wrapper.m_Player_ConsumablesOne;
         public InputAction @ConsumablesTwo => m_Wrapper.m_Player_ConsumablesTwo;
         public InputAction @AbilityOne => m_Wrapper.m_Player_AbilityOne;
@@ -445,6 +468,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Inventory.started += instance.OnInventory;
             @Inventory.performed += instance.OnInventory;
             @Inventory.canceled += instance.OnInventory;
+            @SkillTree.started += instance.OnSkillTree;
+            @SkillTree.performed += instance.OnSkillTree;
+            @SkillTree.canceled += instance.OnSkillTree;
             @ConsumablesOne.started += instance.OnConsumablesOne;
             @ConsumablesOne.performed += instance.OnConsumablesOne;
             @ConsumablesOne.canceled += instance.OnConsumablesOne;
@@ -485,6 +511,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Inventory.started -= instance.OnInventory;
             @Inventory.performed -= instance.OnInventory;
             @Inventory.canceled -= instance.OnInventory;
+            @SkillTree.started -= instance.OnSkillTree;
+            @SkillTree.performed -= instance.OnSkillTree;
+            @SkillTree.canceled -= instance.OnSkillTree;
             @ConsumablesOne.started -= instance.OnConsumablesOne;
             @ConsumablesOne.performed -= instance.OnConsumablesOne;
             @ConsumablesOne.canceled -= instance.OnConsumablesOne;
@@ -530,6 +559,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnMainAttack(InputAction.CallbackContext context);
         void OnMainMenu(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
+        void OnSkillTree(InputAction.CallbackContext context);
         void OnConsumablesOne(InputAction.CallbackContext context);
         void OnConsumablesTwo(InputAction.CallbackContext context);
         void OnAbilityOne(InputAction.CallbackContext context);

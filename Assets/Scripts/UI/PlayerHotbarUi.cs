@@ -34,6 +34,19 @@ public class PlayerHotbarUi : MonoBehaviour
 		Instance = this;
 	}
 
+	public void OpenInventoryButton()
+	{
+		PlayerInventoryUi.Instance.ShowInventory();
+	}
+	public void OpenClassSelectionButton()
+	{
+		PlayerClassesUi.Instance.ShowPlayerClassSelection();
+	}
+	public void OpenClassSkillTreeButton()
+	{
+		PlayerClassesUi.Instance.ShowClassSkillTree(PlayerClassesUi.Instance.currentPlayerClass);
+	}
+
 	public void OnExperienceChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;

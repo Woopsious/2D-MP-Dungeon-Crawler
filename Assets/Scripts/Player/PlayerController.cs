@@ -164,4 +164,8 @@ public class PlayerController : MonoBehaviour
 	{
 		PlayerInventoryUi.Instance.ShowHideInventoryKeybind();
 	}
+	private void OnSkillTree()
+	{
+		PlayerClassesUi.Instance.ShowClassSkillTree(PlayerClassesUi.Instance.currentPlayerClass);
+	}
 }
