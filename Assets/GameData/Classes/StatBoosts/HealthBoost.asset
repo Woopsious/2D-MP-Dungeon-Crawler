@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Health Boost
   Description: Gives a permanent health boost
-  playerLevelRequirement: 3
+  playerLevelRequirement: 15
   preRequisites: []
   exclusions: []
   healthBoostValue: 0.05

@@ -120,18 +120,10 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
-		if (playerEquipmentHandler.equippedConsumableOne == null)
-		{
-			Debug.Log("consumable slot one empty"); return;
-		}
 		playerEquipmentHandler.equippedConsumableOne.ConsumeItem(this);
 	}
 	private void OnConsumablesTwo()
 	{
-		if (playerEquipmentHandler.equippedConsumableTwo == null)
-		{
-			Debug.Log("consumable slot two empty"); return;
-		}
 		playerEquipmentHandler.equippedConsumableTwo.ConsumeItem(this);
 	}
 	private void OnAbilityOne()
@@ -166,6 +158,6 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnSkillTree()
 	{
-		PlayerClassesUi.Instance.ShowClassSkillTree(PlayerClassesUi.Instance.currentPlayerClass);
+		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
 	}
 }

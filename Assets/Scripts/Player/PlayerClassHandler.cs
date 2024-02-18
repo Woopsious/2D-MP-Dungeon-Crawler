@@ -12,14 +12,19 @@ public class PlayerClassHandler : EntityClassHandler
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerClass;
-		PlayerClassesUi.OnClassChange += OnClassChanges;
-		PlayerClassesUi.OnClassReset += OnClassReset;
+		ClassesUi.OnClassChange += OnClassChanges;
+		ClassesUi.OnClassReset += OnClassReset;
+		ClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
+		ClassesUi.OnNewAbilityUnlock += UnlockAbility;
+		Debug.Log("player class handler subbing to events");
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerClass;
-		PlayerClassesUi.OnClassChange -= OnClassChanges;
-		PlayerClassesUi.OnClassReset -= OnClassReset;
+		ClassesUi.OnClassChange -= OnClassChanges;
+		ClassesUi.OnClassReset -= OnClassReset;
+		ClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
+		ClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 	}
 
 	private void ReloadPlayerClass()
@@ -31,5 +36,10 @@ public class PlayerClassHandler : EntityClassHandler
 
 		foreach (SOClassAbilities ability in SaveManager.Instance.GameData.currentUnlockedAbilities)
 			UnlockAbility(ability);
+	}
+
+	public void UpdatePlayerClassUi()
+	{
+
 	}
 }

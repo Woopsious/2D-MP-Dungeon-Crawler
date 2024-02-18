@@ -230,7 +230,7 @@ GameObject:
   - component: {fileID: 4412705391860920891}
   - component: {fileID: 1965868520373403594}
   - component: {fileID: 4193777512436036858}
-  - component: {fileID: 6129221149926735789}
+  - component: {fileID: 3812097260653837204}
   - component: {fileID: 120328194627084056}
   - component: {fileID: 5724620505289801652}
   - component: {fileID: 4928850030821427467}
@@ -347,27 +347,99 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityBaseStats: {fileID: 11400000, guid: 62769b5b0b4d3c04e85ef46bac28b8e3, type: 2}
   classHandler: {fileID: 0}
+  equipmentHandler: {fileID: 0}
   entityLevel: 20
   levelModifier: 0
-  maxHealth: 0
+  maxHealth:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
   currentHealth: 0
-  maxMana: 0
+  maxMana:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
   currentMana: 0
-  physicalResistance: 0
-  poisonResistance: 0
-  fireResistance: 0
-  iceResistance: 0
-  maxHealthModifier: 0
-  maxManaModifier: 0
-  manaRegenPercentageModifier: 0
-  physicalResistanceModifier: 0
-  poisonResistanceModifier: 0
-  fireResistanceModifier: 0
-  iceResistanceModifier: 0
-  physicalDamagePercentageModifier: 0
-  poisonDamagePercentageModifier: 0
-  fireDamagePercentageModifier: 0
-  iceDamagePercentageModifier: 0
+  manaRegenPercentage:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  physicalResistance:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  poisonResistance:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  fireResistance:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  iceResistance:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  physicalDamagePercentageModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  poisonDamagePercentageModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  fireDamagePercentageModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  iceDamagePercentageModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
 --- !u!114 &1965868520373403594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -397,7 +469,7 @@ MonoBehaviour:
   playerCamera: {fileID: 2531859271035774187}
   playerEquipmentHandler: {fileID: 0}
   speed: 10
---- !u!114 &6129221149926735789
+--- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -406,23 +478,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1405763340389273497}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1596dc141a41e1449bfce72c8c76d1aa, type: 3}
+  m_Script: {fileID: 11500000, guid: de212d39230fe37479647e70502f4e2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  currentPlayerClass: {fileID: 0}
-  itemPrefab: {fileID: 0}
   entityStats: {fileID: 0}
-  isPlayerEquipment: 0
-  classHealth: 0
-  classMana: 0
-  classPhysicalResistance: 0
-  classPoisonResistance: 0
-  classFireResistance: 0
-  classIceResistance: 0
-  physicalDamagePercentage: 0
-  poisonDamagePercentage: 0
-  fireDamagePercentage: 0
-  iceDamagePercentage: 0
+  possibleClassesList: []
+  currentEntityClass: {fileID: 0}
+  itemPrefab: {fileID: 0}
+  unlockedAbilitiesList: []
+  unlockedStatBoostList: []
 --- !u!114 &120328194627084056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -437,6 +501,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
   entityStats: {fileID: 0}
+  entityClassHandler: {fileID: 0}
   isPlayerEquipment: 0
   weaponSlotContainer: {fileID: 8319858746991541843}
   equippedWeapon: {fileID: 0}

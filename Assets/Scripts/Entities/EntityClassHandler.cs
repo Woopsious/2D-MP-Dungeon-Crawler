@@ -82,6 +82,8 @@ public class EntityClassHandler : MonoBehaviour
 	}
 	protected void UnlockAbility(SOClassAbilities classAbility)
 	{
+		Debug.Log("new ability added");
+
 		unlockedAbilitiesList.Add(classAbility);
 		OnAbilityUnlock?.Invoke(classAbility);
 	}

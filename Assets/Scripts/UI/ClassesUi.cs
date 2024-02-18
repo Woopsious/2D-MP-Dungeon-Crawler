@@ -4,13 +4,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerClassesUi : MonoBehaviour
+public class ClassesUi : MonoBehaviour
 {
-	public static PlayerClassesUi Instance;
+	public static ClassesUi Instance;
 
 	public SOClasses currentPlayerClass;
 	public GameObject playerClassSelectionPanel;
-	public GameObject closeClassSkillTreeButtonObj;
+	public GameObject closeClassTreeButtonObj;
 
 	[Header("knight Class")]
 	public SOClasses knightClass;
@@ -59,6 +59,19 @@ public class PlayerClassesUi : MonoBehaviour
 		Instance = this;
 	}
 
+	//skill tree node unlocks
+	public void UnlockStatBonus(SOClassStatBonuses statBonus)
+	{
+		OnNewStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void UnlockAbility(SOClassAbilities ability)
+	{
+		Debug.Log("unlocking new ability");
+		OnNewAbilityUnlock?.Invoke(ability);
+	}
+
+	//UI CHANGES
+	//classes
 	public void PlayAsKnightButton()
 	{
 		SetNewClass(knightClass);
@@ -86,17 +99,30 @@ public class PlayerClassesUi : MonoBehaviour
 		ShowClassSkillTree(newClass);
 		HidePlayerClassSelection();
 	}
-
 	public void ResetCurrentClassButton()
 	{
 		OnClassReset?.Invoke(currentPlayerClass);
 	}
 
+	public void ShowPlayerClassSelection()
+	{
+		playerClassSelectionPanel.SetActive(true);
+	}
+	public void CloseClassSelectionButton()
+	{
+		HidePlayerClassSelection();
+	}
+	public void HidePlayerClassSelection()
+	{
+		playerClassSelectionPanel.SetActive(false);
+	}
+
+	//class skill trees
 	public void ShowClassSkillTree(SOClasses thisClass)
 	{
 		if (currentPlayerClass == null) return;
 
-		closeClassSkillTreeButtonObj.SetActive(true);
+		closeClassTreeButtonObj.SetActive(true);
 		if (thisClass == knightClass)
 			knightClassPanel.SetActive(true);
 		if (thisClass == warriorClass)
@@ -114,24 +140,11 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	public void HideClassSkillTree()
 	{
-		closeClassSkillTreeButtonObj.SetActive(false);
+		closeClassTreeButtonObj.SetActive(false);
 		knightClassPanel.SetActive(false);
 		warriorClassPanel.SetActive(false);
 		rogueClassPanel.SetActive(false);
 		rangerClassPanel.SetActive(false);
 		MageClassPanel.SetActive(false);
-	}
-
-	public void ShowPlayerClassSelection()
-	{
-		playerClassSelectionPanel.SetActive(true);
-	}
-	public void CloseClassSelectionButton()
-	{
-		HidePlayerClassSelection();
-	}
-	public void HidePlayerClassSelection()
-	{
-		playerClassSelectionPanel.SetActive(false);
 	}
 }

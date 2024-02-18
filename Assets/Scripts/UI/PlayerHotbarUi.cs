@@ -40,11 +40,11 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	public void OpenClassSelectionButton()
 	{
-		PlayerClassesUi.Instance.ShowPlayerClassSelection();
+		ClassesUi.Instance.ShowPlayerClassSelection();
 	}
 	public void OpenClassSkillTreeButton()
 	{
-		PlayerClassesUi.Instance.ShowClassSkillTree(PlayerClassesUi.Instance.currentPlayerClass);
+		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
 	}
 
 	public void OnExperienceChange(int MaxValue, int currentValue)

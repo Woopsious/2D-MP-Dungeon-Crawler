@@ -18,14 +18,14 @@ MonoBehaviour:
   preRequisites: []
   exclusions: []
   isSpell: 0
-  isDOT: 0
+  isDOT: 1
   isAOE: 0
   abilityDuration: 10
   abilityCooldown: 30
   isHealing: 0
   percentageBased: 1
   value: 0
-  valuePercentage: 5
+  valuePercentage: 0.05
   baseDamageType: 0
   manaCost: 0
   minPercentCost: 0
