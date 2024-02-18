@@ -17,10 +17,5 @@ public class SOClassUnlocks : ScriptableObject
 	[TextArea(3, 10)]
 	public string Description;
 
-	public int playerLevelRequirement;
-
-	[Tooltip("previous skill tree items needed to unlock this one")]
-	public List<SOClassUnlocks> preRequisites = new List<SOClassUnlocks>();
-	[Tooltip("skill tree items that will lock this one")]
-	public List<SOClassUnlocks> exclusions = new List<SOClassUnlocks>();
+	public int levelRequirementForNonPlayerEntities;
 }

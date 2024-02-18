@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Health Boost
   Description: Gives a permanent health boost
-  playerLevelRequirement: 15
-  preRequisites: []
-  exclusions: []
+  levelRequirementForNonPlayerEntities: 1
   healthBoostValue: 0.05
   manaBoostValue: 0
   manaRegenBoostValue: 0

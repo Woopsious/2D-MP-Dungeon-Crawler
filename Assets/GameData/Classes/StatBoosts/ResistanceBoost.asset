@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Resistance Boost
   Description: Gives a permanent Resistance boost to Physical, Posion, FIre and Ice
-  playerLevelRequirement: 3
-  preRequisites: []
-  exclusions: []
+  levelRequirementForNonPlayerEntities: 5
   healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0

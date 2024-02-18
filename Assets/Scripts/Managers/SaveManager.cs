@@ -208,11 +208,9 @@ public class SaveManager : MonoBehaviour
 	}
 	private void SavePlayerClassData()
 	{
-		PlayerClassHandler playerClass = FindObjectOfType<PlayerController>().GetComponent<PlayerClassHandler>();
-
-		GameData.currentPlayerClass = playerClass.currentEntityClass;
-		GameData.currentUnlockedStatBonuses = playerClass.unlockedStatBoostList;
-		GameData.currentUnlockedAbilities = playerClass.unlockedAbilitiesList;
+		GameData.currentPlayerClass = ClassesUi.Instance.currentPlayerClass;
+		foreach (ClassTreeSlotUi node in ClassesUi.Instance.unlockedKnightClassNodes)
+			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
@@ -285,6 +283,7 @@ public class GameData
 	public bool hasRecievedStartingItems;
 
 	public SOClasses currentPlayerClass;
+	public List<int> unlockedClassNodeIndexesList = new List<int>();
 	public List<SOClassStatBonuses> currentUnlockedStatBonuses = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> currentUnlockedAbilities = new List<SOClassAbilities>();
 

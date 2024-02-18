@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4752201053806101689}
   - component: {fileID: 1066627627295770913}
   m_Layer: 5
-  m_Name: SlotUnlockButton
+  m_Name: NodeUnlockButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 3144192069964401491}
   - component: {fileID: 3100723525057790691}
   m_Layer: 5
-  m_Name: SlotInfo
+  m_Name: NodeInfo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -268,7 +268,7 @@ GameObject:
   - component: {fileID: 9191287289323197714}
   - component: {fileID: 3761317906718687018}
   m_Layer: 5
-  m_Name: ClassTreeSlot
+  m_Name: ClassNodeSlot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -293,7 +293,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 10, y: -15}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 200, y: 100}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &3216014241617946873
 CanvasRenderer:
@@ -347,9 +347,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   statBonus: {fileID: 0}
   ability: {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
-  nodeLevelRequirment: 0
   slotInfoText: {fileID: 3100723525057790691}
   slotUnlockButtonObj: {fileID: 1841662796589951103}
+  nodeLevelRequirment: 0
+  isAlreadyUnlocked: 0
+  nodeIndex: 0
+  preRequisites: []
+  exclusions: []
 --- !u!1 &6382465818873178431
 GameObject:
   m_ObjectHideFlags: 0

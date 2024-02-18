@@ -14,9 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Mana Boost
   Description: Gives a permanent Mana boost
-  playerLevelRequirement: 3
-  preRequisites: []
-  exclusions: []
+  levelRequirementForNonPlayerEntities: 1
   healthBoostValue: 0
   manaBoostValue: 0.05
   manaRegenBoostValue: 0

@@ -41,12 +41,12 @@ public class EntityClassHandler : MonoBehaviour
 
 		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
 		{
-			if (entityStats.entityLevel < statBonuses.playerLevelRequirement) continue;
+			if (entityStats.entityLevel < statBonuses.levelRequirementForNonPlayerEntities) continue;
 			UnlockStatBoost(statBonuses);
 		}
 		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
 		{
-			if (entityStats.entityLevel < ability.playerLevelRequirement) continue;
+			if (entityStats.entityLevel < ability.levelRequirementForNonPlayerEntities) continue;
 			UnlockAbility(ability);
 		}
 	}
@@ -75,16 +75,18 @@ public class EntityClassHandler : MonoBehaviour
 		OnClassChanges(currentEntityClass);
 	}
 
-	protected void UnlockStatBoost(SOClassStatBonuses classStatBoost)
+	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
-		unlockedStatBoostList.Add(classStatBoost);
-		OnStatUnlock?.Invoke(classStatBoost);
+		unlockedStatBoostList.Add(statBoost);
+		OnStatUnlock?.Invoke(statBoost);
 	}
-	protected void UnlockAbility(SOClassAbilities classAbility)
+	protected virtual void UnlockAbility(SOClassAbilities ability)
 	{
-		Debug.Log("new ability added");
+		unlockedAbilitiesList.Add(ability);
+		OnAbilityUnlock?.Invoke(ability);
+	}
+	protected virtual void OnNewNodeUnlock()
+	{
 
-		unlockedAbilitiesList.Add(classAbility);
-		OnAbilityUnlock?.Invoke(classAbility);
 	}
 }

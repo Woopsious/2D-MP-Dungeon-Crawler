@@ -16,6 +16,7 @@ public class ClassesUi : MonoBehaviour
 	public SOClasses knightClass;
 	public GameObject knightClassPanel;
 	public Button playAsKnightButton;
+	public List<ClassTreeSlotUi> unlockedKnightClassNodes = new List<ClassTreeSlotUi>();
 
 	[Header("Warrior Class")]
 	public SOClasses warriorClass;
@@ -42,32 +43,46 @@ public class ClassesUi : MonoBehaviour
 	public static event Action<SOClasses> OnClassChange;
 	public static event Action<SOClasses> OnClassReset;
 
+	public static event Action<PlayerClassHandler> OnClassNodeUnlocks;
+
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
 	public static event Action<SOClassAbilities> OnNewAbilityUnlock;
 
 	/// <summary> (NEW IDEA)
-	/// have generic ClassSkillItem Scriptable Object that every class uses, make classSkillUI Item that i either build from ui or have premade
-	/// have an enum to link them to specific classes, only apply bonuses from class the player current is using on class switch
-	/// have script PlayerClassManager that links a player to events of other scripts + PlayerClassesUI that will control ui inputs etc.
-	/// PlayerClassManager will work hopefully just like PlayerEquipmentManager and pass on stat boosts to PlayerStats.
-	/// through events Player Stats update (correctly hopefully) when new items/stat boosts from class tree are unlocked
-	/// as well as unlocking equippable abilities from there respective spells and skills tab in inventory
+	/// player selects class on new game start. if reloading game, indexes of Unlocked ClassTreeSlotUi nodes are saved and loaded to disk,
+	/// from a List in PlayerClassHandler, nodes are then auto unlocked based on those indexes when reloading a game.
+	/// when player opens or levels up updating ui and check if nodes could be unlocked (check for exclusions, player level, pre requisites).
+	/// once player unlocks new node, event sent to PlayerClassHandler that applies stat bonuses, PlayerClassHandler calls another event
 	/// </summary>
 
 	private void Start()
 	{
 		Instance = this;
 	}
+	private void OnEnable()
+	{
+		SaveManager.OnGameLoad += ReloadPlayerClass;
+	}
+	private void OnDisable()
+	{
+		SaveManager.OnGameLoad -= ReloadPlayerClass;
+	}
 
 	//skill tree node unlocks
-	public void UnlockStatBonus(SOClassStatBonuses statBonus)
+	public void UnlockStatBonus(ClassTreeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
 	{
+		unlockedKnightClassNodes.Add(classTreeSlot);
 		OnNewStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void UnlockAbility(SOClassAbilities ability)
+	public void UnlockAbility(ClassTreeSlotUi classTreeSlot, SOClassAbilities ability)
 	{
-		Debug.Log("unlocking new ability");
+		unlockedKnightClassNodes.Add(classTreeSlot);
 		OnNewAbilityUnlock?.Invoke(ability);
+	}
+
+	public void UpdateNodesInClassTree(PlayerClassHandler playerClassHandler)
+	{
+		OnClassNodeUnlocks?.Invoke(playerClassHandler);
 	}
 
 	//UI CHANGES
@@ -102,6 +117,8 @@ public class ClassesUi : MonoBehaviour
 	public void ResetCurrentClassButton()
 	{
 		OnClassReset?.Invoke(currentPlayerClass);
+
+		//reset unlocked node tree list
 	}
 
 	public void ShowPlayerClassSelection()
@@ -146,5 +163,15 @@ public class ClassesUi : MonoBehaviour
 		rogueClassPanel.SetActive(false);
 		rangerClassPanel.SetActive(false);
 		MageClassPanel.SetActive(false);
+	}
+
+	public void ReloadPlayerClass()
+	{
+		currentPlayerClass = SaveManager.Instance.GameData.currentPlayerClass;
+
+		/// <summery>
+		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
+		/// of said classes Nodes, and reunlock those bypassing checks
+		/// <summery>
 	}
 }
