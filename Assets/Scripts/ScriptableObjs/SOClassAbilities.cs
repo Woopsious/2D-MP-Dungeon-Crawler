@@ -5,26 +5,49 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "ClassUnlocksScriptableObject", menuName = "ClassUnlocks/Abilities")]
 public class SOClassAbilities : SOClassUnlocks
 {
+	/// <summary>
+	///  check if status effect first, then check if AoE, else treat it as instant use ability
+	///  status effects require a target to be used on unless aoe, then anyone in aoe gets that effect - enemies (idk how thatll work atm)
+	///  aoes can be placed anywhere valid in world and can be duration based
+	///  instant use spells firebolt or heal can )
+	///  a way to cancel abilities requiring a target via right click once casted??
+	/// </summary>
+
 	[Header("Ability Info")]
-	public bool isSpell;
-	public bool isDOT;
-	public bool isAOE;
-	public float abilityDuration;
+	[Tooltip("status effects need a target to use on, unless marked as canOnlyTargetSelf, aoe needs to be placed on ground")]
+	public AbilityType abilityType;
+	public enum AbilityType
+	{
+		isStatusEffect, isAOEAbility, isDirectionalAbility
+	}
+	[Tooltip("makes ability placeable in world")]
 	public float abilityCooldown;
 
-	[Header("Damage Type")]
-	public bool isHealing;
+	[Header("Status Effects Settings")]
+	public StatusEffectType statusEffectType;
+	public enum StatusEffectType
+	{
+		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
+	}
+	public bool canOnlyTargetSelf;
+
+	[Header("DoT Settings")]
+	public bool isDOT;
+	public float abilityDuration;
+
+	[Header("Damage Settings")]
 	public bool percentageBased;
 	public int value;
 	public float valuePercentage;
 
-	public DamageType baseDamageType;
+	public DamageType damageType;
 	public enum DamageType
 	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
+		isHealing, isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
-	[Header("Spell Info")]
+	[Header("Spell Settings")]
+	public bool isSpell;
 	public int manaCost;            //atm idk if % cost or num cost for spells will work out better. after maxMana % boosts, hard num =
 	public float minPercentCost;    //cost to use spells being pointless. % num cost = no point in having player mana ever change from 100
 }

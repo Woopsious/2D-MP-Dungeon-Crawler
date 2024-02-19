@@ -21,4 +21,7 @@ public class SOClassStatBonuses : SOClassUnlocks
 	public float posionDamageBoostValue;
 	public float fireDamageBoostValue;
 	public float iceDamageBoostValue;
+
+	public float mainWeaponDamageBoostValue;
+	public float duelWeaponDamageBoostValue;
 }

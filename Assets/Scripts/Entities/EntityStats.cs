@@ -36,6 +36,8 @@ public class EntityStats : MonoBehaviour
 	public Stat poisonDamagePercentageModifier;
 	public Stat fireDamagePercentageModifier;
 	public Stat iceDamagePercentageModifier;
+	public Stat mainWeaponDamageModifier;
+	public Stat dualWeaponDamageModifier;
 
 	public event Action<int, bool> OnRecieveHealingEvent;
 	public event Action<int, IDamagable.DamageType> OnRecieveDamageEvent;
@@ -285,7 +287,8 @@ public class EntityStats : MonoBehaviour
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
-		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
+		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
+		dualWeaponDamageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
 	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
@@ -310,7 +313,8 @@ public class EntityStats : MonoBehaviour
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
-		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
+		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
+		dualWeaponDamageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
 	{
@@ -334,7 +338,8 @@ public class EntityStats : MonoBehaviour
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
-		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
+		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
+		dualWeaponDamageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
 	}
 	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
 	{
@@ -360,7 +365,8 @@ public class EntityStats : MonoBehaviour
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
-		iceDamagePercentageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
+		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
+		dualWeaponDamageModifier.finalPercentageValue, equipmentHandler.equippedOffhandWeapon);
 	}
 	//function will full heal entity if not player and at full health when stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)

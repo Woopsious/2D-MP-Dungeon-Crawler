@@ -55,19 +55,30 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = true;
 
 	}
-	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod, Weapons offHandWeapon)
+	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod,
+		float singleHandMod, float duelHandMod, Weapons offHandWeapon)
 	{
+		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
+		float percentageMod = 0;
+
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
 			damage += offHandWeapon.damage;
 
-		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType)
-			damage = (int)(damage * phyMod);
+		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType) //apply damage type mod
+			percentageMod = phyMod;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			damage = (int)(damage * poiMod);
+			percentageMod = poiMod;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			damage = (int)(damage * fireMod);
+			percentageMod = fireMod;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			damage = (int)(damage * iceMod);
+			percentageMod = iceMod;
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
+			percentageMod += singleHandMod;
+		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+			percentageMod += singleHandMod;
+
+		damage = (int)(damage * percentageMod);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
