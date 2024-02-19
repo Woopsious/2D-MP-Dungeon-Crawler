@@ -120,6 +120,10 @@ public class ClassesUi : MonoBehaviour
 	{
 		OnClassReset?.Invoke(currentPlayerClass);
 
+		currentUnlockedClassNodes.Clear();
+
+		//currentUnlockedClassNodes.Clear();
+
 		//reset unlocked node tree list
 	}
 
@@ -148,6 +152,7 @@ public class ClassesUi : MonoBehaviour
 	{
 		if (currentPlayerClass == null) return;
 		closeClassTreeButtonObj.SetActive(true);
+		resetPlayerClassButtonObj.SetActive(true);
 
 		if (thisClass == knightClass)
 			knightClassPanel.SetActive(true);
@@ -167,6 +172,7 @@ public class ClassesUi : MonoBehaviour
 	public void HideClassSkillTree()
 	{
 		closeClassTreeButtonObj.SetActive(false);
+		resetPlayerClassButtonObj.SetActive(false);
 		knightClassPanel.SetActive(false);
 		warriorClassPanel.SetActive(false);
 		rogueClassPanel.SetActive(false);

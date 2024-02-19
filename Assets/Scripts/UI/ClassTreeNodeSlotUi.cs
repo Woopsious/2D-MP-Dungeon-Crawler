@@ -1,8 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class ClassTreeNodeSlotUi : MonoBehaviour
 {
@@ -10,34 +14,32 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	public SOClassAbilities ability;
 
 	public TMP_Text slotInfoText;
+	private Image image;
 	public GameObject slotUnlockButtonObj;
 
 	public int nodeLevelRequirment;
 	public bool isAlreadyUnlocked;
 	public int nodeIndex;
 
-	[Tooltip("previous skill tree items needed to unlock this one")]
+	[Tooltip("Prev skill nodes needed to unlock this one (only needs one of these)")]
 	public List<ClassTreeNodeSlotUi> preRequisites = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("skill tree items that will lock this one")]
+	[Tooltip("Nodes that are exclusive to this one")]
 	public List<ClassTreeNodeSlotUi> exclusions = new List<ClassTreeNodeSlotUi>();
-
-	/// <summary>
-	/// for saving data, 
-	/// </summary>
 
 	private void Start()
 	{
 		Initilize();
 	}
-	public void OnEnable()
+	private void OnEnable()
 	{
 		ClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
+		ClassesUi.OnClassReset += ResetNode;
 	}
 	private void OnDisable()
 	{
 		ClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
+		ClassesUi.OnClassReset -= ResetNode;
 	}
-
 	private void Initilize()
 	{
 		if (statBonus != null)
@@ -47,11 +49,9 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		else
 			Debug.LogError("Skill tree slot has no reference, this shouldnt happen");
 
-		LockNode();
-		isAlreadyUnlocked = false;
+		image = GetComponent<Image>();
 		nodeIndex = transform.GetSiblingIndex();
-		if (nodeLevelRequirment == 1)
-			UnlockNode();
+		ResetNode(null);
 	}
 
 	public void UnlockThisClassSkillButton()
@@ -64,11 +64,13 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			ClassesUi.Instance.UnlockAbility(this, ability);
 	}
 
+	//node update checks
 	public void CheckIfNodeShouldBeLockedOrUnlocked(PlayerClassHandler playerClassHandler)
 	{
 		if (isAlreadyUnlocked)
 		{
 			LockNode();
+			ActivateNode();
 			return;
 		}
 
@@ -111,25 +113,46 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	}
 	public bool CheckIfAllPreRequisiteNodesUnlocked()
 	{
-		int numOfPreRequisiteNodesUnlocked = 0;
-		foreach (ClassTreeNodeSlotUi node in preRequisites)
+		if (preRequisites.Count == 1)
 		{
-			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-				numOfPreRequisiteNodesUnlocked++;
-		}
-
-		if (numOfPreRequisiteNodesUnlocked == preRequisites.Count)
-			return true;
-		else
+			foreach (ClassTreeNodeSlotUi node in preRequisites)
+			{
+				if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+					return true;
+			}
 			return false;
+		}
+		else
+		{
+			foreach (ClassTreeNodeSlotUi node in preRequisites)
+			{
+				if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+					return true;
+			}
+			return false;
+		}
 	}
 
-	public void LockNode()
+	//node updates
+	private void LockNode()
 	{
+		image.color = new Color(1, 0.4f, 0.4f, 1);
 		slotUnlockButtonObj.SetActive(false);
 	}
-	public void UnlockNode()
+	private void UnlockNode()
 	{
+		image.color = new Color(1, 1, 1, 1);
 		slotUnlockButtonObj.SetActive(true);
+	}
+	private void ActivateNode()
+	{
+		image.color = new Color(0.4f, 1, 0.4f, 1);
+	}
+	private void ResetNode(SOClasses currentClass)
+	{
+		isAlreadyUnlocked = false;
+		LockNode();
+		if (nodeLevelRequirment == 1)
+			UnlockNode();
 	}
 }
