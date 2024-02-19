@@ -17,5 +17,5 @@ public class SOClassUnlocks : ScriptableObject
 	[TextArea(3, 10)]
 	public string Description;
 
-	public int levelRequirementForNonPlayerEntities;
+	public int nonPlayerLevelRequirement;
 }

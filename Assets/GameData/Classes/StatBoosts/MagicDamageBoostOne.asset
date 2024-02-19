@@ -23,8 +23,8 @@ MonoBehaviour:
   fireResistanceBoostValue: 0
   iceResistanceBoostValue: 0
   physicalDamageBoostValue: 0
-  posionDamageBoostValue: 0.1
-  fireDamageBoostValue: 0.1
-  iceDamageBoostValue: 0.1
+  posionDamageBoostValue: 0.05
+  fireDamageBoostValue: 0.05
+  iceDamageBoostValue: 0.05
   mainWeaponDamageBoostValue: 0
   duelWeaponDamageBoostValue: 0

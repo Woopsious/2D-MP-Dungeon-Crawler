@@ -14,14 +14,8 @@ public class SOClassAbilities : SOClassUnlocks
 	/// </summary>
 
 	[Header("Ability Info")]
-	[Tooltip("status effects need a target to use on, unless marked as canOnlyTargetSelf, aoe needs to be placed on ground")]
-	public AbilityType abilityType;
-	public enum AbilityType
-	{
-		isStatusEffect, isAOEAbility, isDirectionalAbility
-	}
-	[Tooltip("makes ability placeable in world")]
 	public float abilityCooldown;
+	public bool requiresTarget;
 
 	[Header("Status Effects Settings")]
 	public StatusEffectType statusEffectType;
@@ -30,6 +24,9 @@ public class SOClassAbilities : SOClassUnlocks
 		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
 	}
 	public bool canOnlyTargetSelf;
+
+	[Header("AoE Settings")]
+	public bool isAOE;
 
 	[Header("DoT Settings")]
 	public bool isDOT;

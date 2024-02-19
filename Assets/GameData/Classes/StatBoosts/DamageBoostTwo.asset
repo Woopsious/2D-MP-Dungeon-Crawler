@@ -22,7 +22,9 @@ MonoBehaviour:
   poisonResistanceBoostValue: 0
   fireResistanceBoostValue: 0
   iceResistanceBoostValue: 0
-  physicalDamageBoostValue: 0.05
+  physicalDamageBoostValue: 0.1
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0

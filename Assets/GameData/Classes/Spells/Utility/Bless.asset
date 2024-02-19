@@ -10,15 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: DefensiveStance
+  m_Name: Bless
   m_EditorClassIdentifier: 
-  Name: Defensive Stance
-  Description: Take a defence stance to temporarily boost your defences
+  Name: Bless
+  Description: Bless yourself or friends to increase damage
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   requiresTarget: 1
-  statusEffectType: 2
-  canOnlyTargetSelf: 1
+  statusEffectType: 3
+  canOnlyTargetSelf: 0
   isAOE: 0
   isDOT: 1
   abilityDuration: 10
@@ -26,6 +26,6 @@ MonoBehaviour:
   value: 0
   valuePercentage: 0.05
   damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
+  isSpell: 1
+  manaCost: 20
+  minPercentCost: 15

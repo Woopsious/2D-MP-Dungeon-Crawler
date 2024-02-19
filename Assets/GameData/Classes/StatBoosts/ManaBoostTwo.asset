@@ -16,7 +16,7 @@ MonoBehaviour:
   Description: Gives a permanent Mana boost
   levelRequirementForNonPlayerEntities: 1
   healthBoostValue: 0
-  manaBoostValue: 0.05
+  manaBoostValue: 0.1
   manaRegenBoostValue: 0
   physicalResistanceBoostValue: 0
   poisonResistanceBoostValue: 0
@@ -26,3 +26,5 @@ MonoBehaviour:
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0

@@ -10,22 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: QuickSelfHeal
+  m_Name: FlameStrike
   m_EditorClassIdentifier: 
-  Name: Quick Self Heal
-  Description: A quick bandage to use on your wounds
-  playerLevelRequirement: 5
-  preRequisites: []
-  exclusions: []
-  isSpell: 0
+  Name: Flame Strike
+  Description: Call a flame of fire down from the sky
+  nonPlayerLevelRequirement: 1
+  abilityCooldown: 5
+  statusEffectType: 0
+  canOnlyTargetSelf: 0
+  isAOE: 1
   isDOT: 0
-  isAOE: 0
   abilityDuration: 0
-  abilityCooldown: 30
-  isHealing: 0
-  percentageBased: 1
-  value: 0
-  valuePercentage: 8
-  baseDamageType: 0
-  manaCost: 0
-  minPercentCost: 0
+  percentageBased: 0
+  value: 20
+  valuePercentage: 0
+  damageType: 3
+  isSpell: 1
+  manaCost: 15
+  minPercentCost: 10

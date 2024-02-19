@@ -10,22 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: DefensiveStance
+  m_Name: WellOfResistance
   m_EditorClassIdentifier: 
-  Name: Defensive Stance
-  Description: Take a defence stance to temporarily boost your defences
+  Name: Well of Resistance
+  Description: Cast a well of resistance, increasing resistances of friendlies inside
+    it
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
-  requiresTarget: 1
+  requiresTarget: 0
   statusEffectType: 2
-  canOnlyTargetSelf: 1
-  isAOE: 0
+  canOnlyTargetSelf: 0
+  isAOE: 1
   isDOT: 1
   abilityDuration: 10
   percentageBased: 1
   value: 0
   valuePercentage: 0.05
   damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
+  isSpell: 1
+  manaCost: 20
+  minPercentCost: 15

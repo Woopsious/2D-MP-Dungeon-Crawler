@@ -78,7 +78,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			return;
 		}
 
-		if (playerClassHandler.entityStats.entityLevel <= nodeLevelRequirment)
+		if (playerClassHandler.entityStats.entityLevel < nodeLevelRequirment)
 		{
 			LockNode();
 			return;

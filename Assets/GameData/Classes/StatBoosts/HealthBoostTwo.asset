@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Health Boost
   Description: Gives a permanent health boost
   levelRequirementForNonPlayerEntities: 1
-  healthBoostValue: 0.05
+  healthBoostValue: 0.1
   manaBoostValue: 0
   manaRegenBoostValue: 0
   physicalResistanceBoostValue: 0
@@ -26,3 +26,5 @@ MonoBehaviour:
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0

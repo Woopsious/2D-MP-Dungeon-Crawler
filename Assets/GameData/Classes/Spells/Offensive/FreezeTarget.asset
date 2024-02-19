@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: DefensiveStance
+  m_Name: FreezeTarget
   m_EditorClassIdentifier: 
-  Name: Defensive Stance
-  Description: Take a defence stance to temporarily boost your defences
+  Name: Freeze Target
+  Description: Summon water around the target then quickly freeze them
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 30
+  abilityCooldown: 5
   requiresTarget: 1
-  statusEffectType: 2
-  canOnlyTargetSelf: 1
+  statusEffectType: 0
+  canOnlyTargetSelf: 0
   isAOE: 0
-  isDOT: 1
-  abilityDuration: 10
-  percentageBased: 1
-  value: 0
-  valuePercentage: 0.05
-  damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
+  isDOT: 0
+  abilityDuration: 0
+  percentageBased: 0
+  value: 20
+  valuePercentage: 0
+  damageType: 4
+  isSpell: 1
+  manaCost: 15
+  minPercentCost: 10

@@ -41,12 +41,12 @@ public class EntityClassHandler : MonoBehaviour
 
 		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
 		{
-			if (entityStats.entityLevel < statBonuses.levelRequirementForNonPlayerEntities) continue;
+			if (entityStats.entityLevel < statBonuses.nonPlayerLevelRequirement) continue;
 			UnlockStatBoost(statBonuses);
 		}
 		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
 		{
-			if (entityStats.entityLevel < ability.levelRequirementForNonPlayerEntities) continue;
+			if (entityStats.entityLevel < ability.nonPlayerLevelRequirement) continue;
 			UnlockAbility(ability);
 		}
 	}

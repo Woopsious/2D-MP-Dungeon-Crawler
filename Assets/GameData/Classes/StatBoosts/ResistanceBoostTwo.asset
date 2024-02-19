@@ -18,11 +18,13 @@ MonoBehaviour:
   healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0
-  physicalResistanceBoostValue: 0.05
-  poisonResistanceBoostValue: 0.05
-  fireResistanceBoostValue: 0.05
-  iceResistanceBoostValue: 0.05
+  physicalResistanceBoostValue: 0.1
+  poisonResistanceBoostValue: 0.1
+  fireResistanceBoostValue: 0.1
+  iceResistanceBoostValue: 0.1
   physicalDamageBoostValue: 0
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0
