@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
+    <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
@@ -107,7 +108,6 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />
     <Compile Include="Assets\Scripts\Entities\Stat.cs" />
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
-    <Compile Include="Assets\Scripts\UI\ClassTreeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>
   <ItemGroup>

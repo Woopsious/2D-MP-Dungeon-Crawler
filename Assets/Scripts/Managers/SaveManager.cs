@@ -209,7 +209,7 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerClassData()
 	{
 		GameData.currentPlayerClass = ClassesUi.Instance.currentPlayerClass;
-		foreach (ClassTreeSlotUi node in ClassesUi.Instance.unlockedKnightClassNodes)
+		foreach (ClassTreeNodeSlotUi node in ClassesUi.Instance.currentUnlockedClassNodes)
 			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)

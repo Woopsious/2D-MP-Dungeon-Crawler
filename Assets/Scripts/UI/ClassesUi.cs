@@ -8,15 +8,15 @@ public class ClassesUi : MonoBehaviour
 {
 	public static ClassesUi Instance;
 
-	public SOClasses currentPlayerClass;
+	[Header("Class Selection")]
 	public GameObject playerClassSelectionPanel;
-	public GameObject closeClassTreeButtonObj;
+	public SOClasses currentPlayerClass;
+	public List<ClassTreeNodeSlotUi> currentUnlockedClassNodes = new List<ClassTreeNodeSlotUi>();
 
 	[Header("knight Class")]
 	public SOClasses knightClass;
 	public GameObject knightClassPanel;
 	public Button playAsKnightButton;
-	public List<ClassTreeSlotUi> unlockedKnightClassNodes = new List<ClassTreeSlotUi>();
 
 	[Header("Warrior Class")]
 	public SOClasses warriorClass;
@@ -38,6 +38,8 @@ public class ClassesUi : MonoBehaviour
 	public GameObject MageClassPanel;
 	public Button playAsMageButton;
 
+	[Header("Shared Class ui elements")]
+	public GameObject closeClassTreeButtonObj;
 	public GameObject resetPlayerClassButtonObj;
 
 	public static event Action<SOClasses> OnClassChange;
@@ -69,14 +71,14 @@ public class ClassesUi : MonoBehaviour
 	}
 
 	//skill tree node unlocks
-	public void UnlockStatBonus(ClassTreeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
 	{
-		unlockedKnightClassNodes.Add(classTreeSlot);
+		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void UnlockAbility(ClassTreeSlotUi classTreeSlot, SOClassAbilities ability)
+	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
 	{
-		unlockedKnightClassNodes.Add(classTreeSlot);
+		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewAbilityUnlock?.Invoke(ability);
 	}
 
@@ -135,11 +137,18 @@ public class ClassesUi : MonoBehaviour
 	}
 
 	//class skill trees
+	public void ShowHideClassSkillTree()
+	{
+		if (closeClassTreeButtonObj.activeInHierarchy)
+			HideClassSkillTree();
+		else
+			ShowClassSkillTree(currentPlayerClass);
+	}
 	public void ShowClassSkillTree(SOClasses thisClass)
 	{
 		if (currentPlayerClass == null) return;
-
 		closeClassTreeButtonObj.SetActive(true);
+
 		if (thisClass == knightClass)
 			knightClassPanel.SetActive(true);
 		if (thisClass == warriorClass)

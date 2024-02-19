@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ClassTreeSlotUi : MonoBehaviour
+public class ClassTreeNodeSlotUi : MonoBehaviour
 {
 	public SOClassStatBonuses statBonus;
 	public SOClassAbilities ability;
@@ -17,9 +17,9 @@ public class ClassTreeSlotUi : MonoBehaviour
 	public int nodeIndex;
 
 	[Tooltip("previous skill tree items needed to unlock this one")]
-	public List<ClassTreeSlotUi> preRequisites = new List<ClassTreeSlotUi>();
+	public List<ClassTreeNodeSlotUi> preRequisites = new List<ClassTreeNodeSlotUi>();
 	[Tooltip("skill tree items that will lock this one")]
-	public List<ClassTreeSlotUi> exclusions = new List<ClassTreeSlotUi>();
+	public List<ClassTreeNodeSlotUi> exclusions = new List<ClassTreeNodeSlotUi>();
 
 	/// <summary>
 	/// for saving data, 
@@ -72,6 +72,12 @@ public class ClassTreeSlotUi : MonoBehaviour
 			return;
 		}
 
+		if (CheckForNodeExclusions())
+		{
+			LockNode();
+			return;
+		}
+
 		if (playerClassHandler.entityStats.entityLevel <= nodeLevelRequirment)
 		{
 			LockNode();
@@ -86,13 +92,29 @@ public class ClassTreeSlotUi : MonoBehaviour
 
 		UnlockNode();
 	}
+	public bool CheckForNodeExclusions()
+	{
+		bool containesExclusiveNode = false;
+		foreach (ClassTreeNodeSlotUi node in exclusions)
+		{
+			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+			{
+				containesExclusiveNode = true;
+				break;
+			}
+		}
 
+		if (containesExclusiveNode)
+			return true;
+		else
+			return false;
+	}
 	public bool CheckIfAllPreRequisiteNodesUnlocked()
 	{
 		int numOfPreRequisiteNodesUnlocked = 0;
-		foreach (ClassTreeSlotUi node in preRequisites)
+		foreach (ClassTreeNodeSlotUi node in preRequisites)
 		{
-			if (ClassesUi.Instance.unlockedKnightClassNodes.Contains(node))
+			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
 				numOfPreRequisiteNodesUnlocked++;
 		}
 

@@ -120,10 +120,12 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
+		if (playerEquipmentHandler.equippedConsumableOne == null) return;
 		playerEquipmentHandler.equippedConsumableOne.ConsumeItem(this);
 	}
 	private void OnConsumablesTwo()
 	{
+		if (playerEquipmentHandler.equippedConsumableTwo == null) return;
 		playerEquipmentHandler.equippedConsumableTwo.ConsumeItem(this);
 	}
 	private void OnAbilityOne()
@@ -158,6 +160,6 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnSkillTree()
 	{
-		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
+		ClassesUi.Instance.ShowHideClassSkillTree();
 	}
 }
