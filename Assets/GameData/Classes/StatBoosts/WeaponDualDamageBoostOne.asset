@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
-  m_Name: HealthBoostTwo
+  m_Name: WeaponDualDamageBoostOne
   m_EditorClassIdentifier: 
-  Name: Health Boost II
-  Description: Gives a permanent health boost
+  Name: Dual Weapon Damage Boost I
+  Description: Gives a permanent damage boost to any weapon that can be dual wield
   nonPlayerLevelRequirement: 1
-  healthBoostValue: 0.1
+  healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0
   physicalResistanceBoostValue: 0
@@ -27,5 +27,5 @@ MonoBehaviour:
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
   mainWeaponDamageBoostValue: 0
-  duelWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0.05
   rangedWeaponDamageBoostValue: 0

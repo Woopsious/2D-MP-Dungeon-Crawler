@@ -13,11 +13,11 @@ MonoBehaviour:
   m_Name: Curse
   m_EditorClassIdentifier: 
   Name: Curse
-  Description: Curse your enemy weakening there resistances
+  Description: Curse your enemy weakening there damage
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   requiresTarget: 1
-  statusEffectType: 2
+  statusEffectType: 3
   canOnlyTargetSelf: 0
   isAOE: 0
   isDOT: 1

@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
-  m_Name: MainWeaponDamageBoostOne
+  m_Name: WeaponDualDamageBoostTwo
   m_EditorClassIdentifier: 
-  Name: Weapon Damage Boost
-  Description: Gives a permanent damage boost to any weapon that camt be duel wield
-  levelRequirementForNonPlayerEntities: 10
+  Name: Dual Weapon Damage Boost II
+  Description: Gives a permanent damage boost to any weapon that can be dual wield
+  nonPlayerLevelRequirement: 1
   healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0
@@ -26,5 +26,6 @@ MonoBehaviour:
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
-  mainWeaponDamageBoostValue: 0.05
-  duelWeaponDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0.1
+  rangedWeaponDamageBoostValue: 0

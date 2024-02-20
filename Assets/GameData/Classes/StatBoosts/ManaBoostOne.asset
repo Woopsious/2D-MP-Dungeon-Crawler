@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
   m_Name: ManaBoostOne
   m_EditorClassIdentifier: 
-  Name: Mana Boost
+  Name: Mana Boost I
   Description: Gives a permanent Mana boost
-  levelRequirementForNonPlayerEntities: 1
+  nonPlayerLevelRequirement: 1
   healthBoostValue: 0
   manaBoostValue: 0.05
   manaRegenBoostValue: 0
@@ -26,3 +26,6 @@ MonoBehaviour:
   posionDamageBoostValue: 0
   fireDamageBoostValue: 0
   iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0
+  rangedWeaponDamageBoostValue: 0

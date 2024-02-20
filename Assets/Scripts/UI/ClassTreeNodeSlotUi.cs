@@ -21,10 +21,12 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	public bool isAlreadyUnlocked;
 	public int nodeIndex;
 
-	[Tooltip("Prev skill nodes needed to unlock this one (only needs one of these)")]
+	[Tooltip("Prev skill nodes needed to unlock this one (only needs 1 owned to pass check, can have multiple")]
 	public List<ClassTreeNodeSlotUi> preRequisites = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("Nodes that are exclusive to this one")]
+	[Tooltip("Nodes that are exclusive to this one (must have all exclusions to be excluded)")]
 	public List<ClassTreeNodeSlotUi> exclusions = new List<ClassTreeNodeSlotUi>();
+	[Tooltip("Nodes that are exclusive to this one, mainly used for duplicate skills in class tree")]
+	public List<ClassTreeNodeSlotUi> hardExclusions = new List<ClassTreeNodeSlotUi>();
 
 	private void Start()
 	{
@@ -50,14 +52,9 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			Debug.LogError("Skill tree slot has no reference, this shouldnt happen");
 
 		image = GetComponent<Image>();
-		nodeIndex = transform.parent.GetSiblingIndex();
-		DelegateButtonAction();
-		ResetNode(null);
-	}
-
-	private void DelegateButtonAction()
-	{
+		nodeIndex = transform.GetSiblingIndex();
 		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNodeButton);
+		ResetNode(null);
 	}
 
 	public void UnlockThisNodeButton()
@@ -79,44 +76,56 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			ActivateNode();
 			return;
 		}
-
-		if (CheckForNodeExclusions())
-		{
-			LockNode();
-			return;
-		}
-
 		if (playerClassHandler.entityStats.entityLevel < nodeLevelRequirment)
 		{
 			LockNode();
 			return;
 		}
-
+		if (CheckForHardExclusions())
+		{
+			LockNode();
+			return;
+		}
+		if (CheckForNodeExclusions())
+		{
+			LockNode();
+			return;
+		}
 		if (!CheckIfAllPreRequisiteNodesUnlocked())
 		{
 			LockNode();
 			return;
 		}
-
 		UnlockNode();
+	}
+	public bool CheckForHardExclusions()
+	{
+		if (hardExclusions.Count == 0)
+			return false;
+
+		foreach (ClassTreeNodeSlotUi node in hardExclusions)
+		{
+			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+				return true;
+		}
+		return false;
 	}
 	public bool CheckForNodeExclusions()
 	{
-		bool containesExclusiveNode = false;
+		if (exclusions.Count == 0)
+			return false;
+
+		int numOfMatches = 0;
 		foreach (ClassTreeNodeSlotUi node in exclusions)
 		{
 			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-			{
-				containesExclusiveNode = true;
-				break;
-			}
+				numOfMatches++;
 		}
-
-		if (containesExclusiveNode)
+		if (numOfMatches == exclusions.Count)
 			return true;
-		else
-			return false;
-	}
+        else
+            return false;
+    }
 	public bool CheckIfAllPreRequisiteNodesUnlocked()
 	{
 		if (preRequisites.Count == 1)

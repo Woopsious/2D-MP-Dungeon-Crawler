@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
   m_Name: MagicDamageBoostTwo
   m_EditorClassIdentifier: 
-  Name: Damage Boost
+  Name: Magic Damage Boost II
   Description: Gives a permanent damage boost to Posion, FIre and Ice
-  levelRequirementForNonPlayerEntities: 10
+  nonPlayerLevelRequirement: 1
   healthBoostValue: 0
   manaBoostValue: 0
   manaRegenBoostValue: 0
@@ -28,3 +28,4 @@ MonoBehaviour:
   iceDamageBoostValue: 0.1
   mainWeaponDamageBoostValue: 0
   duelWeaponDamageBoostValue: 0
+  rangedWeaponDamageBoostValue: 0

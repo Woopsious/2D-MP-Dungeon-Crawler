@@ -56,7 +56,7 @@ public class Weapons : Items
 
 	}
 	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod,
-		float singleHandMod, float duelHandMod, Weapons offHandWeapon)
+		float singleHandMod, float duelHandMod, float rangedMod, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		float percentageMod = 0;
@@ -77,6 +77,9 @@ public class Weapons : Items
 			percentageMod += singleHandMod;
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
 			percentageMod += singleHandMod;
+
+		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
+			percentageMod += rangedMod;
 
 		damage = (int)(damage * percentageMod);
 	}
