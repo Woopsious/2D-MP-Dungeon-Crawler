@@ -13,9 +13,9 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	public SOClassStatBonuses statBonus;
 	public SOClassAbilities ability;
 
-	public TMP_Text slotInfoText;
+	public TMP_Text nodeInfoText;
 	private Image image;
-	public GameObject slotUnlockButtonObj;
+	public GameObject nodeUnlockButtonObj;
 
 	public int nodeLevelRequirment;
 	public bool isAlreadyUnlocked;
@@ -43,18 +43,24 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	private void Initilize()
 	{
 		if (statBonus != null)
-			slotInfoText.text = statBonus.Name;
+			nodeInfoText.text = statBonus.Name;
 		else if (ability != null)
-			slotInfoText.text = ability.Name;
+			nodeInfoText.text = ability.Name;
 		else
 			Debug.LogError("Skill tree slot has no reference, this shouldnt happen");
 
 		image = GetComponent<Image>();
-		nodeIndex = transform.GetSiblingIndex();
+		nodeIndex = transform.parent.GetSiblingIndex();
+		DelegateButtonAction();
 		ResetNode(null);
 	}
 
-	public void UnlockThisClassSkillButton()
+	private void DelegateButtonAction()
+	{
+		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNodeButton);
+	}
+
+	public void UnlockThisNodeButton()
 	{
 		isAlreadyUnlocked = true;
 
@@ -137,12 +143,12 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	private void LockNode()
 	{
 		image.color = new Color(1, 0.4f, 0.4f, 1);
-		slotUnlockButtonObj.SetActive(false);
+		nodeUnlockButtonObj.SetActive(false);
 	}
 	private void UnlockNode()
 	{
 		image.color = new Color(1, 1, 1, 1);
-		slotUnlockButtonObj.SetActive(true);
+		nodeUnlockButtonObj.SetActive(true);
 	}
 	private void ActivateNode()
 	{

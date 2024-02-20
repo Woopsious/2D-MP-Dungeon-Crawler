@@ -278,6 +278,8 @@ public class EntityStats : MonoBehaviour
 		poisonDamagePercentageModifier.SetBaseValue(1);
 		fireDamagePercentageModifier.SetBaseValue(1);
 		iceDamagePercentageModifier.SetBaseValue(1);
+		mainWeaponDamageModifier.SetBaseValue(1);
+		dualWeaponDamageModifier.SetBaseValue(1);
 
 		currentHealth = maxHealth.finalValue - maxHealth.equipmentValue;
 		currentMana = maxMana.finalValue - maxMana.equipmentValue;
@@ -328,10 +330,13 @@ public class EntityStats : MonoBehaviour
 		poisonResistance.AddPercentageValue(statBoost.poisonResistanceBoostValue);
 		fireResistance.AddPercentageValue(statBoost.fireResistanceBoostValue);
 		iceResistance.AddPercentageValue(statBoost.iceResistanceBoostValue);
+
 		physicalDamagePercentageModifier.AddPercentageValue(statBoost.physicalDamageBoostValue);
 		poisonDamagePercentageModifier.AddPercentageValue(statBoost.posionDamageBoostValue);
 		fireDamagePercentageModifier.AddPercentageValue(statBoost.fireDamageBoostValue);
 		iceDamagePercentageModifier.AddPercentageValue(statBoost.iceDamageBoostValue);
+		mainWeaponDamageModifier.AddPercentageValue(statBoost.mainWeaponDamageBoostValue);
+		dualWeaponDamageModifier.AddPercentageValue(statBoost.duelWeaponDamageBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 
@@ -355,10 +360,13 @@ public class EntityStats : MonoBehaviour
 			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
 			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
 			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+
 			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
 			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.posionDamageBoostValue);
 			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
 			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
+			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
+			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
 		}
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 

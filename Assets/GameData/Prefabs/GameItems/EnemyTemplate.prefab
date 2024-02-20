@@ -608,7 +608,7 @@ MonoBehaviour:
     percentageBonuses: []
   currentMana: 0
   manaRegenPercentage:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     finalPercentageValue: 0
@@ -672,6 +672,22 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   iceDamagePercentageModifier:
+    isPercentageStat: 1
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  mainWeaponDamageModifier:
+    isPercentageStat: 1
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  dualWeaponDamageModifier:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0

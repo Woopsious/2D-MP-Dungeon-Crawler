@@ -111,6 +111,9 @@ public class ClassesUi : MonoBehaviour
 	}
 	public void SetNewClass(SOClasses newClass)
 	{
+		if (currentPlayerClass != null)
+			ResetCurrentClassButton();
+
 		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;
 		ShowClassSkillTree(newClass);
