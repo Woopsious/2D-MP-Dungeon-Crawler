@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "LearntAbilities",
+                    "type": "Button",
+                    "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ConsumablesOne",
                     "type": "Button",
                     "id": "dfbbab13-27dd-4958-98d4-5cb5b92f4477",
@@ -308,6 +317,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "SkillTree",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cf4651e5-db2e-4d3c-b1be-4fa9d53e986c",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LearntAbilities",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

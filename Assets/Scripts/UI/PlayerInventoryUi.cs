@@ -12,6 +12,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject InventoryPanelUi;
 
 	[Header("Inventory items")]
+	public GameObject LearntAbilitiesTextObj;
+	public GameObject LearntAbilitiesUi;
+	public List<GameObject> LearntAbilitySlots = new List<GameObject>();
+
+	[Header("Inventory items")]
 	public GameObject InventoryUi;
 	public List<GameObject> InventorySlots = new List<GameObject>();
 
@@ -41,6 +46,51 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		Instance = this;
 	}
+	private void OnEnable()
+	{
+		ClassesUi.OnClassReset += OnClassReset;
+		ClassesUi.OnNewAbilityUnlock += OnAbilityUnlock;
+	}
+	private void OnDisable()
+	{
+		ClassesUi.OnClassReset -= OnClassReset;
+		ClassesUi.OnNewAbilityUnlock -= OnAbilityUnlock;
+	}
+	private void OnClassReset(SOClasses currentClass)
+	{
+		foreach (GameObject abilitySlot in LearntAbilitySlots)
+		{
+			if (abilitySlot.transform.GetChild(0) != null)
+				Destroy(abilitySlot.transform.GetChild(0).gameObject);
+		}
+
+		foreach (GameObject equippedAbility in AbilitySlots)
+		{
+			if (equippedAbility.transform.GetChild(0) != null)
+				Destroy(equippedAbility.transform.GetChild(0).gameObject);
+		}
+	}
+	private void OnAbilityUnlock(SOClassAbilities newClassAbility)
+	{
+		/*
+		for (int i = 0; i < LearntAbilitySlots.Count; i++)
+		{
+			InventorySlotUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotUi>();
+
+			if (inventorySlot.IsSlotEmpty())
+			{
+				item.inventorySlotIndex = i;
+				item.transform.SetParent(inventorySlot.transform);
+				item.SetTextColour();
+				inventorySlot.itemInSlot = item;
+				inventorySlot.UpdateSlotSize();
+
+				return;
+			}
+		}
+		*/
+	}
+
 
 	private void Start()
 	{
@@ -58,12 +108,26 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		InventoryPanelUi.SetActive(true);
 	}
-	public void CloseInventoryButton()
-	{
-		HideInventory();
-	}
 	public void HideInventory()
 	{
 		InventoryPanelUi.SetActive(false);
+	}
+
+	public void ShowHideLearntAbilitiesKeybind()
+	{
+		if (LearntAbilitiesUi.activeInHierarchy)
+			ShowLearntAbilities();
+		else
+			HideLearntAbilities();
+	}
+	public void ShowLearntAbilities()
+	{
+		LearntAbilitiesTextObj.SetActive(true);
+		LearntAbilitiesUi.SetActive(true);
+	}
+	public void HideLearntAbilities()
+	{
+		LearntAbilitiesTextObj.SetActive(false);
+		LearntAbilitiesUi.SetActive(false);
 	}
 }

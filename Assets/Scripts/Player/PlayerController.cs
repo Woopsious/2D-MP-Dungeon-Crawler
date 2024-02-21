@@ -162,4 +162,8 @@ public class PlayerController : MonoBehaviour
 	{
 		ClassesUi.Instance.ShowHideClassSkillTree();
 	}
+	private void OnLearntAbilities()
+	{
+		PlayerInventoryUi.Instance.ShowHideLearntAbilitiesKeybind();
+	}
 }

@@ -84,6 +84,7 @@
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Items\Abilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />

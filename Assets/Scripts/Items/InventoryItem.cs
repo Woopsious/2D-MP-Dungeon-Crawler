@@ -19,6 +19,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	private float timeToWait = 0.5f;
 
 	[Header("Item Base Ref")]
+	public SOClassAbilities ability;
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
@@ -55,6 +56,15 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 	public void Initilize()
 	{
+		if (GetComponent<Items>() != null)
+			SetUpItems();
+		else if (GetComponent<Abilities>() != null)
+			SetUpAbilities();
+
+		UpdateUi();
+	}
+	private void SetUpItems()
+	{
 		Items item = GetComponent<Items>();
 		name = item.itemName;
 		itemName = item.itemName;
@@ -68,8 +78,18 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		isStackable = IsStackable();
 		maxStackCount = GetMaxStackCount();
 		currentStackCount = item.currentStackCount;
+	}
+	private void SetUpAbilities()
+	{
+		Abilities ability = GetComponent<Abilities>();
+		name = ability.abilityName;
+		itemName = ability.abilityName;
+		itemImage = ability.abilityImage;
+		itemType = (ItemType)ability.itemType;
 
-		UpdateUi();
+		isStackable = false;
+		maxStackCount = 1;
+		currentStackCount = 1;
 	}
 	private ClassRestriction GetClassRestriction()
 	{

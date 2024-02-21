@@ -224,11 +224,7 @@ public class ClassesUi : MonoBehaviour
 	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
 	{
 		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
-
 		foreach (int index in indexs)
-		{
-			Debug.Log(index);
 			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNodeButton();
-		}
 	}
 }
