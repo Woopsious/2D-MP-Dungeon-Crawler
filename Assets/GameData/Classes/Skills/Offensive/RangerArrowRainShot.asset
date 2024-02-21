@@ -10,22 +10,22 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: BandageWounds
+  m_Name: RangerArrowRainShot
   m_EditorClassIdentifier: 
-  Name: Bandage Wounds
-  Description: A quick bandage to use on your wounds
+  Name: Rain Of Arrows
+  Description: Fire multiple Arrows into the air to hit multiple targets
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 20
-  requiresTarget: 1
-  statusEffectType: 1
-  canOnlyTargetSelf: 1
-  isAOE: 0
+  abilityCooldown: 30
+  requiresTarget: 0
+  statusEffectType: 0
+  canOnlyTargetSelf: 0
+  isAOE: 1
   isDOT: 0
   abilityDuration: 0
-  percentageBased: 1
-  value: 0
-  valuePercentage: 0.08
-  damageType: 0
+  percentageBased: 0
+  value: 30
+  valuePercentage: 0
+  damageType: 1
   isSpell: 0
   manaCost: 0
   minPercentCost: 0

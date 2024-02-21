@@ -28,10 +28,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	[Tooltip("Nodes that are exclusive to this one, mainly used for duplicate skills in class tree")]
 	public List<ClassTreeNodeSlotUi> hardExclusions = new List<ClassTreeNodeSlotUi>();
 
-	private void Start()
-	{
-		Initilize();
-	}
 	private void OnEnable()
 	{
 		ClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
@@ -42,7 +38,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		ClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
 		ClassesUi.OnClassReset -= ResetNode;
 	}
-	private void Initilize()
+	public void Initilize()
 	{
 		if (statBonus != null)
 			nodeInfoText.text = statBonus.Name;

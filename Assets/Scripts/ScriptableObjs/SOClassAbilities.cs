@@ -6,33 +6,38 @@ using UnityEngine;
 public class SOClassAbilities : SOClassUnlocks
 {
 	/// <summary>
-	///  check if status effect first, then check if AoE, else treat it as instant use ability
-	///  status effects require a target to be used on unless aoe, then anyone in aoe gets that effect - enemies (idk how thatll work atm)
-	///  aoes can be placed anywhere valid in world and can be duration based
-	///  instant use spells firebolt or heal can )
-	///  a way to cancel abilities requiring a target via right click once casted??
+	///  check if status effect first, if true: apply said status effect to self/target
+	///  else check if AoE, if true: have player select valid placable area for ability
+	///  else check if damageType == healing, if true: heal self/target
+	///  else treat as active ability and if its a projectile, if true: fire projectile in mouse direction
+	///  else treat as active ability (Rogue backstab skill) and apply ability damage to next player attack
 	/// </summary>
 
 	[Header("Ability Info")]
 	public float abilityCooldown;
+	[Tooltip("forces ability to need specific target to be applied to. EG: healing spells/skills")]
 	public bool requiresTarget;
 
 	[Header("Status Effects Settings")]
+	[Tooltip("only for status effects, leave as noEffect for anything else")]
 	public StatusEffectType statusEffectType;
 	public enum StatusEffectType
 	{
 		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
 	}
+	[Tooltip("EG: Knight/Warrior healing skills")]
 	public bool canOnlyTargetSelf;
 
 	[Header("AoE Settings")]
 	public bool isAOE;
 
 	[Header("DoT Settings")]
+	[Tooltip("Mainly for status effects and some abilities that are AoE. EG: stances and wellOfRes spell")]
 	public bool isDOT;
 	public float abilityDuration;
 
 	[Header("Damage Settings")]
+	public bool isProjectile;
 	public bool percentageBased;
 	public int value;
 	public float valuePercentage;

@@ -12,7 +12,6 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerClass;
 		ClassesUi.OnClassChange += OnClassChanges;
 		ClassesUi.OnClassReset += OnClassReset;
 		ClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
@@ -20,7 +19,6 @@ public class PlayerClassHandler : EntityClassHandler
 	}
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerClass;
 		ClassesUi.OnClassChange -= OnClassChanges;
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
@@ -43,16 +41,5 @@ public class PlayerClassHandler : EntityClassHandler
 			Debug.LogError("ClassesUi component instance not set, ignore if intentional");
 		else
 			ClassesUi.Instance.UpdateNodesInClassTree(this);
-	}
-
-	private void ReloadPlayerClass()
-	{
-		currentEntityClass = SaveManager.Instance.GameData.currentPlayerClass;
-
-		foreach (SOClassStatBonuses statBonus in SaveManager.Instance.GameData.currentUnlockedStatBonuses)
-			UnlockStatBoost(statBonus);
-
-		foreach (SOClassAbilities ability in SaveManager.Instance.GameData.currentUnlockedAbilities)
-			UnlockAbility(ability);
 	}
 }

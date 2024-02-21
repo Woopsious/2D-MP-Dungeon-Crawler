@@ -59,7 +59,7 @@ public class ClassesUi : MonoBehaviour
 
 	private void Start()
 	{
-		Instance = this;
+		Initilize();
 	}
 	private void OnEnable()
 	{
@@ -68,6 +68,22 @@ public class ClassesUi : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerClass;
+	}
+
+	private void Initilize()
+	{
+		Instance = this;
+
+		SetSkillTreeIndexes(knightClassPanel);
+		SetSkillTreeIndexes(warriorClassPanel);
+		SetSkillTreeIndexes(rogueClassPanel);
+		SetSkillTreeIndexes(rangerClassPanel);
+		SetSkillTreeIndexes(MageClassPanel);
+	}
+	private void SetSkillTreeIndexes(GameObject parentObj)
+	{
+		for (int i = 0; i < parentObj.transform.childCount - 1; i++)
+			parentObj.transform.GetChild(i).gameObject.GetComponent<ClassTreeNodeSlotUi>().Initilize();
 	}
 
 	//skill tree node unlocks
@@ -185,11 +201,34 @@ public class ClassesUi : MonoBehaviour
 
 	public void ReloadPlayerClass()
 	{
-		currentPlayerClass = SaveManager.Instance.GameData.currentPlayerClass;
+		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
+
+		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
+
+		if (currentPlayerClass == knightClass)
+			ReloadPlayerClassTreeNodes(knightClassPanel);
+		if (currentPlayerClass == warriorClass)
+			ReloadPlayerClassTreeNodes(warriorClassPanel);
+		if (currentPlayerClass == rogueClass)
+			ReloadPlayerClassTreeNodes(rogueClassPanel);
+		if (currentPlayerClass == rangerClass)
+			ReloadPlayerClassTreeNodes(rangerClassPanel);
+		if (currentPlayerClass == mageClass)
+			ReloadPlayerClassTreeNodes(MageClassPanel);
 
 		/// <summery>
 		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
 		/// of said classes Nodes, and reunlock those bypassing checks
 		/// <summery>
+	}
+	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
+	{
+		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
+
+		foreach (int index in indexs)
+		{
+			Debug.Log(index);
+			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNodeButton();
+		}
 	}
 }

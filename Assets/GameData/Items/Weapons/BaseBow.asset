@@ -22,7 +22,7 @@ MonoBehaviour:
   MaxStackCount: 1
   isBareHands: 0
   isShield: 0
-  baseDamage: 50
+  baseDamage: 40
   baseAttackSpeed: 2
   baseKnockback: 8
   classRestriction: 0
