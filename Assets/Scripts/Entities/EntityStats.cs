@@ -100,7 +100,7 @@ public class EntityStats : MonoBehaviour
 	{
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		spriteRenderer.sprite = GetComponent<EntityStats>().entityBaseStats.sprite;
+		spriteRenderer.sprite = entityBaseStats.sprite;
 
 		CalculateBaseStats();
 		int numOfTries = 0;

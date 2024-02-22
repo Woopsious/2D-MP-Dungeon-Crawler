@@ -15,6 +15,7 @@ MonoBehaviour:
   Name: Well of Resistance
   Description: Cast a well of resistance, increasing resistances of friendlies inside
     it
+  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   requiresTarget: 0
@@ -23,6 +24,7 @@ MonoBehaviour:
   isAOE: 1
   isDOT: 1
   abilityDuration: 10
+  isProjectile: 0
   percentageBased: 1
   value: 0
   valuePercentage: 0.05

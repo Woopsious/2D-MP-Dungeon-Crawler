@@ -27,7 +27,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 
 	[Header("Item Info")]
 	public string itemName;
-	public Sprite itemImage;
+	public Sprite itemSprite;
 	public int itemPrice;
 	public int itemLevel;
 	public ItemType itemType;
@@ -68,7 +68,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		Items item = GetComponent<Items>();
 		name = item.itemName;
 		itemName = item.itemName;
-		itemImage = item.itemImage;
+		itemSprite = item.itemSprite;
 		itemPrice = item.itemPrice;
 		itemLevel = item.itemLevel;
 		rarity = (Rarity)item.rarity;
@@ -84,8 +84,8 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		Abilities ability = GetComponent<Abilities>();
 		name = ability.abilityName;
 		itemName = ability.abilityName;
-		itemImage = ability.abilityImage;
-		itemType = (ItemType)ability.itemType;
+		itemSprite = ability.abilitySprite;
+		itemType = ItemType.isAbility;
 
 		isStackable = false;
 		maxStackCount = 1;
@@ -187,7 +187,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	{
 		gameObject.name = itemName;
 		uiItemName.text = itemName;
-		uiItemImage.sprite = itemImage;
+		uiItemImage.sprite = itemSprite;
 		uiItemLevel.text = "LVL: " + itemLevel;
 		UpdateStackCount();
 		SetTextColour();
@@ -222,7 +222,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		else if (rarity == InventoryItem.Rarity.isLegendary)
 			SetColour(Color.red);
 		else
-			SetColour(Color.white);
+			SetColour(Color.black);
 	}
 	private void SetColour(Color colour)
 	{

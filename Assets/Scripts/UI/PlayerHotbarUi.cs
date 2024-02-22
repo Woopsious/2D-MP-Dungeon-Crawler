@@ -59,6 +59,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		PlayerInventoryUi.Instance.ShowInventory();
 	}
+	public void OpenLearntAbilitiesButton()
+	{
+		PlayerInventoryUi.Instance.ShowLearntAbilities();
+	}
 	public void OpenClassSelectionButton()
 	{
 		ClassesUi.Instance.ShowPlayerClassSelection();

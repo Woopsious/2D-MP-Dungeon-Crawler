@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Poison Spike
   Description: Liquid poison in the shape of a spike to launch at enemies
+  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 5
+  requiresTarget: 0
   statusEffectType: 0
   canOnlyTargetSelf: 0
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
+  isProjectile: 0
   percentageBased: 0
   value: 18
   valuePercentage: 0

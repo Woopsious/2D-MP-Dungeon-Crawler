@@ -14,13 +14,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Mass Healing Words
   Description: Heals Anyone in its radius (excluding enemies)
+  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 15
+  requiresTarget: 0
   statusEffectType: 0
   canOnlyTargetSelf: 0
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
+  isProjectile: 0
   percentageBased: 1
   value: 0
   valuePercentage: 0.2

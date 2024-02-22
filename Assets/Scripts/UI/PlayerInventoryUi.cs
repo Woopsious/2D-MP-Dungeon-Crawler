@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -10,15 +11,17 @@ public class PlayerInventoryUi : MonoBehaviour
 	public static PlayerInventoryUi Instance;
 
 	public GameObject ItemUiPrefab;
-	public GameObject InventoryPanelUi;
+	public GameObject PlayerInfoAndInventoryPanelUi;
 
 	[Header("Inventory items")]
 	public GameObject LearntAbilitiesTextObj;
 	public GameObject LearntAbilitiesUi;
+	public GameObject closeLearntAbilitiesButtonObj;
 	public List<GameObject> LearntAbilitySlots = new List<GameObject>();
 
 	[Header("Inventory items")]
 	public GameObject InventoryUi;
+	public GameObject closeInventoryButtonObj;
 	public List<GameObject> InventorySlots = new List<GameObject>();
 
 	[Header("Equipment items")]
@@ -42,7 +45,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void Start()
 	{
-		InventoryPanelUi.SetActive(false);
+		PlayerInfoAndInventoryPanelUi.SetActive(false);
 	}
 	private void OnEnable()
 	{
@@ -68,14 +71,15 @@ public class PlayerInventoryUi : MonoBehaviour
 		}
 	}
 	//Adding new abilities to Ui
-	public void AddNewUnlockedAbility(SOClassAbilities newAbility)
+	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
-		/*
+		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+		InventoryItem item = go.GetComponent<InventoryItem>();
+		SetAbilityData(item, newAbility);
+
 		for (int i = 0; i < LearntAbilitySlots.Count; i++)
 		{
 			InventorySlotUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotUi>();
-
-			//instantiate here
 
 			if (inventorySlot.IsSlotEmpty())
 			{
@@ -84,11 +88,22 @@ public class PlayerInventoryUi : MonoBehaviour
 				item.SetTextColour();
 				inventorySlot.itemInSlot = item;
 				inventorySlot.UpdateSlotSize();
+				item.Initilize();
 
 				return;
 			}
 		}
-		*/
+	}
+	private void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
+	{
+		Abilities ability = inventoryItem.AddComponent<Abilities>();
+		ability.abilityBaseRef = newAbility;
+		ability.abilityName = newAbility.Name;
+		ability.abilityDescription = newAbility.Description;
+		ability.abilitySprite = newAbility.abilitySprite;
+		ability.isEquippedAbility = false;
+		ability.isOnCooldown = false;
+		ability.abilityCooldownTimer = newAbility.abilityCooldown;
 	}
 
 	//ITEMS
@@ -281,35 +296,41 @@ public class PlayerInventoryUi : MonoBehaviour
 	//UI CHANGES
 	public void ShowHideInventoryKeybind()
 	{
-		if (InventoryPanelUi.activeInHierarchy)
+		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
 			HideInventory();
 		else
 			ShowInventory();
 	}
 	public void ShowInventory()
 	{
-		InventoryPanelUi.SetActive(true);
+		PlayerInfoAndInventoryPanelUi.SetActive(true);
+		LearntAbilitiesUi.SetActive(false);
 	}
 	public void HideInventory()
 	{
-		InventoryPanelUi.SetActive(false);
+		PlayerInfoAndInventoryPanelUi.SetActive(false);
+		LearntAbilitiesUi.SetActive(false);
 	}
 
 	public void ShowHideLearntAbilitiesKeybind()
 	{
 		if (LearntAbilitiesUi.activeInHierarchy)
-			ShowLearntAbilities();
-		else
 			HideLearntAbilities();
+		else
+			ShowLearntAbilities();
 	}
 	public void ShowLearntAbilities()
 	{
+		PlayerInfoAndInventoryPanelUi.SetActive(false);
 		LearntAbilitiesTextObj.SetActive(true);
 		LearntAbilitiesUi.SetActive(true);
+		closeLearntAbilitiesButtonObj.SetActive(true);
 	}
 	public void HideLearntAbilities()
 	{
+		PlayerInfoAndInventoryPanelUi.SetActive(false);
 		LearntAbilitiesTextObj.SetActive(false);
 		LearntAbilitiesUi.SetActive(false);
+		closeLearntAbilitiesButtonObj.SetActive(false);
 	}
 }

@@ -34,6 +34,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItem item = droppeditem.GetComponent<InventoryItem>();
 
+		Debug.Log("item dropped");
+
 		DragEquipItemToSlot(item);
 	}
 	public void DragEquipItemToSlot(InventoryItem item)
@@ -91,7 +93,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public void EquipAbilityItem(InventoryItem item)
 	{
-		Destroy(itemInSlot.gameObject);
+		if (itemInSlot != null)
+			Destroy(itemInSlot.gameObject);
 	}
 
 	public void CheckIfItemInEquipmentSlot(InventoryItem item)

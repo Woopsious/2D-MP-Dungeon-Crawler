@@ -106,7 +106,7 @@ public class PlayerController : MonoBehaviour
 	//player actions
 	private void OnMainAttack()
 	{
-		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.InventoryPanelUi.activeSelf) return;
+		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf) return;
 		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
 	private void OnCameraZoom()

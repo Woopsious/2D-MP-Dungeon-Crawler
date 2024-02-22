@@ -80,7 +80,7 @@ public class PlayerInventoryManager : MonoBehaviour
 			Items item = go.GetComponent<Items>();
 			item.gameObject.name = startingItems[i].name;
 			item.itemName = startingItems[i].name;
-			item.itemImage = startingItems[i].itemImage;
+			item.itemSprite = startingItems[i].itemImage;
 			item.itemPrice = startingItems[i].itemPrice;
 
 			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.

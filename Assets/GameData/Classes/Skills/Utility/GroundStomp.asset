@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ground Stomp
   Description: Stomp on the ground, knocking back all enemies close to you
+  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 20
   requiresTarget: 0

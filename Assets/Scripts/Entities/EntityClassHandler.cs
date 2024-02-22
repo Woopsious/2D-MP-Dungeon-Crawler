@@ -85,8 +85,4 @@ public class EntityClassHandler : MonoBehaviour
 		unlockedAbilitiesList.Add(ability);
 		OnAbilityUnlock?.Invoke(ability);
 	}
-	protected virtual void OnNewNodeUnlock()
-	{
-
-	}
 }

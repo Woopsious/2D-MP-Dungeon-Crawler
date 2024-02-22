@@ -15,7 +15,7 @@ public class Items : MonoBehaviour
 
 	[Header("Item Info")]
 	public string itemName;
-	public Sprite itemImage;
+	public Sprite itemSprite;
 	public int itemPrice;
 	public int itemId;
 
@@ -47,12 +47,12 @@ public class Items : MonoBehaviour
 
 		itemName = GetItemName();
 		name = itemName;
-		itemImage = GetItemImage();
+		itemSprite = GetItemImage();
 		itemPrice = GetItemPrice();
 		itemType = GetItemType();
 
 		if (GetComponent<InventoryItem>() != null) return; //is inventoryItem so doesnt need this ref
-		GetComponent<SpriteRenderer>().sprite = itemImage;
+		GetComponent<SpriteRenderer>().sprite = itemSprite;
 	}
 	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
 	{

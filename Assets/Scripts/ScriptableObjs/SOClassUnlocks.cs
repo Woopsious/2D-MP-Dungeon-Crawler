@@ -16,6 +16,7 @@ public class SOClassUnlocks : ScriptableObject
 	public string Name;
 	[TextArea(3, 10)]
 	public string Description;
+	public Sprite abilitySprite;
 
 	public int nonPlayerLevelRequirement;
 }

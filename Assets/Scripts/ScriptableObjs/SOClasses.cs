@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 [CreateAssetMenu(fileName = "ClassesScriptableObject", menuName = "Classes")]
 public class SOClasses : ScriptableObject
 {
@@ -14,6 +16,7 @@ public class SOClasses : ScriptableObject
 	public string className;
 	[TextArea(3, 10)]
 	public string classDescription;
+	public Image classImageUi;
 
 	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();

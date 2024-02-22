@@ -33,7 +33,6 @@ public class PlayerClassHandler : EntityClassHandler
 	protected override void UnlockAbility(SOClassAbilities ability)
 	{
 		base.UnlockAbility(ability);
-		PlayerInventoryUi.Instance.AddNewUnlockedAbility(ability);
 		UpdateClassTreeUi();
 	}
 
