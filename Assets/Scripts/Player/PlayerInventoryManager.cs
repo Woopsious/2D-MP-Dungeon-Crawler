@@ -95,8 +95,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerInventoryUi.Instance.AbilitySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
 
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 

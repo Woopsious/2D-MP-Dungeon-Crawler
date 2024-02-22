@@ -203,8 +203,8 @@ public class SaveManager : MonoBehaviour
 
 		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
 		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
-		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerInventoryUi.Instance.ConsumableSlots);
-		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerInventoryUi.Instance.AbilitySlots);
+		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
+		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
 	}
 	private void SavePlayerClassData()
 	{

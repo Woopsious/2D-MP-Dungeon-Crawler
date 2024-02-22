@@ -11,9 +11,11 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	[Header("Hotbar")]
 	public GameObject HotbarPanelUi;
+	public List<GameObject> ConsumableSlots = new List<GameObject>();
 	public GameObject consumableSlotOne;
 	public GameObject consumableSlotTwo;
 
+	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
 	public GameObject abilitySlotTwo;
 	public GameObject abilitySlotThree;
