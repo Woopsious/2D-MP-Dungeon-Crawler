@@ -53,7 +53,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		{
 			if (IsItemInSlotStackable() && IsItemInSlotSameAs(item))
 			{
-				PlayerInventoryManager.Instance.AddToStackCount(this, item);
+				PlayerInventoryUi.Instance.AddToStackCount(this, item);
 				if (item.currentStackCount > 0) return;
 			}
 			else //swapping items
@@ -136,13 +136,15 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectSlotType(InventoryItem item)
 	{
-		if (slotType == SlotType.generic)
+		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability)
 			return true;
+
 		if (item.itemType == InventoryItem.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
-		else if (item.itemType == InventoryItem.ItemType.isWeapon)
+		else if (item.itemType == InventoryItem.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))
 		{
 			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
+
 			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
 				return true;
 			else if (SOweapon.weaponType == SOWeapons.WeaponType.isOffhand && slotType == SlotType.weaponOffhand)
@@ -152,7 +154,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else
 				return false;
 		}
-		else if (item.itemType == InventoryItem.ItemType.isArmor)
+		else if (item.itemType == InventoryItem.ItemType.isArmor && CheckClassRestriction((int)item.classRestriction))
 		{
 			Armors armor = item.GetComponent<Armors>();
 			if (armor.armorSlot == Armors.ArmorSlot.helmet && slotType == SlotType.helmet)
@@ -174,11 +176,15 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else
 				return false;
 		}
-		else if (item.itemType == InventoryItem.ItemType.isAbility)
-		{
-			return true;
-		}
 		else return false;
+	}
+	public bool CheckClassRestriction(int itemClassRestrictionNum)
+	{
+		int classRestrictionNum = (int)ClassesUi.Instance.currentPlayerClass.classRestriction;
+		if (classRestrictionNum >= itemClassRestrictionNum)
+			return true;
+		else
+			return false;
 	}
 }
 

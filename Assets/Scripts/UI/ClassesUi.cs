@@ -103,6 +103,36 @@ public class ClassesUi : MonoBehaviour
 		OnClassNodeUnlocks?.Invoke(playerClassHandler);
 	}
 
+	//reload player class
+	public void ReloadPlayerClass()
+	{
+		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
+
+		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
+
+		if (currentPlayerClass == knightClass)
+			ReloadPlayerClassTreeNodes(knightClassPanel);
+		if (currentPlayerClass == warriorClass)
+			ReloadPlayerClassTreeNodes(warriorClassPanel);
+		if (currentPlayerClass == rogueClass)
+			ReloadPlayerClassTreeNodes(rogueClassPanel);
+		if (currentPlayerClass == rangerClass)
+			ReloadPlayerClassTreeNodes(rangerClassPanel);
+		if (currentPlayerClass == mageClass)
+			ReloadPlayerClassTreeNodes(MageClassPanel);
+
+		/// <summery>
+		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
+		/// of said classes Nodes, and reunlock those bypassing checks
+		/// <summery>
+	}
+	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
+	{
+		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
+		foreach (int index in indexs)
+			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNodeButton();
+	}
+
 	//UI CHANGES
 	//classes
 	public void PlayAsKnightButton()
@@ -197,34 +227,5 @@ public class ClassesUi : MonoBehaviour
 		rogueClassPanel.SetActive(false);
 		rangerClassPanel.SetActive(false);
 		MageClassPanel.SetActive(false);
-	}
-
-	public void ReloadPlayerClass()
-	{
-		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
-
-		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
-
-		if (currentPlayerClass == knightClass)
-			ReloadPlayerClassTreeNodes(knightClassPanel);
-		if (currentPlayerClass == warriorClass)
-			ReloadPlayerClassTreeNodes(warriorClassPanel);
-		if (currentPlayerClass == rogueClass)
-			ReloadPlayerClassTreeNodes(rogueClassPanel);
-		if (currentPlayerClass == rangerClass)
-			ReloadPlayerClassTreeNodes(rangerClassPanel);
-		if (currentPlayerClass == mageClass)
-			ReloadPlayerClassTreeNodes(MageClassPanel);
-
-		/// <summery>
-		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
-		/// of said classes Nodes, and reunlock those bypassing checks
-		/// <summery>
-	}
-	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
-	{
-		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
-		foreach (int index in indexs)
-			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNodeButton();
 	}
 }
