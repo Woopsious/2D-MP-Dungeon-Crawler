@@ -35,7 +35,26 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		Instance = this;
 	}
+	private void OnEnable()
+	{
+		ClassesUi.OnClassReset += ResetEquippedAbilities;
+	}
+	private void OnDisable()
+	{
+		ClassesUi.OnClassReset -= ResetEquippedAbilities;
+	}
 
+	//reset/clear any equipped abilities from ui
+	private void ResetEquippedAbilities(SOClasses currentClass)
+	{
+		foreach (GameObject equippedAbility in AbilitySlots)
+		{
+			if (equippedAbility.transform.GetChild(0) != null)
+				Destroy(equippedAbility.transform.GetChild(0).gameObject);
+		}
+	}
+
+	//UI CHANGES
 	public void OpenInventoryButton()
 	{
 		PlayerInventoryUi.Instance.ShowInventory();
@@ -54,13 +73,11 @@ public class PlayerHotbarUi : MonoBehaviour
 		float percentage = (float)currentValue / MaxValue;
 		expBarFiller.fillAmount = percentage;
 	}
-
 	public void OnHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		healthBarFiller.fillAmount = percentage;
 	}
-
 	public void OnManaChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;

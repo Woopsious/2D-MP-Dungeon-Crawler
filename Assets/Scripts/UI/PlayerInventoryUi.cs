@@ -43,7 +43,55 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		InventoryPanelUi.SetActive(false);
 	}
+	private void OnEnable()
+	{
+		ClassesUi.OnClassReset += OnClassReset;
+		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
+	}
+	private void OnDisable()
+	{
+		ClassesUi.OnClassReset -= OnClassReset;
+		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
+	}
 
+	//CLASSES + ABILITIES
+	//reset/clear any learnt abilities from learnt abilities ui
+	private void OnClassReset(SOClasses currentClass)
+	{
+		foreach (GameObject abilitySlot in LearntAbilitySlots)
+		{
+			if (abilitySlot.transform.GetChild(0) != null)
+				Destroy(abilitySlot.transform.GetChild(0).gameObject);
+		}
+	}
+	//Adding new abilities to Ui
+	public void AddNewUnlockedAbility(SOClassAbilities newAbility)
+	{
+		/*
+		for (int i = 0; i < LearntAbilitySlots.Count; i++)
+		{
+			InventorySlotUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotUi>();
+
+			//instantiate here
+
+			if (inventorySlot.IsSlotEmpty())
+			{
+				item.inventorySlotIndex = i;
+				item.transform.SetParent(inventorySlot.transform);
+				item.SetTextColour();
+				inventorySlot.itemInSlot = item;
+				inventorySlot.UpdateSlotSize();
+
+				return;
+			}
+		}
+		*/
+	}
+
+	//ITEMS
+	//Adding new items to Ui
+
+	//UI CHANGES
 	public void ShowHideInventoryKeybind()
 	{
 		if (InventoryPanelUi.activeInHierarchy)

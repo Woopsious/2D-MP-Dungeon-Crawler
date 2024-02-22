@@ -24,22 +24,6 @@ public class PlayerClassHandler : EntityClassHandler
 		ClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
 		ClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 	}
-	protected override void OnClassReset(SOClasses currentClass)
-	{
-		base.OnClassReset(currentClass);
-
-		foreach (GameObject abilitySlot in PlayerInventoryUi.Instance.LearntAbilitySlots)
-		{
-			if (abilitySlot.transform.GetChild(0) != null)
-				Destroy(abilitySlot.transform.GetChild(0).gameObject);
-		}
-
-		foreach (GameObject equippedAbility in PlayerHotbarUi.Instance.AbilitySlots)
-		{
-			if (equippedAbility.transform.GetChild(0) != null)
-				Destroy(equippedAbility.transform.GetChild(0).gameObject);
-		}
-	}
 
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
@@ -49,29 +33,8 @@ public class PlayerClassHandler : EntityClassHandler
 	protected override void UnlockAbility(SOClassAbilities ability)
 	{
 		base.UnlockAbility(ability);
-		AddNewAbilityToLearntOnes();
+		PlayerInventoryUi.Instance.AddNewUnlockedAbility(ability);
 		UpdateClassTreeUi();
-	}
-
-	private void AddNewAbilityToLearntOnes()
-	{
-		/*
-		for (int i = 0; i < PlayerInventoryUi.Instance.LearntAbilitySlots.Count; i++)
-		{
-			InventorySlotUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotUi>();
-
-			if (inventorySlot.IsSlotEmpty())
-			{
-				item.inventorySlotIndex = i;
-				item.transform.SetParent(inventorySlot.transform);
-				item.SetTextColour();
-				inventorySlot.itemInSlot = item;
-				inventorySlot.UpdateSlotSize();
-
-				return;
-			}
-		}
-		*/
 	}
 
 	private void UpdateClassTreeUi()
