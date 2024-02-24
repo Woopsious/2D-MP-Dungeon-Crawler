@@ -96,6 +96,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
 	{
+		inventoryItem.abilityBaseRef = newAbility;
 		Abilities ability = inventoryItem.AddComponent<Abilities>();
 		ability.abilityBaseRef = newAbility;
 		ability.abilityName = newAbility.Name;

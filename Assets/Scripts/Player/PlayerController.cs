@@ -120,33 +120,38 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
-		if (playerEquipmentHandler.equippedConsumableOne == null) return;
-		playerEquipmentHandler.equippedConsumableOne.ConsumeItem(this);
+		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
+		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
-		if (playerEquipmentHandler.equippedConsumableTwo == null) return;
-		playerEquipmentHandler.equippedConsumableTwo.ConsumeItem(this);
+		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
+		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
 	{
-		GetComponent<EntityStats>().DecreaseMana(5, true);
+		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
+		PlayerHotbarUi.Instance.equippedAbilityOne.UseAbility(playerStats);
 	}
 	private void OnAbilityTwo()
 	{
-
+		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
+		PlayerHotbarUi.Instance.equippedAbilityTwo.UseAbility(playerStats);
 	}
 	private void OnAbilityThree()
 	{
-
+		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
+		PlayerHotbarUi.Instance.equippedAbilityThree.UseAbility(playerStats);
 	}
 	private void OnAbilityFour()
 	{
-
+		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
+		PlayerHotbarUi.Instance.equippedAbilityFour.UseAbility(playerStats);
 	}
 	private void OnAbilityFive()
 	{
-
+		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
+		PlayerHotbarUi.Instance.equippedAbilityFive.UseAbility(playerStats);
 	}
 
 	//ui actions

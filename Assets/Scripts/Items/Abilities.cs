@@ -25,8 +25,9 @@ public class Abilities : MonoBehaviour
 		isConsumable, isWeapon, isArmor, isAccessory, isAbility
 	}
 
-	public void UseAbility()
+	public void UseAbility(EntityStats entityStats)
 	{
+		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
 		StartCoroutine(AbilityCooldown());
 	}
 

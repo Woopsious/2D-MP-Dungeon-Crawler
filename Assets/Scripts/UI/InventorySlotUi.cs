@@ -13,11 +13,13 @@ using UnityEngine.UI;
 public class InventorySlotUi : MonoBehaviour, IDropHandler
 {
 	public static event Action<InventoryItem, InventorySlotUi> OnItemEquip;
+	public static event Action<InventoryItem, InventorySlotUi> OnHotbarItemEquip;
 
 	public SlotType slotType;
 	public enum SlotType
 	{
-		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, necklace, ringOne, ringTwo, artifact, ability
+		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
+		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities
 	}
 
 	public int slotIndex;
@@ -34,8 +36,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItem item = droppeditem.GetComponent<InventoryItem>();
 
-		Debug.Log("item dropped");
-
 		DragEquipItemToSlot(item);
 	}
 	public void DragEquipItemToSlot(InventoryItem item)
@@ -44,12 +44,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (!IsCorrectSlotType(item)) return;
 		if (IsNewSlotSameAsOldSlot(item)) return;
-
-		if (slotType == SlotType.ability)
-		{
-			EquipAbilityItem(item);
-			return;
-		}
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
@@ -91,16 +85,15 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
 	}
-	public void EquipAbilityItem(InventoryItem item)
-	{
-		if (itemInSlot != null)
-			Destroy(itemInSlot.gameObject);
-	}
 
 	public void CheckIfItemInEquipmentSlot(InventoryItem item)
 	{
 		if (slotType == SlotType.generic) return;
-		OnItemEquip?.Invoke(item, this);
+
+		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
+			OnHotbarItemEquip?.Invoke(item, this);
+		else
+			OnItemEquip?.Invoke(item, this);
 	}
 	public void UpdateSlotSize()
 	{
@@ -115,13 +108,15 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	{
 		if (item.parentAfterDrag == this)
 			return true;
-		else return false;
+		else
+			return false;
 	}
 	public bool IsSlotEmpty()
 	{
 		if (GetComponentInChildren<InventoryItem>() == null)
 			return true;
-		else return false;
+		else
+			return false;
 	}
 	public bool IsItemInSlotStackable()
 	{
@@ -139,7 +134,11 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectSlotType(InventoryItem item)
 	{
-		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability)
+		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability ||
+			item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
+			return true;
+
+		if (slotType == SlotType.generic)
 			return true;
 
 		if (item.itemType == InventoryItem.ItemType.isConsumable && slotType == SlotType.consumables)

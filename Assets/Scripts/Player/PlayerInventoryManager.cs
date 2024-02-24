@@ -15,7 +15,6 @@ public class PlayerInventoryManager : MonoBehaviour
 {
 	public static PlayerInventoryManager Instance;
 
-	public GameObject ItemUiPrefab;
 	public GameObject droppedItemPrefab;
 
 	[Header("Starting Items")]
@@ -28,8 +27,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		//if (!hasRecievedStartingItems)
-			//SpawnStartingItems();
+		if (!hasRecievedStartingItems)
+			SpawnStartingItems();
 	}
 
 	private void OnEnable()

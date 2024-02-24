@@ -31,16 +31,12 @@ public class Consumables : Items
 		isStackable = consumableBaseRef.isStackable;
 	}
 
-	public void ConsumeItem(PlayerController player)
+	public void ConsumeItem(EntityStats entityStats)
 	{
 		if (consumableType == ConsumableType.healthRestoration)
-		{
-			player.GetComponent<EntityStats>().OnHeal(consumablePercentage, true);
-		}
+			entityStats.OnHeal(consumablePercentage, true);
 		else if (consumableType == ConsumableType.manaRestoration)
-		{
-			player.GetComponent<EntityStats>().IncreaseMana(consumablePercentage, true);
-		}
+			entityStats.IncreaseMana(consumablePercentage, true);
 
 		GetComponent<InventoryItem>().DecreaseStackCounter();
 	}

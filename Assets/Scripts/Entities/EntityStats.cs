@@ -206,26 +206,26 @@ public class EntityStats : MonoBehaviour
 		if (manaRegenTimer <= 0)
 		{
 			manaRegenTimer = manaRegenCooldown;
-			IncreaseMana(manaRegenPercentage.finalValue, true);
+			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
 		}
 	}
-	public void IncreaseMana(int manaValue, bool isPercentageValue)
+	public void IncreaseMana(float manaValue, bool isPercentageValue)
 	{
 		if (isPercentageValue)
 			manaValue = maxMana.finalValue / 100 * manaValue;
 
-		currentMana += manaValue;
+		currentMana = (int)(currentMana + manaValue);
 		if (currentMana > maxMana.finalValue)
 			currentMana = maxMana.finalValue;
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
-	public void DecreaseMana(int manaValue, bool isPercentageValue)
+	public void DecreaseMana(float manaValue, bool isPercentageValue)
 	{
 		if (isPercentageValue)
 			manaValue = maxMana.finalValue / 100 * manaValue;
 
-		currentMana -= manaValue;
+		currentMana = (int)(currentMana - manaValue);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
 

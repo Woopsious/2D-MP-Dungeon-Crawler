@@ -19,7 +19,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	private float timeToWait = 0.5f;
 
 	[Header("Item Base Ref")]
-	public SOClassAbilities ability;
+	public SOClassAbilities abilityBaseRef;
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
@@ -215,11 +215,11 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	//update Ui color based on rarity
 	public void SetTextColour()
 	{
-		if (rarity == InventoryItem.Rarity.isRare)
+		if (rarity == Rarity.isRare)
 			SetColour(Color.cyan);
-		else if (rarity == InventoryItem.Rarity.isEpic)
+		else if (rarity == Rarity.isEpic)
 			SetColour(Color.magenta);
-		else if (rarity == InventoryItem.Rarity.isLegendary)
+		else if (rarity == Rarity.isLegendary)
 			SetColour(Color.red);
 		else
 			SetColour(Color.black);

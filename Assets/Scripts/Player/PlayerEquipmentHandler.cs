@@ -6,17 +6,6 @@ using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
-	[Header("equipped Consumables")]
-	public Consumables equippedConsumableOne;
-	public Consumables equippedConsumableTwo;
-
-	[Header("equipped Abilities")]
-	public Consumables equippedAbilityOne;
-	public Consumables equippedAbilityTwo;
-	public Consumables equippedAbilityThree;
-	public Consumables equippedAbilityFour;
-	public Consumables equippedAbilityFive;
-
 	private void Start()
 	{
 		Initilize();
@@ -73,10 +62,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlotUi.SlotType.ringTwo)
 				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
-		else if (item.itemType == InventoryItem.ItemType.isConsumable)
-		{
-			EquipConsumables(item.GetComponent<Consumables>(), slot);
-		}
 	}
 
 	//physically spawned in to player
@@ -124,19 +109,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);
 	}
 
-	//not physically spawned in
-	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
-	{
-		if (slotEquippedTo.slotIndex == 0)
-		{
-			equippedConsumableOne = consumableToEquip;
-		}
-		else if (slotEquippedTo.slotIndex == 1)
-		{
-			equippedConsumableTwo = consumableToEquip;
-		}
-	}
-
 	private void HandleEmptySlots(InventorySlotUi slot)
 	{
 		if (slot.slotType == InventorySlotUi.SlotType.weaponMain)
@@ -178,13 +150,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		{
 			OnAccessoryUnequip(equippedRingTwo);
 			Destroy(equippedRingTwo.gameObject);
-		}
-		if (slot.slotType == InventorySlotUi.SlotType.consumables)
-		{
-			if (slot.slotIndex == 0)
-				equippedConsumableOne = null;
-			if (slot.slotIndex == 1)
-				equippedConsumableTwo = null;
 		}
 	}
 }
