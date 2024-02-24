@@ -28,6 +28,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject abilitySlotFive;
 
 	[Header("equipped Abilities")]
+	public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
 	public Abilities equippedAbilityOne;
 	public Abilities equippedAbilityTwo;
 	public Abilities equippedAbilityThree;
@@ -66,6 +67,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			if (equippedAbility.transform.GetChild(0) != null)
 				Destroy(equippedAbility.transform.GetChild(0).gameObject);
 		}
+		equippedAbilities.Clear();
 	}
 
 	//Equip Consumables/Abilities

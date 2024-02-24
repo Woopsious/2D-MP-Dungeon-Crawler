@@ -73,6 +73,9 @@ public class PlayerInventoryUi : MonoBehaviour
 	//Adding new abilities to Ui
 	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
+		//dont add abilities if player had it equipped on game load
+		if (PlayerHotbarUi.Instance.equippedAbilities.Contains(newAbility)) return;
+
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem item = go.GetComponent<InventoryItem>();
 		SetAbilityData(item, newAbility);
@@ -93,6 +96,7 @@ public class PlayerInventoryUi : MonoBehaviour
 				return;
 			}
 		}
+		PlayerHotbarUi.Instance.equippedAbilities.Add(newAbility);
 	}
 	private void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
 	{
@@ -111,6 +115,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	//reload player inventory
 	private void ReloadPlayerInventory()
 	{
+		PlayerHotbarUi.Instance.equippedAbilities = SaveManager.Instance.GameData.equippedAbilities;
+
 		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, InventorySlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, EquipmentSlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
@@ -120,7 +126,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		foreach (InventoryItemData itemData in itemDataList) //spawn item from loot pool at death location
 		{
-			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+			GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
 
 			SetItemData(newInventoryItem, itemData);
@@ -128,7 +134,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);
-			newInventoryItem.parentAfterDrag = PlayerInventoryUi.Instance.InventorySlots[0].transform;
+			newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
 			inventorySlot.EquipItemToSlot(newInventoryItem);
 		}
 	}
