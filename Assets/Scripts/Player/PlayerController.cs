@@ -31,6 +31,9 @@ public class PlayerController : MonoBehaviour
 	{
 		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange; //would be in OnEnable but i get null ref
 		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
+
+		playerStats.entityLevel = 20;
+		playerStats.CalculateBaseStats();
 	}
 
 	private void OnEnable()

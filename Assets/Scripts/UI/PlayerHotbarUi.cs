@@ -48,6 +48,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		Instance = this;
 	}
+	private void Start()
+	{
+		Initilize();
+	}
 	private void OnEnable()
 	{
 		ClassesUi.OnClassReset += ResetEquippedAbilities;
@@ -58,14 +62,24 @@ public class PlayerHotbarUi : MonoBehaviour
 		ClassesUi.OnClassReset -= ResetEquippedAbilities;
 		InventorySlotUi.OnHotbarItemEquip -= EquipHotbarItem;
 	}
+	private void Initilize()
+	{
+		foreach (GameObject slot in ConsumableSlots)
+			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+
+		foreach (GameObject slot in AbilitySlots)
+			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+	}
 
 	//reset/clear any equipped abilities from ui
 	private void ResetEquippedAbilities(SOClasses currentClass)
 	{
 		foreach (GameObject equippedAbility in AbilitySlots)
 		{
-			if (equippedAbility.transform.GetChild(0) != null)
-				Destroy(equippedAbility.transform.GetChild(0).gameObject);
+			if (equippedAbility.transform.childCount == 0)
+				continue;
+
+			Destroy(equippedAbility.transform.GetChild(0).gameObject);
 		}
 		equippedAbilities.Clear();
 	}
@@ -80,7 +94,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		else if (item.itemType == InventoryItem.ItemType.isConsumable)
 			EquipConsumables(item.GetComponent<Consumables>(), slot);
 		else if (item.itemType == InventoryItem.ItemType.isAbility)
-			EquipAbility(item.GetComponent<Abilities>(), slot);
+			EquipAbility(item.abilityBaseRef, slot);
 	}
 	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
 	{
@@ -89,20 +103,33 @@ public class PlayerHotbarUi : MonoBehaviour
 		else if (slotEquippedTo.slotIndex == 1)
 			equippedConsumableTwo = consumableToEquip;
 	}
-	private void EquipAbility(Abilities abilityToEquip, InventorySlotUi slotEquippedTo)
+	private void EquipAbility(SOClassAbilities newAbility, InventorySlotUi slotToEquipTo)
 	{
-		if (slotEquippedTo.slotIndex == 0)
-			equippedAbilityOne = abilityToEquip;
-		else if (slotEquippedTo.slotIndex == 1)
-			equippedAbilityTwo = abilityToEquip;
-		else if (slotEquippedTo.slotIndex == 2)
-			equippedAbilityThree = abilityToEquip;
-		else if (slotEquippedTo.slotIndex == 3)
-			equippedAbilityFour = abilityToEquip;
-		else if (slotEquippedTo.slotIndex == 4)
-			equippedAbilityFive = abilityToEquip;
-	}
+		if (slotToEquipTo.itemInSlot != null)
+			Destroy(slotToEquipTo.itemInSlot.gameObject);
 
+		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+		InventoryItem item = go.GetComponent<InventoryItem>();
+		PlayerInventoryUi.Instance.SetAbilityData(item, newAbility);
+
+		item.inventorySlotIndex = slotToEquipTo.slotIndex;
+		item.transform.SetParent(slotToEquipTo.transform);
+		item.SetTextColour();
+		slotToEquipTo.itemInSlot = item;
+		slotToEquipTo.UpdateSlotSize();
+		item.Initilize();
+
+		if (slotToEquipTo.slotIndex == 0)
+			equippedAbilityOne = item.GetComponent<Abilities>();
+		else if (slotToEquipTo.slotIndex == 1)
+			equippedAbilityTwo = item.GetComponent<Abilities>();
+		else if (slotToEquipTo.slotIndex == 2)
+			equippedAbilityThree = item.GetComponent<Abilities>();
+		else if (slotToEquipTo.slotIndex == 3)
+			equippedAbilityFour = item.GetComponent<Abilities>();
+		else if (slotToEquipTo.slotIndex == 4)
+			equippedAbilityFive = item.GetComponent<Abilities>();
+	}
 	private void HandleEmptySlots(InventorySlotUi slot)
 	{
 		if (slot.slotType == InventorySlotUi.SlotType.consumables)

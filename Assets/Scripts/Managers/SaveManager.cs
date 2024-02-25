@@ -287,7 +287,6 @@ public class GameData
 
 	public SOClasses currentPlayerClass;
 	public List<int> unlockedClassNodeIndexesList = new List<int>();
-	public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
 
 	public List<InventoryItemData> inventoryItems = new List<InventoryItemData>();
 	public List<InventoryItemData> equipmentItems = new List<InventoryItemData>();

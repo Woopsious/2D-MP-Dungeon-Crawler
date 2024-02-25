@@ -25,7 +25,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public int slotIndex;
 	public InventoryItem itemInSlot;
 
-	public void Start()
+	public void SetSlotIndex()
 	{
 		slotIndex = transform.GetSiblingIndex();
 	}
@@ -44,6 +44,12 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (!IsCorrectSlotType(item)) return;
 		if (IsNewSlotSameAsOldSlot(item)) return;
+
+		if (slotType == SlotType.equippedAbilities)
+		{
+			CheckIfItemInEquipmentSlot(item);
+			return;
+		}
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
@@ -134,8 +140,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectSlotType(InventoryItem item)
 	{
-		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability ||
-			item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
+		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability)
+			return false;
+		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
 			return true;
 
 		if (slotType == SlotType.generic)

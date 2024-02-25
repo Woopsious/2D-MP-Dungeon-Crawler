@@ -46,6 +46,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void Start()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
+		Initilize();
 	}
 	private void OnEnable()
 	{
@@ -59,6 +60,97 @@ public class PlayerInventoryUi : MonoBehaviour
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 	}
+	private void Initilize()
+	{
+		foreach (GameObject slot in LearntAbilitySlots)
+			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+
+		foreach (GameObject slot in InventorySlots)
+			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+
+		foreach (GameObject slot in EquipmentSlots)
+			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+	}
+
+	//reload player inventory
+	private void ReloadPlayerInventory()
+	{
+		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, InventorySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, EquipmentSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
+	}
+	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
+	{
+		foreach (InventoryItemData itemData in itemDataList) //spawn item from loot pool at death location
+		{
+			GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
+			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
+
+			ReloadItemData(newInventoryItem, itemData);
+			InventorySlotUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotUi>();
+
+			newInventoryItem.Initilize();
+			newInventoryItem.transform.SetParent(inventorySlot.transform);
+			newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
+			inventorySlot.EquipItemToSlot(newInventoryItem);
+		}
+	}
+	private void ReloadItemData(InventoryItem inventoryItem, InventoryItemData itemData)
+	{
+		if (itemData.weaponBaseRef != null)
+		{
+			inventoryItem.weaponBaseRef = itemData.weaponBaseRef;
+			Weapons weapon = inventoryItem.AddComponent<Weapons>();
+			weapon.weaponBaseRef = itemData.weaponBaseRef;
+			weapon.itemLevel = itemData.itemLevel;
+			weapon.rarity = (Items.Rarity)itemData.rarity;
+			weapon.Initilize(weapon.rarity, weapon.itemLevel);
+			weapon.SetCurrentStackCount(itemData.currentStackCount);
+		}
+		if (itemData.armorBaseRef != null)
+		{
+			inventoryItem.armorBaseRef = itemData.armorBaseRef;
+			Armors armor = inventoryItem.AddComponent<Armors>();
+			armor.armorBaseRef = itemData.armorBaseRef;
+			armor.itemLevel = itemData.itemLevel;
+			armor.rarity = (Items.Rarity)itemData.rarity;
+			armor.Initilize(armor.rarity, armor.itemLevel);
+			armor.SetCurrentStackCount(itemData.currentStackCount);
+		}
+		if (itemData.accessoryBaseRef != null)
+		{
+			inventoryItem.accessoryBaseRef = itemData.accessoryBaseRef;
+			Accessories accessory = inventoryItem.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = itemData.accessoryBaseRef;
+			accessory.itemLevel = itemData.itemLevel;
+			accessory.rarity = (Items.Rarity)itemData.rarity;
+			accessory.Initilize(accessory.rarity, accessory.itemLevel);
+			accessory.SetCurrentStackCount(itemData.currentStackCount);
+		}
+		if (itemData.consumableBaseRef != null)
+		{
+			inventoryItem.consumableBaseRef = itemData.consumableBaseRef;
+			Consumables consumable = inventoryItem.AddComponent<Consumables>();
+			consumable.consumableBaseRef = itemData.consumableBaseRef;
+			consumable.itemLevel = itemData.itemLevel;
+			consumable.rarity = (Items.Rarity)itemData.rarity;
+			consumable.Initilize(consumable.rarity, consumable.itemLevel);
+			consumable.SetCurrentStackCount(itemData.currentStackCount);
+		}
+		if (itemData.abilityBaseRef != null)
+		{
+			inventoryItem.abilityBaseRef = itemData.abilityBaseRef;
+			Abilities ability = inventoryItem.AddComponent<Abilities>();
+			ability.abilityBaseRef = itemData.abilityBaseRef;
+			ability.abilityName = itemData.abilityBaseRef.Name;
+			ability.abilityDescription = itemData.abilityBaseRef.Description;
+			ability.abilitySprite = itemData.abilityBaseRef.abilitySprite;
+			ability.isEquippedAbility = false;
+			ability.isOnCooldown = false;
+			ability.abilityCooldownTimer = itemData.abilityBaseRef.abilityCooldown;
+		}
+	}
 
 	//CLASSES + ABILITIES
 	//reset/clear any learnt abilities from learnt abilities ui
@@ -66,16 +158,15 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		foreach (GameObject abilitySlot in LearntAbilitySlots)
 		{
-			if (abilitySlot.transform.GetChild(0) != null)
-				Destroy(abilitySlot.transform.GetChild(0).gameObject);
+			if (abilitySlot.transform.childCount == 0)
+				continue;
+
+			Destroy(abilitySlot.transform.GetChild(0).gameObject);
 		}
 	}
 	//Adding new abilities to Ui
 	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
-		//dont add abilities if player had it equipped on game load
-		if (PlayerHotbarUi.Instance.equippedAbilities.Contains(newAbility)) return;
-
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem item = go.GetComponent<InventoryItem>();
 		SetAbilityData(item, newAbility);
@@ -96,9 +187,8 @@ public class PlayerInventoryUi : MonoBehaviour
 				return;
 			}
 		}
-		PlayerHotbarUi.Instance.equippedAbilities.Add(newAbility);
 	}
-	private void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
+	public void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
 	{
 		inventoryItem.abilityBaseRef = newAbility;
 		Abilities ability = inventoryItem.AddComponent<Abilities>();
@@ -112,33 +202,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//ITEMS
-	//reload player inventory
-	private void ReloadPlayerInventory()
-	{
-		PlayerHotbarUi.Instance.equippedAbilities = SaveManager.Instance.GameData.equippedAbilities;
-
-		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, InventorySlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, EquipmentSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
-	}
-	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
-	{
-		foreach (InventoryItemData itemData in itemDataList) //spawn item from loot pool at death location
-		{
-			GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
-
-			SetItemData(newInventoryItem, itemData);
-			InventorySlotUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotUi>();
-
-			newInventoryItem.Initilize();
-			newInventoryItem.transform.SetParent(inventorySlot.transform);
-			newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
-			inventorySlot.EquipItemToSlot(newInventoryItem);
-		}
-	}
-
 	//Adding new items to Ui
 	public void AddItemToInventory(Items item)
 	{
@@ -197,50 +260,6 @@ public class PlayerInventoryUi : MonoBehaviour
 			consumable.rarity = item.rarity;
 			consumable.Initilize(consumable.rarity, consumable.itemLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
-		}
-	}
-	//overload when reloading inventory items
-	private void SetItemData(InventoryItem inventoryItem, InventoryItemData itemData)
-	{
-		if (itemData.weaponBaseRef != null)
-		{
-			inventoryItem.weaponBaseRef = itemData.weaponBaseRef;
-			Weapons weapon = inventoryItem.AddComponent<Weapons>();
-			weapon.weaponBaseRef = itemData.weaponBaseRef;
-			weapon.itemLevel = itemData.itemLevel;
-			weapon.rarity = (Items.Rarity)itemData.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel);
-			weapon.SetCurrentStackCount(itemData.currentStackCount);
-		}
-		if (itemData.armorBaseRef != null)
-		{
-			inventoryItem.armorBaseRef = itemData.armorBaseRef;
-			Armors armor = inventoryItem.AddComponent<Armors>();
-			armor.armorBaseRef = itemData.armorBaseRef;
-			armor.itemLevel = itemData.itemLevel;
-			armor.rarity = (Items.Rarity)itemData.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel);
-			armor.SetCurrentStackCount(itemData.currentStackCount);
-		}
-		if (itemData.accessoryBaseRef != null)
-		{
-			inventoryItem.accessoryBaseRef = itemData.accessoryBaseRef;
-			Accessories accessory = inventoryItem.AddComponent<Accessories>();
-			accessory.accessoryBaseRef = itemData.accessoryBaseRef;
-			accessory.itemLevel = itemData.itemLevel;
-			accessory.rarity = (Items.Rarity)itemData.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel);
-			accessory.SetCurrentStackCount(itemData.currentStackCount);
-		}
-		if (itemData.consumableBaseRef != null)
-		{
-			inventoryItem.consumableBaseRef = itemData.consumableBaseRef;
-			Consumables consumable = inventoryItem.AddComponent<Consumables>();
-			consumable.consumableBaseRef = itemData.consumableBaseRef;
-			consumable.itemLevel = itemData.itemLevel;
-			consumable.rarity = (Items.Rarity)itemData.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel);
-			consumable.SetCurrentStackCount(itemData.currentStackCount);
 		}
 	}
 
@@ -303,41 +322,42 @@ public class PlayerInventoryUi : MonoBehaviour
 	//UI CHANGES
 	public void ShowHideInventoryKeybind()
 	{
-		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
-			HideInventory();
-		else
+		if (!PlayerInfoAndInventoryPanelUi.activeInHierarchy)
 			ShowInventory();
+		else
+			HideInventory();
 	}
 	public void ShowInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(true);
 		LearntAbilitiesUi.SetActive(false);
+		HideLearntAbilities();
 	}
 	public void HideInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
-		LearntAbilitiesUi.SetActive(false);
+		HideLearntAbilities();
 	}
 
 	public void ShowHideLearntAbilitiesKeybind()
 	{
-		if (LearntAbilitiesUi.activeInHierarchy)
-			HideLearntAbilities();
-		else
+		if (!LearntAbilitiesUi.activeInHierarchy)
 			ShowLearntAbilities();
+		else
+			HideLearntAbilities();
 	}
 	public void ShowLearntAbilities()
 	{
-		PlayerInfoAndInventoryPanelUi.SetActive(false);
 		LearntAbilitiesTextObj.SetActive(true);
 		LearntAbilitiesUi.SetActive(true);
 		closeLearntAbilitiesButtonObj.SetActive(true);
+		HideInventory();
 	}
 	public void HideLearntAbilities()
 	{
-		PlayerInfoAndInventoryPanelUi.SetActive(false);
 		LearntAbilitiesTextObj.SetActive(false);
 		LearntAbilitiesUi.SetActive(false);
 		closeLearntAbilitiesButtonObj.SetActive(false);
+		HideInventory();
 	}
 }
