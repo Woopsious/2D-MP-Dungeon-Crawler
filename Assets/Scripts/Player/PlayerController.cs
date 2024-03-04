@@ -134,27 +134,27 @@ public class PlayerController : MonoBehaviour
 	private void OnAbilityOne()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityOne.UseAbility(playerStats);
+		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats, this);
 	}
 	private void OnAbilityTwo()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityTwo.UseAbility(playerStats);
+		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats, this);
 	}
 	private void OnAbilityThree()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityThree.UseAbility(playerStats);
+		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats, this);
 	}
 	private void OnAbilityFour()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFour.UseAbility(playerStats);
+		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats, this);
 	}
 	private void OnAbilityFive()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFive.UseAbility(playerStats);
+		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats, this);
 	}
 
 	//ui actions

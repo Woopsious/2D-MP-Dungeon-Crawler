@@ -106,7 +106,12 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void EquipAbility(SOClassAbilities newAbility, InventorySlotUi slotToEquipTo)
 	{
 		if (slotToEquipTo.itemInSlot != null)
+		{
+			if (equippedAbilities.Contains(slotToEquipTo.itemInSlot.abilityBaseRef))
+				equippedAbilities.Remove(slotToEquipTo.itemInSlot.abilityBaseRef);
+
 			Destroy(slotToEquipTo.itemInSlot.gameObject);
+		}
 
 		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItem item = go.GetComponent<InventoryItem>();
@@ -129,6 +134,8 @@ public class PlayerHotbarUi : MonoBehaviour
 			equippedAbilityFour = item.GetComponent<Abilities>();
 		else if (slotToEquipTo.slotIndex == 4)
 			equippedAbilityFive = item.GetComponent<Abilities>();
+
+		equippedAbilities.Add(newAbility);
 	}
 	private void HandleEmptySlots(InventorySlotUi slot)
 	{

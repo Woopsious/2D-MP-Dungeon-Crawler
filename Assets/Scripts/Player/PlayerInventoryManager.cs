@@ -18,6 +18,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public GameObject droppedItemPrefab;
 
 	[Header("Starting Items")]
+	public bool debugSpawnStartingItems;
 	public bool hasRecievedStartingItems;
 	public List<SOItems> startingItems = new List<SOItems>();
 
@@ -27,8 +28,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		//if (!hasRecievedStartingItems)
-			//SpawnStartingItems();
+		if (debugSpawnStartingItems)
+			SpawnStartingItems();
 	}
 
 	private void OnEnable()

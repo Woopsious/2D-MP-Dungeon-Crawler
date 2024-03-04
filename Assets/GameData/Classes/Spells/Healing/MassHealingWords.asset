@@ -14,13 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Mass Healing Words
   Description: Heals Anyone in its radius (excluding enemies)
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 15
-  requiresTarget: 0
-  statusEffectType: 0
+  requiresTarget: 1
   canOnlyTargetSelf: 0
-  isAOE: 0
+  isHealthRestoration: 1
+  isManaRestoration: 0
+  statusEffectType: 0
+  isAOE: 1
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
@@ -31,3 +33,5 @@ MonoBehaviour:
   isSpell: 1
   manaCost: 25
   minPercentCost: 20
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

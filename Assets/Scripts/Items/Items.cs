@@ -116,6 +116,7 @@ public class Items : MonoBehaviour
 		Destroy(gameObject);
 	}
 
+	//Debug functions
 	public void GenerateStatsOnStart()
 	{
 		Initilize(rarity, itemLevel);

@@ -10,12 +10,15 @@ using UnityEngine.UI;
 [System.Serializable]
 public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
 {
-	[HideInInspector] public Transform parentAfterDrag;
+	[Header("Debug settings")]
+	public bool generateStatsOnStart;
 
+	[Header("Ui settings")]
 	public TMP_Text uiItemName;
 	public Image uiItemImage;
 	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
+	[HideInInspector] public Transform parentAfterDrag;
 	private float timeToWait = 0.5f;
 
 	[Header("Item Base Ref")]
@@ -53,6 +56,12 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public bool isStackable;
 	public int maxStackCount;
 	public int currentStackCount;
+
+	public void Start()
+	{
+		if (generateStatsOnStart)
+			GenerateStatsOnStart();
+	}
 
 	public void Initilize()
 	{
@@ -229,5 +238,41 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		uiItemName.color = colour;
 		uiItemLevel.color = colour;
 		uiItemStackCount.color = colour;
+	}
+
+	//Debug functions
+	public void GenerateStatsOnStart()
+	{
+		if (weaponBaseRef != null)
+		{
+			Weapons weapon = gameObject.AddComponent<Weapons>();
+			weapon.weaponBaseRef = weaponBaseRef;
+			weapon.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+		}
+		if (armorBaseRef != null)
+		{
+			Armors armor = gameObject.AddComponent<Armors>();
+			armor.armorBaseRef = armorBaseRef;
+			armor.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+		}
+		if (accessoryBaseRef != null)
+		{
+			Accessories accessory = gameObject.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = accessoryBaseRef;
+			accessory.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+		}
+		if (consumableBaseRef != null)
+		{
+			Consumables consumable = gameObject.AddComponent<Consumables>();
+			consumable.consumableBaseRef = consumableBaseRef;
+			consumable.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+		}
+		if (abilityBaseRef != null)
+		{
+			Abilities ability = gameObject.AddComponent<Abilities>();
+			ability.abilityBaseRef = abilityBaseRef;
+			ability.Initilize();
+		}
+		Initilize();
 	}
 }

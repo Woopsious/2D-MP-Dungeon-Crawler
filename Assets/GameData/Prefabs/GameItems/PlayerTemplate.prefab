@@ -259,6 +259,7 @@ Transform:
   - {fileID: 7345822950958779293}
   - {fileID: 5489451220104610846}
   - {fileID: 3127162070853612290}
+  - {fileID: 6483727420578057138}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &5970125703919304695
@@ -456,6 +457,17 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
+  rangedWeaponDamageModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
+  statusEffectsParentObj: {fileID: 7651319034662892506}
+  currentStatusEffects: []
 --- !u!114 &1965868520373403594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,13 +557,6 @@ MonoBehaviour:
   poisonDamagePercentage: 0
   fireDamagePercentage: 0
   iceDamagePercentage: 0
-  equippedConsumableOne: {fileID: 0}
-  equippedConsumableTwo: {fileID: 0}
-  equippedAbilityOne: {fileID: 0}
-  equippedAbilityTwo: {fileID: 0}
-  equippedAbilityThree: {fileID: 0}
-  equippedAbilityFour: {fileID: 0}
-  equippedAbilityFive: {fileID: 0}
 --- !u!114 &5724620505289801652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,7 +569,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 68b04e14178a64e47b81c04cd7c82206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemUiPrefab: {fileID: 0}
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
   hasRecievedStartingItems: 0
   startingItems:
@@ -878,6 +882,37 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3127162070853612290}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7651319034662892506
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6483727420578057138}
+  m_Layer: 0
+  m_Name: StatusEffects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6483727420578057138
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7651319034662892506}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 25.79, y: 5.0800004, z: -0.20775527}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5266391747594527150}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8319858746991541843
 GameObject:

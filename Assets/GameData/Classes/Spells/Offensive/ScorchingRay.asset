@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
   m_Name: ScorchingRay
   m_EditorClassIdentifier: 
-  Name: Scorching Ray
-  Description: Launch a ray of fire at enemies
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  Name: Scorching Rays
+  Description: Launch 3 rays of fire at enemies
+  abilitySprite: {fileID: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 5
   requiresTarget: 0
-  statusEffectType: 0
   canOnlyTargetSelf: 0
+  isHealthRestoration: 0
+  isManaRestoration: 0
+  statusEffectType: 0
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
@@ -31,3 +33,5 @@ MonoBehaviour:
   isSpell: 1
   manaCost: 15
   minPercentCost: 10
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

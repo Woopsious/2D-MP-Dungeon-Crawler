@@ -47,6 +47,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (slotType == SlotType.equippedAbilities)
 		{
+			if (PlayerHotbarUi.Instance.equippedAbilities.Contains(item.abilityBaseRef)) //only 1 copy of ability equipable
+				return;
+
 			CheckIfItemInEquipmentSlot(item);
 			return;
 		}
@@ -145,7 +148,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
 			return true;
 
-		if (slotType == SlotType.generic)
+		if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.generic)
 			return true;
 
 		if (item.itemType == InventoryItem.ItemType.isConsumable && slotType == SlotType.consumables)

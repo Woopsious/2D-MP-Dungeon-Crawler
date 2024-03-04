@@ -14,20 +14,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bandage Wounds
   Description: A quick bandage to use on your wounds
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 20
   requiresTarget: 1
-  statusEffectType: 0
   canOnlyTargetSelf: 1
+  isHealthRestoration: 1
+  isManaRestoration: 0
+  statusEffectType: 0
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
   percentageBased: 1
   value: 0
-  valuePercentage: 0.08
+  valuePercentage: 8
   damageType: 0
   isSpell: 0
   manaCost: 0
   minPercentCost: 0
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

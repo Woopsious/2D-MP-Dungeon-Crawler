@@ -170,10 +170,6 @@ public class ClassesUi : MonoBehaviour
 		OnClassReset?.Invoke(currentPlayerClass);
 
 		currentUnlockedClassNodes.Clear();
-
-		//currentUnlockedClassNodes.Clear();
-
-		//reset unlocked node tree list
 	}
 
 	public void ShowPlayerClassSelection()

@@ -80,11 +80,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		}
 	}
 
-	public void OnClassChanges()
-	{
-
-	}
-
 	//for entitys other then player to randomly equip items when they spawn in
 	private void EquipRandomItems()
 	{

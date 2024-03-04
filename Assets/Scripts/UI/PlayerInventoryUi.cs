@@ -331,12 +331,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(true);
 		LearntAbilitiesUi.SetActive(false);
-		HideLearntAbilities();
 	}
 	public void HideInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
-		HideLearntAbilities();
 	}
 
 	public void ShowHideLearntAbilitiesKeybind()
@@ -351,13 +349,11 @@ public class PlayerInventoryUi : MonoBehaviour
 		LearntAbilitiesTextObj.SetActive(true);
 		LearntAbilitiesUi.SetActive(true);
 		closeLearntAbilitiesButtonObj.SetActive(true);
-		HideInventory();
 	}
 	public void HideLearntAbilities()
 	{
 		LearntAbilitiesTextObj.SetActive(false);
 		LearntAbilitiesUi.SetActive(false);
 		closeLearntAbilitiesButtonObj.SetActive(false);
-		HideInventory();
 	}
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ClassUnlocksScriptableObject", menuName = "ClassUnlocks/Abilities")]
@@ -17,6 +18,10 @@ public class SOClassAbilities : SOClassUnlocks
 	public float abilityCooldown;
 	[Tooltip("forces ability to need specific target to be applied to. EG: healing spells/skills")]
 	public bool requiresTarget;
+	[Tooltip("EG: Knight/Warrior healing skills")]
+	public bool canOnlyTargetSelf;
+	public bool isHealthRestoration;
+	public bool isManaRestoration;
 
 	[Header("Status Effects Settings")]
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
@@ -25,8 +30,6 @@ public class SOClassAbilities : SOClassUnlocks
 	{
 		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
 	}
-	[Tooltip("EG: Knight/Warrior healing skills")]
-	public bool canOnlyTargetSelf;
 
 	[Header("AoE Settings")]
 	public bool isAOE;
@@ -45,11 +48,15 @@ public class SOClassAbilities : SOClassUnlocks
 	public DamageType damageType;
 	public enum DamageType
 	{
-		isHealing, isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
+		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
 	[Header("Spell Settings")]
 	public bool isSpell;
 	public int manaCost;            //atm idk if % cost or num cost for spells will work out better. after maxMana % boosts, hard num =
 	public float minPercentCost;    //cost to use spells being pointless. % num cost = no point in having player mana ever change from 100
+
+	[Header("Particle Effect Settings")]
+	public bool hasParticleEffect;
+	public Color particleColour;
 }
