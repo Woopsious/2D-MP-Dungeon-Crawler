@@ -22,7 +22,9 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
+	//target selection
 	public event Action<EntityStats> OnNewTargetSelected;
+	public EntityStats selectedTarget;
 
 	private void Awake()
 	{
@@ -110,17 +112,28 @@ public class PlayerController : MonoBehaviour
 	public void CheckForSelectableTarget()
 	{
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+		if (hit.collider == null)
+			return;
+		if (hit.collider.GetComponent<EntityStats>() == null)
+			return;
 
-		if (hit.collider != null && hit.collider.GetComponent<EntityStats>() != null)
+		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
+		if (!entityStats.IsPlayerEntity())
 		{
-			EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
-			if (!entityStats.IsPlayerEntity())
-			{
-				Debug.Log("new target selected");
-				//OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
-				OnNewTargetSelected?.Invoke(entityStats);
-			}
+			Debug.Log("new target selected");
+			OnNewTargetSelected?.Invoke(entityStats);
+				
+			if (selectedTarget != null)
+				selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
+
+			selectedTarget = entityStats;
+			selectedTarget.OnDeathEvent += OnSelectedTargetDeath;
 		}
+	}
+	public void OnSelectedTargetDeath(GameObject obj)
+	{
+		selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
+		selectedTarget = null;
 	}
 
 	/// <summary>
@@ -130,10 +143,12 @@ public class PlayerController : MonoBehaviour
 	//player actions
 	private void OnMainAttack()
 	{
-		CheckForSelectableTarget();
-
 		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf) return;
 		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+	}
+	private void OnRightClick()
+	{
+		CheckForSelectableTarget();
 	}
 	private void OnCameraZoom()
 	{

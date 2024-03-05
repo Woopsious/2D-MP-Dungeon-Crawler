@@ -38,7 +38,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Abilities equippedAbilityFive;
 
 	[Header("Selected Target Ui")]
-	public bool hasSelectedTarget;
+	public EntityStats selectedTarget;
 	public GameObject selectedTargetPanelUi;
 	public Image selectedTargetHealthBarFiller;
 	public TMP_Text selectedTargetHealth;
@@ -200,12 +200,20 @@ public class PlayerHotbarUi : MonoBehaviour
 		if (!selectedTargetPanelUi.activeInHierarchy)
 			selectedTargetPanelUi.SetActive(true);
 
-		entityStats.OnDeathEvent += OnTargetDeathUnSelect;
-		entityStats.OnHealthChangeEvent += OnTargetHealthChange;
-		entityStats.OnManaChangeEvent += OnManaChange;
+		if (selectedTarget != null)
+		{
+			selectedTarget.OnDeathEvent -= OnTargetDeathUnSelect;
+			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
+			selectedTarget.OnManaChangeEvent -= OnManaChange;
+		}
 
-		OnTargetHealthChange(entityStats.maxHealth.finalValue, entityStats.currentHealth);
-		OnTargetManaChange(entityStats.maxMana.finalValue, entityStats.currentMana);
+		selectedTarget = entityStats;
+		selectedTarget.OnDeathEvent += OnTargetDeathUnSelect;
+		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
+		selectedTarget.OnManaChangeEvent += OnManaChange;
+
+		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
+		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
 	}
 	public void OnTargetHealthChange(int MaxValue, int currentValue)
 	{
