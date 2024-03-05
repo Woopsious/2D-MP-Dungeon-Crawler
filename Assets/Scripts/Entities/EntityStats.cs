@@ -124,12 +124,8 @@ public class EntityStats : MonoBehaviour
 	}
 	private void RecieveHealing(float healthValue, bool isPercentageValue)
 	{
-		Debug.Log("healing amount: " + healthValue);
-
 		if (isPercentageValue)
-			healthValue = maxHealth.finalValue / 100 * healthValue;
-
-		Debug.Log("healing amount: " + healthValue);
+			healthValue = maxHealth.finalValue * healthValue;
 
 		currentHealth = (int)(currentHealth + healthValue);
 
@@ -150,25 +146,25 @@ public class EntityStats : MonoBehaviour
 	}
 	private void RecieveDamage(int damage, IDamagable.DamageType damageType)
 	{
-		Debug.Log(gameObject.name + " recieved :" + damage);
+		//Debug.Log(gameObject.name + " recieved :" + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
 		{
-			Debug.Log("Poison Dmg res: " + poisonResistance);
+			//Debug.Log("Poison Dmg res: " + poisonResistance);
 			damage -= poisonResistance.finalValue;
 		}
 		if (damageType == IDamagable.DamageType.isFireDamageType)
 		{
-			Debug.Log("Fire Dmg res: " + fireResistance);
+			//Debug.Log("Fire Dmg res: " + fireResistance);
 			damage -= fireResistance.finalValue;
 		}
 		if (damageType == IDamagable.DamageType.isIceDamageType)
 		{
-			Debug.Log("Ice Dmg res: " + iceResistance);
+			//Debug.Log("Ice Dmg res: " + iceResistance);
 			damage -= iceResistance.finalValue;
 		}
 		else
 		{
-			Debug.Log("Physical Dmg res: " + physicalResistance);
+			//Debug.Log("Physical Dmg res: " + physicalResistance);
 			damage -= physicalResistance.finalValue;
 		}
 
@@ -193,7 +189,7 @@ public class EntityStats : MonoBehaviour
 			Destroy(gameObject);
 		}
 		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm
-		Debug.Log("health lost after resistance: " + damage + " | current health: " + currentHealth);
+		//Debug.Log("health lost after resistance: " + damage + " | current health: " + currentHealth);
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -221,12 +217,8 @@ public class EntityStats : MonoBehaviour
 	}
 	public void IncreaseMana(float manaValue, bool isPercentageValue)
 	{
-		Debug.Log("mana amount: " + manaValue);
-
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue / 100 * manaValue;
-
-		Debug.Log("mana amount: " + manaValue);
+			manaValue = maxMana.finalValue * manaValue;
 
 		currentMana = (int)(currentMana + manaValue);
 		if (currentMana > maxMana.finalValue)
@@ -237,7 +229,7 @@ public class EntityStats : MonoBehaviour
 	public void DecreaseMana(float manaValue, bool isPercentageValue)
 	{
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue / 100 * manaValue;
+			manaValue = maxMana.finalValue * manaValue;
 
 		currentMana = (int)(currentMana - manaValue);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
@@ -473,5 +465,13 @@ public class EntityStats : MonoBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+	}
+
+	//Checks
+	public bool IsPlayerEntity()
+	{
+		if (entityBaseStats.isPlayer)
+			return true;
+		else return false;
 	}
 }

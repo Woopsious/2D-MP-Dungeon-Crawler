@@ -22,6 +22,8 @@ public class PlayerController : MonoBehaviour
 	private Vector2 moveDirection = Vector2.zero;
 	public float speed;
 
+	public event Action<EntityStats> OnNewTargetSelected;
+
 	private void Awake()
 	{
 		Initilize();
@@ -31,6 +33,7 @@ public class PlayerController : MonoBehaviour
 	{
 		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange; //would be in OnEnable but i get null ref
 		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
+		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		playerStats.entityLevel = 20;
 		playerStats.CalculateBaseStats();
@@ -51,6 +54,7 @@ public class PlayerController : MonoBehaviour
 
 		playerStats.OnHealthChangeEvent -= PlayerHotbarUi.Instance.OnHealthChange;
 		playerStats.OnManaChangeEvent -= PlayerHotbarUi.Instance.OnManaChange;
+		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 		SaveManager.OnGameLoad -= ReloadPlayerInfo;
 	}
 
@@ -102,6 +106,23 @@ public class PlayerController : MonoBehaviour
 			animator.SetBool("isIdle", false);
 	}
 
+	//player select targeting
+	public void CheckForSelectableTarget()
+	{
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+
+		if (hit.collider != null && hit.collider.GetComponent<EntityStats>() != null)
+		{
+			EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
+			if (!entityStats.IsPlayerEntity())
+			{
+				Debug.Log("new target selected");
+				//OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
+				OnNewTargetSelected?.Invoke(entityStats);
+			}
+		}
+	}
+
 	/// <summary>
 	/// Below are all player actions
 	/// </summary>
@@ -109,6 +130,8 @@ public class PlayerController : MonoBehaviour
 	//player actions
 	private void OnMainAttack()
 	{
+		CheckForSelectableTarget();
+
 		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf) return;
 		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 	}
@@ -133,6 +156,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityOne()
 	{
+		playerStats.DecreaseMana(0.33f , true);
+
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats, this);
 	}

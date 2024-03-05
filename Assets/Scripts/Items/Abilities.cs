@@ -66,20 +66,29 @@ public class Abilities : MonoBehaviour
 
 	public void GetAbilityType(EntityStats entityStats, PlayerController playerController)
 	{
-		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.isHealthRestoration)
+		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.isHealthRestoration) //restore self
 			RestoreHealth(entityStats);
 		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.isManaRestoration)
 			RestoreMana(entityStats);
 
+		//add support for DOT status effects
+		//add support for AOE spells and abilities
+		//add support instantiate directional spells/skills
+
+		//apply buffs to self
 		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 			entityStats.ApplyStatusEffect(abilityBaseRef);
+
+		//apply buffs to selected targets
+
+		//apply buffs to friendlies in AOE
+
+		//instantiate directional spells/skills
 	}
 
 	//health/mana restoration function
 	public void RestoreHealth(EntityStats entityStats)
 	{
-		Debug.Log("Restore Health");
-
 		entityStats.OnHeal(abilityBaseRef.valuePercentage, true);
 	}
 	public void RestoreMana(EntityStats entityStats)

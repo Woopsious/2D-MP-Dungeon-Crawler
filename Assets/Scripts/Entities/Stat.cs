@@ -8,15 +8,19 @@ public class Stat
 	public bool isPercentageStat;
 	public int baseValue;
 	public int finalValue;
+	public float basePercentageValue;
 	public float finalPercentageValue;
 
 	public int equipmentValue;
 	public float equipmentPercentageValue;
 	public List<float> percentageBonuses = new List<float>();
 
-	public void SetBaseValue(int value)
+	public void SetBaseValue(float value)
 	{
-		baseValue = value;
+		if (isPercentageStat)
+			basePercentageValue = value;
+		else
+			baseValue = (int)value;
 		CalcFinalValue();
 	}
 
@@ -50,7 +54,7 @@ public class Stat
 	{
 		if (isPercentageStat)
 		{
-			float percentageValue = equipmentPercentageValue + baseValue;
+			float percentageValue = equipmentPercentageValue + basePercentageValue;
 			percentageBonuses.ForEach(x => percentageValue += x);
 			finalPercentageValue = equipmentPercentageValue + percentageValue;
 		}

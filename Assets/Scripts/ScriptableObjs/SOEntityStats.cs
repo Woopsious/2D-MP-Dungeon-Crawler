@@ -6,6 +6,7 @@ public class SOEntityStats : ScriptableObject
 {
 	public string entityName;
 	public Sprite sprite;
+	public bool isPlayer;
 
 	public int expOnDeath;
 
@@ -20,7 +21,7 @@ public class SOEntityStats : ScriptableObject
 
 	[Header("Mana")]
 	public int maxMana;
-	public int manaRegenPercentage;
+	public float manaRegenPercentage;
 	public float manaRegenCooldown;
 
 	[Header("Possible Weapons")]

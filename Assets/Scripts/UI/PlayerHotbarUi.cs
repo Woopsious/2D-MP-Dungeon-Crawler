@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -15,7 +17,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject consumableSlotOne;
 	public GameObject consumableSlotTwo;
 
-	[Header("equipped Consumables")]
+	[Header("Equipped Consumables")]
 	public Consumables equippedConsumableOne;
 	public Consumables equippedConsumableTwo;
 
@@ -27,7 +29,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject abilitySlotFour;
 	public GameObject abilitySlotFive;
 
-	[Header("equipped Abilities")]
+	[Header("Equipped Abilities")]
 	public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
 	public Abilities equippedAbilityOne;
 	public Abilities equippedAbilityTwo;
@@ -35,14 +37,25 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Abilities equippedAbilityFour;
 	public Abilities equippedAbilityFive;
 
+	[Header("Selected Target Ui")]
+	public bool hasSelectedTarget;
+	public GameObject selectedTargetPanelUi;
+	public Image selectedTargetHealthBarFiller;
+	public TMP_Text selectedTargetHealth;
+	public Image selectedTargetManaBarFiller;
+	public TMP_Text selectedTargetMana;
+
 	[Header("ExpBar")]
 	public Image expBarFiller;
+	public TMP_Text expBarText;
 
 	[Header("HealthBar")]
 	public Image healthBarFiller;
+	public TMP_Text HealthBarText;
 
 	[Header("ManaBar")]
 	public Image manaBarFiller;
+	public TMP_Text manaBarText;
 
 	public void Awake()
 	{
@@ -69,6 +82,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		foreach (GameObject slot in AbilitySlots)
 			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+
+		selectedTargetPanelUi.SetActive(false);
 	}
 
 	//reset/clear any equipped abilities from ui
@@ -179,19 +194,58 @@ public class PlayerHotbarUi : MonoBehaviour
 		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
 	}
 
+	//UI TargetSelection
+	public void OnNewTargetSelected(EntityStats entityStats)
+	{
+		if (!selectedTargetPanelUi.activeInHierarchy)
+			selectedTargetPanelUi.SetActive(true);
+
+		entityStats.OnDeathEvent += OnTargetDeathUnSelect;
+		entityStats.OnHealthChangeEvent += OnTargetHealthChange;
+		entityStats.OnManaChangeEvent += OnManaChange;
+
+		OnTargetHealthChange(entityStats.maxHealth.finalValue, entityStats.currentHealth);
+		OnTargetManaChange(entityStats.maxMana.finalValue, entityStats.currentMana);
+	}
+	public void OnTargetHealthChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedTargetHealthBarFiller.fillAmount = percentage;
+		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	public void OnTargetManaChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedTargetHealthBarFiller.fillAmount = percentage;
+		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	public void OnTargetDeathUnSelect(GameObject obj)
+	{
+		if (selectedTargetPanelUi.activeInHierarchy)
+			selectedTargetPanelUi.SetActive(false);
+
+		obj.GetComponent<EntityStats>().OnDeathEvent -= OnTargetDeathUnSelect;
+		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;
+		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnManaChange;
+	}
+
+	//UI Player Updates
 	public void OnExperienceChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		expBarFiller.fillAmount = percentage;
+		expBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
 	public void OnHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		healthBarFiller.fillAmount = percentage;
+		HealthBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
 	public void OnManaChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		manaBarFiller.fillAmount = percentage;
+		manaBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
 }
