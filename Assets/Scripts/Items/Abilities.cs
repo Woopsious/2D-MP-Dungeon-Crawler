@@ -14,6 +14,7 @@ public class Abilities : MonoBehaviour
 
 	public string abilityName;
 	public string abilityDescription;
+	public Image abilityImage;
 	public Sprite abilitySprite;
 
 	[Header("Ability Dynamic Info")]
@@ -21,6 +22,9 @@ public class Abilities : MonoBehaviour
 	public bool isOnCooldown;
 	public float abilityCooldownTimer;
 	public float abilityDuration;
+
+	[Header("Spell Cost")]
+	public int manaCost;
 
 	public ItemType itemType;
 	public enum ItemType
@@ -36,32 +40,49 @@ public class Abilities : MonoBehaviour
 		abilitySprite = abilityBaseRef.abilitySprite;
 		itemType = ItemType.isAbility;
 
-		abilityCooldownTimer = abilityBaseRef.abilityCooldown;
+		abilityCooldownTimer = 0;
+	}
+
+	private void Update()
+	{
+		if (!isOnCooldown) return;
+
+		abilityCooldownTimer += Time.deltaTime;
+		abilityImage.fillAmount = abilityCooldownTimer / abilityBaseRef.abilityCooldown;
+
+		if (abilityCooldownTimer >= abilityBaseRef.abilityCooldown)
+		{
+			isOnCooldown = false;
+			abilityImage.fillAmount = 1;
+			abilityCooldownTimer = 0;
+		}
 	}
 
 	public void PlayerUseAbility(EntityStats entityStats, PlayerController playerController)
 	{
-		GetAbilityType(entityStats, playerController);
+		if (isOnCooldown)
+		{
+			Debug.Log(abilityName + " on cooldown");
+			return;
+		}
 
+		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetStatModifier(entityStats.entityLevel, 0));
+		if (entityStats.currentMana < totalManaCost)
+		{
+			Debug.Log("Not enough mana for " + abilityName);
+			return;
+		}
+
+		GetAbilityType(entityStats, playerController);
+		
 		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
-		StartCoroutine(AbilityCooldown());
+		isOnCooldown = true;
 	}
 
 	public void EntityUseAbility(EntityStats entityStats)
 	{
 		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
-		StartCoroutine(AbilityCooldown());
-	}
-
-	private IEnumerator AbilityCooldown()
-	{
 		isOnCooldown = true;
-		abilityCooldownTimer -= Time.deltaTime;
-
-		yield return new WaitForSeconds(abilityBaseRef.abilityCooldown);
-
-		isOnCooldown = false;
-		abilityCooldownTimer = abilityBaseRef.abilityCooldown;
 	}
 
 	public void GetAbilityType(EntityStats entityStats, PlayerController playerController)

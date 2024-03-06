@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Back Stab
   Description: Back stab your enemy dealing crititcal damage
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 20
   requiresTarget: 1
-  statusEffectType: 0
   canOnlyTargetSelf: 0
+  isHealthRestoration: 0
+  isManaRestoration: 0
+  statusEffectType: 0
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
@@ -31,3 +33,5 @@ MonoBehaviour:
   isSpell: 0
   manaCost: 0
   minPercentCost: 0
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

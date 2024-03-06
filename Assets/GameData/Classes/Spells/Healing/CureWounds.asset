@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Cure Wounds
   Description: Heal light wounds for yourself or others
-  abilitySprite: {fileID: 0}
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 5
   requiresTarget: 1

@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Bless
   Description: Bless yourself or friends to increase damage
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   requiresTarget: 1
-  statusEffectType: 3
   canOnlyTargetSelf: 0
+  isHealthRestoration: 0
+  isManaRestoration: 0
+  statusEffectType: 3
   isAOE: 0
   isDOT: 1
   abilityDuration: 10
@@ -31,3 +33,5 @@ MonoBehaviour:
   isSpell: 1
   manaCost: 20
   minPercentCost: 15
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

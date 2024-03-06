@@ -99,6 +99,10 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		isStackable = false;
 		maxStackCount = 1;
 		currentStackCount = 1;
+
+		ability.abilityImage = uiItemImage;
+		uiItemImage.type = Image.Type.Filled;
+		uiItemImage.fillMethod = Image.FillMethod.Radial360;
 	}
 	private ClassRestriction GetClassRestriction()
 	{

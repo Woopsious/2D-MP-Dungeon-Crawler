@@ -46,6 +46,20 @@ public class Utilities
 		return itemLvl - 4;
 	}
 
+	public static float GetStatModifier(int level, IGetStatModifier.Rarity rarity)
+	{
+		float levelModifier;
+		if (level == 1)  //get level modifier
+			levelModifier = 1;
+		else
+			levelModifier = 1 + (level / 10f);
+
+		if (rarity == IGetStatModifier.Rarity.isLegendary) { return levelModifier += 0.8f; } //get rarity modifier
+		if (rarity == IGetStatModifier.Rarity.isEpic) { return levelModifier += 0.4f; }
+		if (rarity == IGetStatModifier.Rarity.isRare) { return levelModifier += 0.2f; }
+		else { return levelModifier += 0; }
+	}
+
 	//check if current active scene == this scene name
 	public static bool GetCurrentlyActiveScene(string sceneName)
 	{

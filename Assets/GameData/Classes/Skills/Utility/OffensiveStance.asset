@@ -15,12 +15,14 @@ MonoBehaviour:
   Name: Offensive Stance
   Description: Take an Offensive stance ready to strike your enemies and temporarily
     boosting your own damage
-  uiItemImage: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   requiresTarget: 1
-  statusEffectType: 3
   canOnlyTargetSelf: 1
+  isHealthRestoration: 0
+  isManaRestoration: 0
+  statusEffectType: 3
   isAOE: 0
   isDOT: 1
   abilityDuration: 10
@@ -32,3 +34,5 @@ MonoBehaviour:
   isSpell: 0
   manaCost: 0
   minPercentCost: 0
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

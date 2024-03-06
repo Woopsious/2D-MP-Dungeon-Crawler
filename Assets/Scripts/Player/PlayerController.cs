@@ -114,6 +114,10 @@ public class PlayerController : MonoBehaviour
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 		if (hit.collider == null)
 			return;
+		if (hit.collider != null)
+		{
+			Debug.Log("Name of Obj hit: " + hit.collider.gameObject.name);
+		}
 		if (hit.collider.GetComponent<EntityStats>() == null)
 			return;
 

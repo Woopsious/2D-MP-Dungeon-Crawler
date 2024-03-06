@@ -148,7 +148,6 @@ public class PlayerInventoryUi : MonoBehaviour
 			ability.abilitySprite = itemData.abilityBaseRef.abilitySprite;
 			ability.isEquippedAbility = false;
 			ability.isOnCooldown = false;
-			ability.abilityCooldownTimer = itemData.abilityBaseRef.abilityCooldown;
 		}
 	}
 
@@ -198,7 +197,6 @@ public class PlayerInventoryUi : MonoBehaviour
 		ability.abilitySprite = newAbility.abilitySprite;
 		ability.isEquippedAbility = false;
 		ability.isOnCooldown = false;
-		ability.abilityCooldownTimer = newAbility.abilityCooldown;
 	}
 
 	//ITEMS
