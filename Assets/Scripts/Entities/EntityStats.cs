@@ -99,7 +99,7 @@ public class EntityStats : MonoBehaviour
 	private void Update()
 	{
 		PassiveManaRegen();
-		StatusEffectCountdownTimers();
+		//StatusEffectCountdownTimers();
 	}
 
 	public void Initilize()
@@ -265,6 +265,8 @@ public class EntityStats : MonoBehaviour
 		GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
 		Abilities statusEffect = go.GetComponent<Abilities>();
 		statusEffect.abilityBaseRef = newStatusEffect;
+		statusEffect.entityStatusEffectIsAppliedTo = this;
+		statusEffect.statusEffectActive = true;
 		statusEffect.Initilize();
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
@@ -309,6 +311,7 @@ public class EntityStats : MonoBehaviour
 
 		currentStatusEffects.Remove(statusEffect);
 	}
+	/*
 	public void StatusEffectCountdownTimers()
 	{
 		if (currentStatusEffects.Count == 0)
@@ -316,12 +319,13 @@ public class EntityStats : MonoBehaviour
 
 		for (int i = currentStatusEffects.Count - 1; i >= 0; i--)
 		{
-			currentStatusEffects[i].abilityDuration -= Time.deltaTime;
+			currentStatusEffects[i].abilityDurationTimer += Time.deltaTime;
 
 			if (currentStatusEffects[i].abilityDuration <= 0)
 				UnApplyStatusEffect(currentStatusEffects[i]);
 		}
 	}
+	*/
 
 	/// <summary>
 	/// recalculate stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for example

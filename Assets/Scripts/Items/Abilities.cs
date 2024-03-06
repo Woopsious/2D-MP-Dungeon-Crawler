@@ -9,6 +9,8 @@ using UnityEngine.UI;
 
 public class Abilities : MonoBehaviour
 {
+	public EntityStats entityStatusEffectIsAppliedTo;
+
 	[Header("Ability Info")]
 	public SOClassAbilities abilityBaseRef;
 
@@ -21,7 +23,8 @@ public class Abilities : MonoBehaviour
 	public bool isEquippedAbility;
 	public bool isOnCooldown;
 	public float abilityCooldownTimer;
-	public float abilityDuration;
+	public bool statusEffectActive;
+	public float abilityDurationTimer;
 
 	[Header("Spell Cost")]
 	public int manaCost;
@@ -45,6 +48,11 @@ public class Abilities : MonoBehaviour
 
 	private void Update()
 	{
+		AbilityCooldownTimer();
+		AbilityDurationTimer();
+	}
+	public void AbilityCooldownTimer()
+	{
 		if (!isOnCooldown) return;
 
 		abilityCooldownTimer += Time.deltaTime;
@@ -55,6 +63,19 @@ public class Abilities : MonoBehaviour
 			isOnCooldown = false;
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
+		}
+	}
+	public void AbilityDurationTimer()
+	{
+		if (!statusEffectActive) return;
+
+		abilityDurationTimer += Time.deltaTime;
+
+		if (abilityDurationTimer >= abilityBaseRef.abilityDuration)
+		{
+			entityStatusEffectIsAppliedTo.UnApplyStatusEffect(this);
+			abilityCooldownTimer = 0;
+			Destroy(gameObject);
 		}
 	}
 
