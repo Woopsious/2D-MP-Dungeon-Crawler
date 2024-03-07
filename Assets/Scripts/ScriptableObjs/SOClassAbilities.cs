@@ -16,12 +16,11 @@ public class SOClassAbilities : SOClassUnlocks
 
 	[Header("Ability Info")]
 	public float abilityCooldown;
+	public bool isOffensiveAbility;
 	[Tooltip("forces ability to need specific target to be applied to. EG: healing spells/skills")]
 	public bool requiresTarget;
 	[Tooltip("EG: Knight/Warrior healing skills")]
 	public bool canOnlyTargetSelf;
-	public bool isHealthRestoration;
-	public bool isManaRestoration;
 
 	[Header("Status Effects Settings")]
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
@@ -48,7 +47,7 @@ public class SOClassAbilities : SOClassUnlocks
 	public DamageType damageType;
 	public enum DamageType
 	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
+		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing, isMana
 	}
 
 	[Header("Spell Settings")]

@@ -10,18 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: OffensiveStance
+  m_Name: Curse
   m_EditorClassIdentifier: 
-  Name: Offensive Stance
-  Description: Take an Offensive stance ready to strike your enemies and temporarily
-    boosting your own damage
+  Name: Curse
+  Description: Curse your enemy weakening there damage
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
+  isOffensiveAbility: 1
   requiresTarget: 1
-  canOnlyTargetSelf: 1
-  isHealthRestoration: 0
-  isManaRestoration: 0
+  canOnlyTargetSelf: 0
   statusEffectType: 3
   isAOE: 0
   isDOT: 1
@@ -29,10 +27,10 @@ MonoBehaviour:
   isProjectile: 0
   percentageBased: 1
   value: 0
-  valuePercentage: 0.05
+  valuePercentage: -0.05
   damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
+  isSpell: 1
+  manaCost: 20
+  minPercentCost: 15
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

@@ -17,10 +17,9 @@ MonoBehaviour:
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 15
+  isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
-  isHealthRestoration: 1
-  isManaRestoration: 0
   statusEffectType: 0
   isAOE: 1
   isDOT: 0
@@ -29,7 +28,7 @@ MonoBehaviour:
   percentageBased: 1
   value: 0
   valuePercentage: 0.2
-  damageType: 0
+  damageType: 4
   isSpell: 1
   manaCost: 25
   minPercentCost: 20

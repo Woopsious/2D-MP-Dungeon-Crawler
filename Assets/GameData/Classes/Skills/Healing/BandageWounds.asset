@@ -16,11 +16,10 @@ MonoBehaviour:
   Description: A quick bandage to use on your wounds
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 20
+  abilityCooldown: 15
+  isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
-  isHealthRestoration: 1
-  isManaRestoration: 0
   statusEffectType: 0
   isAOE: 0
   isDOT: 0
@@ -28,8 +27,8 @@ MonoBehaviour:
   isProjectile: 0
   percentageBased: 1
   value: 0
-  valuePercentage: 0.08
-  damageType: 0
+  valuePercentage: 0.1
+  damageType: 4
   isSpell: 0
   manaCost: 0
   minPercentCost: 0

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,8 +24,6 @@ public class Abilities : MonoBehaviour
 	public bool isEquippedAbility;
 	public bool isOnCooldown;
 	public float abilityCooldownTimer;
-	public bool statusEffectActive;
-	public float abilityDurationTimer;
 
 	[Header("Spell Cost")]
 	public int manaCost;
@@ -49,7 +48,6 @@ public class Abilities : MonoBehaviour
 	private void Update()
 	{
 		AbilityCooldownTimer();
-		AbilityDurationTimer();
 	}
 	public void AbilityCooldownTimer()
 	{
@@ -63,19 +61,6 @@ public class Abilities : MonoBehaviour
 			isOnCooldown = false;
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
-		}
-	}
-	public void AbilityDurationTimer()
-	{
-		if (!statusEffectActive) return;
-
-		abilityDurationTimer += Time.deltaTime;
-
-		if (abilityDurationTimer >= abilityBaseRef.abilityDuration)
-		{
-			entityStatusEffectIsAppliedTo.UnApplyStatusEffect(this);
-			abilityCooldownTimer = 0;
-			Destroy(gameObject);
 		}
 	}
 
@@ -94,7 +79,8 @@ public class Abilities : MonoBehaviour
 			return;
 		}
 
-		GetAbilityType(entityStats, playerController);
+		if (!TryGetAbilityType(entityStats, playerController))
+			return;
 		
 		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
 		isOnCooldown = true;
@@ -106,25 +92,59 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = true;
 	}
 
-	public void GetAbilityType(EntityStats entityStats, PlayerController playerController)
+	public bool TryGetAbilityType(EntityStats entityStats, PlayerController playerController)
 	{
-		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.isHealthRestoration) //restore self
-			RestoreHealth(entityStats);
-		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.isManaRestoration)
-			RestoreMana(entityStats);
-
-		//add support for DOT status effects
-		//add support for AOE spells and abilities
-		//add support instantiate directional spells/skills
+		if (abilityBaseRef.canOnlyTargetSelf && !abilityBaseRef.isOffensiveAbility)
+		{
+			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)
+			{
+				RestoreHealth(entityStats);
+				return true;
+			}
+			else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
+			{
+				RestoreMana(entityStats);
+				return true;
+			}
+		}
 
 		//apply buffs to self
 		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		{
 			entityStats.ApplyStatusEffect(abilityBaseRef);
+			return true;
+		}
 
-		//apply buffs to selected targets
+		//apply buffs to friendly selected targets
+		if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
+		{
+			//apply buff to self if not an offensive buff && has no friendly target selected
+			if (!abilityBaseRef.isOffensiveAbility) //add check for friendly selected target when MP is added
+			{
+				entityStats.ApplyStatusEffect(abilityBaseRef);
+				return true;
+			}
+		}
+		//apply debuffs to enemy selected targets
+		if (abilityBaseRef.requiresTarget && abilityBaseRef.isOffensiveAbility)
+		{
+			if (PlayerHotbarUi.Instance.selectedTarget == null)
+			{
+				Debug.Log("No Enemy Target selected");
+				return false;
+			}
+			else
+			{
+				entityStats.GetComponent<PlayerController>().selectedTarget.ApplyStatusEffect(abilityBaseRef);
+				return true;
+			}
+		}
 
+		else return false;
+
+		//add support for AOE spells and abilities
+		//add support instantiate directional spells/skills
 		//apply buffs to friendlies in AOE
-
 		//instantiate directional spells/skills
 	}
 

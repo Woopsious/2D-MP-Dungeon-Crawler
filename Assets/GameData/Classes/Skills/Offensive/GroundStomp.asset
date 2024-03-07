@@ -10,28 +10,27 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: Mockery
+  m_Name: GroundStomp
   m_EditorClassIdentifier: 
-  Name: Mockery
-  Description: Mock your enemy lowering there resistances
+  Name: Ground Stomp
+  Description: Stomp on the ground, knocking back all enemies close to you
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 30
-  requiresTarget: 1
-  canOnlyTargetSelf: 0
-  isHealthRestoration: 0
-  isManaRestoration: 0
-  statusEffectType: 2
-  isAOE: 0
-  isDOT: 1
-  abilityDuration: 10
+  abilityCooldown: 20
+  isOffensiveAbility: 1
+  requiresTarget: 0
+  canOnlyTargetSelf: 1
+  statusEffectType: 0
+  isAOE: 1
+  isDOT: 0
+  abilityDuration: 0
   isProjectile: 0
-  percentageBased: 1
-  value: 0
-  valuePercentage: -0.05
+  percentageBased: 0
+  value: 20
+  valuePercentage: 0
   damageType: 0
-  isSpell: 1
-  manaCost: 20
-  minPercentCost: 15
+  isSpell: 0
+  manaCost: 0
+  minPercentCost: 0
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

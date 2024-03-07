@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\Entities\EnemyIdleState.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityEquipmentHandler.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
@@ -84,15 +85,16 @@
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Items\Abilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
     <Compile Include="Assets\Scripts\Interactables.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AbilityDirectional.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
+    <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
@@ -109,6 +111,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />
     <Compile Include="Assets\Scripts\Entities\Stat.cs" />
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>
   <ItemGroup>

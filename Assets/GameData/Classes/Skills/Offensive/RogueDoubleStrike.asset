@@ -17,10 +17,9 @@ MonoBehaviour:
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 15
+  isOffensiveAbility: 1
   requiresTarget: 1
   canOnlyTargetSelf: 0
-  isHealthRestoration: 0
-  isManaRestoration: 0
   statusEffectType: 0
   isAOE: 0
   isDOT: 0

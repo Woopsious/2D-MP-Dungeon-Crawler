@@ -10,25 +10,24 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: GroundStomp
+  m_Name: DefensiveStance
   m_EditorClassIdentifier: 
-  Name: Ground Stomp
-  Description: Stomp on the ground, knocking back all enemies close to you
+  Name: Defensive Stance
+  Description: Take a defence stance to temporarily boost your defences
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 20
-  requiresTarget: 0
+  abilityCooldown: 30
+  isOffensiveAbility: 0
+  requiresTarget: 1
   canOnlyTargetSelf: 1
-  isHealthRestoration: 0
-  isManaRestoration: 0
-  statusEffectType: 0
-  isAOE: 1
-  isDOT: 0
-  abilityDuration: 0
+  statusEffectType: 2
+  isAOE: 0
+  isDOT: 1
+  abilityDuration: 10
   isProjectile: 0
-  percentageBased: 0
-  value: 20
-  valuePercentage: 0
+  percentageBased: 1
+  value: 0
+  valuePercentage: 0.1
   damageType: 0
   isSpell: 0
   manaCost: 0

@@ -9,11 +9,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2607685961111196810}
-  - component: {fileID: 1099286623663451221}
+  - component: {fileID: 2271628542373634576}
   - component: {fileID: 269759268878753369}
   - component: {fileID: 3511769884026748060}
   m_Layer: 0
-  m_Name: StatusEffect
+  m_Name: StatusEffects
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -28,13 +28,13 @@ Transform:
   m_GameObject: {fileID: 7265944562566003032}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -13.610531, y: -1.8142811, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1099286623663451221
+--- !u!114 &2271628542373634576
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -43,18 +43,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7265944562566003032}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36b0078b63118b54b9e7273f2f0cd45d, type: 3}
+  m_Script: {fileID: 11500000, guid: 8da3879113555054bb68cd2b3bebee55, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityBaseRef: {fileID: 0}
-  abilityName: 
-  abilityDescription: 
-  abilitySprite: {fileID: 0}
-  isEquippedAbility: 0
-  isOnCooldown: 0
-  abilityCooldownTimer: 0
-  abilityDuration: 0
-  itemType: 0
 --- !u!198 &269759268878753369
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -72,7 +63,7 @@ ParticleSystem:
   emitterVelocityMode: 1
   looping: 1
   prewarm: 0
-  playOnAwake: 0
+  playOnAwake: 1
   useUnscaledTime: 0
   autoRandomSeed: 1
   startDelay:

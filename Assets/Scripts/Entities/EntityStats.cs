@@ -43,7 +43,7 @@ public class EntityStats : MonoBehaviour
 	[Header("Status Effects")]
 	public GameObject statusEffectsPrefab;
 	public GameObject statusEffectsParentObj;
-	public List<Abilities> currentStatusEffects;
+	public List<AbilityStatusEffect> currentStatusEffects;
 
 	public event Action<float, bool> OnRecieveHealingEvent;
 	public event Action<int, IDamagable.DamageType> OnRecieveDamageEvent;
@@ -263,11 +263,8 @@ public class EntityStats : MonoBehaviour
 	public void ApplyStatusEffect(SOClassAbilities newStatusEffect)
 	{
 		GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
-		Abilities statusEffect = go.GetComponent<Abilities>();
-		statusEffect.abilityBaseRef = newStatusEffect;
-		statusEffect.entityStatusEffectIsAppliedTo = this;
-		statusEffect.statusEffectActive = true;
-		statusEffect.Initilize();
+		AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
+		statusEffect.Initilize(newStatusEffect, this);
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
@@ -277,7 +274,12 @@ public class EntityStats : MonoBehaviour
 			iceResistance.AddPercentageValue(newStatusEffect.valuePercentage);
 		}
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			mainWeaponDamageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+		{
+			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+		}
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
 		{
@@ -289,43 +291,33 @@ public class EntityStats : MonoBehaviour
 
 		currentStatusEffects.Add(statusEffect);
 	}
-	public void UnApplyStatusEffect(Abilities statusEffect)
+	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect, SOClassAbilities abilityBaseRef)
 	{
-		if (statusEffect.abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.RemovePercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			poisonResistance.RemovePercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			fireResistance.RemovePercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			iceResistance.RemovePercentageValue(statusEffect.abilityBaseRef.valuePercentage);
+			physicalResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			poisonResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			fireResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			iceResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
 		}
-		if (statusEffect.abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			mainWeaponDamageModifier.AddPercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-
-		if (statusEffect.abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
+		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.AddPercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			poisonDamagePercentageModifier.AddPercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			fireDamagePercentageModifier.AddPercentageValue(statusEffect.abilityBaseRef.valuePercentage);
-			iceDamagePercentageModifier.AddPercentageValue(statusEffect.abilityBaseRef.valuePercentage);
+			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+		}
+
+		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
+		{
+			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
 		}
 
 		currentStatusEffects.Remove(statusEffect);
 	}
-	/*
-	public void StatusEffectCountdownTimers()
-	{
-		if (currentStatusEffects.Count == 0)
-			return;
-
-		for (int i = currentStatusEffects.Count - 1; i >= 0; i--)
-		{
-			currentStatusEffects[i].abilityDurationTimer += Time.deltaTime;
-
-			if (currentStatusEffects[i].abilityDuration <= 0)
-				UnApplyStatusEffect(currentStatusEffects[i]);
-		}
-	}
-	*/
 
 	/// <summary>
 	/// recalculate stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for example

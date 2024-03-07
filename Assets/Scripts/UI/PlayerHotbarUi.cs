@@ -39,7 +39,10 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	[Header("Selected Target Ui")]
 	public EntityStats selectedTarget;
-	public GameObject selectedTargetPanelUi;
+	public GameObject unSelectedTargetUi;
+	public GameObject selectedTargetUi;
+	public TMP_Text selectedTargetUiName;
+	public Image selectedTargetUiImage;
 	public Image selectedTargetHealthBarFiller;
 	public TMP_Text selectedTargetHealth;
 	public Image selectedTargetManaBarFiller;
@@ -83,7 +86,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		foreach (GameObject slot in AbilitySlots)
 			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
 
-		selectedTargetPanelUi.SetActive(false);
+		selectedTargetUi.SetActive(false);
 	}
 
 	//reset/clear any equipped abilities from ui
@@ -197,8 +200,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	//UI TargetSelection
 	public void OnNewTargetSelected(EntityStats entityStats)
 	{
-		if (!selectedTargetPanelUi.activeInHierarchy)
-			selectedTargetPanelUi.SetActive(true);
+		if (!selectedTargetUi.activeInHierarchy)
+			selectedTargetUi.SetActive(true);
+		if (unSelectedTargetUi.activeInHierarchy)
+			unSelectedTargetUi.SetActive(false);
 
 		if (selectedTarget != null)
 		{
@@ -208,6 +213,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 
 		selectedTarget = entityStats;
+		selectedTargetUiImage.sprite = entityStats.entityBaseStats.sprite;
+		selectedTargetUiName.text = entityStats.entityBaseStats.entityName;
 		selectedTarget.OnDeathEvent += OnTargetDeathUnSelect;
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnManaChange;
@@ -229,8 +236,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	public void OnTargetDeathUnSelect(GameObject obj)
 	{
-		if (selectedTargetPanelUi.activeInHierarchy)
-			selectedTargetPanelUi.SetActive(false);
+		if (selectedTargetUi.activeInHierarchy)
+			selectedTargetUi.SetActive(false);
+		if (!unSelectedTargetUi.activeInHierarchy)
+			unSelectedTargetUi.SetActive(true);
 
 		obj.GetComponent<EntityStats>().OnDeathEvent -= OnTargetDeathUnSelect;
 		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;

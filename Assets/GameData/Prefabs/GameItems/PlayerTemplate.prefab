@@ -355,6 +355,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -364,6 +365,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -373,6 +375,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -381,6 +384,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -389,6 +393,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -397,6 +402,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -405,6 +411,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -413,6 +420,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -421,6 +429,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -429,6 +438,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -437,6 +447,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -445,6 +456,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -453,6 +465,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -461,6 +474,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -497,6 +511,7 @@ MonoBehaviour:
   playerCamera: {fileID: 2531859271035774187}
   playerEquipmentHandler: {fileID: 0}
   speed: 10
+  selectedTarget: {fileID: 0}
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -570,6 +585,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
+  debugSpawnStartingItems: 0
   hasRecievedStartingItems: 0
   startingItems:
   - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
@@ -908,7 +924,7 @@ Transform:
   m_GameObject: {fileID: 7651319034662892506}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 25.79, y: 5.0800004, z: -0.20775527}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
