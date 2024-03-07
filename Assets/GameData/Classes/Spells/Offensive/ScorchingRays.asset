@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: ScorchingRay
+  m_Name: ScorchingRays
   m_EditorClassIdentifier: 
   Name: Scorching Rays
   Description: Launch 3 rays of fire at enemies
@@ -24,10 +24,11 @@ MonoBehaviour:
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
-  isProjectile: 0
-  percentageBased: 0
-  value: 20
-  valuePercentage: 0
+  isProjectile: 1
+  projectileSpeed: 25
+  isDamagePercentageBased: 0
+  damageValue: 20
+  damageValuePercentage: 0
   damageType: 3
   isSpell: 1
   manaCost: 15

@@ -46,7 +46,7 @@ public class EntityStats : MonoBehaviour
 	public List<AbilityStatusEffect> currentStatusEffects;
 
 	public event Action<float, bool> OnRecieveHealingEvent;
-	public event Action<int, IDamagable.DamageType> OnRecieveDamageEvent;
+	public event Action<float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
@@ -99,7 +99,6 @@ public class EntityStats : MonoBehaviour
 	private void Update()
 	{
 		PassiveManaRegen();
-		//StatusEffectCountdownTimers();
 	}
 
 	public void Initilize()
@@ -134,7 +133,7 @@ public class EntityStats : MonoBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 	}
-	public void OnHit(int damage, IDamagable.DamageType damageType, bool isDestroyedInOneHit)
+	public void OnHit(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
 	{
         if (isDestroyedInOneHit)
         {
@@ -142,36 +141,48 @@ public class EntityStats : MonoBehaviour
 			return;
         }
 
-		OnRecieveDamageEvent?.Invoke(damage, damageType);
+		OnRecieveDamageEvent?.Invoke(damage, damageType, isPercentageValue);
 	}
-	private void RecieveDamage(int damage, IDamagable.DamageType damageType)
+	private void RecieveDamage(float damage, IDamagable.DamageType damageType, bool isPercentageValue)
 	{
 		//Debug.Log(gameObject.name + " recieved :" + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
 		{
 			//Debug.Log("Poison Dmg res: " + poisonResistance);
-			damage -= poisonResistance.finalValue;
+			if (isPercentageValue)
+				damage = (maxHealth.finalValue * damage) - poisonResistance.finalValue;
+			else
+				damage -= poisonResistance.finalValue;
 		}
 		if (damageType == IDamagable.DamageType.isFireDamageType)
 		{
 			//Debug.Log("Fire Dmg res: " + fireResistance);
-			damage -= fireResistance.finalValue;
+			if (isPercentageValue)
+				damage = (maxHealth.finalValue * damage) - fireResistance.finalValue;
+			else
+				damage -= fireResistance.finalValue;
 		}
 		if (damageType == IDamagable.DamageType.isIceDamageType)
 		{
 			//Debug.Log("Ice Dmg res: " + iceResistance);
-			damage -= iceResistance.finalValue;
+			if (isPercentageValue)
+				damage = (maxHealth.finalValue * damage) - iceResistance.finalValue;
+			else
+				damage -= iceResistance.finalValue;
 		}
 		else
 		{
 			//Debug.Log("Physical Dmg res: " + physicalResistance);
-			damage -= physicalResistance.finalValue;
+			if (isPercentageValue)
+				damage = (maxHealth.finalValue * damage) - physicalResistance.finalValue;
+			else
+				damage -= physicalResistance.finalValue;
 		}
 
-		if (damage < 2) //always deal 2 damage
-			damage = 2;
+		if (damage < 3) //always deal 3 damage
+			damage = 3;
 
-		currentHealth -= damage;
+		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
@@ -268,25 +279,25 @@ public class EntityStats : MonoBehaviour
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.AddPercentageValue(newStatusEffect.valuePercentage);
-			poisonResistance.AddPercentageValue(newStatusEffect.valuePercentage);
-			fireResistance.AddPercentageValue(newStatusEffect.valuePercentage);
-			iceResistance.AddPercentageValue(newStatusEffect.valuePercentage);
+			physicalResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			poisonResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			fireResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			iceResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
 		}
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
 		}
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
 		{
-			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
-			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.valuePercentage);
+			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
 		}
 
 		currentStatusEffects.Add(statusEffect);
@@ -295,25 +306,25 @@ public class EntityStats : MonoBehaviour
 	{
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			poisonResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			fireResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			iceResistance.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			physicalResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			poisonResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			fireResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			iceResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
 		}
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
 		}
 
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
 		{
-			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
-			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.valuePercentage);
+			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
 		}
 
 		currentStatusEffects.Remove(statusEffect);

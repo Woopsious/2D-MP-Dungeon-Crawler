@@ -4,5 +4,5 @@ public interface IDamagable
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
-	void RecieveDamage(int damage, DamageType damageType);
+	void RecieveDamage(int damage, DamageType damageType, bool isPercentageValue);
 }

@@ -31,6 +31,7 @@ public class SOClassAbilities : SOClassUnlocks
 	}
 
 	[Header("AoE Settings")]
+	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
 
 	[Header("DoT Settings")]
@@ -38,11 +39,15 @@ public class SOClassAbilities : SOClassUnlocks
 	public bool isDOT;
 	public float abilityDuration;
 
-	[Header("Damage Settings")]
+	[Header("Projectile Settings")]
 	public bool isProjectile;
-	public bool percentageBased;
-	public int value;
-	public float valuePercentage;
+	public float projectileSpeed;
+
+	[Header("Damage Settings")]
+	[Tooltip("Status effects are always percentage based, spells and skill")]
+	public bool isDamagePercentageBased;
+	public int damageValue;
+	public float damageValuePercentage;
 
 	public DamageType damageType;
 	public enum DamageType

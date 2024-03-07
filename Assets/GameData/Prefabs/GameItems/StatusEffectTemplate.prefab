@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 269759268878753369}
   - component: {fileID: 3511769884026748060}
   m_Layer: 0
-  m_Name: StatusEffects
+  m_Name: StatusEffectTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

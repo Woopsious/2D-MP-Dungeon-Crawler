@@ -11,6 +11,7 @@ using UnityEngine.InputSystem;
 public class PlayerController : MonoBehaviour
 {
 	public Camera playerCamera;
+	public LayerMask includeMe;
 	private EntityStats playerStats;
 	private EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
@@ -20,11 +21,13 @@ public class PlayerController : MonoBehaviour
 	private Animator animator;
 
 	private Vector2 moveDirection = Vector2.zero;
-	public float speed;
+	private float speed;
 
 	//target selection
 	public event Action<EntityStats> OnNewTargetSelected;
 	public EntityStats selectedTarget;
+
+	public GameObject AbilityDirectionalPrefab;
 
 	private void Awake()
 	{
@@ -111,7 +114,7 @@ public class PlayerController : MonoBehaviour
 	//player select targeting
 	public void CheckForSelectableTarget()
 	{
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
 		if (hit.collider == null)
 			return;
 		if (hit.collider != null)
@@ -138,6 +141,15 @@ public class PlayerController : MonoBehaviour
 	{
 		selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
 		selectedTarget = null;
+	}
+
+	//player ability casting
+	//directional
+	public void CastAbility(SOClassAbilities ability)
+	{
+		GameObject go = Instantiate(AbilityDirectionalPrefab, gameObject.transform);
+		AbilityDirectional abilityDirectional = go.GetComponent<AbilityDirectional>();
+		abilityDirectional.Initilize(ability, playerStats);
 	}
 
 	/// <summary>

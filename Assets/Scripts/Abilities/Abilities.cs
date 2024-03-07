@@ -66,20 +66,10 @@ public class Abilities : MonoBehaviour
 
 	public void PlayerUseAbility(EntityStats entityStats, PlayerController playerController)
 	{
-		if (isOnCooldown)
-		{
-			Debug.Log(abilityName + " on cooldown");
+		if (!CanUseAbility(entityStats))
 			return;
-		}
 
-		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetStatModifier(entityStats.entityLevel, 0));
-		if (entityStats.currentMana < totalManaCost)
-		{
-			Debug.Log("Not enough mana for " + abilityName);
-			return;
-		}
-
-		if (!TryGetAbilityType(entityStats, playerController))
+		if (!CanGetAbilityType(entityStats, playerController))
 			return;
 		
 		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
@@ -92,29 +82,33 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = true;
 	}
 
-	public bool TryGetAbilityType(EntityStats entityStats, PlayerController playerController)
+	//cooldown and mana cost check
+	public bool CanUseAbility(EntityStats entityStats)
 	{
-		if (abilityBaseRef.canOnlyTargetSelf && !abilityBaseRef.isOffensiveAbility)
+		if (isOnCooldown)
 		{
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)
-			{
-				RestoreHealth(entityStats);
-				return true;
-			}
-			else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
-			{
-				RestoreMana(entityStats);
-				return true;
-			}
+			Debug.Log(abilityName + " on cooldown");
+			return false;
 		}
 
+		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetStatModifier(entityStats.entityLevel, 0));
+		if (entityStats.currentMana < totalManaCost)
+		{
+			Debug.Log("Not enough mana for " + abilityName);
+			return false;
+		}
+
+		return true;
+	}
+	//target checking + getting correct ability type to instantiate
+	public bool CanGetAbilityType(EntityStats entityStats, PlayerController playerController)
+	{
 		//apply buffs to self
 		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 		{
 			entityStats.ApplyStatusEffect(abilityBaseRef);
 			return true;
 		}
-
 		//apply buffs to friendly selected targets
 		if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
 		{
@@ -140,21 +134,47 @@ public class Abilities : MonoBehaviour
 			}
 		}
 
-		else return false;
+		//restoration type abilities
+		if (abilityBaseRef.canOnlyTargetSelf && !abilityBaseRef.isOffensiveAbility)
+		{
+			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)
+			{
+				RestoreHealth(entityStats);
+				return true;
+			}
+			else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
+			{
+				RestoreMana(entityStats);
+				return true;
+			}
+		}
 
-		//add support for AOE spells and abilities
-		//add support instantiate directional spells/skills
-		//apply buffs to friendlies in AOE
-		//instantiate directional spells/skills
+
+		if (abilityBaseRef.isProjectile)
+		{
+			playerController.CastAbility(abilityBaseRef);
+			return true;
+		}
+
+		else
+		{
+			Debug.LogError("No correct ability type");
+			return false;
+		}
+
+			//add support for AOE spells and abilities
+			//add support instantiate directional spells/skills
+			//apply buffs to friendlies in AOE
+			//instantiate directional spells/skills
 	}
 
-	//health/mana restoration function
+		//health/mana restoration function
 	public void RestoreHealth(EntityStats entityStats)
 	{
-		entityStats.OnHeal(abilityBaseRef.valuePercentage, true);
+		entityStats.OnHeal(abilityBaseRef.damageValuePercentage, true);
 	}
 	public void RestoreMana(EntityStats entityStats)
 	{
-		entityStats.IncreaseMana(abilityBaseRef.valuePercentage, true);
+		entityStats.IncreaseMana(abilityBaseRef.damageValuePercentage, true);
 	}
 }

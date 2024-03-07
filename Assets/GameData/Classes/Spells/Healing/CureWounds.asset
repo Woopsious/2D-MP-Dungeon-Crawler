@@ -25,9 +25,10 @@ MonoBehaviour:
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
-  percentageBased: 1
-  value: 0
-  valuePercentage: 0.15
+  projectileSpeed: 0
+  isDamagePercentageBased: 1
+  damageValue: 0
+  damageValuePercentage: 0.15
   damageType: 4
   isSpell: 1
   manaCost: 15

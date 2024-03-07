@@ -9,7 +9,7 @@ public class Damageable : MonoBehaviour
 	public bool isDestroyedInOneHit;
 	private bool CanOtherEntitiesDamageThis;
 
-	public event Action<int, IDamagable.DamageType, bool> OnHit;
+	public event Action<float, IDamagable.DamageType, bool, bool> OnHit;
 
 	private void Start()
 	{
@@ -19,11 +19,11 @@ public class Damageable : MonoBehaviour
 			CanOtherEntitiesDamageThis = false;
 	}
 
-	public void OnHitFromDamageSource(int damage, IDamagable.DamageType damageType, bool wasHitByPlayer)
+	public void OnHitFromDamageSource(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool wasHitByPlayer)
 	{
 		if (DebugInvincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
 
-		OnHit?.Invoke(damage, damageType, isDestroyedInOneHit);
+		OnHit?.Invoke(damage, damageType, isPercentageValue, isDestroyedInOneHit);
 	}
 }

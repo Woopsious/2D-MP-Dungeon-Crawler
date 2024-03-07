@@ -17,18 +17,18 @@ MonoBehaviour:
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 60
+  isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
-  isHealthRestoration: 0
-  isManaRestoration: 0
   statusEffectType: 2
   isAOE: 0
   isDOT: 1
   abilityDuration: 5
   isProjectile: 0
-  percentageBased: 1
-  value: 0
-  valuePercentage: 1
+  projectileSpeed: 0
+  isDamagePercentageBased: 0
+  damageValue: 0
+  damageValuePercentage: 1
   damageType: 0
   isSpell: 0
   manaCost: 0
