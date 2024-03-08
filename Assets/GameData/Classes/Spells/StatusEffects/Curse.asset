@@ -25,7 +25,8 @@ MonoBehaviour:
   isDOT: 1
   abilityDuration: 10
   isProjectile: 0
-  projectileSpeed: 0
+  projectileSprite: {fileID: 0}
+  projectileSpeed: 20
   isDamagePercentageBased: 1
   damageValue: 0
   damageValuePercentage: -0.1

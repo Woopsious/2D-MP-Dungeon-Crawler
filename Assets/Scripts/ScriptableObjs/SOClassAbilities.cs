@@ -41,6 +41,8 @@ public class SOClassAbilities : SOClassUnlocks
 
 	[Header("Projectile Settings")]
 	public bool isProjectile;
+	public Sprite projectileSprite;
+	[Range(20,50)]
 	public float projectileSpeed;
 
 	[Header("Damage Settings")]

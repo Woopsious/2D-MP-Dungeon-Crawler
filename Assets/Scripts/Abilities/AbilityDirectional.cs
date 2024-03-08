@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class AbilityDirectional : MonoBehaviour
 {
-	private SOClassAbilities abilityBaseRef;
+	public SOClassAbilities abilityBaseRef;
 
+	private BoxCollider2D boxCollider;
+	private SpriteRenderer projectileSprite;
 	private bool isPlayerProjectile;
 	private float projectileSpeed;
 	private int projectileDamage;
@@ -20,26 +23,38 @@ public class AbilityDirectional : MonoBehaviour
 		transform.localPosition = Vector3.zero;
 		this.abilityBaseRef = abilityBaseRef;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
+		boxCollider = GetComponent<BoxCollider2D>();
+		projectileSprite = GetComponent<SpriteRenderer>();
+		projectileSprite.sprite = abilityBaseRef.projectileSprite;
+		boxCollider.size = projectileSprite.size;
+		boxCollider.offset = new Vector2(0, 0);
 
 		isPlayerProjectile = casterInfo.IsPlayerEntity();
 		projectileSpeed = abilityBaseRef.projectileSpeed;
 		damageType = (DamageType)abilityBaseRef.damageType;
+		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 
 		if (damageType == DamageType.isPhysicalDamageType)
-			projectileDamage = (int)(abilityBaseRef.damageValue * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
+			projectileDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isPoisonDamageType)
-			projectileDamage = (int)(abilityBaseRef.damageValue * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
+			projectileDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isFireDamageType)
-			projectileDamage = (int)(abilityBaseRef.damageValue * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
+			projectileDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isIceDamageType)
-			projectileDamage = (int)(abilityBaseRef.damageValue * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
+			projectileDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<Damageable>() == null || isPlayerProjectile == false) return;
+		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
+			Destroy(gameObject);
+
+		if (other.gameObject.GetComponent<Damageable>() == null) return;
+
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerProjectile ||
+			other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !isPlayerProjectile)
+			return;
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(projectileDamage, (IDamagable.DamageType)damageType, 
 			abilityBaseRef.isDamagePercentageBased ,isPlayerProjectile);
@@ -47,21 +62,8 @@ public class AbilityDirectional : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	private void Update()
+	private void FixedUpdate()
 	{
-		//AbilityDurationTimer();
+		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
 	}
-
-	/*
-	private void AbilityDurationTimer()
-	{
-		abilityDurationTimer += Time.deltaTime;
-
-		if (abilityDurationTimer >= abilityBaseRef.abilityDuration)
-		{
-			entityEffectIsAppliedTo.UnApplyStatusEffect(this, abilityBaseRef);
-			Destroy(gameObject);
-		}
-	}
-	*/
 }

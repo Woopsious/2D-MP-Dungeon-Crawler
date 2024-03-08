@@ -91,7 +91,7 @@ public class Abilities : MonoBehaviour
 			return false;
 		}
 
-		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetStatModifier(entityStats.entityLevel, 0));
+		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(entityStats.entityLevel));
 		if (entityStats.currentMana < totalManaCost)
 		{
 			Debug.Log("Not enough mana for " + abilityName);

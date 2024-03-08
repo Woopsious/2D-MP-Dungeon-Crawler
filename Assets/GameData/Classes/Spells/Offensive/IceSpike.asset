@@ -24,8 +24,9 @@ MonoBehaviour:
   isAOE: 0
   isDOT: 0
   abilityDuration: 0
-  isProjectile: 0
-  projectileSpeed: 0
+  isProjectile: 1
+  projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
+  projectileSpeed: 25
   isDamagePercentageBased: 0
   damageValue: 18
   damageValuePercentage: 0

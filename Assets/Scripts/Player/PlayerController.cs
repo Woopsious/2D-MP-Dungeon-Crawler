@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Mathematics;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.AI;
@@ -21,17 +22,29 @@ public class PlayerController : MonoBehaviour
 	private Animator animator;
 
 	private Vector2 moveDirection = Vector2.zero;
-	private float speed;
+	private float speed = 12;
 
 	//target selection
 	public event Action<EntityStats> OnNewTargetSelected;
 	public EntityStats selectedTarget;
 
+	public bool debugUseMouseDirectionForProjectiles;
 	public GameObject AbilityDirectionalPrefab;
 
 	private void Awake()
 	{
 		Initilize();
+	}
+	public void Initilize()
+	{
+		playerInputs = new PlayerInputActions();
+		playerStats = GetComponent<EntityStats>();
+		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
+		playerCamera.transform.parent = null;
 	}
 
 	private void Start()
@@ -75,18 +88,6 @@ public class PlayerController : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-	}
-
-	public void Initilize()
-	{
-		playerInputs = new PlayerInputActions();
-		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
-		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
-		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		animator = GetComponent<Animator>();
-		playerCamera.transform.parent = null;
 	}
 
 	public void ReloadPlayerInfo()
@@ -147,8 +148,23 @@ public class PlayerController : MonoBehaviour
 	//directional
 	public void CastAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(AbilityDirectionalPrefab, gameObject.transform);
+		GameObject go = Instantiate(AbilityDirectionalPrefab, transform, true);
+		//go.transform.parent = null;
 		AbilityDirectional abilityDirectional = go.GetComponent<AbilityDirectional>();
+
+		if (debugUseMouseDirectionForProjectiles)
+		{
+			Vector3 rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+			float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+			go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		}
+		else
+		{
+			Vector3 rotation = selectedTarget.transform.position - transform.position;
+			float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+			go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		}
+
 		abilityDirectional.Initilize(ability, playerStats);
 	}
 

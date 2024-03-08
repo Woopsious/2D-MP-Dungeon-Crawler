@@ -46,6 +46,16 @@ public class Utilities
 		return itemLvl - 4;
 	}
 
+	public static float GetLevelModifier(int level)
+	{
+		float levelModifier;
+		if (level == 1)  //get level modifier
+			levelModifier = 1;
+		else
+			levelModifier = 1 + (level / 10f);
+
+		return levelModifier;
+	}
 	public static float GetStatModifier(int level, IGetStatModifier.Rarity rarity)
 	{
 		float levelModifier;
