@@ -30,6 +30,9 @@ public class PlayerController : MonoBehaviour
 
 	public bool debugUseMouseDirectionForProjectiles;
 	public GameObject AbilityDirectionalPrefab;
+	public GameObject AbilityAoePrefab;
+
+	public Abilities queuedAbility;
 
 	private void Awake()
 	{
@@ -118,10 +121,6 @@ public class PlayerController : MonoBehaviour
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
 		if (hit.collider == null)
 			return;
-		if (hit.collider != null)
-		{
-			Debug.Log("Name of Obj hit: " + hit.collider.gameObject.name);
-		}
 		if (hit.collider.GetComponent<EntityStats>() == null)
 			return;
 
@@ -149,23 +148,26 @@ public class PlayerController : MonoBehaviour
 	public void CastAbility(SOClassAbilities ability)
 	{
 		GameObject go = Instantiate(AbilityDirectionalPrefab, transform, true);
-		//go.transform.parent = null;
 		AbilityDirectional abilityDirectional = go.GetComponent<AbilityDirectional>();
 
+		Vector3 rotation;
 		if (debugUseMouseDirectionForProjectiles)
-		{
-			Vector3 rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
-			float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-			go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
-		}
+			rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 		else
-		{
-			Vector3 rotation = selectedTarget.transform.position - transform.position;
-			float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-			go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
-		}
+			rotation = selectedTarget.transform.position - transform.position;
+
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 
 		abilityDirectional.Initilize(ability, playerStats);
+	}
+	public void CastQueuedAbility(SOClassAbilities ability, Vector3 position)
+	{
+		Debug.Log(position);
+		GameObject go = Instantiate(AbilityAoePrefab, new Vector2(position.x, position.y), Quaternion.identity);
+		AbilityAOE abilityAoe = go.GetComponent<AbilityAOE>();
+
+		abilityAoe.Initilize(ability, playerStats);
 	}
 
 	/// <summary>
@@ -175,8 +177,18 @@ public class PlayerController : MonoBehaviour
 	//player actions
 	private void OnMainAttack()
 	{
-		if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf) return;
-		playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		if (queuedAbility == null)
+		{
+			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
+				return;
+			playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		}
+		else if (queuedAbility.isAbilityQueuedUp)
+		{
+			queuedAbility.isAbilityQueuedUp = false;
+			CastQueuedAbility(queuedAbility.abilityBaseRef, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+			queuedAbility = null;
+		}
 	}
 	private void OnRightClick()
 	{
@@ -207,26 +219,31 @@ public class PlayerController : MonoBehaviour
 
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats, this);
+		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 	}
 	private void OnAbilityTwo()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats, this);
+		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 	}
 	private void OnAbilityThree()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats, this);
+		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 	}
 	private void OnAbilityFour()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats, this);
+		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 	}
 	private void OnAbilityFive()
 	{
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats, this);
+		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
 	}
 
 	//ui actions

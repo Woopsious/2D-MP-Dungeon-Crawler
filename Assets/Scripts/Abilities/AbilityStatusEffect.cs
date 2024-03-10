@@ -8,8 +8,6 @@ public class AbilityStatusEffect : MonoBehaviour
 	private float abilityDurationTimer;
 	private EntityStats entityEffectIsAppliedTo;
 
-	private bool isPlayerProjectile;
-	private int projectileDamage;
 	private DamageType damageType;
 	enum DamageType
 	{

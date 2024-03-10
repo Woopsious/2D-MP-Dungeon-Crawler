@@ -509,26 +509,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerCamera: {fileID: 2531859271035774187}
-  contactFilter:
-    useTriggers: 0
-    useLayerMask: 0
-    useDepth: 0
-    useOutsideDepth: 0
-    useNormalAngle: 0
-    useOutsideNormalAngle: 0
-    layerMask:
-      serializedVersion: 2
-      m_Bits: 0
-    minDepth: 0
-    maxDepth: 0
-    minNormalAngle: 0
-    maxNormalAngle: 0
   includeMe:
     serializedVersion: 2
     m_Bits: 512
   playerEquipmentHandler: {fileID: 0}
-  speed: 10
   selectedTarget: {fileID: 0}
+  debugUseMouseDirectionForProjectiles: 0
+  AbilityDirectionalPrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
+  AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
+  queuedAbility: {fileID: 0}
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0

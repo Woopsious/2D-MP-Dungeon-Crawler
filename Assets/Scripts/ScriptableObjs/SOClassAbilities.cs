@@ -22,6 +22,12 @@ public class SOClassAbilities : SOClassUnlocks
 	[Tooltip("EG: Knight/Warrior healing skills")]
 	public bool canOnlyTargetSelf;
 
+	public AbilityType abilityType;
+	public enum AbilityType
+	{
+		isStatusEffect, isDirectional, isAoe
+	}
+
 	[Header("Status Effects Settings")]
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
 	public StatusEffectType statusEffectType;
@@ -33,6 +39,8 @@ public class SOClassAbilities : SOClassUnlocks
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
+	[Range(20, 50)]
+	public float aoeSize;
 
 	[Header("DoT Settings")]
 	[Tooltip("Mainly for status effects and some abilities that are AoE. EG: stances and wellOfRes spell")]

@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Numerics;
 using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Playables;
@@ -23,16 +25,13 @@ public class Abilities : MonoBehaviour
 	[Header("Ability Dynamic Info")]
 	public bool isEquippedAbility;
 	public bool isOnCooldown;
+	public bool isAbilityQueuedUp;
 	public float abilityCooldownTimer;
 
 	[Header("Spell Cost")]
 	public int manaCost;
 
-	public ItemType itemType;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public static event Action OnAbilityQueueUp;
 
 	public void Initilize()
 	{
@@ -40,7 +39,6 @@ public class Abilities : MonoBehaviour
 		abilityName = abilityBaseRef.Name;
 		abilityDescription = abilityBaseRef.Description;
 		abilitySprite = abilityBaseRef.abilitySprite;
-		itemType = ItemType.isAbility;
 
 		abilityCooldownTimer = 0;
 	}
@@ -62,6 +60,10 @@ public class Abilities : MonoBehaviour
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
 		}
+	}
+	public void AbilityAoePlacement()
+	{
+		if (!isAbilityQueuedUp) return;
 	}
 
 	public void PlayerUseAbility(EntityStats entityStats, PlayerController playerController)
@@ -103,34 +105,36 @@ public class Abilities : MonoBehaviour
 	//target checking + getting correct ability type to instantiate
 	public bool CanGetAbilityType(EntityStats entityStats, PlayerController playerController)
 	{
-		//apply buffs to self
-		if (abilityBaseRef.canOnlyTargetSelf && abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		//apply status effects
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 		{
-			entityStats.ApplyStatusEffect(abilityBaseRef);
-			return true;
-		}
-		//apply buffs to friendly selected targets
-		if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
-		{
-			//apply buff to self if not an offensive buff && has no friendly target selected
-			if (!abilityBaseRef.isOffensiveAbility) //add check for friendly selected target when MP is added
+			//apply buffs to self
+			if (abilityBaseRef.canOnlyTargetSelf)
 			{
 				entityStats.ApplyStatusEffect(abilityBaseRef);
 				return true;
 			}
-		}
-		//apply debuffs to enemy selected targets
-		if (abilityBaseRef.requiresTarget && abilityBaseRef.isOffensiveAbility)
-		{
-			if (PlayerHotbarUi.Instance.selectedTarget == null)
+			//apply buffs to friendly targets
+			if (abilityBaseRef.requiresTarget & !abilityBaseRef.isOffensiveAbility)
 			{
-				Debug.Log("No Enemy Target selected");
-				return false;
-			}
-			else
-			{
-				entityStats.GetComponent<PlayerController>().selectedTarget.ApplyStatusEffect(abilityBaseRef);
+				//apply buff to self if not an offensive buff && has no friendly target selected
+				//add check for friendly selected target when MP is added
+				entityStats.ApplyStatusEffect(abilityBaseRef);
 				return true;
+			}
+			//apply debuffs to selected enemy targets
+			if (abilityBaseRef.requiresTarget && abilityBaseRef.isOffensiveAbility)
+			{
+				if (PlayerHotbarUi.Instance.selectedTarget == null)
+				{
+					Debug.Log("No Enemy Target selected");
+					return false;
+				}
+				else
+				{
+					entityStats.GetComponent<PlayerController>().selectedTarget.ApplyStatusEffect(abilityBaseRef);
+					return true;
+				}
 			}
 		}
 
@@ -149,10 +153,17 @@ public class Abilities : MonoBehaviour
 			}
 		}
 
-
+		//projectile abilities
 		if (abilityBaseRef.isProjectile)
 		{
 			playerController.CastAbility(abilityBaseRef);
+			return true;
+		}
+
+		//aoe abilities
+		if (abilityBaseRef.isAOE)
+		{
+			isAbilityQueuedUp = true;
 			return true;
 		}
 

@@ -93,7 +93,7 @@ public class Weapons : Items
 
 		Vector2 difference = other.transform.position - gameObject.transform.position;
 		difference = difference.normalized * weaponBaseRef.baseKnockback * 100;
-		Debug.LogWarning(difference.normalized);
+		//Debug.LogWarning(difference.normalized);
 		other.GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
 	}
 	public void Attack(Vector3 positionOfThingToAttack)

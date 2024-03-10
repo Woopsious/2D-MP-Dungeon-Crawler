@@ -14,17 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Flame Strike
   Description: Call a flame of fire down from the sky
-  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 5
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
+  abilityType: 0
   statusEffectType: 0
   isAOE: 1
+  aoeSize: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
   damageValue: 20
