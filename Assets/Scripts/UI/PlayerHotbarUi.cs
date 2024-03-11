@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -10,6 +12,8 @@ public class PlayerHotbarUi : MonoBehaviour
 {
 	[SerializeField]
 	public static PlayerHotbarUi Instance;
+
+	public static event Action<Abilities, EntityStats> OnNewQueuedAbilities;
 
 	[Header("Hotbar Consumables")]
 	public GameObject HotbarPanelUi;
@@ -22,6 +26,8 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableTwo;
 
 	[Header("Hotbar Abilities")]
+	public GameObject queuedAbilityTextInfo;
+	public Abilities queuedAbility;
 	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
 	public GameObject abilitySlotTwo;
@@ -68,6 +74,12 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		Initilize();
 	}
+	private void Update()
+	{
+		if (queuedAbilityTextInfo.activeInHierarchy)
+			queuedAbilityTextInfo.transform.position =
+				new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
+	}
 	private void OnEnable()
 	{
 		ClassesUi.OnClassReset += ResetEquippedAbilities;
@@ -87,6 +99,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
 
 		selectedTargetUi.SetActive(false);
+		queuedAbilityTextInfo.SetActive(false);
 	}
 
 	//reset/clear any equipped abilities from ui
@@ -244,6 +257,29 @@ public class PlayerHotbarUi : MonoBehaviour
 		obj.GetComponent<EntityStats>().OnDeathEvent -= OnTargetDeathUnSelect;
 		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;
 		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnManaChange;
+	}
+
+	//UI Ability Uses
+	public void AddNewQueuedAbility(Abilities ability, PlayerController player, bool canInstantCast)
+	{
+		OnNewQueuedAbilities?.Invoke(ability, player.GetComponent<EntityStats>());
+		queuedAbility = ability;
+
+		queuedAbilityTextInfo.SetActive(true);
+
+		if (canInstantCast)
+			player.CastQueuedAbility(ability);
+	}
+	public void OnUseQueuedAbility(Abilities ability, PlayerController player)
+	{
+		ability.CastAbility(player.GetComponent<EntityStats>());
+		queuedAbilityTextInfo.SetActive(false);
+		queuedAbility = null;
+	}
+	public void OnCancelQueuedAbility(Abilities ability)
+	{
+		queuedAbilityTextInfo.SetActive(false);
+		queuedAbility = null;
 	}
 
 	//UI Player Updates

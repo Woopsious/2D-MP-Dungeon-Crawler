@@ -20,7 +20,6 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  abilityType: 0
   statusEffectType: 0
   isAOE: 1
   aoeSize: 0
@@ -32,7 +31,7 @@ MonoBehaviour:
   isDamagePercentageBased: 0
   damageValue: 30
   damageValuePercentage: 0
-  damageType: 1
+  damageType: 0
   isSpell: 0
   manaCost: 0
   minPercentCost: 0

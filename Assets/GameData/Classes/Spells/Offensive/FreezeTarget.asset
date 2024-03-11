@@ -22,14 +22,16 @@ MonoBehaviour:
   canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 0
+  aoeSize: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
   damageValue: 20
   damageValuePercentage: 0
-  damageType: 4
+  damageType: 3
   isSpell: 1
   manaCost: 15
   minPercentCost: 10

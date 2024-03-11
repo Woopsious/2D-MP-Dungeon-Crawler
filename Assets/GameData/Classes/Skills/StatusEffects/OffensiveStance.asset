@@ -23,9 +23,11 @@ MonoBehaviour:
   canOnlyTargetSelf: 1
   statusEffectType: 3
   isAOE: 0
+  aoeSize: 0
   isDOT: 1
   abilityDuration: 10
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
   damageValue: 0

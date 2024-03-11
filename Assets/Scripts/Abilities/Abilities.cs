@@ -31,8 +31,6 @@ public class Abilities : MonoBehaviour
 	[Header("Spell Cost")]
 	public int manaCost;
 
-	public static event Action OnAbilityQueueUp;
-
 	public void Initilize()
 	{
 		name = abilityBaseRef.Name;
@@ -61,26 +59,42 @@ public class Abilities : MonoBehaviour
 			abilityCooldownTimer = 0;
 		}
 	}
-	public void AbilityAoePlacement()
-	{
-		if (!isAbilityQueuedUp) return;
-	}
 
-	public void PlayerUseAbility(EntityStats entityStats, PlayerController playerController)
+	public void PlayerUseAbility(EntityStats entityStats)
 	{
+		PlayerController playerController = entityStats.GetComponent<PlayerController>();
 		if (!CanUseAbility(entityStats))
 			return;
 
-		if (!CanGetAbilityType(entityStats, playerController))
-			return;
-		
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect || abilityBaseRef.damageType == 
+			SOClassAbilities.DamageType.isHealing || abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
+		{
+			if (CanInstantCastEffect())
+				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, true);
+			else
+				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, false);
+		}
+		else
+		{
+			if (CanInstantCastAbility())
+				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, true);
+			else
+				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, false);
+		}
+	}
+	public void EntityUseAbility(EntityStats entityStats)
+	{
 		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
 		isOnCooldown = true;
 	}
 
-	public void EntityUseAbility(EntityStats entityStats)
+	public void CastAbility(EntityStats casterStats)
 	{
-		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
+		if (abilityBaseRef.isSpell)
+		{
+			int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(casterStats.entityLevel));
+			casterStats.DecreaseMana(totalManaCost, false);
+		}
 		isOnCooldown = true;
 	}
 
@@ -102,90 +116,42 @@ public class Abilities : MonoBehaviour
 
 		return true;
 	}
-	//target checking + getting correct ability type to instantiate
-	public bool CanGetAbilityType(EntityStats entityStats, PlayerController playerController)
+	//cast now
+	public bool CanInstantCastEffect()
 	{
-		//apply status effects
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		if (abilityBaseRef.canOnlyTargetSelf) //for effects that can only be added to self
+			return true;
+		if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing||
+			abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana) //restoration effects
 		{
-			//apply buffs to self
-			if (abilityBaseRef.canOnlyTargetSelf)
-			{
-				entityStats.ApplyStatusEffect(abilityBaseRef);
-				return true;
-			}
-			//apply buffs to friendly targets
-			if (abilityBaseRef.requiresTarget & !abilityBaseRef.isOffensiveAbility)
-			{
-				//apply buff to self if not an offensive buff && has no friendly target selected
-				//add check for friendly selected target when MP is added
-				entityStats.ApplyStatusEffect(abilityBaseRef);
-				return true;
-			}
-			//apply debuffs to selected enemy targets
-			if (abilityBaseRef.requiresTarget && abilityBaseRef.isOffensiveAbility)
-			{
-				if (PlayerHotbarUi.Instance.selectedTarget == null)
-				{
-					Debug.Log("No Enemy Target selected");
-					return false;
-				}
-				else
-				{
-					entityStats.GetComponent<PlayerController>().selectedTarget.ApplyStatusEffect(abilityBaseRef);
-					return true;
-				}
-			}
-		}
-
-		//restoration type abilities
-		if (abilityBaseRef.canOnlyTargetSelf && !abilityBaseRef.isOffensiveAbility)
-		{
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)
-			{
-				RestoreHealth(entityStats);
-				return true;
-			}
-			else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
-			{
-				RestoreMana(entityStats);
-				return true;
-			}
-		}
-
-		//projectile abilities
-		if (abilityBaseRef.isProjectile)
-		{
-			playerController.CastAbility(abilityBaseRef);
+			//add additional checks for friendlies when mp is added
 			return true;
 		}
-
-		//aoe abilities
-		if (abilityBaseRef.isAOE)
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect) //status effects
 		{
-			isAbilityQueuedUp = true;
-			return true;
+			if (!abilityBaseRef.isOffensiveAbility)
+				return true;
+			if (abilityBaseRef.isOffensiveAbility && PlayerHotbarUi.Instance.selectedTarget != null)
+				return true;
+			else
+				return false;
 		}
-
 		else
 		{
-			Debug.LogError("No correct ability type");
+			Debug.LogError("failed to handle ability effect, this shouldnt happen");
 			return false;
 		}
-
-			//add support for AOE spells and abilities
-			//add support instantiate directional spells/skills
-			//apply buffs to friendlies in AOE
-			//instantiate directional spells/skills
 	}
-
-		//health/mana restoration function
-	public void RestoreHealth(EntityStats entityStats)
+	public bool CanInstantCastAbility()
 	{
-		entityStats.OnHeal(abilityBaseRef.damageValuePercentage, true);
-	}
-	public void RestoreMana(EntityStats entityStats)
-	{
-		entityStats.IncreaseMana(abilityBaseRef.damageValuePercentage, true);
+		if (abilityBaseRef.isAOE)
+			return false;
+		if (abilityBaseRef.isProjectile)
+			return true;
+		else
+		{
+			Debug.LogError("failed to handle ability, this shouldnt happen");
+			return false;
+		}
 	}
 }

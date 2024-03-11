@@ -20,7 +20,7 @@ MonoBehaviour:
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
-  abilityType: 0
+  abilityType: 2
   statusEffectType: 0
   isAOE: 1
   aoeSize: 0

@@ -20,7 +20,6 @@ public class AbilityDirectional : MonoBehaviour
 
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
-		transform.localPosition = Vector3.zero;
 		this.abilityBaseRef = abilityBaseRef;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();

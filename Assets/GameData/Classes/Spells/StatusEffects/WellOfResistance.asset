@@ -21,7 +21,6 @@ MonoBehaviour:
   isOffensiveAbility: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  abilityType: 0
   statusEffectType: 2
   isAOE: 1
   aoeSize: 0

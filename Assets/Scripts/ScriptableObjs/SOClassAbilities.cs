@@ -22,12 +22,6 @@ public class SOClassAbilities : SOClassUnlocks
 	[Tooltip("EG: Knight/Warrior healing skills")]
 	public bool canOnlyTargetSelf;
 
-	public AbilityType abilityType;
-	public enum AbilityType
-	{
-		isStatusEffect, isDirectional, isAoe
-	}
-
 	[Header("Status Effects Settings")]
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
 	public StatusEffectType statusEffectType;
