@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
@@ -26,12 +27,13 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		//OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange;
+		SaveManager.OnGameLoad += ReloadPlayerExp;
 	}
 
 	private void OnDisable()
 	{
 		OnAddExperienceEvent -= PlayerHotbarUi.Instance.OnExperienceChange;
+		SaveManager.OnGameLoad -= ReloadPlayerExp;
 	}
 
 	/// <summary>
@@ -43,9 +45,9 @@ public class PlayerExperienceHandler : MonoBehaviour
 	/// new skill/spells if applicable...
 	/// </summary>
 
-	public void ReloadExperienceLevel(int exp)
+	public void ReloadPlayerExp()
 	{
-		currentExp = exp;
+		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
 		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
 	}
 	public void AddExperience(GameObject Obj)

@@ -328,7 +328,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void ShowInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(true);
-		LearntAbilitiesUi.SetActive(false);
+		HideLearntAbilities();
 	}
 	public void HideInventory()
 	{
@@ -347,6 +347,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		LearntAbilitiesTextObj.SetActive(true);
 		LearntAbilitiesUi.SetActive(true);
 		closeLearntAbilitiesButtonObj.SetActive(true);
+		HideInventory();
 	}
 	public void HideLearntAbilities()
 	{

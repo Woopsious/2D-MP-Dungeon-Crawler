@@ -75,7 +75,7 @@ public class PlayerController : MonoBehaviour
 			playerInputs = new PlayerInputActions();
 		playerInputs.Enable();
 
-		SaveManager.OnGameLoad += ReloadPlayerInfo;
+		SaveManager.OnGameLoad += ReloadPlayerLevel;
 	}
 
 	private void OnDisable()
@@ -91,7 +91,7 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities -= OnUseQueuedAbility;
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
-		SaveManager.OnGameLoad -= ReloadPlayerInfo;
+		SaveManager.OnGameLoad -= ReloadPlayerLevel;
 	}
 
 	private void Update()
@@ -108,10 +108,9 @@ public class PlayerController : MonoBehaviour
 		UpdateAnimationState();
 	}
 
-	public void ReloadPlayerInfo()
+	public void ReloadPlayerLevel()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
-		GetComponent<PlayerExperienceHandler>().ReloadExperienceLevel(SaveManager.Instance.GameData.playerCurrentExp);
 		playerStats.CalculateBaseStats();
 	}
 

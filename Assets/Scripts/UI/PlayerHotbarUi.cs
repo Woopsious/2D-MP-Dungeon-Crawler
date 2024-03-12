@@ -286,6 +286,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void OnExperienceChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
+		Debug.Log(percentage);
 		expBarFiller.fillAmount = percentage;
 		expBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
