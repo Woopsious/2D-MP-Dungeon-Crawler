@@ -222,7 +222,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		{
 			selectedTarget.OnDeathEvent -= OnTargetDeathUnSelect;
 			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-			selectedTarget.OnManaChangeEvent -= OnManaChange;
+			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
 		}
 
 		selectedTarget = entityStats;
@@ -230,24 +230,26 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTargetUiName.text = entityStats.entityBaseStats.entityName;
 		selectedTarget.OnDeathEvent += OnTargetDeathUnSelect;
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent += OnManaChange;
+		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
 
 		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
 		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
 	}
-	public void OnTargetHealthChange(int MaxValue, int currentValue)
+	private void OnTargetHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		selectedTargetHealthBarFiller.fillAmount = percentage;
 		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
+		Debug.Log("health fill amount %: " + percentage);
 	}
-	public void OnTargetManaChange(int MaxValue, int currentValue)
+	private void OnTargetManaChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
-		selectedTargetHealthBarFiller.fillAmount = percentage;
+		selectedTargetManaBarFiller.fillAmount = percentage;
 		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
+		Debug.Log("mana fill amount %: " + percentage);
 	}
-	public void OnTargetDeathUnSelect(GameObject obj)
+	private void OnTargetDeathUnSelect(GameObject obj)
 	{
 		if (selectedTargetUi.activeInHierarchy)
 			selectedTargetUi.SetActive(false);
@@ -256,7 +258,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		obj.GetComponent<EntityStats>().OnDeathEvent -= OnTargetDeathUnSelect;
 		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;
-		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnManaChange;
+		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnTargetManaChange;
 	}
 
 	//UI Ability Uses
@@ -286,7 +288,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void OnExperienceChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
-		Debug.Log(percentage);
 		expBarFiller.fillAmount = percentage;
 		expBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}

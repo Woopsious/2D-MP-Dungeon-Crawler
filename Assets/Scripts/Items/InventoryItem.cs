@@ -57,7 +57,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	public int maxStackCount;
 	public int currentStackCount;
 
-	public void Start()
+	private void Start()
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
@@ -245,7 +245,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 	}
 
 	//Debug functions
-	public void GenerateStatsOnStart()
+	private void GenerateStatsOnStart()
 	{
 		if (weaponBaseRef != null)
 		{

@@ -6,11 +6,11 @@ public class AbilityAOE : MonoBehaviour
 {
 	public SOClassAbilities abilityBaseRef;
 
-	private float abilityDurationTimer;
+	public float abilityDurationTime;
+	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
 	private SpriteRenderer aoeSprite;
 	private bool isPlayerAoe;
-	private bool applyEffectToEveryone;
 	public int aoeDamage;
 	private DamageType damageType;
 	enum DamageType
@@ -19,14 +19,13 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void Start()
 	{
-		FindObjectOfType<PlayerController>();
 		Initilize(abilityBaseRef, FindObjectOfType<PlayerController>().GetComponent<EntityStats>());
 	}
 
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
-		gameObject.name = abilityBaseRef.Name + "Projectile";
+		gameObject.name = abilityBaseRef.Name + "Aoe";
 		circleCollider = GetComponent<CircleCollider2D>();
 		aoeSprite = GetComponent<SpriteRenderer>();
 		aoeSprite.sprite = abilityBaseRef.abilitySprite;
@@ -34,7 +33,11 @@ public class AbilityAOE : MonoBehaviour
 		circleCollider.radius = 0.1f;
 		circleCollider.offset = new Vector2(0, 0);
 
-		isPlayerAoe = false;
+		abilityDurationTime = abilityBaseRef.abilityDuration;
+		if (abilityBaseRef.abilityDuration == 0)
+			abilityDurationTime = 0.1f;
+
+		isPlayerAoe = casterInfo.IsPlayerEntity();
 		damageType = (DamageType)abilityBaseRef.damageType;
 		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 
@@ -56,13 +59,11 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!abilityBaseRef.isDOT) return;
-
 		if (other.gameObject.GetComponent<EntityStats>() == null) return;
 
 		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 		{
-			//status effects only apply to friendlies
+			//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
 			if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
 				other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !isPlayerAoe)
 				return;
@@ -81,7 +82,7 @@ public class AbilityAOE : MonoBehaviour
 	{
 		abilityDurationTimer += Time.deltaTime;
 
-		if (abilityDurationTimer >= abilityBaseRef.abilityDuration)
+		if (abilityDurationTimer >= abilityDurationTime)
 			Destroy(gameObject);
 	}
 }

@@ -22,7 +22,7 @@ MonoBehaviour:
   canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 1
-  aoeSize: 0
+  aoeSize: 25
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0

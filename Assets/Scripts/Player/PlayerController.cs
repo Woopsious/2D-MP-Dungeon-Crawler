@@ -108,7 +108,7 @@ public class PlayerController : MonoBehaviour
 		UpdateAnimationState();
 	}
 
-	public void ReloadPlayerLevel()
+	private void ReloadPlayerLevel()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
 		playerStats.CalculateBaseStats();
@@ -130,7 +130,7 @@ public class PlayerController : MonoBehaviour
 	}
 
 	//player select targeting
-	public void CheckForSelectableTarget()
+	private void CheckForSelectableTarget()
 	{
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
 		if (hit.collider == null)
@@ -151,7 +151,7 @@ public class PlayerController : MonoBehaviour
 			selectedTarget.OnDeathEvent += OnSelectedTargetDeath;
 		}
 	}
-	public void OnSelectedTargetDeath(GameObject obj)
+	private void OnSelectedTargetDeath(GameObject obj)
 	{
 		selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
 		selectedTarget = null;
