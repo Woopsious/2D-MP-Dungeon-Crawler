@@ -471,7 +471,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   rangedWeaponDamageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0

@@ -63,6 +63,7 @@
     <Compile Include="Assets\Scripts\Entities\EnemyIdleState.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityEquipmentHandler.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />

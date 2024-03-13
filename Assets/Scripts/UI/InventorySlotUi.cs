@@ -19,7 +19,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public enum SlotType
 	{
 		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
-		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities
+		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot
 	}
 
 	public int slotIndex;
@@ -38,7 +38,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		DragEquipItemToSlot(item);
 	}
-	public void DragEquipItemToSlot(InventoryItem item)
+	public void DragEquipItemToSlot(InventoryItem item) //dragging items
 	{
 		InventorySlotUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotUi>();
 
@@ -56,43 +56,48 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
-			if (IsItemInSlotStackable() && IsItemInSlotSameAs(item))
+			if (IsItemInSlotStackable() && IsItemInSlotSameAs(item)) //stacking items
 			{
 				PlayerInventoryUi.Instance.AddToStackCount(this, item);
 				if (item.currentStackCount > 0) return;
 			}
 			else //swapping items
 			{
-				if (!oldInventorySlot.IsCorrectSlotType(itemInSlot)) return; //stops swapping of equipped items when they are wrong type
-
-				itemInSlot.transform.SetParent(item.parentAfterDrag, false);
-				itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
-				oldInventorySlot.itemInSlot = itemInSlot;
-				oldInventorySlot.UpdateSlotSize();
-				oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
+				if (!oldInventorySlot.IsCorrectSlotType(itemInSlot)) return;
+				SwapItemInSlot(item, oldInventorySlot);
 			}
 		}
-		else //set ref of old parent slot to null
-		{
-			oldInventorySlot.itemInSlot = null;
-			oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
-		}
+		else
+			ClearItemFromSlot(oldInventorySlot);
 
-		//set new slot data
+		AddItemToSlot(item);
+	}
+	public void EquipItemToSlot(InventoryItem item) //ui context menu
+	{
+		AddItemToSlot(item);
+	}
+
+	//types of item changes
+	private void AddItemToSlot(InventoryItem item)
+	{
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
 	}
-	public void EquipItemToSlot(InventoryItem item)
+	private void SwapItemInSlot(InventoryItem item, InventorySlotUi oldInventorySlot)
 	{
-		//set new slot data
-		item.parentAfterDrag = transform;
-		item.inventorySlotIndex = slotIndex;
-		itemInSlot = item;
-		UpdateSlotSize();
-		CheckIfItemInEquipmentSlot(item);
+		itemInSlot.transform.SetParent(item.parentAfterDrag, false);
+		itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
+		oldInventorySlot.itemInSlot = itemInSlot;
+		oldInventorySlot.UpdateSlotSize();
+		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
+	}
+	private void ClearItemFromSlot(InventorySlotUi oldInventorySlot)
+	{
+		oldInventorySlot.itemInSlot = null;
+		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 	}
 
 	public void CheckIfItemInEquipmentSlot(InventoryItem item)
@@ -149,6 +154,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			return true;
 
 		if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.generic)
+			return true;
+
+		if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.shopSlot)
 			return true;
 
 		if (item.itemType == InventoryItem.ItemType.isConsumable && slotType == SlotType.consumables)

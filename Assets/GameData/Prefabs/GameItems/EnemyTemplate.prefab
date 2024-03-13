@@ -625,6 +625,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -634,6 +635,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -643,6 +645,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -651,6 +654,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -659,6 +663,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -667,6 +672,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -675,6 +681,7 @@ MonoBehaviour:
     isPercentageStat: 0
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -683,6 +690,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -691,6 +699,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -699,6 +708,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -707,6 +717,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -715,6 +726,7 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
@@ -723,14 +735,16 @@ MonoBehaviour:
     isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
   rangedWeaponDamageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
+    basePercentageValue: 0
     finalPercentageValue: 0
     equipmentValue: 0
     equipmentPercentageValue: 0

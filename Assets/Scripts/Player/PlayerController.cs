@@ -29,6 +29,7 @@ public class PlayerController : MonoBehaviour
 	public event Action<EntityStats> OnNewTargetSelected;
 	public EntityStats selectedTarget;
 
+	//abilities
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
 	public event Action<Abilities> OnCancelQueuedAbilities;
 	public bool debugUseMouseDirectionForProjectiles;
@@ -76,6 +77,9 @@ public class PlayerController : MonoBehaviour
 		playerInputs.Enable();
 
 		SaveManager.OnGameLoad += ReloadPlayerLevel;
+		playerStats.OnStatChangeEvent += PlayerInfoUi.Instance.UpdatePlayerStatInfo;
+
+		Debug.Log(PlayerInfoUi.Instance);
 	}
 
 	private void OnDisable()
@@ -92,6 +96,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 		SaveManager.OnGameLoad -= ReloadPlayerLevel;
+		playerStats.OnStatChangeEvent -= PlayerInfoUi.Instance.UpdatePlayerStatInfo;
 	}
 
 	private void Update()
@@ -309,6 +314,7 @@ public class PlayerController : MonoBehaviour
 	private void OnInventory()
 	{
 		PlayerInventoryUi.Instance.ShowHideInventoryKeybind();
+		playerStats.UpdatePlayerStatInfo();
 	}
 	private void OnSkillTree()
 	{

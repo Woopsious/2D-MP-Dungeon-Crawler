@@ -45,7 +45,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void Start()
 	{
-		PlayerInfoAndInventoryPanelUi.SetActive(false);
 		Initilize();
 	}
 	private void OnEnable()
@@ -62,6 +61,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void Initilize()
 	{
+		PlayerInfoAndInventoryPanelUi.SetActive(false);
+
 		foreach (GameObject slot in LearntAbilitySlots)
 			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
 

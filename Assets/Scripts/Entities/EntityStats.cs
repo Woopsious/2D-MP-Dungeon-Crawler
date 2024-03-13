@@ -51,6 +51,8 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
+	public event Action<EntityStats> OnStatChangeEvent;
+
 	public event Action<GameObject> OnDeathEvent;
 
 	private void Start()
@@ -365,6 +367,8 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
+		UpdatePlayerStatInfo();
+
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
 		poisonDamagePercentageModifier.finalPercentageValue, fireDamagePercentageModifier.finalPercentageValue,
@@ -391,6 +395,7 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.iceDamagePercentage);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfo();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -421,6 +426,7 @@ public class EntityStats : MonoBehaviour
 		rangedWeaponDamageModifier.AddPercentageValue(statBoost.rangedWeaponDamageBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfo();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -452,7 +458,9 @@ public class EntityStats : MonoBehaviour
 			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
 			rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
 		}
+
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfo();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -472,6 +480,12 @@ public class EntityStats : MonoBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+	}
+
+	public void UpdatePlayerStatInfo()
+	{
+		Debug.Log("invoke update player Stats");
+		OnStatChangeEvent?.Invoke(this);
 	}
 
 	//Checks
