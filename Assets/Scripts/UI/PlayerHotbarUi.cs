@@ -27,6 +27,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	[Header("Hotbar Abilities")]
 	public GameObject queuedAbilityTextInfo;
+	public GameObject queuedAbilityAoe;
 	public Abilities queuedAbility;
 	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
@@ -76,9 +77,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void Update()
 	{
-		if (queuedAbilityTextInfo.activeInHierarchy)
-			queuedAbilityTextInfo.transform.position =
-				new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
+		DisplayQueuedAbilityUi();
 	}
 	private void OnEnable()
 	{
@@ -100,6 +99,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityAoe.SetActive(false);
 	}
 
 	//reset/clear any equipped abilities from ui
@@ -268,6 +268,11 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbility = ability;
 
 		queuedAbilityTextInfo.SetActive(true);
+		if (ability.abilityBaseRef.isAOE)
+		{
+			queuedAbilityAoe.SetActive(true);
+			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
+		}
 
 		if (canInstantCast)
 			player.CastQueuedAbility(ability);
@@ -276,12 +281,27 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		ability.CastAbility(player.GetComponent<EntityStats>());
 		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
 	}
 	public void OnCancelQueuedAbility(Abilities ability)
 	{
 		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
+	}
+	private void DisplayQueuedAbilityUi()
+	{
+		if (queuedAbilityTextInfo.activeInHierarchy)
+			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
+
+		if (queuedAbilityAoe.activeInHierarchy)
+			queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+	}
+	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
+	{
+		Vector3 scale = new Vector3(abilityRef.aoeSize, abilityRef.aoeSize, abilityRef.aoeSize);
+		queuedAbilityAoe.transform.localScale = scale;
 	}
 
 	//UI Player Updates
