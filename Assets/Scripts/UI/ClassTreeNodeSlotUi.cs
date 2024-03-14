@@ -124,7 +124,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
     }
 	public bool CheckIfAllPreRequisiteNodesUnlocked()
 	{
-		if (preRequisites.Count == 1)
+		if (preRequisites.Count != 0)
 		{
 			foreach (ClassTreeNodeSlotUi node in preRequisites)
 			{
@@ -133,15 +133,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			}
 			return false;
 		}
-		else
-		{
-			foreach (ClassTreeNodeSlotUi node in preRequisites)
-			{
-				if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-					return true;
-			}
-			return false;
-		}
+		else return true;
 	}
 
 	//node updates

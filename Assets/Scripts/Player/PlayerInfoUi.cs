@@ -54,8 +54,12 @@ public class PlayerInfoUi : MonoBehaviour
 
 	public int GetPercentageValue(Stat stat)
 	{
-		int newValue = (int)(stat.finalPercentageValue * 100);
+		float newValue;
+		newValue = stat.finalPercentageValue - 1;
+		Debug.Log("value -: " + newValue);
+		newValue *= 100;
+		Debug.Log("value *: " + newValue);
 
-		return newValue;
+		return Mathf.RoundToInt(newValue);
 	}
 }
