@@ -603,6 +603,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55dd00374a4b75e40856a2aa269bb404, type: 2}
   - {fileID: 11400000, guid: 00123595220a5194eba5b6afb9c30f6e, type: 2}
   - {fileID: 11400000, guid: f81d1027d20380e43a30e5d23cffdd23, type: 2}
+  startingGold: 500
 --- !u!114 &4928850030821427467
 MonoBehaviour:
   m_ObjectHideFlags: 0

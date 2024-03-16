@@ -19,11 +19,21 @@ public class Damageable : MonoBehaviour
 			CanOtherEntitiesDamageThis = false;
 	}
 
-	public void OnHitFromDamageSource(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool wasHitByPlayer)
+	public void OnHitFromDamageSource(Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
+		bool isPercentageValue, bool wasHitByPlayer)
 	{
 		if (DebugInvincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
 
+		ApplyHitForce(other, knockBack);
 		OnHit?.Invoke(damage, damageType, isPercentageValue, isDestroyedInOneHit);
+	}
+	public void ApplyHitForce(Collider2D other, float knockback)
+	{
+		if (GetComponent<Rigidbody2D>() == null || other == null) return;
+
+		Vector2 difference = other.transform.position + gameObject.transform.position;
+		difference = difference.normalized * knockback * 100;
+		GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
 	}
 }

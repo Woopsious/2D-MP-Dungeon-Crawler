@@ -22,6 +22,10 @@ public class PlayerInventoryManager : MonoBehaviour
 	public bool hasRecievedStartingItems;
 	public List<SOItems> startingItems = new List<SOItems>();
 
+	//player gold
+	public int playerGoldAmount;
+	public int startingGold;
+
 	public void Awake()
 	{
 		Instance = this;
@@ -85,7 +89,6 @@ public class PlayerInventoryManager : MonoBehaviour
 
 			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
 			//im just not sure of a better way to do it atm
-			go.AddComponent<Interactables>(); //add interactables script. set randomized stats
 			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
@@ -96,8 +99,25 @@ public class PlayerInventoryManager : MonoBehaviour
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 
 		if (!hasRecievedStartingItems)
+		{
+			UpdateGoldAmount(startingGold);
 			SpawnStartingItems();
+		}
+		else
+			UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
 	}
+
+	//player gold
+	public int GetGoldAmount()
+	{
+		return playerGoldAmount;
+	}
+	public void UpdateGoldAmount(int gold)
+	{
+		playerGoldAmount += gold;
+		GetGoldAmount();
+	}
+
 	//on item pickup
 	public void AddNewItemToPlayerInventory(Items item)
 	{

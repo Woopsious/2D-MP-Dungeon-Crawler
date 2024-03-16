@@ -196,6 +196,7 @@ public class SaveManager : MonoBehaviour
 		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
 		GameData.playerCurrenthealth = playerStats.currentHealth;
 		GameData.playerCurrentMana = playerStats.currentMana;
+		GameData.playerGoldAmount = playerStats.GetComponent<PlayerInventoryManager>().GetGoldAmount();
 	}
 	private void SavePlayerInventoryData()
 	{
@@ -205,6 +206,7 @@ public class SaveManager : MonoBehaviour
 		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
 		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
 		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
+		GrabQuestDataFromActiveOnes(GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
 	}
 	private void SavePlayerClassData()
 	{
@@ -242,6 +244,29 @@ public class SaveManager : MonoBehaviour
 				};
 				itemDataList.Add(itemData);
 			}
+		}
+	}
+	private void GrabQuestDataFromActiveOnes(List<QuestItemData> questDataList, List<QuestSlotsUi> activeQuestList)
+	{
+		questDataList.Clear();
+
+		foreach (QuestSlotsUi quest in activeQuestList)
+		{
+			QuestItemData questData = new()
+			{
+				questType = (QuestItemData.QuestType)quest.questType,
+				amount = quest.amount,
+				currentAmount = quest.currentAmount,
+				entityToKill = quest.entityToKill,
+				weaponToHandIn = quest.weaponToHandIn,
+				armorToHandIn = quest.armorToHandIn,
+				accessoryToHandIn = quest.accessoryToHandIn,
+				consumableToHandIn = quest.consumableToHandIn,
+				itemTypeToHandIn = (QuestItemData.ItemType)quest.questType,
+				questRewardType = (QuestItemData.RewardType)quest.questRewardType,
+				rewardToAdd = quest.rewardToAdd
+			};
+			questDataList.Add(questData);
 		}
 	}
 
@@ -282,6 +307,7 @@ public class GameData
 	public int playerCurrentExp;
 	public int playerCurrenthealth;
 	public int playerCurrentMana;
+	public int playerGoldAmount;
 
 	public bool hasRecievedStartingItems;
 
@@ -292,6 +318,8 @@ public class GameData
 	public List<InventoryItemData> equipmentItems = new List<InventoryItemData>();
 	public List<InventoryItemData> consumableItems = new List<InventoryItemData>();
 	public List<InventoryItemData> abilityItems = new List<InventoryItemData>();
+
+	public List<QuestItemData> activePlayerQuests = new List<QuestItemData>();
 }
 
 [System.Serializable]
@@ -318,4 +346,39 @@ public class InventoryItemData
 	public bool isStackable;
 	public int maxStackCount;
 	public int currentStackCount;
+}
+[System.Serializable]
+public class QuestItemData
+{
+	[Header("Quest Info")]
+	public QuestType questType;
+	public enum QuestType
+	{
+		isBossKillQuest, isKillQuest, isItemHandInQuest
+	}
+	public float amount;
+	public float currentAmount;
+
+	[Header("Kill Quest Info")]
+	public SOEntityStats entityToKill;
+
+	[Header("Item Quest Info")]
+	public SOWeapons weaponToHandIn;
+	public SOArmors armorToHandIn;
+	public SOAccessories accessoryToHandIn;
+	public SOConsumables consumableToHandIn;
+
+	public ItemType itemTypeToHandIn;
+	public enum ItemType
+	{
+		isConsumable, isWeapon, isArmor, isAccessory, isAbility
+	}
+
+	[Header("Quest Reward")]
+	public RewardType questRewardType;
+	public enum RewardType
+	{
+		isExpReward, isGoldReward
+	}
+	public int rewardToAdd;
 }

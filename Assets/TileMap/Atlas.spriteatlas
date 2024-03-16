@@ -76,6 +76,7 @@ SpriteAtlas:
     - 76686699748622a48b566623ca98afc6: -256620199
     - 76686699748622a48b566623ca98afc6: -1782689878
     - 76686699748622a48b566623ca98afc6: -762973996
+    - 76686699748622a48b566623ca98afc6: -2090949032
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
   - {fileID: -1729793132, guid: 76686699748622a48b566623ca98afc6, type: 3}
@@ -104,6 +105,7 @@ SpriteAtlas:
   - {fileID: -256620199, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -1782689878, guid: 76686699748622a48b566623ca98afc6, type: 3}
   - {fileID: -762973996, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  - {fileID: -2090949032, guid: 76686699748622a48b566623ca98afc6, type: 3}
   m_PackedSpriteNamesToIndex:
   - Dungeon TileSheet 16x16_1
   - Dungeon TileSheet 16x16_0
@@ -131,6 +133,7 @@ SpriteAtlas:
   - Chest_Full
   - ManaPotion
   - Chest_Closed
+  - NPC_Quests
   m_RenderDataMap: {}
   m_Tag: Atlas
   m_IsVariant: 0

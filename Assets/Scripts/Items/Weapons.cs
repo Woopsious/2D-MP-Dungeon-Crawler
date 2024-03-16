@@ -76,7 +76,7 @@ public class Weapons : Items
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
 			percentageMod += singleHandMod;
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
-			percentageMod += singleHandMod;
+			percentageMod += duelHandMod;
 
 		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
 			percentageMod += rangedMod;
@@ -84,17 +84,16 @@ public class Weapons : Items
 		damage = (int)(damage * percentageMod);
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
+	protected override void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<Damageable>() == null || isEquippedByPlayer == false && isEquippedByOther == false) return;
+		if (!isEquippedByPlayer && !isEquippedByOther)
+			base.OnTriggerEnter2D(other);
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType,
-			false, isEquippedByPlayer);
+		if (!isEquippedByPlayer && !isEquippedByOther) return;
+		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
 
-		Vector2 difference = other.transform.position - gameObject.transform.position;
-		difference = difference.normalized * weaponBaseRef.baseKnockback * 100;
-		//Debug.LogWarning(difference.normalized);
-		other.GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
+		other.GetComponent<Damageable>().OnHitFromDamageSource(boxCollider, damage, 
+			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
 	}
 	public void Attack(Vector3 positionOfThingToAttack)
 	{

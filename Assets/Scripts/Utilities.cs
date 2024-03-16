@@ -7,11 +7,11 @@ using UnityEngine.SceneManagement;
 public class Utilities
 {
 	//return random number
-	public static int GetRandomNumber(int num)
+	public static int GetRandomNumber(int num) //returns num between 0 and num -1
 	{
 		return Random.Range(0, num);
 	}
-	public static int GetRandomNumberBetween(int numOne, int numTwo)
+	public static int GetRandomNumberBetween(int numOne, int numTwo) //returns num between numOne and numTwo -1
 	{
 		return Random.Range(numOne, numTwo);
 	}

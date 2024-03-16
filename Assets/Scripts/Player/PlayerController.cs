@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
@@ -76,7 +77,7 @@ public class PlayerController : MonoBehaviour
 			playerInputs = new PlayerInputActions();
 		playerInputs.Enable();
 
-		SaveManager.OnGameLoad += ReloadPlayerLevel;
+		SaveManager.OnGameLoad += ReloadPlayerInfo;
 	}
 	private void OnDisable()
 	{
@@ -91,7 +92,7 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities -= OnUseQueuedAbility;
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
-		SaveManager.OnGameLoad -= ReloadPlayerLevel;
+		SaveManager.OnGameLoad -= ReloadPlayerInfo;
 		playerStats.OnStatChangeEvent -= PlayerInfoUi.Instance.UpdatePlayerStatInfo;
 	}
 
@@ -108,7 +109,7 @@ public class PlayerController : MonoBehaviour
 		UpdateAnimationState();
 	}
 
-	private void ReloadPlayerLevel()
+	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
 		playerStats.CalculateBaseStats();

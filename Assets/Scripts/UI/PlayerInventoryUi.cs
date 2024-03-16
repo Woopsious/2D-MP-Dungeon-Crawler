@@ -81,7 +81,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
-		foreach (InventoryItemData itemData in itemDataList) //spawn item from loot pool at death location
+		foreach (InventoryItemData itemData in itemDataList)
 		{
 			GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
@@ -328,7 +328,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(true);
 
-		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerJournalUi.Instance.HidePlayerJournal();
 		PlayerInventoryUi.Instance.HideLearntAbilities();
 		ClassesUi.Instance.HidePlayerClassSelection();
 		ClassesUi.Instance.HideClassSkillTree();
@@ -349,7 +349,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		LearntAbilitiesPanelUi.SetActive(true);
 
-		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerJournalUi.Instance.HidePlayerJournal();
 		PlayerInventoryUi.Instance.HideInventory();
 		ClassesUi.Instance.HidePlayerClassSelection();
 		ClassesUi.Instance.HideClassSkillTree();

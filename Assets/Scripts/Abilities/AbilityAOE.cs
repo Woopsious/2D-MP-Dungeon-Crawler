@@ -73,7 +73,7 @@ public class AbilityAOE : MonoBehaviour
 		}
 		else
 		{
-			other.GetComponent<Damageable>().OnHitFromDamageSource(aoeDamage, (IDamagable.DamageType)damageType,
+			other.GetComponent<Damageable>().OnHitFromDamageSource(other, aoeDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
 		}
 	}

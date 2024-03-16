@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Items : MonoBehaviour
+public class Items : MonoBehaviour, IInteractable
 {
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;
@@ -104,23 +104,30 @@ public class Items : MonoBehaviour
 		//display what item it is eg: item price and name and rarity
 		//in child classes also display weapon stats if weapon or armor stats if armor
 	}
-	public virtual void PickUpItem()
+
+	//item interactions
+	public void Interact(PlayerController playerController)
 	{
-		if (PlayerInventoryManager.Instance.CheckIfInventoryFull())
+		PlayerInventoryManager playerInventory = playerController.GetComponent<PlayerInventoryManager>();
+		if (playerInventory.CheckIfInventoryFull())
 		{
 			Debug.LogWarning("Inventory is full");
 			return;
 		}
 
-		PlayerInventoryManager.Instance.AddNewItemToPlayerInventory(this);
+		playerInventory.AddNewItemToPlayerInventory(this);
 		Destroy(gameObject);
+	}
+	protected virtual void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.GetComponent<PlayerController>() != null)
+			Interact(other.GetComponent<PlayerController>());
 	}
 
 	//Debug functions
 	public void GenerateStatsOnStart()
 	{
 		Initilize(rarity, itemLevel);
-		gameObject.AddComponent<Interactables>();
 		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
 		collider2D.isTrigger = true;
 	}

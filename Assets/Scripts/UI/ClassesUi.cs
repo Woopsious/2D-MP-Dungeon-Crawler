@@ -182,7 +182,7 @@ public class ClassesUi : MonoBehaviour
 	{
 		playerClassSelectionPanel.SetActive(true);
 
-		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerJournalUi.Instance.HidePlayerJournal();
 		PlayerInventoryUi.Instance.HideInventory();
 		PlayerInventoryUi.Instance.HideLearntAbilities();
 		ClassesUi.Instance.HideClassSkillTree();
@@ -217,7 +217,7 @@ public class ClassesUi : MonoBehaviour
 		if (thisClass == mageClass)
 			MageClassPanel.SetActive(true);
 
-		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerJournalUi.Instance.HidePlayerJournal();
 		PlayerInventoryUi.Instance.HideInventory();
 		PlayerInventoryUi.Instance.HideLearntAbilities();
 		ClassesUi.Instance.HidePlayerClassSelection();

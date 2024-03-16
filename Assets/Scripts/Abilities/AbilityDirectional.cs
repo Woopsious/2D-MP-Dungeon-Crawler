@@ -55,7 +55,7 @@ public class AbilityDirectional : MonoBehaviour
 			other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !isPlayerProjectile)
 			return;
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(projectileDamage, (IDamagable.DamageType)damageType, 
+		other.GetComponent<Damageable>().OnHitFromDamageSource(other ,projectileDamage, (IDamagable.DamageType)damageType, 0,
 			abilityBaseRef.isDamagePercentageBased ,isPlayerProjectile);
 
 		Destroy(gameObject);

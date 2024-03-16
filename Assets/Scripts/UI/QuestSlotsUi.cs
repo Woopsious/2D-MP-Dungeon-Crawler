@@ -59,12 +59,13 @@ public class QuestSlotsUi : MonoBehaviour
 	public List<SOAccessories> possibleAccessories = new List<SOAccessories>();
 	public List<SOConsumables> possibleConsumables = new List<SOConsumables>();
 
+	public event Action OnQuestComplete;
 	public event Action OnQuestAbandon;
 
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
-		//entityToKill = (randomly select one from list of bosses)
+		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count)];
 		amount = 1;
 
 		SetUpQuestName();
@@ -74,8 +75,8 @@ public class QuestSlotsUi : MonoBehaviour
 	public void InitilizeKillQuest()
 	{
 		questType = QuestType.isKillQuest;
-		//entityToKill = (randomly select one from list of enemies)
-		amount = Utilities.GetRandomNumberBetween(4, 8);
+		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count)];
+		amount = Utilities.GetRandomNumberBetween(5, 9);
 
 		SetUpQuestName();
 		SetUpQuestDescription();
@@ -84,26 +85,26 @@ public class QuestSlotsUi : MonoBehaviour
 	public void InitilizeItemHandInQuest()
 	{
 		questType = QuestType.isItemHandInQuest;
-		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(4);
+		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(5);
 
 		if (itemTypeToHandIn == ItemType.isWeapon)
 		{
-			//weaponToHandIn = (get random item to hand in from list)
+			weaponToHandIn = possibleWeapons[Utilities.GetRandomNumber(possibleWeapons.Count)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isArmor)
 		{
-			//armorToHandIn = (get random item to hand in from list)
+			armorToHandIn = possibleArmors[Utilities.GetRandomNumber(possibleArmors.Count)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isAccessory)
 		{
-			//accessoryToHandIn = (get random item to hand in from list)
+			accessoryToHandIn = possibleAccessories[Utilities.GetRandomNumber(possibleAccessories.Count)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isConsumable)
 		{
-			//consumableToHandIn = (get random item to hand in from list)
+			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count)];
 			amount = 5;
 		}
 
@@ -182,16 +183,16 @@ public class QuestSlotsUi : MonoBehaviour
 	}
 	private void SetUpQuestReward()
 	{
-		questRewardType = (RewardType)Utilities.GetRandomNumber(1);
+		questRewardType = (RewardType)Utilities.GetRandomNumber(2);
 
 		if (questRewardType == RewardType.isExpReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(149, 300);
+			rewardToAdd = Utilities.GetRandomNumberBetween(150, 301);
 			questRewardUi.text = $"Reward: {rewardToAdd} Exp";
 		}
 		if (questRewardType == RewardType.isGoldReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(299, 500);
+			rewardToAdd = Utilities.GetRandomNumberBetween(300, 501);
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
 	}
@@ -227,8 +228,9 @@ public class QuestSlotsUi : MonoBehaviour
 			CompleteThisQuest();
 	}
 
-	private void CompleteThisQuest()
+	public void CompleteThisQuest()
 	{
+		OnQuestComplete?.Invoke();
 		//do stuff to complete quest
 	}
 	public void AbandonQuest()

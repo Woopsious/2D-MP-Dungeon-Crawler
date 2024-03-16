@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IInteractable.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
@@ -91,11 +92,11 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
-    <Compile Include="Assets\Scripts\Interactables.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityDirectional.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryManager.cs" />
+    <Compile Include="Assets\Scripts\NPC&apos;s\NpcHandler.cs" />
     <Compile Include="Assets\Scripts\UI\QuestSlotsUi.cs" />
     <Compile Include="Assets\Scripts\UI\ClassesUi.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
