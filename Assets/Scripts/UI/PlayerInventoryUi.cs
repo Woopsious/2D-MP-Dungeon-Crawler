@@ -12,16 +12,14 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	public GameObject ItemUiPrefab;
 	public GameObject PlayerInfoAndInventoryPanelUi;
+	public GameObject LearntAbilitiesPanelUi;
 
 	[Header("Inventory items")]
-	public GameObject LearntAbilitiesTextObj;
 	public GameObject LearntAbilitiesUi;
-	public GameObject closeLearntAbilitiesButtonObj;
 	public List<GameObject> LearntAbilitySlots = new List<GameObject>();
 
 	[Header("Inventory items")]
 	public GameObject InventoryUi;
-	public GameObject closeInventoryButtonObj;
 	public List<GameObject> InventorySlots = new List<GameObject>();
 
 	[Header("Equipment items")]
@@ -329,7 +327,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void ShowInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(true);
-		HideLearntAbilities();
+
+		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerInventoryUi.Instance.HideLearntAbilities();
+		ClassesUi.Instance.HidePlayerClassSelection();
+		ClassesUi.Instance.HideClassSkillTree();
 	}
 	public void HideInventory()
 	{
@@ -345,15 +347,15 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	public void ShowLearntAbilities()
 	{
-		LearntAbilitiesTextObj.SetActive(true);
-		LearntAbilitiesUi.SetActive(true);
-		closeLearntAbilitiesButtonObj.SetActive(true);
-		HideInventory();
+		LearntAbilitiesPanelUi.SetActive(true);
+
+		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerInventoryUi.Instance.HideInventory();
+		ClassesUi.Instance.HidePlayerClassSelection();
+		ClassesUi.Instance.HideClassSkillTree();
 	}
 	public void HideLearntAbilities()
 	{
-		LearntAbilitiesTextObj.SetActive(false);
-		LearntAbilitiesUi.SetActive(false);
-		closeLearntAbilitiesButtonObj.SetActive(false);
+		LearntAbilitiesPanelUi.SetActive(false);
 	}
 }

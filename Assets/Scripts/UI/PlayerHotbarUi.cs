@@ -209,6 +209,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
 	}
+	public void OpenPlayerJournalButton()
+	{
+		PlayerJournalUi.Instance.ShowPlayerJournal();
+	}
 
 	//UI TargetSelection
 	public void OnNewTargetSelected(EntityStats entityStats)

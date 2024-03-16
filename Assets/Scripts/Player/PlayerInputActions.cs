@@ -82,6 +82,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""ClassSelection"",
+                    ""type"": ""Button"",
+                    ""id"": ""db0e87a2-54c8-4272-a01c-1018f911390e"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""SkillTree"",
                     ""type"": ""Button"",
                     ""id"": ""17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf"",
@@ -94,6 +103,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""name"": ""LearntAbilities"",
                     ""type"": ""Button"",
                     ""id"": ""641a7cf8-2aaa-420f-b263-fee64d017918"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Journal"",
+                    ""type"": ""Button"",
+                    ""id"": ""cb9c16ae-bd49-4af4-bb8c-0f9dc20bc05f"",
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": """",
@@ -343,7 +361,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""8a59e2ad-78c5-4930-b9cc-bc86d8271618"",
-                    ""path"": ""<Keyboard>/g"",
+                    ""path"": ""<Keyboard>/x"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -372,6 +390,28 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""RightClick"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""86d6e498-b35c-4906-800c-4f7623a8a01d"",
+                    ""path"": ""<Keyboard>/z"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ClassSelection"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4e4e12c0-a7d5-4071-a7f2-321b4a499027"",
+                    ""path"": ""<Keyboard>/j"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Journal"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -386,8 +426,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
         m_Player_MainMenu = m_Player.FindAction("MainMenu", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
+        m_Player_ClassSelection = m_Player.FindAction("ClassSelection", throwIfNotFound: true);
         m_Player_SkillTree = m_Player.FindAction("SkillTree", throwIfNotFound: true);
         m_Player_LearntAbilities = m_Player.FindAction("LearntAbilities", throwIfNotFound: true);
+        m_Player_Journal = m_Player.FindAction("Journal", throwIfNotFound: true);
         m_Player_ConsumablesOne = m_Player.FindAction("ConsumablesOne", throwIfNotFound: true);
         m_Player_ConsumablesTwo = m_Player.FindAction("ConsumablesTwo", throwIfNotFound: true);
         m_Player_AbilityOne = m_Player.FindAction("AbilityOne", throwIfNotFound: true);
@@ -462,8 +504,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_RightClick;
     private readonly InputAction m_Player_MainMenu;
     private readonly InputAction m_Player_Inventory;
+    private readonly InputAction m_Player_ClassSelection;
     private readonly InputAction m_Player_SkillTree;
     private readonly InputAction m_Player_LearntAbilities;
+    private readonly InputAction m_Player_Journal;
     private readonly InputAction m_Player_ConsumablesOne;
     private readonly InputAction m_Player_ConsumablesTwo;
     private readonly InputAction m_Player_AbilityOne;
@@ -481,8 +525,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
         public InputAction @MainMenu => m_Wrapper.m_Player_MainMenu;
         public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
+        public InputAction @ClassSelection => m_Wrapper.m_Player_ClassSelection;
         public InputAction @SkillTree => m_Wrapper.m_Player_SkillTree;
         public InputAction @LearntAbilities => m_Wrapper.m_Player_LearntAbilities;
+        public InputAction @Journal => m_Wrapper.m_Player_Journal;
         public InputAction @ConsumablesOne => m_Wrapper.m_Player_ConsumablesOne;
         public InputAction @ConsumablesTwo => m_Wrapper.m_Player_ConsumablesTwo;
         public InputAction @AbilityOne => m_Wrapper.m_Player_AbilityOne;
@@ -517,12 +563,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Inventory.started += instance.OnInventory;
             @Inventory.performed += instance.OnInventory;
             @Inventory.canceled += instance.OnInventory;
+            @ClassSelection.started += instance.OnClassSelection;
+            @ClassSelection.performed += instance.OnClassSelection;
+            @ClassSelection.canceled += instance.OnClassSelection;
             @SkillTree.started += instance.OnSkillTree;
             @SkillTree.performed += instance.OnSkillTree;
             @SkillTree.canceled += instance.OnSkillTree;
             @LearntAbilities.started += instance.OnLearntAbilities;
             @LearntAbilities.performed += instance.OnLearntAbilities;
             @LearntAbilities.canceled += instance.OnLearntAbilities;
+            @Journal.started += instance.OnJournal;
+            @Journal.performed += instance.OnJournal;
+            @Journal.canceled += instance.OnJournal;
             @ConsumablesOne.started += instance.OnConsumablesOne;
             @ConsumablesOne.performed += instance.OnConsumablesOne;
             @ConsumablesOne.canceled += instance.OnConsumablesOne;
@@ -566,12 +618,18 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @Inventory.started -= instance.OnInventory;
             @Inventory.performed -= instance.OnInventory;
             @Inventory.canceled -= instance.OnInventory;
+            @ClassSelection.started -= instance.OnClassSelection;
+            @ClassSelection.performed -= instance.OnClassSelection;
+            @ClassSelection.canceled -= instance.OnClassSelection;
             @SkillTree.started -= instance.OnSkillTree;
             @SkillTree.performed -= instance.OnSkillTree;
             @SkillTree.canceled -= instance.OnSkillTree;
             @LearntAbilities.started -= instance.OnLearntAbilities;
             @LearntAbilities.performed -= instance.OnLearntAbilities;
             @LearntAbilities.canceled -= instance.OnLearntAbilities;
+            @Journal.started -= instance.OnJournal;
+            @Journal.performed -= instance.OnJournal;
+            @Journal.canceled -= instance.OnJournal;
             @ConsumablesOne.started -= instance.OnConsumablesOne;
             @ConsumablesOne.performed -= instance.OnConsumablesOne;
             @ConsumablesOne.canceled -= instance.OnConsumablesOne;
@@ -618,8 +676,10 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnRightClick(InputAction.CallbackContext context);
         void OnMainMenu(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
+        void OnClassSelection(InputAction.CallbackContext context);
         void OnSkillTree(InputAction.CallbackContext context);
         void OnLearntAbilities(InputAction.CallbackContext context);
+        void OnJournal(InputAction.CallbackContext context);
         void OnConsumablesOne(InputAction.CallbackContext context);
         void OnConsumablesTwo(InputAction.CallbackContext context);
         void OnAbilityOne(InputAction.CallbackContext context);

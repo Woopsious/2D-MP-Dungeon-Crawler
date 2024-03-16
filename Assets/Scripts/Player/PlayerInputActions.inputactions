@@ -60,6 +60,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "ClassSelection",
+                    "type": "Button",
+                    "id": "db0e87a2-54c8-4272-a01c-1018f911390e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "SkillTree",
                     "type": "Button",
                     "id": "17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf",
@@ -72,6 +81,15 @@
                     "name": "LearntAbilities",
                     "type": "Button",
                     "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Journal",
+                    "type": "Button",
+                    "id": "cb9c16ae-bd49-4af4-bb8c-0f9dc20bc05f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -321,7 +339,7 @@
                 {
                     "name": "",
                     "id": "8a59e2ad-78c5-4930-b9cc-bc86d8271618",
-                    "path": "<Keyboard>/g",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -348,6 +366,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "RightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86d6e498-b35c-4906-800c-4f7623a8a01d",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClassSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4e4e12c0-a7d5-4071-a7f2-321b4a499027",
+                    "path": "<Keyboard>/j",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Journal",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

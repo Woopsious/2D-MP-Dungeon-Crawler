@@ -6,7 +6,12 @@ public class SOEntityStats : ScriptableObject
 {
 	public string entityName;
 	public Sprite sprite;
-	public bool isPlayer;
+
+	public HumanoidTypes humanoidType;
+	public enum HumanoidTypes
+	{
+		isPlayer, isGoblin
+	}
 
 	public int expOnDeath;
 

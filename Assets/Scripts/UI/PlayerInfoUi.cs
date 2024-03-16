@@ -15,13 +15,11 @@ public class PlayerInfoUi : MonoBehaviour
 
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
-		Debug.Log("updates player info");
-
 		string mainInfo = $"(Player Name)\nHealth: {stats.currentHealth} / {stats.maxHealth.finalValue}" +
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";
 
 		string weaponInfo;
-		if (stats.equipmentHandler.equippedWeapon != null)
+		if (stats.equipmentHandler != null && stats.equipmentHandler.equippedWeapon != null)
 		{
 			weaponInfo = $"\r\n\r\nWeapon Damage: {stats.equipmentHandler.equippedWeapon.damage}";
 			string rangeInfo;
@@ -51,14 +49,11 @@ public class PlayerInfoUi : MonoBehaviour
 
 		playerInfo.text = mainInfo + weaponInfo + damageBonusInfo + resistanceInfo;
 	}
-
 	public int GetPercentageValue(Stat stat)
 	{
 		float newValue;
 		newValue = stat.finalPercentageValue - 1;
-		Debug.Log("value -: " + newValue);
 		newValue *= 100;
-		Debug.Log("value *: " + newValue);
 
 		return Mathf.RoundToInt(newValue);
 	}

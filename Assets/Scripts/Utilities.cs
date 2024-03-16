@@ -11,6 +11,10 @@ public class Utilities
 	{
 		return Random.Range(0, num);
 	}
+	public static int GetRandomNumberBetween(int numOne, int numTwo)
+	{
+		return Random.Range(numOne, numTwo);
+	}
 	public static Vector3 GetRandomPointInBounds(Bounds bounds)
 	{
 		return new Vector3(

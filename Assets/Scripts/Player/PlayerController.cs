@@ -56,6 +56,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Start()
 	{
+		playerStats.OnStatChangeEvent += PlayerInfoUi.Instance.UpdatePlayerStatInfo;
 		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange; //would be in OnEnable but i get null ref
 		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
@@ -69,7 +70,6 @@ public class PlayerController : MonoBehaviour
 		playerStats.entityLevel = 20;
 		playerStats.CalculateBaseStats();
 	}
-
 	private void OnEnable()
 	{
 		if (playerInputs == null)
@@ -77,11 +77,7 @@ public class PlayerController : MonoBehaviour
 		playerInputs.Enable();
 
 		SaveManager.OnGameLoad += ReloadPlayerLevel;
-		playerStats.OnStatChangeEvent += PlayerInfoUi.Instance.UpdatePlayerStatInfo;
-
-		Debug.Log(PlayerInfoUi.Instance);
 	}
-
 	private void OnDisable()
 	{
 		playerInputs.Disable();
@@ -103,7 +99,6 @@ public class PlayerController : MonoBehaviour
 	{
 		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 10);
 	}
-
 	private void FixedUpdate()
 	{
 		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
@@ -314,7 +309,10 @@ public class PlayerController : MonoBehaviour
 	private void OnInventory()
 	{
 		PlayerInventoryUi.Instance.ShowHideInventoryKeybind();
-		playerStats.UpdatePlayerStatInfo();
+	}
+	private void OnClassSelection()
+	{
+		ClassesUi.Instance.ShowHidePlayerClassSelection();
 	}
 	private void OnSkillTree()
 	{
@@ -323,5 +321,9 @@ public class PlayerController : MonoBehaviour
 	private void OnLearntAbilities()
 	{
 		PlayerInventoryUi.Instance.ShowHideLearntAbilitiesKeybind();
+	}
+	private void OnJournal()
+	{
+		PlayerJournalUi.Instance.ShowHidePlayerJournal();
 	}
 }

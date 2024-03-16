@@ -163,22 +163,29 @@ public class ClassesUi : MonoBehaviour
 		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;
 		ShowClassSkillTree(newClass);
-		HidePlayerClassSelection();
 	}
 	public void ResetCurrentClassButton()
 	{
 		OnClassReset?.Invoke(currentPlayerClass);
-
 		currentUnlockedClassNodes.Clear();
 	}
 
+	//class selection
+	public void ShowHidePlayerClassSelection()
+	{
+		if (playerClassSelectionPanel.activeInHierarchy)
+			HidePlayerClassSelection();
+		else
+			ShowPlayerClassSelection();
+	}
 	public void ShowPlayerClassSelection()
 	{
 		playerClassSelectionPanel.SetActive(true);
-	}
-	public void CloseClassSelectionButton()
-	{
-		HidePlayerClassSelection();
+
+		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerInventoryUi.Instance.HideInventory();
+		PlayerInventoryUi.Instance.HideLearntAbilities();
+		ClassesUi.Instance.HideClassSkillTree();
 	}
 	public void HidePlayerClassSelection()
 	{
@@ -209,10 +216,11 @@ public class ClassesUi : MonoBehaviour
 			rangerClassPanel.SetActive(true);
 		if (thisClass == mageClass)
 			MageClassPanel.SetActive(true);
-	}
-	public void CloseClassSkillTreeButton()
-	{
-		HideClassSkillTree();
+
+		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerInventoryUi.Instance.HideInventory();
+		PlayerInventoryUi.Instance.HideLearntAbilities();
+		ClassesUi.Instance.HidePlayerClassSelection();
 	}
 	public void HideClassSkillTree()
 	{

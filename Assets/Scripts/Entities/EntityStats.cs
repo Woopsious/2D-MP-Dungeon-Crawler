@@ -484,14 +484,13 @@ public class EntityStats : MonoBehaviour
 
 	public void UpdatePlayerStatInfo()
 	{
-		Debug.Log("invoke update player Stats");
 		OnStatChangeEvent?.Invoke(this);
 	}
 
 	//Checks
 	public bool IsPlayerEntity()
 	{
-		if (entityBaseStats.isPlayer)
+		if (entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
 			return true;
 		else return false;
 	}
