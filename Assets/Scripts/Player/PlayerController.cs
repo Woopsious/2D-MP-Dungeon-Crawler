@@ -39,6 +39,10 @@ public class PlayerController : MonoBehaviour
 
 	public Abilities queuedAbility;
 
+	//interactions
+	[HideInInspector] public bool isInteractingWithSomething;
+	private NpcHandler currentInteractedNpc;
+
 	private void Awake()
 	{
 		Initilize();
@@ -228,6 +232,24 @@ public class PlayerController : MonoBehaviour
 	}
 
 	/// <summary>
+	/// Below are functions to link to player so they can interact with them
+	/// </summary>
+	
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.GetComponent<NpcHandler>() != null)
+			currentInteractedNpc = other.GetComponent<NpcHandler>();
+	}
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if (other.GetComponent<NpcHandler>() != null)
+		{
+			currentInteractedNpc.UnInteract(this);
+			currentInteractedNpc = null;
+		}
+	}
+
+	/// <summary>
 	/// Below are all player actions
 	/// </summary>
 
@@ -256,6 +278,16 @@ public class PlayerController : MonoBehaviour
 		float value = playerInputs.Player.CameraZoom.ReadValue<float>();
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
+	}
+	private void OnInteract()
+	{
+		if (currentInteractedNpc != null)
+		{
+			if (PlayerJournalUi.Instance.npcJournalPanalUi.activeInHierarchy)
+				currentInteractedNpc.UnInteract(this);
+			else
+				currentInteractedNpc.Interact(this);
+		}
 	}
 
 	//hotbar actions
@@ -325,6 +357,6 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnJournal()
 	{
-		PlayerJournalUi.Instance.ShowHidePlayerJournal();
+		PlayerJournalUi.Instance.ShowHidePlayerJournal(this);
 	}
 }

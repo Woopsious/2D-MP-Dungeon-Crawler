@@ -118,6 +118,10 @@ public class Items : MonoBehaviour, IInteractable
 		playerInventory.AddNewItemToPlayerInventory(this);
 		Destroy(gameObject);
 	}
+	public void UnInteract(PlayerController playerController)
+	{
+
+	}
 	protected virtual void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.GetComponent<PlayerController>() != null)

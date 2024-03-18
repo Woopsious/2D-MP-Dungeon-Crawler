@@ -64,6 +64,15 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": false
                 },
                 {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""23ef1617-a567-4225-9809-90a9d0a5e36f"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
                     ""name"": ""MainMenu"",
                     ""type"": ""Button"",
                     ""id"": ""6d7e1c7f-f3b3-445a-a98b-b1257b56c154"",
@@ -412,6 +421,17 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Journal"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""d0dfce21-05b9-439f-913d-c13fef6b5cff"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -424,6 +444,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         m_Player_CameraZoom = m_Player.FindAction("CameraZoom", throwIfNotFound: true);
         m_Player_MainAttack = m_Player.FindAction("MainAttack", throwIfNotFound: true);
         m_Player_RightClick = m_Player.FindAction("RightClick", throwIfNotFound: true);
+        m_Player_Interact = m_Player.FindAction("Interact", throwIfNotFound: true);
         m_Player_MainMenu = m_Player.FindAction("MainMenu", throwIfNotFound: true);
         m_Player_Inventory = m_Player.FindAction("Inventory", throwIfNotFound: true);
         m_Player_ClassSelection = m_Player.FindAction("ClassSelection", throwIfNotFound: true);
@@ -502,6 +523,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_CameraZoom;
     private readonly InputAction m_Player_MainAttack;
     private readonly InputAction m_Player_RightClick;
+    private readonly InputAction m_Player_Interact;
     private readonly InputAction m_Player_MainMenu;
     private readonly InputAction m_Player_Inventory;
     private readonly InputAction m_Player_ClassSelection;
@@ -523,6 +545,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         public InputAction @CameraZoom => m_Wrapper.m_Player_CameraZoom;
         public InputAction @MainAttack => m_Wrapper.m_Player_MainAttack;
         public InputAction @RightClick => m_Wrapper.m_Player_RightClick;
+        public InputAction @Interact => m_Wrapper.m_Player_Interact;
         public InputAction @MainMenu => m_Wrapper.m_Player_MainMenu;
         public InputAction @Inventory => m_Wrapper.m_Player_Inventory;
         public InputAction @ClassSelection => m_Wrapper.m_Player_ClassSelection;
@@ -557,6 +580,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @RightClick.started += instance.OnRightClick;
             @RightClick.performed += instance.OnRightClick;
             @RightClick.canceled += instance.OnRightClick;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
             @MainMenu.started += instance.OnMainMenu;
             @MainMenu.performed += instance.OnMainMenu;
             @MainMenu.canceled += instance.OnMainMenu;
@@ -612,6 +638,9 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
             @RightClick.started -= instance.OnRightClick;
             @RightClick.performed -= instance.OnRightClick;
             @RightClick.canceled -= instance.OnRightClick;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
             @MainMenu.started -= instance.OnMainMenu;
             @MainMenu.performed -= instance.OnMainMenu;
             @MainMenu.canceled -= instance.OnMainMenu;
@@ -674,6 +703,7 @@ public partial class @PlayerInputActions: IInputActionCollection2, IDisposable
         void OnCameraZoom(InputAction.CallbackContext context);
         void OnMainAttack(InputAction.CallbackContext context);
         void OnRightClick(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
         void OnMainMenu(InputAction.CallbackContext context);
         void OnInventory(InputAction.CallbackContext context);
         void OnClassSelection(InputAction.CallbackContext context);

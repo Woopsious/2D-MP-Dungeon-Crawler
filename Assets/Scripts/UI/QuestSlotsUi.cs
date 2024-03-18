@@ -13,6 +13,7 @@ public class QuestSlotsUi : MonoBehaviour
 	public TMP_Text questTrackerUi;
 	public TMP_Text questRewardUi;
 	public Image questImage;
+	public GameObject acceptQuestButtonObj;
 
 	[Header("Quest Info")]
 	public string questName;
@@ -59,8 +60,10 @@ public class QuestSlotsUi : MonoBehaviour
 	public List<SOAccessories> possibleAccessories = new List<SOAccessories>();
 	public List<SOConsumables> possibleConsumables = new List<SOConsumables>();
 
-	public event Action OnQuestComplete;
-	public event Action OnQuestAbandon;
+	/// <summary>
+	/// entities will sub to above events when they spawn, i wont have to worry about new quests being added as for now quests can only
+	/// be accepted in the hub area and no enemies will exist there (will change if i decide special sorta NPC's can spawn in dungeons)
+	/// </summary>
 
 	public void InitilizeBossKillQuest()
 	{
@@ -195,13 +198,16 @@ public class QuestSlotsUi : MonoBehaviour
 			rewardToAdd = Utilities.GetRandomNumberBetween(300, 501);
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
+
+		if (isCurrentlyActiveQuest) //hide accept quest button (for when reloading active quests OnGameLoad)
+			acceptQuestButtonObj.SetActive(false);
 	}
 
-	private void OnEntityDeathCheckKillAmount(SOEntityStats entityStats)
+	public void OnEntityDeathCheckKillAmount(GameObject entity)
 	{
-		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
+        if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
 		{
-			if (entityToKill = entityStats)
+			if (entityToKill = entity.GetComponent<EntityStats>().entityBaseStats)
 			{
 				currentAmount++;
 				questTrackerUi.text = $"{currentAmount} / {amount} Killed";
@@ -211,7 +217,7 @@ public class QuestSlotsUi : MonoBehaviour
 		if (currentAmount >= amount)
 			CompleteThisQuest();
 	}
-	private void OnItemHandInCheckHandInAmount(InventoryItem item)
+	public void OnItemHandInCheckHandInAmount(InventoryItem item)
 	{
 		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest) return;
 
@@ -228,13 +234,16 @@ public class QuestSlotsUi : MonoBehaviour
 			CompleteThisQuest();
 	}
 
-	public void CompleteThisQuest()
+	public void AcceptThisQuest() //button call
 	{
-		OnQuestComplete?.Invoke();
-		//do stuff to complete quest
+		PlayerJournalUi.Instance.OnQuestAccepted(this);
 	}
-	public void AbandonQuest()
+	public void CompleteThisQuest() //autoChecked
 	{
-		OnQuestAbandon?.Invoke();
+		PlayerJournalUi.Instance.CompleteQuest(this);
+	}
+	public void AbandonThisQuest() //button call
+	{
+		PlayerJournalUi.Instance.AbandonQuest(this);
 	}
 }

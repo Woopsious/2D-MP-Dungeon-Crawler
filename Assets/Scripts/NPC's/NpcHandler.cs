@@ -29,19 +29,19 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 		GenerateNewQuests();
 	}
-	private void GenerateNewQuests()
+	public void GenerateNewQuests()
 	{
 		for (int i = avalableQuestList.Count; i > 0; i--)
 		{
-			Destroy(avalableQuestList[i].gameObject);
+			if (!avalableQuestList[i - 1].isCurrentlyActiveQuest)
+				Destroy(avalableQuestList[i - 1].gameObject);
 		}
+		avalableQuestList.Clear();
 
-		for (int i = 0; i > 5; i++)
-		{
+		for (int i = 0; i < 5; i++)
 			GenerateQuest();
-		}
 	}
-	private void GenerateQuest()
+	public void GenerateQuest()
 	{
 		GameObject go = Instantiate(questPrefab, questContainer.transform);
 		QuestSlotsUi quest = go.GetComponent<QuestSlotsUi>();
@@ -53,25 +53,43 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			quest.InitilizeKillQuest();
 		else
 			quest.InitilizeItemHandInQuest();
+
+		avalableQuestList.Add(quest);
 	}
 
-	private void OnTriggerEnter2D(Collider2D other)
+	public void RefreshThisNpcsQuests() //function delegated to button in ui
 	{
-		if (other.GetComponent<PlayerController>() != null)
-		{
-
-		}
-	}
-	private void OnTriggerExit2D(Collider2D other)
-	{
-		if (other.GetComponent<PlayerController>() != null)
-		{
-
-		}
+		GenerateNewQuests();
+		MoveQuestsToUi();
 	}
 
-	public void Interact(PlayerController playerController)
+	public void Interact(PlayerController player)
 	{
+		player.isInteractingWithSomething = true;
+		PlayerJournalUi.Instance.ShowPlayerJournal();
+		PlayerJournalUi.Instance.ShowNpcJournal();
+		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); } );
+		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.AddListener(delegate { UnInteract(player); } );
+		MoveQuestsToUi();
+	}
+	public void UnInteract(PlayerController player)
+	{
+		player.isInteractingWithSomething = false;
+		PlayerJournalUi.Instance.HidePlayerJournal();
+		PlayerJournalUi.Instance.HideNpcJournal();
+		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.RemoveAllListeners();
+		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.RemoveAllListeners();
+		MoveQuestsToContainer();
+	}
 
+	private void MoveQuestsToUi()
+	{
+		foreach (QuestSlotsUi quest in avalableQuestList)
+			quest.transform.SetParent(PlayerJournalUi.Instance.avalableQuestContainer.transform);
+	}
+	private void MoveQuestsToContainer()
+	{
+		foreach (QuestSlotsUi quest in avalableQuestList)
+			quest.transform.SetParent(questContainer.transform);
 	}
 }

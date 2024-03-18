@@ -58,6 +58,8 @@ public class EntityStats : MonoBehaviour
 	private void Start()
 	{
 		Initilize();
+
+		PlayerJournalUi.Instance.OnNewQuestAccepted += SubToQuest;
 	}
 	private void OnEnable()
 	{
@@ -67,7 +69,6 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-
 		OnDeathEvent += playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 
@@ -86,9 +87,11 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-
 		OnDeathEvent -= playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
+
+		PlayerJournalUi.Instance.OnQuestComplete -= UnSubToQuest;
+		PlayerJournalUi.Instance.OnQuestAbandon -= UnSubToQuest;
 
 		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
 		entityClassHandler.OnClassChange -= OnClassChanges;
@@ -102,7 +105,6 @@ public class EntityStats : MonoBehaviour
 	{
 		PassiveManaRegen();
 	}
-
 	public void Initilize()
 	{
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
@@ -330,6 +332,16 @@ public class EntityStats : MonoBehaviour
 		}
 
 		currentStatusEffects.Remove(statusEffect);
+	}
+
+	//sub to questEvents
+	private void SubToQuest(QuestSlotsUi quest)
+	{
+		OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
+	}
+	private void UnSubToQuest(QuestSlotsUi quest)
+	{
+		OnDeathEvent -= quest.OnEntityDeathCheckKillAmount;
 	}
 
 	/// <summary>
