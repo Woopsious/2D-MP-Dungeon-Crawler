@@ -26,14 +26,21 @@ public class PlayerInventoryManager : MonoBehaviour
 	public int playerGoldAmount;
 	public int startingGold;
 
+	public event Action<int> OnGoldAmountChange;
+
 	public void Awake()
 	{
 		Instance = this;
 	}
 	public void Start()
 	{
+		OnGoldAmountChange += PlayerHotbarUi.Instance.OnGoldAmountChange;
+
 		if (debugSpawnStartingItems)
+		{
 			SpawnStartingItems();
+			UpdateGoldAmount(startingGold);
+		}
 	}
 
 	private void OnEnable()
@@ -43,6 +50,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
+		OnGoldAmountChange -= PlayerHotbarUi.Instance.OnGoldAmountChange;
 	}
 
 	private void SpawnStartingItems()
@@ -116,6 +124,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
+		OnGoldAmountChange?.Invoke(playerGoldAmount);
 	}
 
 	//on item pickup

@@ -52,17 +52,16 @@ public class PlayerExperienceHandler : MonoBehaviour
 	}
 	public void AddExperience(GameObject Obj)
 	{
-		//return; //disabled for now
-		if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
-
-		Debug.Log("current exp amount: " + currentExp);
-		currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
-		Debug.Log("exp added: " + Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath + "\nnew exp amount: " + currentExp);
-
+		if (Obj.GetComponent<QuestSlotsUi>() != null)
+			currentExp += Obj.GetComponent<QuestSlotsUi>().rewardToAdd;
+		else
+		{
+			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
+			currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
+		}
 		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
 
 		if (!CheckIfPLayerCanLevelUp()) return;
-
 		OnPlayerLevelUp();
 	}
 

@@ -51,6 +51,7 @@ public class QuestSlotsUi : MonoBehaviour
 		isExpReward, isGoldReward
 	}
 	public int rewardToAdd;
+	public PlayerController playerThatAcceptedQuest;
 
 	[Header("List of Items/Enemies")]
 	public List<SOEntityStats> possibleBossTargets = new List<SOEntityStats>();
@@ -64,7 +65,10 @@ public class QuestSlotsUi : MonoBehaviour
 	/// entities will sub to above events when they spawn, i wont have to worry about new quests being added as for now quests can only
 	/// be accepted in the hub area and no enemies will exist there (will change if i decide special sorta NPC's can spawn in dungeons)
 	/// </summary>
-
+	private void OnDisable()
+	{
+		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccepted;
+	}
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
@@ -88,7 +92,7 @@ public class QuestSlotsUi : MonoBehaviour
 	public void InitilizeItemHandInQuest()
 	{
 		questType = QuestType.isItemHandInQuest;
-		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(5);
+		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(4);
 
 		if (itemTypeToHandIn == ItemType.isWeapon)
 		{
@@ -238,12 +242,17 @@ public class QuestSlotsUi : MonoBehaviour
 	{
 		PlayerJournalUi.Instance.OnQuestAccepted(this);
 	}
+	public void OnQuestAccepted(QuestSlotsUi quest)
+	{
+		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
+	}
+
 	public void CompleteThisQuest() //autoChecked
 	{
-		PlayerJournalUi.Instance.CompleteQuest(this);
+		PlayerJournalUi.Instance.CompleteQuest(this, playerThatAcceptedQuest);
 	}
 	public void AbandonThisQuest() //button call
 	{
-		PlayerJournalUi.Instance.AbandonQuest(this);
+		PlayerJournalUi.Instance.AbandonQuest(this, playerThatAcceptedQuest);
 	}
 }

@@ -23,9 +23,10 @@ public class PlayerJournalUi : MonoBehaviour
 	public Button refreshNpcQuestsButton;
 	public Button closeAvalableQuestsButton;
 
+	public PlayerController playerInteractedRef;
 	public event Action<QuestSlotsUi> OnNewQuestAccepted;
-	public event Action<QuestSlotsUi> OnQuestComplete;
-	public event Action<QuestSlotsUi> OnQuestAbandon;
+	public event Action<QuestSlotsUi, PlayerController> OnQuestComplete;
+	public event Action<QuestSlotsUi, PlayerController> OnQuestAbandon;
 
 	private void Awake()
 	{
@@ -59,23 +60,32 @@ public class PlayerJournalUi : MonoBehaviour
 		quest.isCurrentlyActiveQuest = true;
 		activeQuests.Add(quest);
 		quest.transform.SetParent(activeQuestContainer.transform);
+		quest.playerThatAcceptedQuest = playerInteractedRef;
 
 		UpdateActiveQuestTracker();
 	}
-	public void CompleteQuest(QuestSlotsUi quest)
+	public void CompleteQuest(QuestSlotsUi quest,PlayerController player)
 	{
-		OnQuestComplete?.Invoke(quest);
+		OnQuestComplete?.Invoke(quest, player);
 
 		//do stuff to complete quest
+		if (quest.questRewardType == QuestSlotsUi.RewardType.isExpReward)
+			player.GetComponent<PlayerExperienceHandler>().AddExperience(quest.gameObject);
+		else if (quest.questRewardType == QuestSlotsUi.RewardType.isGoldReward)
+			player.GetComponent<PlayerInventoryManager>().UpdateGoldAmount(quest.rewardToAdd);
 
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
+
+		UpdateActiveQuestTracker();
 	}
-	public void AbandonQuest(QuestSlotsUi quest)
+	public void AbandonQuest(QuestSlotsUi quest, PlayerController player)
 	{
-		OnQuestAbandon?.Invoke(quest);
+		OnQuestAbandon?.Invoke(quest, player);
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
+
+		UpdateActiveQuestTracker();
 	}
 
 	//UI CHANGES
@@ -106,25 +116,14 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 
 	//npc Journal
-	public void ShowHideNpcJournal()
+	public void ShowNpcJournal(PlayerController playerRef)
 	{
-		if (npcJournalPanalUi.activeInHierarchy)
-		{
-			HideNpcJournal();
-			HidePlayerJournal();
-		}
-		else
-		{
-			ShowNpcJournal();
-			ShowPlayerJournal();
-		}
-	}
-	public void ShowNpcJournal()
-	{
+		playerInteractedRef = playerRef;
 		npcJournalPanalUi.SetActive(true);
 	}
 	public void HideNpcJournal()
 	{
+		playerInteractedRef = null;
 		npcJournalPanalUi.SetActive(false);
 	}
 }

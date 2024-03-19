@@ -19,6 +19,11 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	{
 		Initilize();
 	}
+	private void OnDisable()
+	{
+		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccepted;
+	}
+
 	private void Initilize()
 	{
 		animator = GetComponent<Animator>();
@@ -54,6 +59,9 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		else
 			quest.InitilizeItemHandInQuest();
 
+		PlayerJournalUi.Instance.OnNewQuestAccepted += OnQuestAccepted;
+		PlayerJournalUi.Instance.OnNewQuestAccepted += quest.OnQuestAccepted;
+
 		avalableQuestList.Add(quest);
 	}
 
@@ -67,7 +75,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	{
 		player.isInteractingWithSomething = true;
 		PlayerJournalUi.Instance.ShowPlayerJournal();
-		PlayerJournalUi.Instance.ShowNpcJournal();
+		PlayerJournalUi.Instance.ShowNpcJournal(player);
 		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); } );
 		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.AddListener(delegate { UnInteract(player); } );
 		MoveQuestsToUi();
@@ -80,6 +88,12 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.RemoveAllListeners();
 		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.RemoveAllListeners();
 		MoveQuestsToContainer();
+	}
+
+	public void OnQuestAccepted(QuestSlotsUi quest)
+	{
+		avalableQuestList.Remove(quest);
+		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
 
 	private void MoveQuestsToUi()

@@ -15,6 +15,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	public static event Action<Abilities, EntityStats> OnNewQueuedAbilities;
 
+	public TMP_Text goldAmountText;
+
 	[Header("Hotbar Consumables")]
 	public GameObject HotbarPanelUi;
 	public List<GameObject> ConsumableSlots = new List<GameObject>();
@@ -212,6 +214,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void OpenPlayerJournalButton()
 	{
 		PlayerJournalUi.Instance.ShowPlayerJournal();
+	}
+	public void OnGoldAmountChange(int amount)
+	{
+		goldAmountText.text = $"Gold: {amount}";
 	}
 
 	//UI TargetSelection

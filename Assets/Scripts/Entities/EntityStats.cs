@@ -339,7 +339,7 @@ public class EntityStats : MonoBehaviour
 	{
 		OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
 	}
-	private void UnSubToQuest(QuestSlotsUi quest)
+	private void UnSubToQuest(QuestSlotsUi quest, PlayerController player)
 	{
 		OnDeathEvent -= quest.OnEntityDeathCheckKillAmount;
 	}
