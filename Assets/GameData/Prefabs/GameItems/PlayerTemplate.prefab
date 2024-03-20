@@ -518,6 +518,7 @@ MonoBehaviour:
   AbilityDirectionalPrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   queuedAbility: {fileID: 0}
+  isInteractingWithSomething: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -603,7 +604,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 55dd00374a4b75e40856a2aa269bb404, type: 2}
   - {fileID: 11400000, guid: 00123595220a5194eba5b6afb9c30f6e, type: 2}
   - {fileID: 11400000, guid: f81d1027d20380e43a30e5d23cffdd23, type: 2}
+  playerGoldAmount: 0
   startingGold: 500
+  questPrefab: {fileID: 1743256298257394230, guid: a39a1790082c6df4e94a88a068c7a865, type: 3}
+  activeQuests: []
 --- !u!114 &4928850030821427467
 MonoBehaviour:
   m_ObjectHideFlags: 0

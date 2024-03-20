@@ -25,8 +25,8 @@ public class PlayerJournalUi : MonoBehaviour
 
 	public PlayerController playerInteractedRef;
 	public event Action<QuestSlotsUi> OnNewQuestAccepted;
-	public event Action<QuestSlotsUi, PlayerController> OnQuestComplete;
-	public event Action<QuestSlotsUi, PlayerController> OnQuestAbandon;
+	public event Action<QuestSlotsUi> OnQuestComplete;
+	public event Action<QuestSlotsUi> OnQuestAbandon;
 
 	private void Awake()
 	{
@@ -47,7 +47,7 @@ public class PlayerJournalUi : MonoBehaviour
 		UpdateActiveQuestTracker();
 	}
 
-	public void OnQuestAccepted(QuestSlotsUi quest)
+	public void AcceptQuest(QuestSlotsUi quest)
 	{
 		if (activeQuests.Count >= 5)
 		{
@@ -55,36 +55,27 @@ public class PlayerJournalUi : MonoBehaviour
 			return;
 		}
 
-		OnNewQuestAccepted?.Invoke(quest);
 		quest.acceptQuestButtonObj.SetActive(false);
-		quest.isCurrentlyActiveQuest = true;
-		activeQuests.Add(quest);
 		quest.transform.SetParent(activeQuestContainer.transform);
-		quest.playerThatAcceptedQuest = playerInteractedRef;
+		activeQuests.Add(quest);
 
+		OnNewQuestAccepted?.Invoke(quest);
 		UpdateActiveQuestTracker();
 	}
-	public void CompleteQuest(QuestSlotsUi quest,PlayerController player)
+	public void CompleteQuest(QuestSlotsUi quest)
 	{
-		OnQuestComplete?.Invoke(quest, player);
-
-		//do stuff to complete quest
-		if (quest.questRewardType == QuestSlotsUi.RewardType.isExpReward)
-			player.GetComponent<PlayerExperienceHandler>().AddExperience(quest.gameObject);
-		else if (quest.questRewardType == QuestSlotsUi.RewardType.isGoldReward)
-			player.GetComponent<PlayerInventoryManager>().UpdateGoldAmount(quest.rewardToAdd);
-
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
 
+		OnQuestComplete?.Invoke(quest);
 		UpdateActiveQuestTracker();
 	}
-	public void AbandonQuest(QuestSlotsUi quest, PlayerController player)
+	public void AbandonQuest(QuestSlotsUi quest)
 	{
-		OnQuestAbandon?.Invoke(quest, player);
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
 
+		OnQuestAbandon?.Invoke(quest);
 		UpdateActiveQuestTracker();
 	}
 
@@ -116,14 +107,12 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 
 	//npc Journal
-	public void ShowNpcJournal(PlayerController playerRef)
+	public void ShowNpcJournal()
 	{
-		playerInteractedRef = playerRef;
 		npcJournalPanalUi.SetActive(true);
 	}
 	public void HideNpcJournal()
 	{
-		playerInteractedRef = null;
 		npcJournalPanalUi.SetActive(false);
 	}
 }

@@ -52,14 +52,14 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnManaChangeEvent;
 
 	public event Action<EntityStats> OnStatChangeEvent;
-
 	public event Action<GameObject> OnDeathEvent;
 
 	private void Start()
 	{
 		Initilize();
 
-		PlayerJournalUi.Instance.OnNewQuestAccepted += SubToQuest;
+		PlayerJournalUi.Instance.OnNewQuestAccepted += SubToNewQuestAtRuntime;
+		SubToActiveQuestsOnSpawn();
 	}
 	private void OnEnable()
 	{
@@ -90,8 +90,8 @@ public class EntityStats : MonoBehaviour
 		OnDeathEvent -= playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 
-		PlayerJournalUi.Instance.OnQuestComplete -= UnSubToQuest;
-		PlayerJournalUi.Instance.OnQuestAbandon -= UnSubToQuest;
+		PlayerJournalUi.Instance.OnQuestComplete -= UnSubToNewQuestAtRuntime;
+		PlayerJournalUi.Instance.OnQuestAbandon -= UnSubToNewQuestAtRuntime;
 
 		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
 		entityClassHandler.OnClassChange -= OnClassChanges;
@@ -250,30 +250,6 @@ public class EntityStats : MonoBehaviour
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
 
-	private void OnPlayerLevelUp(int newPlayerLevel)
-	{
-		if (currentHealth <= 0) return;
-
-		entityLevel = newPlayerLevel;
-		bool wasDamaged = true;
-
-		if (maxHealth.finalValue == currentHealth)
-			wasDamaged = false;
-
-		int oldMaxHP = maxHealth.baseValue;
-		int oldCurrentHP = currentHealth;
-		int oldcurrentMana = currentMana;
-		CalculateBaseStats();
-
-		if (GetComponent<PlayerController>() == null && !wasDamaged) //if not player or taken damage full heal entity
-			currentHealth = maxHealth.finalValue;
-		else
-			currentHealth = oldCurrentHP + (maxHealth.finalValue - oldMaxHP); //else return health + extra health from new level/modifiers
-
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-	}
-
 	//status effect functions
 	public void ApplyStatusEffect(SOClassAbilities newStatusEffect)
 	{
@@ -335,11 +311,16 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//sub to questEvents
-	private void SubToQuest(QuestSlotsUi quest)
+	private void SubToActiveQuestsOnSpawn()
+	{
+		foreach (QuestSlotsUi quest in PlayerJournalUi.Instance.activeQuests)
+			OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
+	}
+	private void SubToNewQuestAtRuntime(QuestSlotsUi quest)
 	{
 		OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
 	}
-	private void UnSubToQuest(QuestSlotsUi quest, PlayerController player)
+	private void UnSubToNewQuestAtRuntime(QuestSlotsUi quest)
 	{
 		OnDeathEvent -= quest.OnEntityDeathCheckKillAmount;
 	}
@@ -350,6 +331,29 @@ public class EntityStats : MonoBehaviour
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier, 
 	/// </summary>
+	private void OnPlayerLevelUp(int newPlayerLevel)
+	{
+		if (currentHealth <= 0) return;
+
+		entityLevel = newPlayerLevel;
+		bool wasDamaged = true;
+
+		if (maxHealth.finalValue == currentHealth)
+			wasDamaged = false;
+
+		int oldMaxHP = maxHealth.baseValue;
+		int oldCurrentHP = currentHealth;
+		int oldcurrentMana = currentMana;
+		CalculateBaseStats();
+
+		if (GetComponent<PlayerController>() == null && !wasDamaged) //if not player or taken damage full heal entity
+			currentHealth = maxHealth.finalValue;
+		else
+			currentHealth = oldCurrentHP + (maxHealth.finalValue - oldMaxHP); //else return health + extra health from new level/modifiers
+
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+	}
 	public void CalculateBaseStats()
 	{
 		if (entityLevel == 1)  //get level modifier
@@ -493,7 +497,6 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
-
 	public void UpdatePlayerStatInfo()
 	{
 		OnStatChangeEvent?.Invoke(this);

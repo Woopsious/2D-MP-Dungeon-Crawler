@@ -74,8 +74,9 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void Interact(PlayerController player)
 	{
 		player.isInteractingWithSomething = true;
+		PlayerJournalUi.Instance.playerInteractedRef = player;
 		PlayerJournalUi.Instance.ShowPlayerJournal();
-		PlayerJournalUi.Instance.ShowNpcJournal(player);
+		PlayerJournalUi.Instance.ShowNpcJournal();
 		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); } );
 		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.AddListener(delegate { UnInteract(player); } );
 		MoveQuestsToUi();
@@ -83,6 +84,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void UnInteract(PlayerController player)
 	{
 		player.isInteractingWithSomething = false;
+		PlayerJournalUi.Instance.playerInteractedRef = null;
 		PlayerJournalUi.Instance.HidePlayerJournal();
 		PlayerJournalUi.Instance.HideNpcJournal();
 		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.RemoveAllListeners();

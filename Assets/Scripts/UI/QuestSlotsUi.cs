@@ -51,7 +51,6 @@ public class QuestSlotsUi : MonoBehaviour
 		isExpReward, isGoldReward
 	}
 	public int rewardToAdd;
-	public PlayerController playerThatAcceptedQuest;
 
 	[Header("List of Items/Enemies")]
 	public List<SOEntityStats> possibleBossTargets = new List<SOEntityStats>();
@@ -74,20 +73,14 @@ public class QuestSlotsUi : MonoBehaviour
 		questType = QuestType.isBossKillQuest;
 		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count)];
 		amount = 1;
-
-		SetUpQuestName();
-		SetUpQuestDescription();
-		SetUpQuestReward();
+		InitilizeText();
 	}
 	public void InitilizeKillQuest()
 	{
 		questType = QuestType.isKillQuest;
 		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count)];
 		amount = Utilities.GetRandomNumberBetween(5, 9);
-
-		SetUpQuestName();
-		SetUpQuestDescription();
-		SetUpQuestReward();
+		InitilizeText();
 	}
 	public void InitilizeItemHandInQuest()
 	{
@@ -114,12 +107,16 @@ public class QuestSlotsUi : MonoBehaviour
 			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count)];
 			amount = 5;
 		}
+		InitilizeText();
+	}
 
+	//set up ui text
+	public void InitilizeText()
+	{
 		SetUpQuestName();
 		SetUpQuestDescription();
 		SetUpQuestReward();
 	}
-
 	private void SetUpQuestName()
 	{
 		string questName = "";
@@ -238,21 +235,22 @@ public class QuestSlotsUi : MonoBehaviour
 			CompleteThisQuest();
 	}
 
-	public void AcceptThisQuest() //button call
-	{
-		PlayerJournalUi.Instance.OnQuestAccepted(this);
-	}
 	public void OnQuestAccepted(QuestSlotsUi quest)
 	{
 		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
 
+	//calls to global quest events to invoke said events passing in this quest info
+	public void AcceptThisQuest() //button call
+	{
+		PlayerJournalUi.Instance.AcceptQuest(this);
+	}
 	public void CompleteThisQuest() //autoChecked
 	{
-		PlayerJournalUi.Instance.CompleteQuest(this, playerThatAcceptedQuest);
+		PlayerJournalUi.Instance.CompleteQuest(this);
 	}
 	public void AbandonThisQuest() //button call
 	{
-		PlayerJournalUi.Instance.AbandonQuest(this, playerThatAcceptedQuest);
+		PlayerJournalUi.Instance.AbandonQuest(this);
 	}
 }
