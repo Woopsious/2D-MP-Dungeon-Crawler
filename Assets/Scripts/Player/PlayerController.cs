@@ -238,13 +238,17 @@ public class PlayerController : MonoBehaviour
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.GetComponent<NpcHandler>() != null)
+		{
 			currentInteractedNpc = other.GetComponent<NpcHandler>();
+			currentInteractedNpc.interactWithObj.SetActive(true);
+		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<NpcHandler>() != null)
 		{
 			currentInteractedNpc.UnInteract(this);
+			currentInteractedNpc.interactWithObj.SetActive(false);
 			currentInteractedNpc = null;
 		}
 	}

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -10,10 +11,14 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	private Animator animator;
 	private SpriteRenderer spriteRenderer;
 
+	[Header("Quests")]
 	public GameObject questContainer;
 	public GameObject questPrefab;
-
 	public List<QuestSlotsUi> avalableQuestList = new List<QuestSlotsUi>();
+
+	[Header("Ui Notif")]
+	public GameObject interactWithObj;
+	public TMP_Text interactWithText;
 
 	private void Start()
 	{
@@ -23,6 +28,10 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	{
 		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccepted;
 	}
+	private void Update()
+	{
+		DisplayInteractText();
+	}
 
 	private void Initilize()
 	{
@@ -31,6 +40,9 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = npc.sprite;
 		name = npc.entityName;
+
+		interactWithObj.transform.SetParent(FindObjectOfType<Canvas>().transform);
+		interactWithText.text = $"Press F to interact with {name}";
 
 		GenerateNewQuests();
 	}
@@ -90,6 +102,12 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.RemoveAllListeners();
 		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.RemoveAllListeners();
 		MoveQuestsToContainer();
+	}
+	private void DisplayInteractText()
+	{
+		if (!interactWithObj.activeInHierarchy) return;
+		interactWithObj.transform.position = 
+			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1, 0));
 	}
 
 	public void OnQuestAccepted(QuestSlotsUi quest)
