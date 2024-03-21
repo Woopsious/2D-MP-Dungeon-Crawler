@@ -20,10 +20,9 @@ public class PlayerJournalUi : MonoBehaviour
 	[Header("Interacted Npc Ui")]
 	public GameObject npcJournalPanalUi;
 	public GameObject avalableQuestContainer;
-	public Button refreshNpcQuestsButton;
-	public Button closeAvalableQuestsButton;
+	public Button refreshQuestsButton;
+	public Button closeQuestsButton;
 
-	public PlayerController playerInteractedRef;
 	public event Action<QuestSlotsUi> OnNewQuestAccepted;
 	public event Action<QuestSlotsUi> OnQuestComplete;
 	public event Action<QuestSlotsUi> OnQuestAbandon;

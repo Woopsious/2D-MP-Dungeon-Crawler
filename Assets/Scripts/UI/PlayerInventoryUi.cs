@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.UI;
 
 public class PlayerInventoryUi : MonoBehaviour
 {
@@ -36,6 +38,20 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject necklassEquipmentSlot;
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
+
+	[Header("Interacted Npc Ui")]
+	public TMP_Text transactionTrackerText;
+	public GameObject npcShopPanalUi;
+	public List<GameObject> shopSlots = new List<GameObject>();
+	public Button refreshShopButton;
+	public Button closeShopButton;
+
+	public List<InventoryItem> itemsSelling = new List<InventoryItem>();
+	public List<InventoryItem> itemsBuying = new List<InventoryItem>();
+
+	//public event Action<QuestSlotsUi> OnNewQuestAccepted;
+	//public event Action<QuestSlotsUi> OnQuestComplete;
+	//public event Action<QuestSlotsUi> OnQuestAbandon;
 
 	private void Awake()
 	{
@@ -357,5 +373,16 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void HideLearntAbilities()
 	{
 		LearntAbilitiesPanelUi.SetActive(false);
+	}
+
+	//npc shop
+	public void ShowNpcShop()
+	{
+		npcShopPanalUi.SetActive(true);
+	}
+	public void HideNpcShop()
+	{
+		npcShopPanalUi.SetActive(false);
+		Debug.Log("hide shop ui");
 	}
 }

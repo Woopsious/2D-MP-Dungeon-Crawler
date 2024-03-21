@@ -10,12 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: bd41d7bc9a0df6342926ab7c2a244852, type: 3}
-  m_Name: NpcQuest
+  m_Name: NpcShopArmorer
   m_EditorClassIdentifier: 
-  entityName: Quest Npc
+  entityName: Armorer Npc
   sprite: {fileID: -2090949032, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  npcType: 0
-  shopType: 0
+  npcType: 1
+  shopType: 2
   weaponSmithShopItems:
   - {fileID: 11400000, guid: 752560be2cf32244e8e66813eb3bbd92, type: 2}
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}

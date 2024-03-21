@@ -11,6 +11,17 @@ public class SONpcs : ScriptableObject
 	public NPCType npcType;
 	public enum NPCType
 	{
-		isQuestNpc
+		isQuestNpc, isShopNpc
 	}
+
+	public ShopType shopType;
+	public enum ShopType
+	{
+		isntShop, isWeaponSmith, isArmorer, isGoldSmith, isGeneralStore
+	}
+
+	public List<SOItems> weaponSmithShopItems = new List<SOItems>();
+	public List<SOItems> armorerShopItems = new List<SOItems>();
+	public List<SOItems> goldSmithShopItems = new List<SOItems>();
+	public List<SOItems>generalStoreItems = new List<SOItems>();
 }

@@ -231,6 +231,14 @@ public class PlayerController : MonoBehaviour
 		go.GetComponent<AbilityAOE>().Initilize(ability, playerStats);
 	}
 
+	//bool checks
+	private bool IsPlayerInteracting()
+	{
+		if (isInteractingWithSomething)
+			return true;
+		else return false;
+	}
+
 	/// <summary>
 	/// Below are functions to link to player so they can interact with them
 	/// </summary>
@@ -257,9 +265,11 @@ public class PlayerController : MonoBehaviour
 	/// Below are all player actions
 	/// </summary>
 
-	//player actions
+	//in game actions
 	private void OnMainAttack()
 	{
+		if (IsPlayerInteracting()) return;
+
 		if (queuedAbility == null)
 		{
 			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
@@ -271,6 +281,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnRightClick()
 	{
+		if (IsPlayerInteracting()) return;
+
 		if (queuedAbility != null)
 			OnCancelQueuedAbilities?.Invoke(queuedAbility);
 
@@ -285,9 +297,17 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInteract()
 	{
-		if (currentInteractedNpc != null)
+		if (currentInteractedNpc == null) return;
+		if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
 			if (PlayerJournalUi.Instance.npcJournalPanalUi.activeInHierarchy)
+				currentInteractedNpc.UnInteract(this);
+			else
+				currentInteractedNpc.Interact(this);
+		}
+		else if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isShopNpc)
+		{
+			if (PlayerInventoryUi.Instance.npcShopPanalUi.activeInHierarchy)
 				currentInteractedNpc.UnInteract(this);
 			else
 				currentInteractedNpc.Interact(this);
@@ -297,42 +317,47 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
 	{
-		playerStats.DecreaseMana(0.33f , true);
-
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 	}
 	private void OnAbilityTwo()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 	}
 	private void OnAbilityThree()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 	}
 	private void OnAbilityFour()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 	}
 	private void OnAbilityFive()
 	{
+		if (IsPlayerInteracting()) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;

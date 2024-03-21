@@ -12,9 +12,15 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	private SpriteRenderer spriteRenderer;
 
 	[Header("Quests")]
-	public GameObject questContainer;
 	public GameObject questPrefab;
 	public List<QuestSlotsUi> avalableQuestList = new List<QuestSlotsUi>();
+
+	[Header("Shop Items")]
+	public GameObject ItemPrefab;
+	public List<InventoryItem> avalableShopItemsList = new List<InventoryItem>();
+
+	[Header("Container Ref")]
+	public GameObject npcContainer;
 
 	[Header("Ui Notif")]
 	public GameObject interactWithObj;
@@ -44,8 +50,151 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		interactWithObj.transform.SetParent(FindObjectOfType<Canvas>().transform);
 		interactWithText.text = $"Press F to interact with {name}";
 
-		GenerateNewQuests();
+		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
+			GenerateNewQuests();
+		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
+			GenerateShopItems();
 	}
+
+	public void Interact(PlayerController player)
+	{
+		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
+		{
+			PlayerJournalUi.Instance.ShowPlayerJournal();
+			PlayerJournalUi.Instance.ShowNpcJournal();
+			PlayerJournalUi.Instance.refreshQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); });
+			PlayerJournalUi.Instance.closeQuestsButton.onClick.AddListener(delegate { UnInteract(player); });
+			MoveQuestsToUi();
+		}
+		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
+		{
+			PlayerInventoryUi.Instance.ShowInventory();
+			PlayerInventoryUi.Instance.ShowNpcShop();
+			PlayerInventoryUi.Instance.refreshShopButton.onClick.AddListener(delegate { RefreshThisNpcsShopItems(); });
+			PlayerInventoryUi.Instance.closeShopButton.onClick.AddListener(delegate { UnInteract(player); });
+			MoveShopItemsToUi();
+		}
+		player.isInteractingWithSomething = true;
+	}
+	public void UnInteract(PlayerController player)
+	{
+		Debug.Log("uninteract");
+
+		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
+		{
+			PlayerJournalUi.Instance.HidePlayerJournal();
+			PlayerJournalUi.Instance.HideNpcJournal();
+			PlayerJournalUi.Instance.refreshQuestsButton.onClick.RemoveAllListeners();
+			PlayerJournalUi.Instance.closeQuestsButton.onClick.RemoveAllListeners();
+			MoveQuestsToContainer();
+		}
+		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
+		{
+			Debug.Log("hide shop");
+			PlayerInventoryUi.Instance.HideInventory();
+			PlayerInventoryUi.Instance.HideNpcShop();
+			PlayerInventoryUi.Instance.refreshShopButton.onClick.RemoveAllListeners();
+			PlayerInventoryUi.Instance.closeShopButton.onClick.RemoveAllListeners();
+			MoveShopItemsToContainer();
+		}
+		player.isInteractingWithSomething = false;
+	}
+	private void DisplayInteractText()
+	{
+		if (!interactWithObj.activeInHierarchy) return;
+		interactWithObj.transform.position = 
+			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1, 0));
+	}
+
+	//shop npc functions
+	public void GenerateShopItems()
+	{
+		for (int i = avalableShopItemsList.Count; i > 0; i--)
+		{
+			//if (!avalableShopItemsList[i - 1].isCurrentlyActiveQuest)
+			Destroy(avalableShopItemsList[i - 1].gameObject);
+		}
+		avalableShopItemsList.Clear();
+
+		//for now grab player level, later need a better way to do this if possible
+		int playerLevel = FindObjectOfType<PlayerController>().GetComponent<EntityStats>().entityLevel;
+
+		for (int i = 0; i < 10; i++)
+			GenerateItem(playerLevel);
+	}
+	public void GenerateItem(int playerLevel)
+	{
+		GameObject go = Instantiate(ItemPrefab, npcContainer.transform);
+		InventoryItem item = go.GetComponent<InventoryItem>();
+
+		if (npc.shopType == SONpcs.ShopType.isWeaponSmith)
+		{
+			Weapons weapon = go.AddComponent<Weapons>();
+			weapon.weaponBaseRef = (SOWeapons)npc.weaponSmithShopItems[Utilities.GetRandomNumber(npc.weaponSmithShopItems.Count)];
+			item.weaponBaseRef = weapon.weaponBaseRef;
+			item.currentStackCount = 1;
+			weapon.Initilize(Utilities.SetRarity(), playerLevel);
+		}
+		if (npc.shopType == SONpcs.ShopType.isArmorer)
+		{
+			Armors armor = go.AddComponent<Armors>();
+			armor.armorBaseRef = (SOArmors)npc.armorerShopItems[Utilities.GetRandomNumber(npc.armorerShopItems.Count)];
+			item.armorBaseRef = armor.armorBaseRef;
+			item.currentStackCount = 1;
+			armor.Initilize(Utilities.SetRarity(), playerLevel);
+		}
+		if (npc.shopType == SONpcs.ShopType.isGoldSmith)
+		{
+			Accessories accessory = go.AddComponent<Accessories>();
+			accessory.accessoryBaseRef = (SOAccessories)npc.goldSmithShopItems[Utilities.GetRandomNumber(npc.goldSmithShopItems.Count)];
+			item.accessoryBaseRef = accessory.accessoryBaseRef;
+			item.currentStackCount = 1;
+			accessory.Initilize(Utilities.SetRarity(), playerLevel);
+		}
+		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
+		{
+			Consumables consumable = go.AddComponent<Consumables>();
+			consumable.consumableBaseRef = (SOConsumables)npc.generalStoreItems[Utilities.GetRandomNumber(npc.generalStoreItems.Count)];
+			item.consumableBaseRef = consumable.consumableBaseRef;
+			item.currentStackCount = 3;
+			consumable.Initilize(Utilities.SetRarity(), playerLevel);
+		}
+
+		item.Initilize();
+		avalableShopItemsList.Add(item);
+	}
+	public void RefreshThisNpcsShopItems() //function delegated to button in ui
+	{
+		GenerateShopItems();
+		MoveShopItemsToUi();
+	}
+
+	//move shops items between NPC container/ui container
+	private void MoveShopItemsToUi()
+	{
+		//need to change to for loop so i can sync inventory slots with inventoryitems
+		for (int i = 0; i < avalableShopItemsList.Count; i++)
+		{
+			InventorySlotUi slot = PlayerInventoryUi.Instance.shopSlots[i].GetComponent<InventorySlotUi>();
+			slot.EquipItemToSlot(avalableShopItemsList[i]);
+			slot.itemInSlot.transform.SetParent(slot.transform);
+		}
+	}
+	private void MoveShopItemsToContainer()
+	{
+		//need to change to for loop so i can sync inventory slots with inventoryitems
+		foreach (GameObject obj in PlayerInventoryUi.Instance.shopSlots)
+		{
+			if (obj.GetComponent<InventorySlotUi>().itemInSlot != null)
+			{
+				InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+				if (!slot.IsSlotEmpty())
+					slot.itemInSlot.transform.SetParent(npcContainer.transform);
+			}
+		}
+	}
+
+	//quest npc functions
 	public void GenerateNewQuests()
 	{
 		for (int i = avalableQuestList.Count; i > 0; i--)
@@ -60,7 +209,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	}
 	public void GenerateQuest()
 	{
-		GameObject go = Instantiate(questPrefab, questContainer.transform);
+		GameObject go = Instantiate(questPrefab, npcContainer.transform);
 		QuestSlotsUi quest = go.GetComponent<QuestSlotsUi>();
 
 		int percentage = Utilities.GetRandomNumber(101);
@@ -76,46 +225,13 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 		avalableQuestList.Add(quest);
 	}
-
 	public void RefreshThisNpcsQuests() //function delegated to button in ui
 	{
 		GenerateNewQuests();
 		MoveQuestsToUi();
 	}
 
-	public void Interact(PlayerController player)
-	{
-		player.isInteractingWithSomething = true;
-		PlayerJournalUi.Instance.playerInteractedRef = player;
-		PlayerJournalUi.Instance.ShowPlayerJournal();
-		PlayerJournalUi.Instance.ShowNpcJournal();
-		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); } );
-		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.AddListener(delegate { UnInteract(player); } );
-		MoveQuestsToUi();
-	}
-	public void UnInteract(PlayerController player)
-	{
-		player.isInteractingWithSomething = false;
-		PlayerJournalUi.Instance.playerInteractedRef = null;
-		PlayerJournalUi.Instance.HidePlayerJournal();
-		PlayerJournalUi.Instance.HideNpcJournal();
-		PlayerJournalUi.Instance.refreshNpcQuestsButton.onClick.RemoveAllListeners();
-		PlayerJournalUi.Instance.closeAvalableQuestsButton.onClick.RemoveAllListeners();
-		MoveQuestsToContainer();
-	}
-	private void DisplayInteractText()
-	{
-		if (!interactWithObj.activeInHierarchy) return;
-		interactWithObj.transform.position = 
-			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1, 0));
-	}
-
-	public void OnQuestAccepted(QuestSlotsUi quest)
-	{
-		avalableQuestList.Remove(quest);
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
-	}
-
+	//move quests between NPC container/ui container
 	private void MoveQuestsToUi()
 	{
 		foreach (QuestSlotsUi quest in avalableQuestList)
@@ -124,6 +240,12 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	private void MoveQuestsToContainer()
 	{
 		foreach (QuestSlotsUi quest in avalableQuestList)
-			quest.transform.SetParent(questContainer.transform);
+			quest.transform.SetParent(npcContainer.transform);
+	}
+
+	public void OnQuestAccepted(QuestSlotsUi quest)
+	{
+		avalableQuestList.Remove(quest);
+		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
 }
