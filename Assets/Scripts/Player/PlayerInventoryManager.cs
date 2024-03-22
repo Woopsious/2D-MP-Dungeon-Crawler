@@ -25,7 +25,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public int playerGoldAmount;
 	public int startingGold;
 
-	public event Action<int> OnGoldAmountChange;
+	//public event Action<int> OnGoldAmountChange; // move to hotbar ui
 
 	[Header("Player Quests")]
 	public GameObject questPrefab;
@@ -37,11 +37,9 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		OnGoldAmountChange += PlayerHotbarUi.Instance.OnGoldAmountChange;
-
-		PlayerJournalUi.Instance.OnNewQuestAccepted += OnQuestAccept;
-		PlayerJournalUi.Instance.OnQuestComplete += OnQuestComplete;
-		PlayerJournalUi.Instance.OnQuestAbandon += OnQuestAbandon;
+		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
+		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
+		PlayerJournalUi.OnQuestAbandon += OnQuestAbandon;
 
 		if (debugSpawnStartingItems)
 		{
@@ -57,11 +55,10 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
-		OnGoldAmountChange -= PlayerHotbarUi.Instance.OnGoldAmountChange;
 
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccept;
-		PlayerJournalUi.Instance.OnQuestComplete -= OnQuestComplete;
-		PlayerJournalUi.Instance.OnQuestAbandon -= OnQuestAbandon;
+		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
+		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
+		PlayerJournalUi.OnQuestAbandon -= OnQuestAbandon;
 	}
 
 	private void SpawnStartingItems()
@@ -138,7 +135,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
-		OnGoldAmountChange?.Invoke(playerGoldAmount);
+		EventManagerUi.GoldAmountChange(playerGoldAmount);
 	}
 
 	//player quests
@@ -195,7 +192,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public bool CheckIfInventoryFull()
 	{
 		int numOfFilledSlots = 0;
-
+		return true;
 		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
 		{
 			InventorySlotUi inventorySlot = obj.GetComponent<InventorySlotUi>();

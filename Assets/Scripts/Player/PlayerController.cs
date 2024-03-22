@@ -61,9 +61,6 @@ public class PlayerController : MonoBehaviour
 
 	private void Start()
 	{
-		playerStats.OnStatChangeEvent += PlayerInfoUi.Instance.UpdatePlayerStatInfo;
-		playerStats.OnHealthChangeEvent += PlayerHotbarUi.Instance.OnHealthChange; //would be in OnEnable but i get null ref
-		playerStats.OnManaChangeEvent += PlayerHotbarUi.Instance.OnManaChange;
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities += OnNewQueuedAbility;
@@ -87,8 +84,6 @@ public class PlayerController : MonoBehaviour
 	{
 		playerInputs.Disable();
 
-		playerStats.OnHealthChangeEvent -= PlayerHotbarUi.Instance.OnHealthChange;
-		playerStats.OnManaChangeEvent -= PlayerHotbarUi.Instance.OnManaChange;
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities -= OnNewQueuedAbility;
@@ -97,7 +92,6 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 		SaveManager.OnGameLoad -= ReloadPlayerInfo;
-		playerStats.OnStatChangeEvent -= PlayerInfoUi.Instance.UpdatePlayerStatInfo;
 	}
 
 	private void Update()
@@ -370,22 +364,22 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInventory()
 	{
-		PlayerInventoryUi.Instance.ShowHideInventoryKeybind();
+		EventManagerUi.ShowPlayerInventory();
 	}
 	private void OnClassSelection()
 	{
-		ClassesUi.Instance.ShowHidePlayerClassSelection();
+		EventManagerUi.ShowPlayerClassSelection();
 	}
 	private void OnSkillTree()
 	{
-		ClassesUi.Instance.ShowHideClassSkillTree();
+		EventManagerUi.ShowPlayerSkillTree();
 	}
 	private void OnLearntAbilities()
 	{
-		PlayerInventoryUi.Instance.ShowHideLearntAbilitiesKeybind();
+		EventManagerUi.ShowPlayerLearntAbilities();
 	}
 	private void OnJournal()
 	{
-		PlayerJournalUi.Instance.ShowHidePlayerJournal(this);
+		EventManagerUi.ShowPlayerJournal();
 	}
 }

@@ -51,14 +51,14 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
-	public event Action<EntityStats> OnStatChangeEvent;
+	//public event Action<EntityStats> OnStatChangeEvent;
 	public event Action<GameObject> OnDeathEvent;
 
 	private void Start()
 	{
 		Initilize();
 
-		PlayerJournalUi.Instance.OnNewQuestAccepted += SubToNewQuestAtRuntime;
+		PlayerJournalUi.OnNewQuestAccepted += SubToNewQuestAtRuntime;
 		SubToActiveQuestsOnSpawn();
 	}
 	private void OnEnable()
@@ -90,8 +90,8 @@ public class EntityStats : MonoBehaviour
 		OnDeathEvent -= playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 
-		PlayerJournalUi.Instance.OnQuestComplete -= UnSubToNewQuestAtRuntime;
-		PlayerJournalUi.Instance.OnQuestAbandon -= UnSubToNewQuestAtRuntime;
+		PlayerJournalUi.OnQuestComplete -= UnSubToNewQuestAtRuntime;
+		PlayerJournalUi.OnQuestAbandon -= UnSubToNewQuestAtRuntime;
 
 		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
 		entityClassHandler.OnClassChange -= OnClassChanges;
@@ -136,6 +136,8 @@ public class EntityStats : MonoBehaviour
 			currentHealth = maxHealth.finalValue;
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		if (!IsPlayerEntity()) return;
+		EventManagerUi.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 	}
 	public void OnHit(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
 	{
@@ -189,8 +191,6 @@ public class EntityStats : MonoBehaviour
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
 
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-
 		///
 		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
 		/// also could invoke a onEntityDeath that instead calls functions in scripts to disable them then and play death sounds/animations
@@ -203,8 +203,10 @@ public class EntityStats : MonoBehaviour
 			OnDeathEvent?.Invoke(gameObject);
 			Destroy(gameObject);
 		}
-		//healthUi.UpdateHealthBar(currentHealth, maxHealth);	//ui not made atm
-		//Debug.Log("health lost after resistance: " + damage + " | current health: " + currentHealth);
+
+		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+		if (!IsPlayerEntity()) return;
+		EventManagerUi.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -228,6 +230,8 @@ public class EntityStats : MonoBehaviour
 		{
 			manaRegenTimer = manaRegenCooldown;
 			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
+			if (!IsPlayerEntity()) return;
+			EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
 		}
 	}
 	public void IncreaseMana(float manaValue, bool isPercentageValue)
@@ -240,6 +244,8 @@ public class EntityStats : MonoBehaviour
 			currentMana = maxMana.finalValue;
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+		if (!IsPlayerEntity()) return;
+		EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
 	}
 	public void DecreaseMana(float manaValue, bool isPercentageValue)
 	{
@@ -248,6 +254,8 @@ public class EntityStats : MonoBehaviour
 
 		currentMana = (int)(currentMana - manaValue);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+		if (!IsPlayerEntity()) return;
+		EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
 	}
 
 	//status effect functions
@@ -383,7 +391,7 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		UpdatePlayerStatInfo();
+		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -411,7 +419,7 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.UpdateEquipmentPercentageValue(equipmentHandler.iceDamagePercentage);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
-		UpdatePlayerStatInfo();
+		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -442,7 +450,7 @@ public class EntityStats : MonoBehaviour
 		rangedWeaponDamageModifier.AddPercentageValue(statBoost.rangedWeaponDamageBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
-		UpdatePlayerStatInfo();
+		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -476,7 +484,7 @@ public class EntityStats : MonoBehaviour
 		}
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
-		UpdatePlayerStatInfo();
+		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(physicalDamagePercentageModifier.finalPercentageValue,
@@ -497,9 +505,12 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
-	public void UpdatePlayerStatInfo()
+	public void UpdatePlayerStatInfoUi()
 	{
-		OnStatChangeEvent?.Invoke(this);
+		if (!IsPlayerEntity()) return;
+		EventManagerUi.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
+		EventManagerUi.PlayerStatChange(this);
 	}
 
 	//Checks

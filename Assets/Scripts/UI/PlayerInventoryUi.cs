@@ -49,10 +49,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	public List<InventoryItem> itemsSelling = new List<InventoryItem>();
 	public List<InventoryItem> itemsBuying = new List<InventoryItem>();
 
-	//public event Action<QuestSlotsUi> OnNewQuestAccepted;
-	//public event Action<QuestSlotsUi> OnQuestComplete;
-	//public event Action<QuestSlotsUi> OnQuestAbandon;
-
 	private void Awake()
 	{
 		Instance = this;
@@ -66,12 +62,36 @@ public class PlayerInventoryUi : MonoBehaviour
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
 		ClassesUi.OnClassReset += OnClassReset;
 		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += ShowInventory;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += HideInventory;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += HideInventory;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideInventory;
+		EventManagerUi.OnShowPlayerJournalEvent += HideInventory;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += HideLearntAbilities;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
+		EventManagerUi.OnShowPlayerJournalEvent += HideLearntAbilities;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= ShowInventory;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideInventory;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= HideInventory;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
+		EventManagerUi.OnShowPlayerJournalEvent -= HideInventory;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= HideLearntAbilities;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
+		EventManagerUi.OnShowPlayerJournalEvent -= HideLearntAbilities;
 	}
 	private void Initilize()
 	{
@@ -335,19 +355,17 @@ public class PlayerInventoryUi : MonoBehaviour
 	//UI CHANGES
 	public void ShowHideInventoryKeybind()
 	{
-		if (!PlayerInfoAndInventoryPanelUi.activeInHierarchy)
-			ShowInventory();
+		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
+			HideInventory();
 		else
 			HideInventory();
 	}
 	public void ShowInventory()
 	{
-		PlayerInfoAndInventoryPanelUi.SetActive(true);
-
-		PlayerJournalUi.Instance.HidePlayerJournal();
-		PlayerInventoryUi.Instance.HideLearntAbilities();
-		ClassesUi.Instance.HidePlayerClassSelection();
-		ClassesUi.Instance.HideClassSkillTree();
+		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
+			HideInventory();
+		else
+			PlayerInfoAndInventoryPanelUi.SetActive(true);
 	}
 	public void HideInventory()
 	{
@@ -356,19 +374,17 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	public void ShowHideLearntAbilitiesKeybind()
 	{
-		if (!LearntAbilitiesUi.activeInHierarchy)
-			ShowLearntAbilities();
-		else
+		if (LearntAbilitiesUi.activeInHierarchy)
 			HideLearntAbilities();
+		else
+			ShowLearntAbilities();
 	}
 	public void ShowLearntAbilities()
 	{
-		LearntAbilitiesPanelUi.SetActive(true);
-
-		PlayerJournalUi.Instance.HidePlayerJournal();
-		PlayerInventoryUi.Instance.HideInventory();
-		ClassesUi.Instance.HidePlayerClassSelection();
-		ClassesUi.Instance.HideClassSkillTree();
+		if (LearntAbilitiesUi.activeInHierarchy)
+			HideLearntAbilities();
+		else
+			LearntAbilitiesPanelUi.SetActive(true);
 	}
 	public void HideLearntAbilities()
 	{
@@ -383,6 +399,5 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void HideNpcShop()
 	{
 		npcShopPanalUi.SetActive(false);
-		Debug.Log("hide shop ui");
 	}
 }

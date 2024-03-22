@@ -66,7 +66,7 @@ public class QuestSlotsUi : MonoBehaviour
 	/// </summary>
 	private void OnDisable()
 	{
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
 	}
 	public void InitilizeBossKillQuest()
 	{
@@ -237,7 +237,7 @@ public class QuestSlotsUi : MonoBehaviour
 
 	public void OnQuestAccepted(QuestSlotsUi quest)
 	{
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
 
 	//calls to global quest events to invoke said events passing in this quest info

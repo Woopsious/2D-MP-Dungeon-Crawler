@@ -14,15 +14,13 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private EntityStats playerStats;
 
-	public event Action<int, int> OnAddExperienceEvent;
+	//public event Action<int, int> OnAddExperienceEvent;
 	public event Action<int> OnPlayerLevelUpEvent;
 
 	private void Start()
 	{
 		playerController = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
-
-		OnAddExperienceEvent += PlayerHotbarUi.Instance.OnExperienceChange; //would be in OnEnable but i get null ref
 	}
 
 	private void OnEnable()
@@ -32,7 +30,6 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void OnDisable()
 	{
-		OnAddExperienceEvent -= PlayerHotbarUi.Instance.OnExperienceChange;
 		SaveManager.OnGameLoad -= ReloadPlayerExp;
 	}
 
@@ -48,7 +45,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	public void ReloadPlayerExp()
 	{
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
-		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
+		EventManagerUi.PlayerExpChange(maxExp, currentExp);
 	}
 	public void AddExperience(GameObject Obj)
 	{
@@ -59,7 +56,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
 			currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
 		}
-		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
+		EventManagerUi.PlayerExpChange(maxExp, currentExp);
 
 		if (!CheckIfPLayerCanLevelUp()) return;
 		OnPlayerLevelUp();
@@ -70,7 +67,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		int r = currentExp % maxExp;
 		currentExp = r;
 
-		OnAddExperienceEvent?.Invoke(maxExp, currentExp);
+		EventManagerUi.PlayerExpChange(maxExp, currentExp);
 		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
 	}
 	private bool CheckIfPLayerCanLevelUp()

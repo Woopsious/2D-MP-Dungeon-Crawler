@@ -85,11 +85,19 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		ClassesUi.OnClassReset += ResetEquippedAbilities;
 		InventorySlotUi.OnHotbarItemEquip += EquipHotbarItem;
+		EventManagerUi.OnGoldAmountChange += OnGoldAmountChange;
+		EventManagerUi.OnPlayerExpChangeEvent += OnExperienceChange;
+		EventManagerUi.OnPlayerHealthChangeEvent += OnHealthChange;
+		EventManagerUi.OnPlayerManaChangeEvent += OnManaChange;
 	}
 	private void OnDisable()
 	{
 		ClassesUi.OnClassReset -= ResetEquippedAbilities;
 		InventorySlotUi.OnHotbarItemEquip -= EquipHotbarItem;
+		EventManagerUi.OnGoldAmountChange -= OnGoldAmountChange;
+		EventManagerUi.OnPlayerExpChangeEvent -= OnExperienceChange;
+		EventManagerUi.OnPlayerHealthChangeEvent -= OnHealthChange;
+		EventManagerUi.OnPlayerManaChangeEvent -= OnManaChange;
 	}
 	private void Initilize()
 	{
@@ -209,7 +217,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	public void OpenClassSkillTreeButton()
 	{
-		ClassesUi.Instance.ShowClassSkillTree(ClassesUi.Instance.currentPlayerClass);
+		ClassesUi.Instance.ShowClassSkillTree();
 	}
 	public void OpenPlayerJournalButton()
 	{

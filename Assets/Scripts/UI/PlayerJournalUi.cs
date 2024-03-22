@@ -23,9 +23,9 @@ public class PlayerJournalUi : MonoBehaviour
 	public Button refreshQuestsButton;
 	public Button closeQuestsButton;
 
-	public event Action<QuestSlotsUi> OnNewQuestAccepted;
-	public event Action<QuestSlotsUi> OnQuestComplete;
-	public event Action<QuestSlotsUi> OnQuestAbandon;
+	public static event Action<QuestSlotsUi> OnNewQuestAccepted;
+	public static event Action<QuestSlotsUi> OnQuestComplete;
+	public static event Action<QuestSlotsUi> OnQuestAbandon;
 
 	private void Awake()
 	{
@@ -35,10 +35,22 @@ public class PlayerJournalUi : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerBounties;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += HidePlayerJournal;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
+		EventManagerUi.OnShowPlayerJournalEvent += ShowPlayerJournal;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerBounties;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= HidePlayerJournal;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
+		EventManagerUi.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 	}
 
 	private void ReloadPlayerBounties()
@@ -80,7 +92,7 @@ public class PlayerJournalUi : MonoBehaviour
 
 	//UI CHANGES
 	//player Journal
-	public void ShowHidePlayerJournal(PlayerController player)
+	public void ShowHidePlayerJournal()
 	{
 		if (playerJournalPanalUi.activeInHierarchy)
 			HidePlayerJournal();
@@ -89,12 +101,10 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	public void ShowPlayerJournal()
 	{
-		playerJournalPanalUi.SetActive(true);
-
-		PlayerInventoryUi.Instance.HideInventory();
-		PlayerInventoryUi.Instance.HideLearntAbilities();
-		ClassesUi.Instance.HidePlayerClassSelection();
-		ClassesUi.Instance.HideClassSkillTree();
+		if (playerJournalPanalUi.activeInHierarchy)
+			HidePlayerJournal();
+		else
+			playerJournalPanalUi.SetActive(true);
 	}
 	public void HidePlayerJournal()
 	{

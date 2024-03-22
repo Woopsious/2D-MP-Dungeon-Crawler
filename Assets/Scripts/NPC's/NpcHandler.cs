@@ -32,7 +32,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	}
 	private void OnDisable()
 	{
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
 	}
 	private void Update()
 	{
@@ -220,8 +220,8 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		else
 			quest.InitilizeItemHandInQuest();
 
-		PlayerJournalUi.Instance.OnNewQuestAccepted += OnQuestAccepted;
-		PlayerJournalUi.Instance.OnNewQuestAccepted += quest.OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted += quest.OnQuestAccepted;
 
 		avalableQuestList.Add(quest);
 	}
@@ -246,6 +246,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void OnQuestAccepted(QuestSlotsUi quest)
 	{
 		avalableQuestList.Remove(quest);
-		PlayerJournalUi.Instance.OnNewQuestAccepted -= quest.OnQuestAccepted;
+		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
 }

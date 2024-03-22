@@ -13,6 +13,15 @@ public class PlayerInfoUi : MonoBehaviour
 		Instance = this;
 	}
 
+	private void OnEnable()
+	{
+		EventManagerUi.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+	}
+	private void OnDisable()
+	{
+		EventManagerUi.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+	}
+
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
 		string mainInfo = $"(Player Name)\nHealth: {stats.currentHealth} / {stats.maxHealth.finalValue}" +

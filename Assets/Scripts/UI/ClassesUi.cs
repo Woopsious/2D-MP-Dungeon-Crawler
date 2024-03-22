@@ -64,10 +64,34 @@ public class ClassesUi : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerClass;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerJournalEvent += HidePlayerClassSelection;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += HideClassSkillTree;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
+		EventManagerUi.OnShowPlayerJournalEvent += HideClassSkillTree;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerClass;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
+		EventManagerUi.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= HideClassSkillTree;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
+		EventManagerUi.OnShowPlayerJournalEvent -= HideClassSkillTree;
 	}
 
 	private void Initilize()
@@ -162,7 +186,7 @@ public class ClassesUi : MonoBehaviour
 
 		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;
-		ShowClassSkillTree(newClass);
+		EventManagerUi.ShowPlayerSkillTree();
 	}
 	public void ResetCurrentClassButton()
 	{
@@ -180,12 +204,10 @@ public class ClassesUi : MonoBehaviour
 	}
 	public void ShowPlayerClassSelection()
 	{
-		playerClassSelectionPanel.SetActive(true);
-
-		PlayerJournalUi.Instance.HidePlayerJournal();
-		PlayerInventoryUi.Instance.HideInventory();
-		PlayerInventoryUi.Instance.HideLearntAbilities();
-		ClassesUi.Instance.HideClassSkillTree();
+		if (playerClassSelectionPanel.activeInHierarchy)
+			HidePlayerClassSelection();
+		else
+			playerClassSelectionPanel.SetActive(true);
 	}
 	public void HidePlayerClassSelection()
 	{
@@ -198,29 +220,30 @@ public class ClassesUi : MonoBehaviour
 		if (closeClassTreeButtonObj.activeInHierarchy)
 			HideClassSkillTree();
 		else
-			ShowClassSkillTree(currentPlayerClass);
+			ShowClassSkillTree();
 	}
-	public void ShowClassSkillTree(SOClasses thisClass)
+	public void ShowClassSkillTree()
 	{
 		if (currentPlayerClass == null) return;
-		closeClassTreeButtonObj.SetActive(true);
-		resetPlayerClassButtonObj.SetActive(true);
 
-		if (thisClass == knightClass)
-			knightClassPanel.SetActive(true);
-		if (thisClass == warriorClass)
-			warriorClassPanel.SetActive(true);
-		if (thisClass == rogueClass)
-			rogueClassPanel.SetActive(true);
-		if (thisClass == rangerClass)
-			rangerClassPanel.SetActive(true);
-		if (thisClass == mageClass)
-			MageClassPanel.SetActive(true);
+		if (closeClassTreeButtonObj.activeInHierarchy)
+			HideClassSkillTree();
+		else
+		{
+			if (currentPlayerClass == knightClass)
+				knightClassPanel.SetActive(true);
+			if (currentPlayerClass == warriorClass)
+				warriorClassPanel.SetActive(true);
+			if (currentPlayerClass == rogueClass)
+				rogueClassPanel.SetActive(true);
+			if (currentPlayerClass == rangerClass)
+				rangerClassPanel.SetActive(true);
+			if (currentPlayerClass == mageClass)
+				MageClassPanel.SetActive(true);
 
-		PlayerJournalUi.Instance.HidePlayerJournal();
-		PlayerInventoryUi.Instance.HideInventory();
-		PlayerInventoryUi.Instance.HideLearntAbilities();
-		ClassesUi.Instance.HidePlayerClassSelection();
+			closeClassTreeButtonObj.SetActive(true);
+			resetPlayerClassButtonObj.SetActive(true);
+		}
 	}
 	public void HideClassSkillTree()
 	{
