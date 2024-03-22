@@ -60,6 +60,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	{
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
+			player.isInteractingWithNpc = true;
 			PlayerJournalUi.Instance.ShowPlayerJournal();
 			PlayerJournalUi.Instance.ShowNpcJournal();
 			PlayerJournalUi.Instance.refreshQuestsButton.onClick.AddListener(delegate { RefreshThisNpcsQuests(); });
@@ -68,20 +69,19 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		}
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 		{
+			player.isInteractingWithNpc = true;
 			PlayerInventoryUi.Instance.ShowInventory();
 			PlayerInventoryUi.Instance.ShowNpcShop();
 			PlayerInventoryUi.Instance.refreshShopButton.onClick.AddListener(delegate { RefreshThisNpcsShopItems(); });
 			PlayerInventoryUi.Instance.closeShopButton.onClick.AddListener(delegate { UnInteract(player); });
 			MoveShopItemsToUi();
 		}
-		player.isInteractingWithSomething = true;
 	}
 	public void UnInteract(PlayerController player)
 	{
-		Debug.Log("uninteract");
-
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
+			player.isInteractingWithNpc = false;
 			PlayerJournalUi.Instance.HidePlayerJournal();
 			PlayerJournalUi.Instance.HideNpcJournal();
 			PlayerJournalUi.Instance.refreshQuestsButton.onClick.RemoveAllListeners();
@@ -90,14 +90,13 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		}
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 		{
-			Debug.Log("hide shop");
+			player.isInteractingWithNpc = false;
 			PlayerInventoryUi.Instance.HideInventory();
 			PlayerInventoryUi.Instance.HideNpcShop();
 			PlayerInventoryUi.Instance.refreshShopButton.onClick.RemoveAllListeners();
 			PlayerInventoryUi.Instance.closeShopButton.onClick.RemoveAllListeners();
 			MoveShopItemsToContainer();
 		}
-		player.isInteractingWithSomething = false;
 	}
 	private void DisplayInteractText()
 	{

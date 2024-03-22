@@ -15,7 +15,6 @@ public static class EventManagerUi
 	public static event Action<int, int> OnPlayerHealthChangeEvent;
 	public static void PlayerHealthChange(int max, int current)
 	{
-		Debug.Log($"health: {current}/{max}");
 		OnPlayerHealthChangeEvent?.Invoke(max, current);
 	}
 

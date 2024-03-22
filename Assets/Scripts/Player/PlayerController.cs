@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
 	public Abilities queuedAbility;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithSomething;
+	[HideInInspector] public bool isInteractingWithNpc;
 	private NpcHandler currentInteractedNpc;
 
 	private void Awake()
@@ -99,6 +99,11 @@ public class PlayerController : MonoBehaviour
 		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 10);
 	}
 	private void FixedUpdate()
+	{
+		if (IsPlayerInteracting()) return;
+		PlayerMovement();
+	}
+	private void PlayerMovement()
 	{
 		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
 		rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
@@ -228,7 +233,7 @@ public class PlayerController : MonoBehaviour
 	//bool checks
 	private bool IsPlayerInteracting()
 	{
-		if (isInteractingWithSomething)
+		if (isInteractingWithNpc)
 			return true;
 		else return false;
 	}

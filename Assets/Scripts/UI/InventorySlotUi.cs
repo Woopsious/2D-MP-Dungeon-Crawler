@@ -15,11 +15,14 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public static event Action<InventoryItem, InventorySlotUi> OnItemEquip;
 	public static event Action<InventoryItem, InventorySlotUi> OnHotbarItemEquip;
 
+	public static event Action<InventoryItem, InventorySlotUi> OnItemBuyEvent;
+	public static event Action<InventoryItem, InventorySlotUi> OnItemSellEvent;
+
 	public SlotType slotType;
 	public enum SlotType
 	{
 		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
-		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot
+		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot, shopSellSlot, shopBuySlot
 	}
 
 	public int slotIndex;
@@ -68,7 +71,23 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			}
 		}
 		else
+		{
+			//check if some sort of shop slot. if it is make sure slot it empty.
+			//if is shopBuySlot add to list of items player is buying. - gold based on item price * stack count
+			//if is shopSellSlot add to list of items player is selling. + gold based on item price * stack count
+			if (IsShopBuySlot() && oldInventorySlot.IsShopSlot())
+			{
+				OnItemBuyEvent?.Invoke(item, this);
+				//- gold based on item price * stack count
+			}
+			else if (IsShopSellSlot() && oldInventorySlot.slotType == SlotType.generic)
+			{
+				OnItemSellEvent?.Invoke(item, this);
+				//+ gold based on item price * stack count
+			}
+
 			ClearItemFromSlot(oldInventorySlot);
+		}
 
 		AddItemToSlot(item);
 	}
@@ -196,6 +215,24 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else
 				return false;
 		}
+		else return false;
+	}
+	public bool IsShopSlot()
+	{
+		if (slotType == SlotType.shopSlot)
+			return true;
+		else return false;
+	}
+	public bool IsShopBuySlot()
+	{
+		if (slotType == SlotType.shopBuySlot)
+			return true;
+		else return false;
+	}
+	public bool IsShopSellSlot()
+	{
+		if (slotType == SlotType.shopSellSlot)
+			return true;
 		else return false;
 	}
 	public bool CheckClassRestriction(int itemClassRestrictionNum)

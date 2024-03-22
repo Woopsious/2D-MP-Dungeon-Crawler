@@ -37,10 +37,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
-		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
-		PlayerJournalUi.OnQuestAbandon += OnQuestAbandon;
-
 		if (debugSpawnStartingItems)
 		{
 			SpawnStartingItems();
@@ -51,6 +47,12 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
+
+		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
+		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
+		PlayerJournalUi.OnQuestAbandon += OnQuestAbandon;
+
+		//sub to item buy/sell events
 	}
 	private void OnDisable()
 	{
@@ -59,6 +61,8 @@ public class PlayerInventoryManager : MonoBehaviour
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 		PlayerJournalUi.OnQuestAbandon -= OnQuestAbandon;
+
+		//unsub to item buy/sell events
 	}
 
 	private void SpawnStartingItems()
@@ -192,7 +196,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	public bool CheckIfInventoryFull()
 	{
 		int numOfFilledSlots = 0;
-		return true;
 		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
 		{
 			InventorySlotUi inventorySlot = obj.GetComponent<InventorySlotUi>();
