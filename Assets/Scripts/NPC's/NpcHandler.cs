@@ -76,6 +76,8 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			PlayerInventoryUi.Instance.closeShopButton.onClick.AddListener(delegate { UnInteract(player); });
 			MoveShopItemsToUi();
 		}
+
+		interactWithText.gameObject.SetActive(false);
 	}
 	public void UnInteract(PlayerController player)
 	{
@@ -84,8 +86,8 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			player.isInteractingWithNpc = false;
 			PlayerJournalUi.Instance.HidePlayerJournal();
 			PlayerJournalUi.Instance.HideNpcJournal();
-			PlayerJournalUi.Instance.refreshQuestsButton.onClick.RemoveAllListeners();
-			PlayerJournalUi.Instance.closeQuestsButton.onClick.RemoveAllListeners();
+			PlayerJournalUi.Instance.refreshQuestsButton.onClick.RemoveListener(delegate { RefreshThisNpcsQuests(); });
+			PlayerJournalUi.Instance.closeQuestsButton.onClick.RemoveListener(delegate { UnInteract(player); });
 			MoveQuestsToContainer();
 		}
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
@@ -93,10 +95,12 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			player.isInteractingWithNpc = false;
 			PlayerInventoryUi.Instance.HideInventory();
 			PlayerInventoryUi.Instance.HideNpcShop();
-			PlayerInventoryUi.Instance.refreshShopButton.onClick.RemoveAllListeners();
-			PlayerInventoryUi.Instance.closeShopButton.onClick.RemoveAllListeners();
+			PlayerInventoryUi.Instance.refreshShopButton.onClick.RemoveListener(delegate { RefreshThisNpcsShopItems(); });
+			PlayerInventoryUi.Instance.closeShopButton.onClick.RemoveListener(delegate { UnInteract(player); });
 			MoveShopItemsToContainer();
 		}
+
+		interactWithText.gameObject.SetActive(true);
 	}
 	private void DisplayInteractText()
 	{
@@ -131,7 +135,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			Weapons weapon = go.AddComponent<Weapons>();
 			weapon.weaponBaseRef = (SOWeapons)npc.weaponSmithShopItems[Utilities.GetRandomNumber(npc.weaponSmithShopItems.Count)];
 			item.weaponBaseRef = weapon.weaponBaseRef;
-			item.currentStackCount = 1;
+			weapon.currentStackCount = 1;
 			weapon.Initilize(Utilities.SetRarity(), playerLevel);
 		}
 		if (npc.shopType == SONpcs.ShopType.isArmorer)
@@ -139,7 +143,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			Armors armor = go.AddComponent<Armors>();
 			armor.armorBaseRef = (SOArmors)npc.armorerShopItems[Utilities.GetRandomNumber(npc.armorerShopItems.Count)];
 			item.armorBaseRef = armor.armorBaseRef;
-			item.currentStackCount = 1;
+			armor.currentStackCount = 1;
 			armor.Initilize(Utilities.SetRarity(), playerLevel);
 		}
 		if (npc.shopType == SONpcs.ShopType.isGoldSmith)
@@ -147,7 +151,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			Accessories accessory = go.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = (SOAccessories)npc.goldSmithShopItems[Utilities.GetRandomNumber(npc.goldSmithShopItems.Count)];
 			item.accessoryBaseRef = accessory.accessoryBaseRef;
-			item.currentStackCount = 1;
+			accessory.currentStackCount = 1;
 			accessory.Initilize(Utilities.SetRarity(), playerLevel);
 		}
 		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
@@ -155,7 +159,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			Consumables consumable = go.AddComponent<Consumables>();
 			consumable.consumableBaseRef = (SOConsumables)npc.generalStoreItems[Utilities.GetRandomNumber(npc.generalStoreItems.Count)];
 			item.consumableBaseRef = consumable.consumableBaseRef;
-			item.currentStackCount = 3;
+			consumable.currentStackCount = 3;
 			consumable.Initilize(Utilities.SetRarity(), playerLevel);
 		}
 
@@ -175,7 +179,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		for (int i = 0; i < avalableShopItemsList.Count; i++)
 		{
 			InventorySlotUi slot = PlayerInventoryUi.Instance.shopSlots[i].GetComponent<InventorySlotUi>();
-			slot.EquipItemToSlot(avalableShopItemsList[i]);
+			slot.AddItemToSlot(avalableShopItemsList[i]);
 			slot.itemInSlot.transform.SetParent(slot.transform);
 		}
 	}

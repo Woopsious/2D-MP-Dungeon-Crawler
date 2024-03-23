@@ -46,8 +46,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public Button refreshShopButton;
 	public Button closeShopButton;
 
-	public List<InventoryItem> itemsSelling = new List<InventoryItem>();
-	public List<InventoryItem> itemsBuying = new List<InventoryItem>();
+	public int goldTransaction;
 
 	private void Awake()
 	{
@@ -62,6 +61,8 @@ public class PlayerInventoryUi : MonoBehaviour
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
 		ClassesUi.OnClassReset += OnClassReset;
 		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
+		InventorySlotUi.OnItemBuyEvent += OnItemBuy;
+		InventorySlotUi.OnItemSellEvent += OnItemSell;
 
 		EventManagerUi.OnShowPlayerInventoryEvent += ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent += HideInventory;
@@ -80,6 +81,8 @@ public class PlayerInventoryUi : MonoBehaviour
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
+		InventorySlotUi.OnItemBuyEvent -= OnItemBuy;
+		InventorySlotUi.OnItemSellEvent -= OnItemSell;
 
 		EventManagerUi.OnShowPlayerInventoryEvent -= ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideInventory;
@@ -128,7 +131,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);
 			newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
-			inventorySlot.EquipItemToSlot(newInventoryItem);
+			inventorySlot.AddItemToSlot(newInventoryItem);
 		}
 	}
 	private void ReloadItemData(InventoryItem inventoryItem, InventoryItemData itemData)
@@ -294,6 +297,18 @@ public class PlayerInventoryUi : MonoBehaviour
 			consumable.Initilize(consumable.rarity, consumable.itemLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
 		}
+	}
+
+	//buying/selling items
+	public void OnItemSell(InventoryItem item)
+	{
+		goldTransaction = item.itemPrice * item.currentStackCount;
+		transactionTrackerText.text = $"Gold: {goldTransaction}";
+	}
+	public void OnItemBuy(InventoryItem item)
+	{
+		goldTransaction = -item.itemPrice * item.currentStackCount;
+		transactionTrackerText.text = $"Gold: {goldTransaction}";
 	}
 
 	//adding new item to ui

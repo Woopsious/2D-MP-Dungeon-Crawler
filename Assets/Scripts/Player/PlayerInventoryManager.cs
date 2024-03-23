@@ -25,8 +25,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	public int playerGoldAmount;
 	public int startingGold;
 
-	//public event Action<int> OnGoldAmountChange; // move to hotbar ui
-
 	[Header("Player Quests")]
 	public GameObject questPrefab;
 	public List<QuestSlotsUi> activeQuests = new List<QuestSlotsUi>();
@@ -47,6 +45,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
+		InventorySlotUi.OnItemBuyEvent += OnItemBuy;
+		InventorySlotUi.OnItemSellEvent += OnItemSell;
 
 		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
@@ -57,6 +57,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
+		InventorySlotUi.OnItemBuyEvent -= OnItemBuy;
+		InventorySlotUi.OnItemSellEvent -= OnItemSell;
 
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
@@ -135,11 +137,37 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		return playerGoldAmount;
 	}
-	public void UpdateGoldAmount(int gold)
+	private void UpdateGoldAmount(int gold)
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
 		EventManagerUi.GoldAmountChange(playerGoldAmount);
+	}
+	public void OnItemBuy(InventoryItem item)
+	{
+		int gold = 0;
+		gold -= item.itemPrice * item.currentStackCount;
+		UpdateGoldAmount(gold);
+	}
+	public void CheckIfCanAffordItem(InventoryItem item)
+	{
+		int gold = 0;
+		gold -= item.itemPrice * item.currentStackCount;
+		if (gold <= playerGoldAmount)
+		{
+			gold -= item.itemPrice * item.currentStackCount;
+			UpdateGoldAmount(gold);
+		}
+		else
+		{
+
+		}
+	}
+	public void OnItemSell(InventoryItem item)
+	{
+		int newgold = 0;
+		newgold += item.itemPrice * item.currentStackCount;
+		UpdateGoldAmount(newgold);
 	}
 
 	//player quests

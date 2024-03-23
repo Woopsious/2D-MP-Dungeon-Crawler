@@ -11,6 +11,11 @@ public static class EventManagerUi
 	{
 		OnGoldAmountChange?.Invoke(gold);
 	}
+	public static Action<InventoryItem> OnItemBuyCancel;
+	public static void GoldAmountChange(InventoryItem item)
+	{
+		OnItemBuyCancel?.Invoke(item);
+	}
 
 	public static event Action<int, int> OnPlayerHealthChangeEvent;
 	public static void PlayerHealthChange(int max, int current)

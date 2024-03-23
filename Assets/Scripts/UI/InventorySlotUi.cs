@@ -15,8 +15,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public static event Action<InventoryItem, InventorySlotUi> OnItemEquip;
 	public static event Action<InventoryItem, InventorySlotUi> OnHotbarItemEquip;
 
-	public static event Action<InventoryItem, InventorySlotUi> OnItemBuyEvent;
-	public static event Action<InventoryItem, InventorySlotUi> OnItemSellEvent;
+	public static event Action<InventoryItem> OnItemBuyEvent;
+	public static event Action<InventoryItem> OnItemSellEvent;
 
 	public SlotType slotType;
 	public enum SlotType
@@ -59,6 +59,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
+			if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot()) return; //disable swapping of shop items
+
 			if (IsItemInSlotStackable() && IsItemInSlotSameAs(item)) //stacking items
 			{
 				PlayerInventoryUi.Instance.AddToStackCount(this, item);
@@ -70,23 +72,14 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 				SwapItemInSlot(item, oldInventorySlot);
 			}
 		}
-		else
+		else if (IsShopSlot() || oldInventorySlot.IsShopSlot())
 		{
-			//check if some sort of shop slot. if it is make sure slot it empty.
-			//if is shopBuySlot add to list of items player is buying. - gold based on item price * stack count
-			//if is shopSellSlot add to list of items player is selling. + gold based on item price * stack count
-			if (IsShopBuySlot() && oldInventorySlot.IsShopSlot())
-			{
-				OnItemBuyEvent?.Invoke(item, this);
-				//- gold based on item price * stack count
-			}
-			else if (IsShopSellSlot() && oldInventorySlot.slotType == SlotType.generic)
-			{
-				OnItemSellEvent?.Invoke(item, this);
-				//+ gold based on item price * stack count
-			}
+			if (IsShopSlot() && oldInventorySlot.slotType == SlotType.generic)
+				OnItemSellEvent?.Invoke(item);
+			else if (oldInventorySlot.IsShopSlot() && slotType == SlotType.generic)
+				OnItemBuyEvent?.Invoke(item);
 
-			ClearItemFromSlot(oldInventorySlot);
+			oldInventorySlot.RemoveItemFromSlot();
 		}
 
 		AddItemToSlot(item);
@@ -97,13 +90,19 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 
 	//types of item changes
-	private void AddItemToSlot(InventoryItem item)
+	public void AddItemToSlot(InventoryItem item)
 	{
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
+		item.transform.SetParent(transform);
+	}
+	public void RemoveItemFromSlot()
+	{
+		itemInSlot = null;
+		CheckIfItemInEquipmentSlot(itemInSlot);
 	}
 	private void SwapItemInSlot(InventoryItem item, InventorySlotUi oldInventorySlot)
 	{
@@ -113,15 +112,10 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		oldInventorySlot.UpdateSlotSize();
 		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 	}
-	private void ClearItemFromSlot(InventorySlotUi oldInventorySlot)
-	{
-		oldInventorySlot.itemInSlot = null;
-		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
-	}
 
 	public void CheckIfItemInEquipmentSlot(InventoryItem item)
 	{
-		if (slotType == SlotType.generic) return;
+		if (slotType == SlotType.generic || IsShopSlot()) return;
 
 		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			OnHotbarItemEquip?.Invoke(item, this);
@@ -167,18 +161,25 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectSlotType(InventoryItem item)
 	{
-		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability)
-			return false;
-		if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
+		//ability checks
+		if (item.itemType == InventoryItem.ItemType.isAbility)
+		{
+			if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.ability)
+				return false;
+			if (item.itemType == InventoryItem.ItemType.isAbility && slotType == SlotType.equippedAbilities)
+				return true;
+		}
+
+		//shop checks
+		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().slotType == SlotType.generic)
+			return true;
+		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot() || slotType == SlotType.generic)
 			return true;
 
-		if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.generic)
-			return true;
-
-		if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.shopSlot)
-			return true;
-
+		//equipment/class restriction checks
 		if (item.itemType == InventoryItem.ItemType.isConsumable && slotType == SlotType.consumables)
+			return true;
+		else if (item.itemType != InventoryItem.ItemType.isAbility && slotType == SlotType.generic)
 			return true;
 		else if (item.itemType == InventoryItem.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))
 		{
@@ -220,18 +221,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public bool IsShopSlot()
 	{
 		if (slotType == SlotType.shopSlot)
-			return true;
-		else return false;
-	}
-	public bool IsShopBuySlot()
-	{
-		if (slotType == SlotType.shopBuySlot)
-			return true;
-		else return false;
-	}
-	public bool IsShopSellSlot()
-	{
-		if (slotType == SlotType.shopSellSlot)
 			return true;
 		else return false;
 	}
