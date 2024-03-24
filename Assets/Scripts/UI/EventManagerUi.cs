@@ -12,7 +12,7 @@ public static class EventManagerUi
 		OnGoldAmountChange?.Invoke(gold);
 	}
 	public static Action<InventoryItem> OnItemBuyCancel;
-	public static void GoldAmountChange(InventoryItem item)
+	public static void CancelItemBuy(InventoryItem item)
 	{
 		OnItemBuyCancel?.Invoke(item);
 	}

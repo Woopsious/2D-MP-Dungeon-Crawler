@@ -78,11 +78,10 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 				OnItemSellEvent?.Invoke(item);
 			else if (oldInventorySlot.IsShopSlot() && slotType == SlotType.generic)
 				OnItemBuyEvent?.Invoke(item);
-
-			oldInventorySlot.RemoveItemFromSlot();
 		}
 
 		AddItemToSlot(item);
+		oldInventorySlot.RemoveItemFromSlot();
 	}
 	public void EquipItemToSlot(InventoryItem item) //ui context menu
 	{
@@ -101,6 +100,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public void RemoveItemFromSlot()
 	{
+		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
 	}

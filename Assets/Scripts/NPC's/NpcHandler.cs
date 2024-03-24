@@ -175,7 +175,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	//move shops items between NPC container/ui container
 	private void MoveShopItemsToUi()
 	{
-		//need to change to for loop so i can sync inventory slots with inventoryitems
 		for (int i = 0; i < avalableShopItemsList.Count; i++)
 		{
 			InventorySlotUi slot = PlayerInventoryUi.Instance.shopSlots[i].GetComponent<InventorySlotUi>();
@@ -185,14 +184,17 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	}
 	private void MoveShopItemsToContainer()
 	{
-		//need to change to for loop so i can sync inventory slots with inventoryitems
+		avalableShopItemsList.Clear(); //reset list of shop items
 		foreach (GameObject obj in PlayerInventoryUi.Instance.shopSlots)
 		{
 			if (obj.GetComponent<InventorySlotUi>().itemInSlot != null)
 			{
 				InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
 				if (!slot.IsSlotEmpty())
+				{
 					slot.itemInSlot.transform.SetParent(npcContainer.transform);
+					avalableShopItemsList.Add(slot.itemInSlot); //add new items
+				}
 			}
 		}
 	}

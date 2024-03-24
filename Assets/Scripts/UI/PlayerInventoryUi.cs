@@ -63,6 +63,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
 		InventorySlotUi.OnItemBuyEvent += OnItemBuy;
 		InventorySlotUi.OnItemSellEvent += OnItemSell;
+		EventManagerUi.OnItemBuyCancel += OnItemBuyCancel;
 
 		EventManagerUi.OnShowPlayerInventoryEvent += ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent += HideInventory;
@@ -83,6 +84,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 		InventorySlotUi.OnItemBuyEvent -= OnItemBuy;
 		InventorySlotUi.OnItemSellEvent -= OnItemSell;
+		EventManagerUi.OnItemBuyCancel -= OnItemBuyCancel;
 
 		EventManagerUi.OnShowPlayerInventoryEvent -= ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideInventory;
@@ -309,6 +311,19 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		goldTransaction = -item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
+	}
+	public void OnItemBuyCancel(InventoryItem item)
+	{
+		goldTransaction = 0;
+		transactionTrackerText.text = $"Gold: {goldTransaction}";
+
+		foreach (GameObject obj in shopSlots)
+		{
+			InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+			if (!slot.IsSlotEmpty()) continue;
+
+			slot.AddItemToSlot(item);
+		}
 	}
 
 	//adding new item to ui

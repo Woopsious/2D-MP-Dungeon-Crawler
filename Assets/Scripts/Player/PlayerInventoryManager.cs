@@ -145,24 +145,16 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void OnItemBuy(InventoryItem item)
 	{
-		int gold = 0;
-		gold -= item.itemPrice * item.currentStackCount;
-		UpdateGoldAmount(gold);
-	}
-	public void CheckIfCanAffordItem(InventoryItem item)
-	{
-		int gold = 0;
-		gold -= item.itemPrice * item.currentStackCount;
-		if (gold <= playerGoldAmount)
+		if (item.itemPrice * item.currentStackCount <= playerGoldAmount)
 		{
+			int gold = 0;
 			gold -= item.itemPrice * item.currentStackCount;
 			UpdateGoldAmount(gold);
 		}
 		else
-		{
-
-		}
+			EventManagerUi.CancelItemBuy(item);
 	}
+
 	public void OnItemSell(InventoryItem item)
 	{
 		int newgold = 0;
