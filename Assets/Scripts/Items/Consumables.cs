@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Services.Analytics;
 using UnityEngine;
 
@@ -29,6 +30,16 @@ public class Consumables : Items
 		consumableType = (ConsumableType)consumableBaseRef.consumableType;
 		consumablePercentage = consumableBaseRef.consumablePercentage;
 		isStackable = consumableBaseRef.isStackable;
+
+		SetToolTip();
+	}
+	protected override void SetToolTip()
+	{
+		toolTip = GetComponent<ToolTipUi>();
+
+		string info = $"{itemName} \n {itemPrice} Price";
+
+		toolTip.tipToShow = info;
 	}
 
 	public void ConsumeItem(EntityStats entityStats)

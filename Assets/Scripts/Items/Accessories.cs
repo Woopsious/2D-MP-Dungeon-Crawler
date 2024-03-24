@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Accessories : Items
@@ -66,6 +67,49 @@ public class Accessories : Items
 		bonusPoisonResistance = (int)(accessoryBaseRef.bonusPoisonResistance * levelModifier);
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
+
+		SetToolTip();
+	}
+	protected override void SetToolTip()
+	{
+		toolTip = GetComponent<ToolTipUi>();
+
+		string rarity;
+		if (this.rarity == Rarity.isLegendary)
+			rarity = "Legendary";
+		else if (this.rarity == Rarity.isEpic)
+			rarity = "Epic";
+		else if (this.rarity == Rarity.isRare)
+			rarity = "Rare";
+		else
+			rarity = "Common";
+		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+
+		string extraInfo;
+
+		if (accessoryType == AccessoryType.isWarding)
+		{
+			extraInfo = $"{bonusHealth} Extra Health \n {bonusPhysicalResistance} Physical Res \n" +
+				$"{bonusPoisonResistance} Poison Res \n {bonusFireResistance} Fire Res \n {bonusIceResistance} Ice Res";
+		}
+		else if (accessoryType == AccessoryType.isDamaging)
+		{
+			string damageType;
+			if (damageTypeToBoost == DamageTypeToBoost.isPhysicalDamageType)
+				damageType = $"{bonusPercentageValue}% Physical Damage Boost";
+			else if (damageTypeToBoost == DamageTypeToBoost.isPoisonDamageType)
+				damageType = $"{bonusPercentageValue}% Posion Damage Boost";
+			else if (damageTypeToBoost == DamageTypeToBoost.isFireDamageType)
+				damageType = $"{bonusPercentageValue}% Fire Damage Boost";
+			else
+				damageType = $"{bonusPercentageValue}% Ice Damage Boost";
+
+			extraInfo = $"{bonusMana} Extra Mana \n {damageType}";
+		}
+		else
+			extraInfo = $"{bonusMana} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
+
+		toolTip.tipToShow = $"{info} \n {extraInfo}";
 	}
 
 	public void SetRandomDamageTypeOnDrop()

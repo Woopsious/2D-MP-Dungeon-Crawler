@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Weapons : Items
@@ -34,6 +35,8 @@ public class Weapons : Items
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
+
+		SetToolTip();
 	}
 	private void WeaponInitilization()
 	{
@@ -54,6 +57,33 @@ public class Weapons : Items
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
 
+	}
+	protected override void SetToolTip()
+	{
+		toolTip = GetComponent<ToolTipUi>();
+
+		string rarity;
+		if (this.rarity == Rarity.isLegendary)
+			rarity = "Legendary";
+		else if (this.rarity == Rarity.isEpic)
+			rarity = "Epic";
+		else if (this.rarity == Rarity.isRare)
+			rarity = "Rare";
+		else
+			rarity = "Common";
+		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+
+		string dps;
+		if (isShield)
+			dps = $"Blocks {damage}";
+		else
+		{
+			int newDps = (int)(damage * weaponBaseRef.baseAttackSpeed);
+			dps = $"{newDps} Dps";
+		}
+		string damageInfo = $"{dps} \n {weaponBaseRef.baseAttackSpeed} Attack speed \n {bonusMana} Mana bonus";
+
+		toolTip.tipToShow = $"{info} \n {damageInfo}";
 	}
 	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod,
 		float singleHandMod, float duelHandMod, float rangedMod, Weapons offHandWeapon)

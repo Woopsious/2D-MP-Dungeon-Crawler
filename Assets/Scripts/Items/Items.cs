@@ -14,6 +14,7 @@ public class Items : MonoBehaviour, IInteractable
 	public SOConsumables consumableBaseRef;
 
 	[Header("Item Info")]
+	protected ToolTipUi toolTip;
 	public string itemName;
 	public Sprite itemSprite;
 	public int itemPrice;
@@ -126,6 +127,12 @@ public class Items : MonoBehaviour, IInteractable
 	{
 		if (other.GetComponent<PlayerController>() != null)
 			Interact(other.GetComponent<PlayerController>());
+	}
+
+	//tool tip
+	protected virtual void SetToolTip()
+	{
+
 	}
 
 	//Debug functions

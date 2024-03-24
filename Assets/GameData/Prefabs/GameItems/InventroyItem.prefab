@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 5745626266757072346}
   - component: {fileID: 2877081399184059635}
   - component: {fileID: 2826316085371664277}
+  - component: {fileID: -3623799894385280569}
   m_Layer: 5
   m_Name: InventroyItem
   m_TagString: Untagged
@@ -217,6 +218,20 @@ MonoBehaviour:
   isStackable: 0
   maxStackCount: 0
   currentStackCount: 0
+--- !u!114 &-3623799894385280569
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2498642512250934063}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f54a3bf58379af8468851d77343a04fd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isTip: 1
+  tipToShow: 
 --- !u!1 &4762302495352001267
 GameObject:
   m_ObjectHideFlags: 0
