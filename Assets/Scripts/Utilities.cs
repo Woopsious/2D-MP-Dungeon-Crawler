@@ -74,6 +74,16 @@ public class Utilities
 		else { return levelModifier += 0; }
 	}
 
+	//convert % to ui % (0.08f = 8%)
+	public static int ConvertFloatToUiPercentage(float value)
+	{
+		float newValue;
+		newValue = value;
+		newValue *= 100;
+
+		return Mathf.RoundToInt(newValue);
+	}
+
 	//check if current active scene == this scene name
 	public static bool GetCurrentlyActiveScene(string sceneName)
 	{

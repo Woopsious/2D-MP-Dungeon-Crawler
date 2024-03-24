@@ -55,7 +55,6 @@ public class Stat
 		if (isPercentageStat)
 		{
 			float percentageValue = basePercentageValue;
-			Debug.Log(percentageValue);
 			percentageBonuses.ForEach(x => percentageValue += x);
 			finalPercentageValue = equipmentPercentageValue + percentageValue;
 		}

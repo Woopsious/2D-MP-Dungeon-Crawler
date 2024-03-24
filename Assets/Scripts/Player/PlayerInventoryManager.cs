@@ -154,7 +154,6 @@ public class PlayerInventoryManager : MonoBehaviour
 		else
 			EventManagerUi.CancelItemBuy(item);
 	}
-
 	public void OnItemSell(InventoryItem item)
 	{
 		int newgold = 0;

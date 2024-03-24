@@ -232,11 +232,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		inventoryItem.abilityBaseRef = newAbility;
 		Abilities ability = inventoryItem.AddComponent<Abilities>();
 		ability.abilityBaseRef = newAbility;
-		ability.abilityName = newAbility.Name;
-		ability.abilityDescription = newAbility.Description;
-		ability.abilitySprite = newAbility.abilitySprite;
-		ability.isEquippedAbility = false;
-		ability.isOnCooldown = false;
+		ability.Initilize();
 	}
 
 	//ITEMS

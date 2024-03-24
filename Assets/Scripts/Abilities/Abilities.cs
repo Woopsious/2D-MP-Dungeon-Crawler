@@ -15,6 +15,7 @@ public class Abilities : MonoBehaviour
 	public EntityStats entityStatusEffectIsAppliedTo;
 
 	[Header("Ability Info")]
+	private ToolTipUi toolTip;
 	public SOClassAbilities abilityBaseRef;
 
 	public string abilityName;
@@ -38,7 +39,47 @@ public class Abilities : MonoBehaviour
 		abilityDescription = abilityBaseRef.Description;
 		abilitySprite = abilityBaseRef.abilitySprite;
 
+		isEquippedAbility = false;
+		isOnCooldown = false;
 		abilityCooldownTimer = 0;
+
+		SetToolTip();
+	}
+	//tool tip
+	private void SetToolTip()
+	{
+		toolTip = GetComponent<ToolTipUi>();
+
+		string info = $"{abilityName} \n {abilityDescription}";
+
+		string effectInfo;
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		{
+			if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
+			{
+				if (abilityBaseRef.isOffensiveAbility)
+					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
+						$"damage debuff to selected enemy";
+				else
+					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
+						$"damage buff to selected friendly/self";
+			}
+			else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+			{
+				if (abilityBaseRef.isOffensiveAbility)
+					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
+						$"damage resistance debuff to selected enemy";
+				else
+					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
+						$"damage resistance buff to selected friendly/self";
+			}
+			else
+				effectInfo = "";
+		}
+		else
+			effectInfo = "";
+
+		toolTip.tipToShow = $"{info} \n {effectInfo}";
 	}
 
 	private void Update()

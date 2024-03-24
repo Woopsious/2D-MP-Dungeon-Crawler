@@ -276,6 +276,7 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 			Abilities ability = gameObject.AddComponent<Abilities>();
 			ability.abilityBaseRef = abilityBaseRef;
 			ability.Initilize();
+			Debug.Log("initilize ability start");
 		}
 		Initilize();
 	}

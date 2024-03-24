@@ -13,6 +13,7 @@ using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
+	public bool debugSetStartingItems;
 	public Camera playerCamera;
 	public LayerMask includeMe;
 	private EntityStats playerStats;
@@ -254,7 +255,6 @@ public class PlayerController : MonoBehaviour
 	{
 		if (other.GetComponent<NpcHandler>() != null)
 		{
-			currentInteractedNpc.UnInteract(this);
 			currentInteractedNpc.interactWithObj.SetActive(false);
 			currentInteractedNpc = null;
 		}

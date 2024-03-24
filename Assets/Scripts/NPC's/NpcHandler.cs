@@ -179,23 +179,20 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		{
 			InventorySlotUi slot = PlayerInventoryUi.Instance.shopSlots[i].GetComponent<InventorySlotUi>();
 			slot.AddItemToSlot(avalableShopItemsList[i]);
-			slot.itemInSlot.transform.SetParent(slot.transform);
 		}
 	}
 	private void MoveShopItemsToContainer()
 	{
-		avalableShopItemsList.Clear(); //reset list of shop items
+		avalableShopItemsList.Clear();
+
 		foreach (GameObject obj in PlayerInventoryUi.Instance.shopSlots)
 		{
-			if (obj.GetComponent<InventorySlotUi>().itemInSlot != null)
-			{
-				InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
-				if (!slot.IsSlotEmpty())
-				{
-					slot.itemInSlot.transform.SetParent(npcContainer.transform);
-					avalableShopItemsList.Add(slot.itemInSlot); //add new items
-				}
-			}
+			InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+			if (slot.IsSlotEmpty()) continue;
+
+			avalableShopItemsList.Add(slot.itemInSlot); //add new items
+			slot.itemInSlot.transform.SetParent(npcContainer.transform);
+			slot.RemoveItemFromSlot();
 		}
 	}
 

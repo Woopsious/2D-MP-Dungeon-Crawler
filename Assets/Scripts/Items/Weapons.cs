@@ -78,10 +78,11 @@ public class Weapons : Items
 			dps = $"Blocks {damage}";
 		else
 		{
-			int newDps = (int)(damage * weaponBaseRef.baseAttackSpeed);
+			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
 			dps = $"{newDps} Dps";
 		}
-		string damageInfo = $"{dps} \n {weaponBaseRef.baseAttackSpeed} Attack speed \n {bonusMana} Mana bonus";
+		string damageInfo = $"{dps} \n {damage} Damage \n {weaponBaseRef.baseAttackSpeed}s Attack speed \n " +
+			$"{weaponBaseRef.baseKnockback} Knockback \n {bonusMana} Mana bonus";
 
 		toolTip.tipToShow = $"{info} \n {damageInfo}";
 	}
