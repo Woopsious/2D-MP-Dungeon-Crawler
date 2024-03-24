@@ -138,6 +138,7 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		if (!IsPlayerEntity()) return;
 		EventManagerUi.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		UpdatePlayerStatInfoUi();
 	}
 	public void OnHit(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
 	{
@@ -207,6 +208,7 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		if (!IsPlayerEntity()) return;
 		EventManagerUi.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		UpdatePlayerStatInfoUi();
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -222,6 +224,8 @@ public class EntityStats : MonoBehaviour
 	//mana functions
 	public void PassiveManaRegen()
 	{
+		if (currentMana > maxMana.finalValue)
+			DecreaseMana(currentMana - maxMana.finalValue, false);
 		if (currentMana >= maxMana.finalValue) return;
 
 		manaRegenTimer -= Time.deltaTime;
@@ -246,6 +250,7 @@ public class EntityStats : MonoBehaviour
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 		if (!IsPlayerEntity()) return;
 		EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
+		UpdatePlayerStatInfoUi();
 	}
 	public void DecreaseMana(float manaValue, bool isPercentageValue)
 	{
@@ -256,6 +261,7 @@ public class EntityStats : MonoBehaviour
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 		if (!IsPlayerEntity()) return;
 		EventManagerUi.PlayerManaChange(maxMana.finalValue, currentMana);
+		UpdatePlayerStatInfoUi();
 	}
 
 	//status effect functions
