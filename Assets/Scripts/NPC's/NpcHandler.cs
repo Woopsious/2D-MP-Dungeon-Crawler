@@ -17,7 +17,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	[Header("Shop Items")]
 	public GameObject ItemPrefab;
-	public List<InventoryItem> avalableShopItemsList = new List<InventoryItem>();
+	public List<InventoryItemUi> avalableShopItemsList = new List<InventoryItemUi>();
 
 	[Header("Container Ref")]
 	public GameObject npcContainer;
@@ -128,7 +128,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void GenerateItem(int playerLevel)
 	{
 		GameObject go = Instantiate(ItemPrefab, npcContainer.transform);
-		InventoryItem item = go.GetComponent<InventoryItem>();
+		InventoryItemUi item = go.GetComponent<InventoryItemUi>();
 
 		if (npc.shopType == SONpcs.ShopType.isWeaponSmith)
 		{

@@ -8,7 +8,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 [System.Serializable]
-public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IPointerEnterHandler, IPointerExitHandler
+public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;
@@ -124,57 +124,6 @@ public class InventoryItem : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
 		else if (armorBaseRef != null) return armorBaseRef.MaxStackCount;
 		else if (accessoryBaseRef != null) return accessoryBaseRef.MaxStackCount;
 		else return consumableBaseRef.MaxStackCount;
-	}
-
-	//functions to display item info on mouse hover
-	public void OnPointerEnter(PointerEventData eventData)
-	{
-		StopAllCoroutines();
-		//StartCoroutine(StartTimer());
-	}
-	public void OnPointerExit(PointerEventData eventData)
-	{
-		StopAllCoroutines();
-		//HoverTipManager.OnMouseLoseFocus();
-	}
-
-	private void ShowMessage()
-	{
-		string info = itemName + "\n Sell Price: " + itemPrice / 25;
-
-		if (itemType == ItemType.isWeapon)
-		{
-			Weapons weapon = GetComponent<Weapons>();
-			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Damage: " + weapon.damage + "\n Range: ";
-			if (weapon.weaponBaseRef.isRangedWeapon)
-				info += weapon.weaponBaseRef.baseMaxAttackRange;
-			else
-				info += "Melee";
-			info += "\n Attack Speed: " + weapon.weaponBaseRef.baseAttackSpeed + "\n Bonus Mana: " + weapon.bonusMana;
-		}
-		if (itemType == ItemType.isArmor)
-		{
-			Armors armor = GetComponent<Armors>();
-			info += "\n Level: " + itemLevel + "\n Rarity: " + rarity + "\n \n Bonus Health: " + armor.bonusHealth + "\n Bonus Mana: " +
-				armor.bonusMana + "\n \n Physical Resistance: " + armor.bonusPhysicalResistance + "\n Poison Resistance: " +
-				armor.bonusPoisonResistance + "\n Fire Resistance: " + armor.bonusFireResistance + "\n Ice Resistance: " + 
-				armor.bonusIceResistance;
-		}
-		if (itemType == ItemType.isConsumable)
-		{
-			Consumables consumable = GetComponent<Consumables>();
-			if (consumable.consumableType == Consumables.ConsumableType.healthRestoration)
-				info += "\n \n Restores: " + consumable.consumablePercentage + "% Health";
-            else if (consumable.consumableType == Consumables.ConsumableType.manaRestoration)
-				info += "\n \n Restores: " + consumable.consumablePercentage + "% Mana";
-		}
-
-		//HoverTipManager.OnMouseHover(info, Input.mousePosition);
-	}
-	private IEnumerator StartTimer()
-	{
-		yield return new WaitForSeconds(timeToWait);
-		ShowMessage();
 	}
 
 	//functions for dragging

@@ -49,6 +49,6 @@ public class Consumables : Items
 		else if (consumableType == ConsumableType.manaRestoration)
 			entityStats.IncreaseMana(consumablePercentage, true);
 
-		GetComponent<InventoryItem>().DecreaseStackCounter();
+		GetComponent<InventoryItemUi>().DecreaseStackCounter();
 	}
 }

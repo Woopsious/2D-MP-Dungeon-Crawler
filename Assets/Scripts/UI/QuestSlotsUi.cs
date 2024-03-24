@@ -218,7 +218,7 @@ public class QuestSlotsUi : MonoBehaviour
 		if (currentAmount >= amount)
 			CompleteThisQuest();
 	}
-	public void OnItemHandInCheckHandInAmount(InventoryItem item)
+	public void OnItemHandInCheckHandInAmount(InventoryItemUi item)
 	{
 		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest) return;
 

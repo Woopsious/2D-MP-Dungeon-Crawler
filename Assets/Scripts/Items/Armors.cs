@@ -60,8 +60,9 @@ public class Armors : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		string resInfo = $"{bonusHealth} Extra Health \n {bonusMana} Extra Mana \n {bonusPhysicalResistance} Physical Res \n" +
-			$"{bonusPoisonResistance} Poison Res \n {bonusFireResistance} Fire Res \n {bonusIceResistance} Ice Res";
+		string resInfo = $"WITHOUT PLAYER MODIFIERS \n {bonusHealth} Extra Health \n {bonusMana} Extra Mana \n " +
+			$"{bonusPhysicalResistance} Physical Res \n {bonusPoisonResistance} Poison Res \n {bonusFireResistance} " +
+			$"Fire Res \n {bonusIceResistance} Ice Res";
 
 		toolTip.tipToShow = $"{info} \n {resInfo}";
 	}

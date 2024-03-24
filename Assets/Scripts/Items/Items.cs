@@ -14,6 +14,7 @@ public class Items : MonoBehaviour, IInteractable
 	public SOConsumables consumableBaseRef;
 
 	[Header("Item Info")]
+	public EntityStats ownerStats;
 	protected ToolTipUi toolTip;
 	public string itemName;
 	public Sprite itemSprite;
@@ -52,7 +53,7 @@ public class Items : MonoBehaviour, IInteractable
 		itemPrice = GetItemPrice();
 		itemType = GetItemType();
 
-		if (GetComponent<InventoryItem>() != null) return; //is inventoryItem so doesnt need this ref
+		if (GetComponent<InventoryItemUi>() != null) return; //is inventoryItem so doesnt need this ref
 		GetComponent<SpriteRenderer>().sprite = itemSprite;
 	}
 	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity)

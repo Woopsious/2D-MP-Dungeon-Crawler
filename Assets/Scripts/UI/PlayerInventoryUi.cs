@@ -125,7 +125,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		foreach (InventoryItemData itemData in itemDataList)
 		{
 			GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-			InventoryItem newInventoryItem = go.GetComponent<InventoryItem>();
+			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
 
 			ReloadItemData(newInventoryItem, itemData);
 			InventorySlotUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotUi>();
@@ -136,7 +136,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventorySlot.AddItemToSlot(newInventoryItem);
 		}
 	}
-	private void ReloadItemData(InventoryItem inventoryItem, InventoryItemData itemData)
+	private void ReloadItemData(InventoryItemUi inventoryItem, InventoryItemData itemData)
 	{
 		if (itemData.weaponBaseRef != null)
 		{
@@ -207,7 +207,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-		InventoryItem item = go.GetComponent<InventoryItem>();
+		InventoryItemUi item = go.GetComponent<InventoryItemUi>();
 		SetAbilityData(item, newAbility);
 
 		for (int i = 0; i < LearntAbilitySlots.Count; i++)
@@ -227,7 +227,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			}
 		}
 	}
-	public void SetAbilityData(InventoryItem inventoryItem, SOClassAbilities newAbility)
+	public void SetAbilityData(InventoryItemUi inventoryItem, SOClassAbilities newAbility)
 	{
 		inventoryItem.abilityBaseRef = newAbility;
 		Abilities ability = inventoryItem.AddComponent<Abilities>();
@@ -244,16 +244,16 @@ public class PlayerInventoryUi : MonoBehaviour
 		else
 			SpawnNewItemInInventory(ConvertPickupsToInventoryItem(item));
 	}
-	private InventoryItem ConvertPickupsToInventoryItem(Items item)
+	private InventoryItemUi ConvertPickupsToInventoryItem(Items item)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-		InventoryItem newItem = go.GetComponent<InventoryItem>();
+		InventoryItemUi newItem = go.GetComponent<InventoryItemUi>();
 
 		SetItemData(newItem, item);
 		newItem.Initilize();
 		return newItem;
 	}
-	private void SetItemData(InventoryItem inventoryItem, Items item)
+	private void SetItemData(InventoryItemUi inventoryItem, Items item)
 	{
 		if (item.weaponBaseRef != null)
 		{
@@ -298,17 +298,17 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//buying/selling items
-	public void OnItemSell(InventoryItem item)
+	public void OnItemSell(InventoryItemUi item)
 	{
 		goldTransaction = item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 	}
-	public void OnItemBuy(InventoryItem item)
+	public void OnItemBuy(InventoryItemUi item)
 	{
 		goldTransaction = -item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 	}
-	public void OnItemBuyCancel(InventoryItem item)
+	public void OnItemBuyCancel(InventoryItemUi item)
 	{
 		goldTransaction = 0;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
@@ -323,7 +323,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//adding new item to ui
-	private void SpawnNewItemInInventory(InventoryItem item)
+	private void SpawnNewItemInInventory(InventoryItemUi item)
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
 		{
@@ -343,7 +343,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//stack item to existing ui items
-	private void TryStackItem(InventoryItem newItem)
+	private void TryStackItem(InventoryItemUi newItem)
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
 		{
@@ -360,9 +360,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			}
 		}
 	}
-	public void AddToStackCount(InventorySlotUi inventroySlot, InventoryItem newItem)
+	public void AddToStackCount(InventorySlotUi inventroySlot, InventoryItemUi newItem)
 	{
-		InventoryItem itemInSlot = inventroySlot.GetComponentInChildren<InventoryItem>();
+		InventoryItemUi itemInSlot = inventroySlot.GetComponentInChildren<InventoryItemUi>();
 		if (inventroySlot.IsItemInSlotSameAs(newItem) && itemInSlot.currentStackCount < itemInSlot.maxStackCount)
 		{
 			//add to itemInSlot.CurrentStackCount till maxStackCountReached

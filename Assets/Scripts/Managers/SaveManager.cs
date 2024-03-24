@@ -225,7 +225,7 @@ public class SaveManager : MonoBehaviour
 			if (slot.GetComponent<InventorySlotUi>().IsSlotEmpty()) continue;
 			else
 			{
-				InventoryItem inventoryItem = slot.GetComponent<InventorySlotUi>().itemInSlot;
+				InventoryItemUi inventoryItem = slot.GetComponent<InventorySlotUi>().itemInSlot;
 				InventoryItemData itemData = new()
 				{
 					weaponBaseRef = inventoryItem.weaponBaseRef,

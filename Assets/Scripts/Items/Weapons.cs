@@ -38,26 +38,7 @@ public class Weapons : Items
 
 		SetToolTip();
 	}
-	private void WeaponInitilization()
-	{
-		if (GetComponent<InventoryItem>() != null) return;  //return as this is an item in inventory
-		if (transform.parent == null) return;				//weapon is not equipped
-
-		parentObj = transform.parent.gameObject;
-		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
-		animator = GetComponent<Animator>();
-		boxCollider = gameObject.AddComponent<BoxCollider2D>();
-		boxCollider.enabled = false;
-		boxCollider.isTrigger = true;
-		canAttackAgain = true;
-		animator.SetBool("isMeleeAttack", false);
-
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
-			idleWeaponSprite.enabled = true;
-
-	}
+	//sub this to EventManagerUI.OnPlayerStatChangeEvent
 	protected override void SetToolTip()
 	{
 		toolTip = GetComponent<ToolTipUi>();
@@ -81,10 +62,30 @@ public class Weapons : Items
 			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
 			dps = $"{newDps} Dps";
 		}
-		string damageInfo = $"{dps} \n {damage} Damage \n {weaponBaseRef.baseAttackSpeed}s Attack speed \n " +
-			$"{weaponBaseRef.baseKnockback} Knockback \n {bonusMana} Mana bonus";
+		string damageInfo = $"WITHOUT PLAYER MODIFIERS \n {dps} \n {damage} Damage \n " +
+			$"{weaponBaseRef.baseAttackSpeed}s Attack speed \n {weaponBaseRef.baseKnockback} Knockback \n {bonusMana} Mana bonus";
 
 		toolTip.tipToShow = $"{info} \n {damageInfo}";
+	}
+	private void WeaponInitilization()
+	{
+		if (GetComponent<InventoryItemUi>() != null) return;  //return as this is an item in inventory
+		if (transform.parent == null) return;				//weapon is not equipped
+
+		parentObj = transform.parent.gameObject;
+		attackWeaponSprite = GetComponent<SpriteRenderer>();
+		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
+		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		animator = GetComponent<Animator>();
+		boxCollider = gameObject.AddComponent<BoxCollider2D>();
+		boxCollider.enabled = false;
+		boxCollider.isTrigger = true;
+		canAttackAgain = true;
+		animator.SetBool("isMeleeAttack", false);
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			idleWeaponSprite.enabled = true;
+
 	}
 	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod,
 		float singleHandMod, float duelHandMod, float rangedMod, Weapons offHandWeapon)
@@ -105,12 +106,12 @@ public class Weapons : Items
 			percentageMod = iceMod;
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
-			percentageMod += singleHandMod;
+			percentageMod += singleHandMod - 1;
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
-			percentageMod += duelHandMod;
+			percentageMod += duelHandMod - 1;
 
 		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
-			percentageMod += rangedMod;
+			percentageMod += rangedMod - 1;
 
 		damage = (int)(damage * percentageMod);
 	}

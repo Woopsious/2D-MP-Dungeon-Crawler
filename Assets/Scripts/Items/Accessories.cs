@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class Accessories : Items
@@ -85,11 +86,11 @@ public class Accessories : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		string extraInfo;
+		string extraInfo = "WITHOUT PLAYER MODIFIERS \n";
 
 		if (accessoryType == AccessoryType.isWarding)
 		{
-			extraInfo = $"{bonusHealth} Extra Health \n {bonusPhysicalResistance} Physical Res \n" +
+			extraInfo += $"{bonusHealth} Extra Health \n {bonusPhysicalResistance} Physical Res \n" +
 				$"{bonusPoisonResistance} Poison Res \n {bonusFireResistance} Fire Res \n {bonusIceResistance} Ice Res";
 		}
 		else if (accessoryType == AccessoryType.isDamaging)
@@ -104,10 +105,10 @@ public class Accessories : Items
 			else
 				damageType = $"{bonusPercentageValue}% Ice Damage Boost";
 
-			extraInfo = $"{bonusMana} Extra Mana \n {damageType}";
+			extraInfo += $"{bonusMana} Extra Mana \n {damageType}";
 		}
 		else
-			extraInfo = $"{bonusMana} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
+			extraInfo += $"{bonusMana} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
 
 		toolTip.tipToShow = $"{info} \n {extraInfo}";
 	}

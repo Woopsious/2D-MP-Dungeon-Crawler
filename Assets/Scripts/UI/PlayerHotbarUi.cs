@@ -127,14 +127,14 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	//Equip Consumables/Abilities
 	//not physically spawned in
-	private void EquipHotbarItem(InventoryItem item, InventorySlotUi slot)
+	private void EquipHotbarItem(InventoryItemUi item, InventorySlotUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
 
-		else if (item.itemType == InventoryItem.ItemType.isConsumable)
+		else if (item.itemType == InventoryItemUi.ItemType.isConsumable)
 			EquipConsumables(item.GetComponent<Consumables>(), slot);
-		else if (item.itemType == InventoryItem.ItemType.isAbility)
+		else if (item.itemType == InventoryItemUi.ItemType.isAbility)
 			EquipAbility(item.abilityBaseRef, slot);
 	}
 	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
@@ -155,7 +155,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 
 		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
-		InventoryItem item = go.GetComponent<InventoryItem>();
+		InventoryItemUi item = go.GetComponent<InventoryItemUi>();
 		PlayerInventoryUi.Instance.SetAbilityData(item, newAbility);
 
 		item.inventorySlotIndex = slotToEquipTo.slotIndex;

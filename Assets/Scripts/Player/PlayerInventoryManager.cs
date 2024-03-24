@@ -143,7 +143,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		GetGoldAmount();
 		EventManagerUi.GoldAmountChange(playerGoldAmount);
 	}
-	public void OnItemBuy(InventoryItem item)
+	public void OnItemBuy(InventoryItemUi item)
 	{
 		if (item.itemPrice * item.currentStackCount <= playerGoldAmount)
 		{
@@ -154,7 +154,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		else
 			EventManagerUi.CancelItemBuy(item);
 	}
-	public void OnItemSell(InventoryItem item)
+	public void OnItemSell(InventoryItemUi item)
 	{
 		int newgold = 0;
 		newgold += item.itemPrice * item.currentStackCount;

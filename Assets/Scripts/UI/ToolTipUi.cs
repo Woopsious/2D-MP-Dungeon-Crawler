@@ -5,8 +5,11 @@ using UnityEngine.EventSystems;
 
 public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
+	private PlayerController playerRef;
+
 	public string tipToShow;
 	private float timeToWait = 0.5f;
+
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		StopAllCoroutines();

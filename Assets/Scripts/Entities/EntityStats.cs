@@ -405,6 +405,8 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
 		dualWeaponDamageModifier.finalPercentageValue, rangedWeaponDamageModifier.finalPercentageValue,
 		equipmentHandler.equippedOffhandWeapon);
+
+		UpdatePlayerStatInfoUi();
 	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
@@ -433,6 +435,8 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
 		dualWeaponDamageModifier.finalPercentageValue, rangedWeaponDamageModifier.finalPercentageValue,
 		equipmentHandler.equippedOffhandWeapon);
+
+		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
 	{
@@ -464,6 +468,8 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
 		dualWeaponDamageModifier.finalPercentageValue, rangedWeaponDamageModifier.finalPercentageValue,
 		equipmentHandler.equippedOffhandWeapon);
+
+		UpdatePlayerStatInfoUi();
 	}
 	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
 	{
@@ -498,6 +504,8 @@ public class EntityStats : MonoBehaviour
 		iceDamagePercentageModifier.finalPercentageValue, mainWeaponDamageModifier.finalPercentageValue,
 		dualWeaponDamageModifier.finalPercentageValue, rangedWeaponDamageModifier.finalPercentageValue,
 		equipmentHandler.equippedOffhandWeapon);
+
+		UpdatePlayerStatInfoUi();
 	}
 	//function will full heal entity if not player and at full health when stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)

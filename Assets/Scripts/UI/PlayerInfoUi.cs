@@ -8,6 +8,7 @@ public class PlayerInfoUi : MonoBehaviour
 	public static PlayerInfoUi Instance;
 
 	public TMP_Text playerInfo;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -30,7 +31,11 @@ public class PlayerInfoUi : MonoBehaviour
 		string weaponInfo;
 		if (stats.equipmentHandler != null && stats.equipmentHandler.equippedWeapon != null)
 		{
-			weaponInfo = $"\r\n\r\nWeapon Damage: {stats.equipmentHandler.equippedWeapon.damage}";
+			int dps = (int)(stats.equipmentHandler.equippedWeapon.damage /
+				stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed);
+
+			weaponInfo = $"\r\n\r\nWeapon DPS: {dps} \r\nWeapon Damage: {stats.equipmentHandler.equippedWeapon.damage} \r\n " +
+				$"Weapon Knockback: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseKnockback}";
 			string rangeInfo;
 
 			if (stats.equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
@@ -38,7 +43,7 @@ public class PlayerInfoUi : MonoBehaviour
 			else
 				rangeInfo = $"\r\nWeapon Range: Melee";
 
-			weaponInfo += rangeInfo + $"\r\nWeapon Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}";
+			weaponInfo += $"\r\nWeapon Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}{rangeInfo}";
 		}
 		else
 			weaponInfo = "\r\n\r\nNo main weapon equipped";

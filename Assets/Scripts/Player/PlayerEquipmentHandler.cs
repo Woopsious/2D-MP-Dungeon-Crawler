@@ -25,12 +25,12 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		isPlayerEquipment = true;
 	}
 
-	private void EquipItem(InventoryItem item, InventorySlotUi slot)
+	private void EquipItem(InventoryItemUi item, InventorySlotUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
 
-		else if (item.itemType == InventoryItem.ItemType.isWeapon) //when player first equips/swaps equipment
+		else if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
 			Weapons weapon = item.GetComponent<Weapons>();
 			if (weapon.weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
@@ -38,7 +38,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			else
 				EquipWeapon(weapon, equippedOffhandWeapon, offhandWeaponSlotContainer);
 		}
-		else if (item.itemType == InventoryItem.ItemType.isArmor)
+		else if (item.itemType == InventoryItemUi.ItemType.isArmor)
 		{
 			Armors armor = item.GetComponent<Armors>();
 			if (armor.armorSlot == Armors.ArmorSlot.helmet)
@@ -50,7 +50,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 			if (armor.armorSlot == Armors.ArmorSlot.legs)
 				EquipArmor(armor, equippedLegs, legsSlotContainer);
 		}
-		else if (item.itemType == InventoryItem.ItemType.isAccessory)
+		else if (item.itemType == InventoryItemUi.ItemType.isAccessory)
 		{
 			Accessories accessories = item.GetComponent<Accessories>();
 			if (accessories.accessorySlot == Accessories.AccessorySlot.necklace)
