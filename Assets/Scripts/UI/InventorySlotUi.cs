@@ -22,7 +22,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public enum SlotType
 	{
 		playerInventory, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
-		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot, shopSellSlot, shopBuySlot
+		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot
 	}
 
 	public int slotIndex;
@@ -165,25 +165,32 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		//ability checks
 		if (item.itemType == InventoryItemUi.ItemType.isAbility)
 		{
-			if (item.itemType == InventoryItemUi.ItemType.isAbility && slotType == SlotType.ability)
-				return false;
+			//if (item.itemType == InventoryItemUi.ItemType.isAbility && slotType == SlotType.ability)
+				//return false;
 			if (item.itemType == InventoryItemUi.ItemType.isAbility && slotType == SlotType.equippedAbilities)
 				return true;
+			else
+				return false;
 		}
 
 		//shop checks
-		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
-			return true;
-		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot() || IsPlayerInventorySlot())
-			return true;
+		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
+		{
+			if (IsShopSlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
+				return true;
+			if (IsPlayerInventorySlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
+				return true;
+			else return false;
+		}
 
-		//equipment/class restriction checks
-		if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
+		//equipment class restriction/level checks
+		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
 			return true;
-		else if (item.itemType != InventoryItemUi.ItemType.isAbility && IsPlayerInventorySlot())
+		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))
 		{
+			if (!IsCorrectLevel(item)) return false;
 			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
 
 			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
@@ -197,7 +204,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItemUi.ItemType.isArmor && CheckClassRestriction((int)item.classRestriction))
 		{
+			if (!IsCorrectLevel(item)) return false;
 			Armors armor = item.GetComponent<Armors>();
+
 			if (armor.armorSlot == Armors.ArmorSlot.helmet && slotType == SlotType.helmet)
 				return true;
 			if (armor.armorSlot == Armors.ArmorSlot.chestpiece && slotType == SlotType.chestpiece)
@@ -208,7 +217,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 		else if (item.itemType == InventoryItemUi.ItemType.isAccessory)
 		{
+			if (!IsCorrectLevel(item)) return false;
 			Accessories accessory = item.GetComponent<Accessories>();
+
 			if (accessory.accessorySlot == Accessories.AccessorySlot.necklace && slotType == SlotType.necklace)
 				return true;
 			else if (accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringOne ||
@@ -219,6 +230,12 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 		else return false;
 	}
+	public bool IsCorrectLevel(InventoryItemUi item)
+	{
+		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel >= item.itemLevel)
+			return true;
+		else return false;
+	}
 	public bool IsPlayerInventorySlot()
 	{
 		if (slotType == SlotType.playerInventory)
@@ -227,7 +244,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsPlayerEquipmentSlot()
 	{
-		if (slotType == SlotType.playerInventory)
+		if (slotType != SlotType.playerInventory && slotType != SlotType.shopSlot && slotType != SlotType.ability)
 			return true;
 		else return false;
 	}
