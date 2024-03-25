@@ -42,11 +42,10 @@ public class Armors : Items
 		bonusPoisonResistance = (int)(armorBaseRef.bonusPoisonResistance * levelModifier);
 		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * levelModifier);
-
-		SetToolTip();
 	}
-	protected override void SetToolTip()
+	public override void SetToolTip(EntityStats playerStats)
 	{
+		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
 		string rarity;

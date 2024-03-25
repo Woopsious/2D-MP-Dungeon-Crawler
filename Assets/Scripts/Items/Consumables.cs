@@ -17,8 +17,9 @@ public class Consumables : Items
 		base.Initilize(setRarity, setLevel);
 		isStackable = consumableBaseRef.isStackable;
 	}
-	protected override void SetToolTip()
+	public override void SetToolTip(EntityStats playerStats)
 	{
+		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
 		string info = $"{itemName} \n {itemPrice} Price";

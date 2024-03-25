@@ -7,6 +7,7 @@ public class PlayerInfoUi : MonoBehaviour
 {
 	public static PlayerInfoUi Instance;
 
+	public static PlayerController playerInstance;
 	public TMP_Text playerInfo;
 
 	private void Awake()
@@ -25,6 +26,8 @@ public class PlayerInfoUi : MonoBehaviour
 
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
+		playerInstance = stats.GetComponent<PlayerController>();
+
 		string mainInfo = $"(Player Name)\nHealth: {stats.currentHealth} / {stats.maxHealth.finalValue}" +
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";
 

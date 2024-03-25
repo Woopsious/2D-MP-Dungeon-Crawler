@@ -8,15 +8,6 @@ public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 	public string tipToShow;
 	private float timeToWait = 0.5f;
 
-	private void OnEnable()
-	{
-		EventManagerUi.OnPlayerStatChangeEvent += OnPlayerStatChanges;
-	}
-	private void OnDisable()
-	{
-		EventManagerUi.OnPlayerStatChangeEvent -= OnPlayerStatChanges;
-	}
-
 	public void OnPointerEnter(PointerEventData eventData)
 	{
 		StopAllCoroutines();
@@ -38,8 +29,9 @@ public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 		yield return new WaitForSeconds(timeToWait);
 		ShowMessage(eventData);
 	}
-	public void OnPlayerStatChanges(EntityStats playerStats)
+	public void UpdatePlayerToolTip()
 	{
-
+		if (GetComponent<Items>() != null)
+			GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
 	}
 }

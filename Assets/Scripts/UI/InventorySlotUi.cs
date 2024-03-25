@@ -21,7 +21,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	public SlotType slotType;
 	public enum SlotType
 	{
-		generic, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
+		playerInventory, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
 		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot, shopSellSlot, shopBuySlot
 	}
 
@@ -74,9 +74,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 		else if (IsShopSlot() || oldInventorySlot.IsShopSlot())
 		{
-			if (IsShopSlot() && oldInventorySlot.slotType == SlotType.generic)
+			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
 				OnItemSellEvent?.Invoke(item);
-			else if (oldInventorySlot.IsShopSlot() && slotType == SlotType.generic)
+			else if (oldInventorySlot.IsShopSlot() && IsPlayerInventorySlot())
 				OnItemBuyEvent?.Invoke(item);
 		}
 
@@ -97,6 +97,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
 		item.transform.SetParent(transform);
+
+		item.GetComponent<ToolTipUi>().UpdatePlayerToolTip();
 	}
 	public void RemoveItemFromSlot()
 	{
@@ -112,10 +114,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		oldInventorySlot.UpdateSlotSize();
 		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 	}
-
 	public void CheckIfItemInEquipmentSlot(InventoryItemUi item)
 	{
-		if (slotType == SlotType.generic || IsShopSlot()) return;
+		if (IsPlayerInventorySlot() || IsShopSlot()) return;
 
 		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			OnHotbarItemEquip?.Invoke(item, this);
@@ -171,15 +172,15 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 
 		//shop checks
-		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().slotType == SlotType.generic)
+		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
 			return true;
-		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot() || slotType == SlotType.generic)
+		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot() || IsPlayerInventorySlot())
 			return true;
 
 		//equipment/class restriction checks
 		if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
-		else if (item.itemType != InventoryItemUi.ItemType.isAbility && slotType == SlotType.generic)
+		else if (item.itemType != InventoryItemUi.ItemType.isAbility && IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))
 		{
@@ -216,6 +217,18 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else
 				return false;
 		}
+		else return false;
+	}
+	public bool IsPlayerInventorySlot()
+	{
+		if (slotType == SlotType.playerInventory)
+			return true;
+		else return false;
+	}
+	public bool IsPlayerEquipmentSlot()
+	{
+		if (slotType == SlotType.playerInventory)
+			return true;
 		else return false;
 	}
 	public bool IsShopSlot()

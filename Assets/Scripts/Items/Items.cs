@@ -131,7 +131,7 @@ public class Items : MonoBehaviour, IInteractable
 	}
 
 	//tool tip
-	protected virtual void SetToolTip()
+	public virtual void SetToolTip(EntityStats playerStats)
 	{
 
 	}

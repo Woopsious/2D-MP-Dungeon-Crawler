@@ -379,38 +379,29 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//UI CHANGES
-	public void ShowHideInventoryKeybind()
-	{
-		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
-			HideInventory();
-		else
-			HideInventory();
-	}
 	public void ShowInventory()
 	{
 		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
 			HideInventory();
 		else
 			PlayerInfoAndInventoryPanelUi.SetActive(true);
+
+		UpdatePlayerToolTips(InventorySlots);
+		UpdatePlayerToolTips(EquipmentSlots);
 	}
 	public void HideInventory()
 	{
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
 	}
 
-	public void ShowHideLearntAbilitiesKeybind()
-	{
-		if (LearntAbilitiesUi.activeInHierarchy)
-			HideLearntAbilities();
-		else
-			ShowLearntAbilities();
-	}
 	public void ShowLearntAbilities()
 	{
 		if (LearntAbilitiesUi.activeInHierarchy)
 			HideLearntAbilities();
 		else
 			LearntAbilitiesPanelUi.SetActive(true);
+
+		UpdatePlayerToolTips(LearntAbilitySlots);
 	}
 	public void HideLearntAbilities()
 	{
@@ -421,9 +412,20 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void ShowNpcShop()
 	{
 		npcShopPanalUi.SetActive(true);
+		UpdatePlayerToolTips(shopSlots);
 	}
 	public void HideNpcShop()
 	{
 		npcShopPanalUi.SetActive(false);
+	}
+
+	private void UpdatePlayerToolTips(List<GameObject> objList)
+	{
+		foreach (GameObject obj in objList)
+		{
+			if (obj.GetComponent<InventorySlotUi>().itemInSlot == null) continue;
+			ToolTipUi tip = obj.GetComponent<InventorySlotUi>().itemInSlot.GetComponent<ToolTipUi>();
+			tip.UpdatePlayerToolTip();
+		}
 	}
 }

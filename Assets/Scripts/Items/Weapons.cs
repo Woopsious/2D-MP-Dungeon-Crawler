@@ -35,13 +35,38 @@ public class Weapons : Items
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
-
-		SetToolTip();
 	}
 	//sub this to EventManagerUI.OnPlayerStatChangeEvent
-	protected override void SetToolTip()
+	public override void SetToolTip(EntityStats playerStats)
 	{
+		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
+
+		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
+		float percentageMod = 0;
+
+		//apply offhand weapon dmg to main weapon (atm only useful for dagger)
+		if (playerStats.equipmentHandler != null && playerStats.equipmentHandler.equippedOffhandWeapon != null)
+			damage += playerStats.equipmentHandler.equippedOffhandWeapon.damage;
+
+		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType) //apply damage type mod
+			percentageMod = playerStats.physicalDamagePercentageModifier.finalPercentageValue;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
+			percentageMod = playerStats.poisonDamagePercentageModifier.finalPercentageValue;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
+			percentageMod = playerStats.fireDamagePercentageModifier.finalPercentageValue;
+		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
+			percentageMod = playerStats.iceDamagePercentageModifier.finalPercentageValue;
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
+			percentageMod += playerStats.mainWeaponDamageModifier.finalPercentageValue - 1;
+		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+			percentageMod += playerStats.dualWeaponDamageModifier.finalPercentageValue - 1;
+
+		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
+			percentageMod += playerStats.rangedWeaponDamageModifier.finalPercentageValue - 1;
+
+		damage = (int)(damage * percentageMod);
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
