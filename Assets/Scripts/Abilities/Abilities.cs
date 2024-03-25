@@ -12,8 +12,6 @@ using UnityEngine.UI;
 
 public class Abilities : MonoBehaviour
 {
-	public EntityStats entityStatusEffectIsAppliedTo;
-
 	[Header("Ability Info")]
 	private ToolTipUi toolTip;
 	public SOClassAbilities abilityBaseRef;

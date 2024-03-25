@@ -18,9 +18,9 @@ public class EntityClassHandler : MonoBehaviour
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
 
-	public event Action<EntityClassHandler> OnClassChange; //scripts subbed: Entity stats to update stats 
-	public event Action<SOClassStatBonuses> OnStatUnlock; //scripts subbed: Entity stats to update stats 
-	public event Action<SOClassAbilities> OnAbilityUnlock; //scripts subbed: A Ui script that will add ability to skill/spell book
+	public event Action<EntityClassHandler> OnClassChange;
+	public event Action<SOClassStatBonuses> OnStatUnlock;
+	public event Action<SOClassAbilities> OnAbilityUnlock;
 
 	private void Start()
 	{

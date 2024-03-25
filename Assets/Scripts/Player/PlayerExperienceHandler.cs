@@ -14,7 +14,6 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private EntityStats playerStats;
 
-	//public event Action<int, int> OnAddExperienceEvent;
 	public event Action<int> OnPlayerLevelUpEvent;
 
 	private void Start()

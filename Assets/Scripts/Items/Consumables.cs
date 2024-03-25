@@ -6,17 +6,6 @@ using UnityEngine;
 
 public class Consumables : Items
 {
-	[Header("Consumable Info")]
-	[Header("Consumable Type")]
-	public ConsumableType consumableType;
-	public enum ConsumableType
-	{
-		healthRestoration, manaRestoration
-	}
-
-	[Header("Percentage Value")]
-	public int consumablePercentage;
-
 	private void Start()
 	{
 		if (generateStatsOnStart)
@@ -26,12 +15,7 @@ public class Consumables : Items
 	public override void Initilize(Rarity setRarity, int setLevel)
 	{
 		base.Initilize(setRarity, setLevel);
-
-		consumableType = (ConsumableType)consumableBaseRef.consumableType;
-		consumablePercentage = consumableBaseRef.consumablePercentage;
 		isStackable = consumableBaseRef.isStackable;
-
-		SetToolTip();
 	}
 	protected override void SetToolTip()
 	{
@@ -39,15 +23,22 @@ public class Consumables : Items
 
 		string info = $"{itemName} \n {itemPrice} Price";
 
-		toolTip.tipToShow = info;
+		string extraInfo;
+
+		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
+			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of health";
+		else
+			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of mana";
+
+		toolTip.tipToShow = $"{info} \n {extraInfo}";
 	}
 
 	public void ConsumeItem(EntityStats entityStats)
 	{
-		if (consumableType == ConsumableType.healthRestoration)
-			entityStats.OnHeal(consumablePercentage, true);
-		else if (consumableType == ConsumableType.manaRestoration)
-			entityStats.IncreaseMana(consumablePercentage, true);
+		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
+			entityStats.OnHeal(consumableBaseRef.consumablePercentage, true);
+		else if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration)
+			entityStats.IncreaseMana(consumableBaseRef.consumablePercentage, true);
 
 		GetComponent<InventoryItemUi>().DecreaseStackCounter();
 	}
