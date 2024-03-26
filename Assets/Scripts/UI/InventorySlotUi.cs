@@ -77,7 +77,11 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
 				OnItemSellEvent?.Invoke(item);
 			else if (oldInventorySlot.IsShopSlot() && IsPlayerInventorySlot())
+			{
+				int itemCost = item.itemPrice * item.currentStackCount; //check if player can afford
+				if (itemCost > PlayerInfoUi.playerInstance.GetComponent<PlayerInventoryManager>().playerGoldAmount) return;
 				OnItemBuyEvent?.Invoke(item);
+			}
 		}
 
 		AddItemToSlot(item);

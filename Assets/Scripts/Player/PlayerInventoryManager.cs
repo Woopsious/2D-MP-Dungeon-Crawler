@@ -51,8 +51,6 @@ public class PlayerInventoryManager : MonoBehaviour
 		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 		PlayerJournalUi.OnQuestAbandon += OnQuestAbandon;
-
-		//sub to item buy/sell events
 	}
 	private void OnDisable()
 	{
@@ -63,8 +61,6 @@ public class PlayerInventoryManager : MonoBehaviour
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 		PlayerJournalUi.OnQuestAbandon -= OnQuestAbandon;
-
-		//unsub to item buy/sell events
 	}
 
 	private void SpawnStartingItems()
@@ -147,12 +143,15 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		if (item.itemPrice * item.currentStackCount <= playerGoldAmount)
 		{
+			Debug.Log("can afford");
 			int gold = 0;
 			gold -= item.itemPrice * item.currentStackCount;
 			UpdateGoldAmount(gold);
 		}
 		else
-			EventManagerUi.CancelItemBuy(item);
+		{
+			item.transform.SetParent(item.parentAfterDrag);
+		}
 	}
 	public void OnItemSell(InventoryItemUi item)
 	{

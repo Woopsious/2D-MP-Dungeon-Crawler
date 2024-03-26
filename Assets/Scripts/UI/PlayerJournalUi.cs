@@ -92,13 +92,6 @@ public class PlayerJournalUi : MonoBehaviour
 
 	//UI CHANGES
 	//player Journal
-	public void ShowHidePlayerJournal()
-	{
-		if (playerJournalPanalUi.activeInHierarchy)
-			HidePlayerJournal();
-		else
-			ShowPlayerJournal();
-	}
 	public void ShowPlayerJournal()
 	{
 		if (playerJournalPanalUi.activeInHierarchy)
