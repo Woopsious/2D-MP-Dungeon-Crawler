@@ -62,7 +62,6 @@ public class PlayerController : MonoBehaviour
 
 	private void Start()
 	{
-		PlayerInfoUi.playerInstance = this;
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities += OnNewQueuedAbility;

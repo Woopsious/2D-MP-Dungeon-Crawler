@@ -45,8 +45,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
-		InventorySlotUi.OnItemBuyEvent += OnItemBuy;
 		InventorySlotUi.OnItemSellEvent += OnItemSell;
+		InventorySlotUi.OnItemTryBuyEvent += OnItemTryBuy;
 
 		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
@@ -55,8 +55,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
-		InventorySlotUi.OnItemBuyEvent -= OnItemBuy;
 		InventorySlotUi.OnItemSellEvent -= OnItemSell;
+		InventorySlotUi.OnItemTryBuyEvent -= OnItemTryBuy;
 
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
@@ -139,21 +139,20 @@ public class PlayerInventoryManager : MonoBehaviour
 		GetGoldAmount();
 		EventManagerUi.GoldAmountChange(playerGoldAmount);
 	}
-	public void OnItemBuy(InventoryItemUi item)
+	public void OnItemTryBuy(InventoryItemUi item, InventorySlotUi newSlot, InventorySlotUi oldSlot)
 	{
-		if (item.itemPrice * item.currentStackCount <= playerGoldAmount)
+		if (item.itemPrice * item.currentStackCount > playerGoldAmount)
+			oldSlot.ItemCancelBuy(item, oldSlot, "Cant Afford Item");
+		else
 		{
-			Debug.Log("can afford");
+			newSlot.ItemConfirmBuy(item, newSlot);
+
 			int gold = 0;
 			gold -= item.itemPrice * item.currentStackCount;
 			UpdateGoldAmount(gold);
 		}
-		else
-		{
-			item.transform.SetParent(item.parentAfterDrag);
-		}
 	}
-	public void OnItemSell(InventoryItemUi item)
+	public void OnItemSell(InventoryItemUi item, InventorySlotUi slot)
 	{
 		int newgold = 0;
 		newgold += item.itemPrice * item.currentStackCount;

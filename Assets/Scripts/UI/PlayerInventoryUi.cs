@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Services.Relay.Models;
 using Unity.VisualScripting;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
@@ -40,6 +41,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotTwo;
 
 	[Header("Interacted Npc Ui")]
+	public TMP_Text transactionInfoText;
 	public TMP_Text transactionTrackerText;
 	public GameObject npcShopPanalUi;
 	public List<GameObject> shopSlots = new List<GameObject>();
@@ -61,8 +63,10 @@ public class PlayerInventoryUi : MonoBehaviour
 		SaveManager.OnGameLoad += ReloadPlayerInventory;
 		ClassesUi.OnClassReset += OnClassReset;
 		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
-		InventorySlotUi.OnItemBuyEvent += OnItemBuy;
+
 		InventorySlotUi.OnItemSellEvent += OnItemSell;
+		InventorySlotUi.OnItemConfirmBuyEvent += OnItemConfirmBuy;
+		InventorySlotUi.OnItemCancelBuyEvent += OnItemCancelBuy;
 
 		EventManagerUi.OnShowPlayerInventoryEvent += ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent += HideInventory;
@@ -81,8 +85,10 @@ public class PlayerInventoryUi : MonoBehaviour
 		SaveManager.OnGameLoad -= ReloadPlayerInventory;
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
-		InventorySlotUi.OnItemBuyEvent -= OnItemBuy;
+
 		InventorySlotUi.OnItemSellEvent -= OnItemSell;
+		InventorySlotUi.OnItemConfirmBuyEvent -= OnItemConfirmBuy;
+		InventorySlotUi.OnItemCancelBuyEvent -= OnItemCancelBuy;
 
 		EventManagerUi.OnShowPlayerInventoryEvent -= ShowInventory;
 		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideInventory;
@@ -296,15 +302,32 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//buying/selling items
-	public void OnItemSell(InventoryItemUi item)
+	public void OnItemSell(InventoryItemUi item, InventorySlotUi slot)
 	{
 		goldTransaction = item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		transactionInfoText.text = "Item Sold";
+		slot.AddItemToSlot(item);
 	}
-	public void OnItemBuy(InventoryItemUi item)
+	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotUi slot)
 	{
+		Debug.Log("confirm buy");
+
 		goldTransaction = -item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		transactionInfoText.text = "Item Brought";
+
+		slot.AddItemToSlot(item);
+	}
+	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotUi slot, string reason)
+	{
+		Debug.Log("cancel buy");
+
+		goldTransaction = 0;
+		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		transactionInfoText.text = reason;
+
+		slot.AddItemToSlot(item);
 	}
 
 	//adding new item to ui
@@ -353,6 +376,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			//add to itemInSlot.CurrentStackCount till maxStackCountReached
 			for (int itemCount = itemInSlot.currentStackCount; itemCount < itemInSlot.maxStackCount; itemCount++)
 			{
+				if (newItem.currentStackCount <= 0) return;
 				newItem.DecreaseStackCounter();
 				itemInSlot.IncreaseStackCounter();
 			}
@@ -396,6 +420,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	//npc shop
 	public void ShowNpcShop()
 	{
+		transactionTrackerText.text = "Gold: 0";
+		transactionInfoText.text = "No Item Sold/Brought";
 		npcShopPanalUi.SetActive(true);
 		UpdatePlayerToolTips(shopSlots);
 	}
