@@ -43,30 +43,12 @@ public class Weapons : Items
 		toolTip = GetComponent<ToolTipUi>();
 
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
-		float percentageMod = 0;
 
 		//apply offhand weapon dmg to main weapon (atm only useful for dagger)
 		if (playerStats.equipmentHandler != null && playerStats.equipmentHandler.equippedOffhandWeapon != null)
 			damage += playerStats.equipmentHandler.equippedOffhandWeapon.damage;
 
-		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType) //apply damage type mod
-			percentageMod = playerStats.physicalDamagePercentageModifier.finalPercentageValue;
-		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			percentageMod = playerStats.poisonDamagePercentageModifier.finalPercentageValue;
-		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			percentageMod = playerStats.fireDamagePercentageModifier.finalPercentageValue;
-		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			percentageMod = playerStats.iceDamagePercentageModifier.finalPercentageValue;
-
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
-			percentageMod += playerStats.mainWeaponDamageModifier.finalPercentageValue - 1;
-		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
-			percentageMod += playerStats.dualWeaponDamageModifier.finalPercentageValue - 1;
-
-		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
-			percentageMod += playerStats.rangedWeaponDamageModifier.finalPercentageValue - 1;
-
-		damage = (int)(damage * percentageMod);
+		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
@@ -87,7 +69,7 @@ public class Weapons : Items
 			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
 			dps = $"{newDps} Dps";
 		}
-		string damageInfo = $"WITHOUT PLAYER MODIFIERS \n {dps} \n {damage} Damage \n " +
+		string damageInfo = $"{dps} \n {damage} Damage \n " +
 			$"{weaponBaseRef.baseAttackSpeed}s Attack speed \n {weaponBaseRef.baseKnockback} Knockback \n {bonusMana} Mana bonus";
 
 		toolTip.tipToShow = $"{info} \n {damageInfo}";
@@ -112,33 +94,40 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = true;
 
 	}
-	public void UpdateWeaponDamage(float phyMod, float poiMod, float fireMod, float iceMod,
-		float singleHandMod, float duelHandMod, float rangedMod, Weapons offHandWeapon)
+	public void UpdateWeaponDamage(EntityStats playerStats, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
-		float percentageMod = 0;
+		if (playerStats.equipmentHandler != null && offHandWeapon != null)
+			damage += offHandWeapon.damage;
 
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
 			damage += offHandWeapon.damage;
 
+		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
+	}
+
+	public float GetWeaponDamageModifier(EntityStats playerStats)
+	{
+		float percentageMod = 0;
+
 		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType) //apply damage type mod
-			percentageMod = phyMod;
+			percentageMod = playerStats.physicalDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			percentageMod = poiMod;
+			percentageMod = playerStats.poisonDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			percentageMod = fireMod;
+			percentageMod = playerStats.fireDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			percentageMod = iceMod;
+			percentageMod = playerStats.iceDamagePercentageModifier.finalPercentageValue;
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
-			percentageMod += singleHandMod - 1;
+			percentageMod += playerStats.mainWeaponDamageModifier.finalPercentageValue - 1;
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
-			percentageMod += duelHandMod - 1;
+			percentageMod += playerStats.dualWeaponDamageModifier.finalPercentageValue - 1;
 
 		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
-			percentageMod += rangedMod - 1;
+			percentageMod += playerStats.rangedWeaponDamageModifier.finalPercentageValue - 1;
 
-		damage = (int)(damage * percentageMod);
+		return percentageMod;
 	}
 
 	protected override void OnTriggerEnter2D(Collider2D other)

@@ -46,7 +46,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		InventorySlotUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotUi>();
 
 		if (!IsCorrectSlotType(item)) return;
-		if (IsNewSlotSameAsOldSlot(item)) return;
+		if (IsNewSlotSameAsOldSlot(oldInventorySlot)) return;
 
 		if (slotType == SlotType.equippedAbilities)
 		{
@@ -136,9 +136,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 
 	//bool checks
-	public bool IsNewSlotSameAsOldSlot(InventoryItemUi item)
+	public bool IsNewSlotSameAsOldSlot(InventorySlotUi oldInventorySlot)
 	{
-		if (item.parentAfterDrag == this)
+		if (oldInventorySlot == this)
 			return true;
 		else
 			return false;

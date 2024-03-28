@@ -59,9 +59,12 @@ public class Armors : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		string resInfo = $"WITHOUT PLAYER MODIFIERS \n {bonusHealth} Extra Health \n {bonusMana} Extra Mana \n " +
-			$"{bonusPhysicalResistance} Physical Res \n {bonusPoisonResistance} Poison Res \n {bonusFireResistance} " +
-			$"Fire Res \n {bonusIceResistance} Ice Res";
+		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetModifiers())} Extra Health \n " +
+			$"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n " +
+			$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetModifiers())} Physical Res \n " +
+			$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetModifiers())} Poison Res \n " +
+			$"{(int)(bonusFireResistance * playerStats.fireResistance.GetModifiers())} Fire Res \n " +
+			$"{(int)(bonusIceResistance * playerStats.iceResistance.GetModifiers())} Ice Res";
 
 		toolTip.tipToShow = $"{info} \n {resInfo}";
 	}

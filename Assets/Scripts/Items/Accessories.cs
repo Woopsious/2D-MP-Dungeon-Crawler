@@ -85,12 +85,15 @@ public class Accessories : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		string extraInfo = "WITHOUT PLAYER MODIFIERS \n";
+		string extraInfo;
 
 		if (accessoryType == AccessoryType.isWarding)
 		{
-			extraInfo += $"{bonusHealth} Extra Health \n {bonusPhysicalResistance} Physical Res \n" +
-				$"{bonusPoisonResistance} Poison Res \n {bonusFireResistance} Fire Res \n {bonusIceResistance} Ice Res";
+			extraInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetModifiers())} Extra Health \n " +
+				$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetModifiers())} Physical Res \n " +
+				$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetModifiers())} Poison Res \n " +
+				$"{(int)(bonusFireResistance * playerStats.fireResistance.GetModifiers())} Fire Res \n " +
+				$"{(int)(bonusIceResistance * playerStats.iceResistance.GetModifiers())} Ice Res";
 		}
 		else if (accessoryType == AccessoryType.isDamaging)
 		{
@@ -104,10 +107,10 @@ public class Accessories : Items
 			else
 				damageType = $"{bonusPercentageValue}% Ice Damage Boost";
 
-			extraInfo += $"{bonusMana} Extra Mana \n {damageType}";
+			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n {damageType}";
 		}
 		else
-			extraInfo += $"{bonusMana} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
+			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
 
 		toolTip.tipToShow = $"{info} \n {extraInfo}";
 	}
