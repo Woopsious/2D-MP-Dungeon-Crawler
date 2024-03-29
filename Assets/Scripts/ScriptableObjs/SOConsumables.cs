@@ -12,5 +12,5 @@ public class SOConsumables : SOItems
 	}
 
 	[Header("Percentage Value")]
-	public int consumablePercentage;
+	public float consumablePercentage;
 }

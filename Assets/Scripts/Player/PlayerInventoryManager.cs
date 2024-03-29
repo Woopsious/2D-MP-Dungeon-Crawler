@@ -209,7 +209,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		PlayerInventoryUi.Instance.AddItemToInventory(item);
 	}
-	//bool check before item pickup
 	public bool CheckIfInventoryFull()
 	{
 		int numOfFilledSlots = 0;

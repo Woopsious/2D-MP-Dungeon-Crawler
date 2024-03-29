@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: GroundStomp
   m_EditorClassIdentifier: 
   Name: Ground Stomp
-  Description: Stomp on the ground, knocking back all enemies close to you
+  Description: Stomp on the ground, damaging enemies around you
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 20
   isOffensiveAbility: 1
   requiresTarget: 0
-  canOnlyTargetSelf: 1
+  canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 1
   aoeSize: 0

@@ -68,9 +68,9 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		string info = $"{statBonus.Description} \n";
 
 		if (statBonus.healthBoostValue != 0)
-			info += $"\nBoosts health by {Utilities.ConvertFloatToUiPercentage(statBonus.healthBoostValue)}%";
+			info += $"\nBoosts max health by {Utilities.ConvertFloatToUiPercentage(statBonus.healthBoostValue)}%";
 		if (statBonus.manaBoostValue != 0)
-			info += $"\nBoosts mana by {Utilities.ConvertFloatToUiPercentage(statBonus.manaBoostValue)}%";
+			info += $"\nBoosts max mana by {Utilities.ConvertFloatToUiPercentage(statBonus.manaBoostValue)}%";
 		if (statBonus.manaRegenBoostValue != 0)
 			info += $"\nBoosts mana regen by {Utilities.ConvertFloatToUiPercentage(statBonus.manaRegenBoostValue)}%";
 

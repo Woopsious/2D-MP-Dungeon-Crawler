@@ -99,19 +99,19 @@ public class Accessories : Items
 		{
 			string damageType;
 			if (damageTypeToBoost == DamageTypeToBoost.isPhysicalDamageType)
-				damageType = $"{bonusPercentageValue}% Physical Damage Boost";
+				damageType = $"{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Physical Damage Boost";
 			else if (damageTypeToBoost == DamageTypeToBoost.isPoisonDamageType)
-				damageType = $"{bonusPercentageValue}% Posion Damage Boost";
+				damageType = $"{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Posion Damage Boost";
 			else if (damageTypeToBoost == DamageTypeToBoost.isFireDamageType)
-				damageType = $"{bonusPercentageValue}% Fire Damage Boost";
+				damageType = $"{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Fire Damage Boost";
 			else
-				damageType = $"{bonusPercentageValue}% Ice Damage Boost";
+				damageType = $"{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Ice Damage Boost";
 
 			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n{damageType}";
 		}
 		else
 			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana" +
-				$"\n{bonusPercentageValue}% Bonus Healing";
+				$"\n{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Extra Healing";
 
 		toolTip.tipToShow = $"{info}\n{extraInfo}";
 	}

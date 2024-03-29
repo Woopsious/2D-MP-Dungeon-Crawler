@@ -21,4 +21,4 @@ MonoBehaviour:
   isStackable: 1
   MaxStackCount: 5
   consumableType: 1
-  consumablePercentage: 15
+  consumablePercentage: 0.15

@@ -27,9 +27,9 @@ public class Consumables : Items
 		string extraInfo;
 
 		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
-			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of health";
+			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of max health";
 		else
-			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of mana";
+			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of max mana";
 
 		toolTip.tipToShow = $"{info}\n{extraInfo}";
 	}

@@ -60,6 +60,18 @@ public class Weapons : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			info += "\n Main hand ";
+		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isOffhand)
+			info += "\n Offhand ";
+		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+			info += "\n Dual hand ";
+
+		if (weaponBaseRef.isRangedWeapon)
+			info += "ranged weapon";
+		else
+			info += "melee weapon";
+
 		string dps;
 		if (isShield)
 			dps = $"Blocks {damage}";

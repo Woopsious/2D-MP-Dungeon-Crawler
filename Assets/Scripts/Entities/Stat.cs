@@ -67,7 +67,7 @@ public class Stat
 	}
 	public float GetPercentageModifiers()
 	{
-		float percentageValue = equipmentPercentageValue;
+		float percentageValue = equipmentPercentageValue + 1;
 		percentageBonuses.ForEach(x => percentageValue += x);
 		return percentageValue;
 	}
