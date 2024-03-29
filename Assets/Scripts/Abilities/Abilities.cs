@@ -8,6 +8,7 @@ using UnityEditor;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Playables;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class Abilities : MonoBehaviour
@@ -40,44 +41,85 @@ public class Abilities : MonoBehaviour
 		isEquippedAbility = false;
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
-
-		SetToolTip();
 	}
 	//tool tip
-	private void SetToolTip()
+	public virtual void SetToolTip(EntityStats playerStats)
 	{
 		toolTip = GetComponent<ToolTipUi>();
 
-		string info = $"{abilityName} \n {abilityDescription}";
+		string info = $"{abilityDescription} \n";
 
-		string effectInfo;
 		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 		{
+			string effectInfo = "";
+
 			if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			{
-				if (abilityBaseRef.isOffensiveAbility)
-					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
-						$"damage debuff to selected enemy";
-				else
-					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
-						$"damage buff to selected friendly/self";
-			}
+				effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% damage ";
 			else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+				effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% damage res ";
+
+			if (abilityBaseRef.canOnlyTargetSelf)
+				effectInfo += "buff to yourself";
+			else
 			{
-				if (abilityBaseRef.isOffensiveAbility)
-					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
-						$"damage resistance debuff to selected enemy";
+				if (abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+					effectInfo += "debuff to enemies inside AoE";
+				else if (!abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+					effectInfo += "buff to friendlies/self inside AoE";
+
+				if (abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+					effectInfo += "debuff to selected enemy";
+				else if (!abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+					effectInfo += "buff to selected friendlies or self";
+			}
+
+			info += $"\n {effectInfo} \n Effect lasts for {abilityBaseRef.abilityDuration}s";
+		}
+		else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)
+		{
+			if (abilityBaseRef.damageType != SOClassAbilities.DamageType.isHealing && abilityBaseRef.isOffensiveAbility)
+			{
+				int damage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
+
+				if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isPhysicalDamageType)
+					damage = (int)(damage * playerStats.physicalDamagePercentageModifier.finalPercentageValue);
+				if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isPoisonDamageType)
+					damage = (int)(damage * playerStats.poisonDamagePercentageModifier.finalPercentageValue);
+				if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isFireDamageType)
+					damage = (int)(damage * playerStats.fireDamagePercentageModifier.finalPercentageValue);
+				if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isIceDamageType)
+					damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
+
+				if (abilityBaseRef.requiresTarget)
+					info += "\n Needs selected enemy target";
+
+				info += $"\n Deals {damage} damage to enemies ";
+
+				if (abilityBaseRef.isAOE)
+					info += "inside AoE";
+			}
+			else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing && !abilityBaseRef.isOffensiveAbility)
+			{
+				float healing = Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage);
+
+				if (abilityBaseRef.isAOE)
+					info += $"\n Heals for {healing}% of health for friendlies inside AoE";
 				else
-					effectInfo = $"Applies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage)}% " +
-						$"damage resistance buff to selected friendly/self";
+					info += $"\n Heals for {healing}% of health for selected friendlies or self ";
 			}
 			else
-				effectInfo = "";
+				Debug.LogError("Setting up non effect ability tool tip failed");
+
+			if (abilityBaseRef.isDOT)
+				info += $"\n lasts for {abilityBaseRef.abilityDuration}s";
 		}
 		else
-			effectInfo = "";
+			Debug.LogError("Setting up ability tool tip failed");
 
-		toolTip.tipToShow = $"{info} \n {effectInfo}";
+		if (abilityBaseRef.isSpell)
+			info += $"\n Costs {(int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
+
+		toolTip.tipToShow = $"{info}";
 	}
 
 	private void Update()

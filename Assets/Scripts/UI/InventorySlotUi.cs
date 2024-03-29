@@ -104,8 +104,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
 		item.transform.SetParent(transform);
-
-		item.GetComponent<ToolTipUi>().UpdatePlayerToolTip();
 	}
 	public void RemoveItemFromSlot()
 	{

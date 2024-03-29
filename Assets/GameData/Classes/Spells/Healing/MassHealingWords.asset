@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: MassHealingWords
   m_EditorClassIdentifier: 
   Name: Mass Healing Words
-  Description: Heals Anyone in its radius (excluding enemies)
+  Description: Heals Anyone in its radius
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 15
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
-  abilityType: 2
   statusEffectType: 0
   isAOE: 1
   aoeSize: 0

@@ -33,5 +33,7 @@ public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 	{
 		if (GetComponent<Items>() != null)
 			GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
+		if (GetComponent<Abilities>() != null)
+			GetComponent<Abilities>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
 	}
 }
