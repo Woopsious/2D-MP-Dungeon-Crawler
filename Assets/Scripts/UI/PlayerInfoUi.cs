@@ -51,27 +51,34 @@ public class PlayerInfoUi : MonoBehaviour
 		else
 			weaponInfo = "\r\n\r\nNo main weapon equipped";
 
-		string damageBonusInfo = $"\r\n\r\nBonus Main Weapon Damage: {GetPercentageValue(stats.mainWeaponDamageModifier)}%" +
-			$"\r\nBonus Dual Weapon Damage: {GetPercentageValue(stats.dualWeaponDamageModifier)}%" +
-			$"\r\nBonus Ranged Weapon Damage: {GetPercentageValue(stats.rangedWeaponDamageModifier)}%" +
-			$"\r\n\r\nBonus Physical Damage: {GetPercentageValue(stats.physicalDamagePercentageModifier)}%" +
-			$"\r\nBonus Posion Damage: {GetPercentageValue(stats.poisonDamagePercentageModifier)}%" +
-			$"\r\nBonus Fire Damage: {GetPercentageValue(stats.fireDamagePercentageModifier)}%" +
-			$"\r\nBonus Ice Damage: {GetPercentageValue(stats.iceDamagePercentageModifier)}%";
-
-		string resistanceInfo = $"\r\n\r\nPhysical Resist: {stats.physicalResistance.finalValue}" +
+		string resistanceInfo = 
+			$"\r\n\r\nPhysical Resist: {stats.physicalResistance.finalValue}" +
 			$"\r\nPosion Resist: {stats.poisonResistance.finalValue}" +
 			$"\r\nFire Resist: {stats.fireResistance.finalValue}" +
 			$"\r\nIce Resist: {stats.iceResistance.finalValue}";
 
-		playerInfo.text = mainInfo + weaponInfo + damageBonusInfo + resistanceInfo;
-	}
-	public int GetPercentageValue(Stat stat)
-	{
-		float newValue;
-		newValue = stat.finalPercentageValue - 1;
-		newValue *= 100;
+		string damageBonusInfo = 
+			$"\r\n\r\nBonus Main Weapon Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.mainWeaponDamageModifier.finalPercentageValue - 1)}%" +
+			$"\r\nBonus Dual Weapon Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.dualWeaponDamageModifier.finalPercentageValue - 1)}%" +
+			$"\r\nBonus Ranged Weapon Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.rangedWeaponDamageModifier.finalPercentageValue - 1)}%" +
+			$"\r\n\r\nBonus Physical Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.physicalDamagePercentageModifier.finalPercentageValue - 1)}%" +
+			$"\r\nBonus Posion Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.poisonDamagePercentageModifier.finalPercentageValue - 1)}%" +
+			$"\r\nBonus Fire Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.fireDamagePercentageModifier.finalPercentageValue - 1)}%" +
+			$"\r\nBonus Ice Damage: " +
+			$"{Utilities.ConvertFloatToUiPercentage(stats.iceDamagePercentageModifier.finalPercentageValue - 1)}%";
 
-		return Mathf.RoundToInt(newValue);
+		string resistanceBonusInfo = 
+			$"\r\n\r\nPhysical Resist: {Utilities.ConvertFloatToUiPercentage(stats.physicalResistance.GetPercentageModifiers())}%" +
+			$"\r\nPosion Resist: {Utilities.ConvertFloatToUiPercentage(stats.poisonResistance.GetPercentageModifiers())}%" +
+			$"\r\nFire Resist: {Utilities.ConvertFloatToUiPercentage(stats.fireResistance.GetPercentageModifiers())}%" +
+			$"\r\nIce Resist: {Utilities.ConvertFloatToUiPercentage(stats.iceResistance.GetPercentageModifiers())}%";
+
+		playerInfo.text = mainInfo + weaponInfo + resistanceInfo + damageBonusInfo + resistanceBonusInfo;
 	}
 }

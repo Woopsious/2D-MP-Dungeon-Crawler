@@ -442,7 +442,7 @@ public class EntityStats : MonoBehaviour
 		iceResistance.AddPercentageValue(statBoost.iceResistanceBoostValue);
 
 		physicalDamagePercentageModifier.AddPercentageValue(statBoost.physicalDamageBoostValue);
-		poisonDamagePercentageModifier.AddPercentageValue(statBoost.posionDamageBoostValue);
+		poisonDamagePercentageModifier.AddPercentageValue(statBoost.poisionDamageBoostValue);
 		fireDamagePercentageModifier.AddPercentageValue(statBoost.fireDamageBoostValue);
 		iceDamagePercentageModifier.AddPercentageValue(statBoost.iceDamageBoostValue);
 		mainWeaponDamageModifier.AddPercentageValue(statBoost.mainWeaponDamageBoostValue);
@@ -472,7 +472,7 @@ public class EntityStats : MonoBehaviour
 			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
 
 			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
-			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.posionDamageBoostValue);
+			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
 			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
 			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
 			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);

@@ -22,7 +22,7 @@ public class Consumables : Items
 		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
-		string info = $"{itemName} \n {itemPrice} Price";
+		string info = $"{itemName}\n{itemPrice} Price";
 
 		string extraInfo;
 
@@ -31,7 +31,7 @@ public class Consumables : Items
 		else
 			extraInfo = $"Restores {Utilities.ConvertFloatToUiPercentage(consumableBaseRef.consumablePercentage)}% of mana";
 
-		toolTip.tipToShow = $"{info} \n {extraInfo}";
+		toolTip.tipToShow = $"{info}\n{extraInfo}";
 	}
 
 	public void ConsumeItem(EntityStats entityStats)

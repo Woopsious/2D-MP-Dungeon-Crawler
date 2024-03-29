@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Magic Damage Boost I
   Description: Gives a permanent damage boost to Posion, FIre and Ice
+  abilitySprite: {fileID: 0}
   nonPlayerLevelRequirement: 1
   healthBoostValue: 0
   manaBoostValue: 0
@@ -23,7 +24,7 @@ MonoBehaviour:
   fireResistanceBoostValue: 0
   iceResistanceBoostValue: 0
   physicalDamageBoostValue: 0
-  posionDamageBoostValue: 0.05
+  poisionDamageBoostValue: 0.05
   fireDamageBoostValue: 0.05
   iceDamageBoostValue: 0.05
   mainWeaponDamageBoostValue: 0

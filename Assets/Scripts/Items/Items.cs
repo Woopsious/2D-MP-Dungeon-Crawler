@@ -14,7 +14,6 @@ public class Items : MonoBehaviour, IInteractable
 	public SOConsumables consumableBaseRef;
 
 	[Header("Item Info")]
-	public EntityStats ownerStats;
 	protected ToolTipUi toolTip;
 	public string itemName;
 	public Sprite itemSprite;

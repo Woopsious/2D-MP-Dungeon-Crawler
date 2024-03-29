@@ -59,13 +59,13 @@ public class Armors : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetModifiers())} Extra Health \n " +
-			$"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n " +
-			$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetModifiers())} Physical Res \n " +
-			$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetModifiers())} Poison Res \n " +
-			$"{(int)(bonusFireResistance * playerStats.fireResistance.GetModifiers())} Fire Res \n " +
-			$"{(int)(bonusIceResistance * playerStats.iceResistance.GetModifiers())} Ice Res";
+		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
+			$"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n" +
+			$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetPercentageModifiers())} Physical Res\n" +
+			$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetPercentageModifiers())} Poison Res\n" +
+			$"{(int)(bonusFireResistance * playerStats.fireResistance.GetPercentageModifiers())} Fire Res\n" +
+			$"{(int)(bonusIceResistance * playerStats.iceResistance.GetPercentageModifiers())} Ice Res";
 
-		toolTip.tipToShow = $"{info} \n {resInfo}";
+		toolTip.tipToShow = $"{info}\n{resInfo}";
 	}
 }

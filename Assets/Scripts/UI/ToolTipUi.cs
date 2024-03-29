@@ -31,6 +31,8 @@ public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 	}
 	public void UpdatePlayerToolTip()
 	{
+		if (GetComponent<ClassTreeNodeSlotUi>() != null)
+			GetComponent<ClassTreeNodeSlotUi>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
 		if (GetComponent<Items>() != null)
 			GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
 		if (GetComponent<Abilities>() != null)

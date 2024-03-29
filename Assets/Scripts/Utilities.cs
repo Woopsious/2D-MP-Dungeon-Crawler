@@ -77,11 +77,7 @@ public class Utilities
 	//convert % to ui % (0.08f = 8%)
 	public static int ConvertFloatToUiPercentage(float value)
 	{
-		float newValue;
-		newValue = value;
-		newValue *= 100;
-
-		return Mathf.RoundToInt(newValue);
+		return Mathf.RoundToInt(value *= 100);
 	}
 
 	//check if current active scene == this scene name

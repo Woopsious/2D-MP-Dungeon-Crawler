@@ -16,26 +16,31 @@ public class ClassesUi : MonoBehaviour
 	[Header("knight Class")]
 	public SOClasses knightClass;
 	public GameObject knightClassPanel;
+	public List<GameObject> knightClassNodes;
 	public Button playAsKnightButton;
 
 	[Header("Warrior Class")]
 	public SOClasses warriorClass;
 	public GameObject warriorClassPanel;
+	public List<GameObject> warriorClassNodes;
 	public Button playAsWarriorButton;
 
 	[Header("Rogue Class")]
 	public SOClasses rogueClass;
 	public GameObject rogueClassPanel;
+	public List<GameObject> rogueClassNodes;
 	public Button playAsRogueButton;
 
 	[Header("Ranger Class")]
 	public SOClasses rangerClass;
 	public GameObject rangerClassPanel;
+	public List<GameObject> rangerClassNodes;
 	public Button playAsRangerButton;
 
 	[Header("Mage Class")]
 	public SOClasses mageClass;
 	public GameObject MageClassPanel;
+	public List<GameObject> mageClassNodes;
 	public Button playAsMageButton;
 
 	[Header("Shared Class ui elements")]
@@ -231,15 +236,30 @@ public class ClassesUi : MonoBehaviour
 		else
 		{
 			if (currentPlayerClass == knightClass)
+			{
 				knightClassPanel.SetActive(true);
+				UpdatePlayerToolTips(knightClassNodes);
+			}
 			if (currentPlayerClass == warriorClass)
+			{
 				warriorClassPanel.SetActive(true);
+				UpdatePlayerToolTips(warriorClassNodes);
+			}
 			if (currentPlayerClass == rogueClass)
+			{
 				rogueClassPanel.SetActive(true);
+				UpdatePlayerToolTips(rogueClassNodes);
+			}
 			if (currentPlayerClass == rangerClass)
+			{
 				rangerClassPanel.SetActive(true);
+				UpdatePlayerToolTips(rangerClassNodes);
+			}
 			if (currentPlayerClass == mageClass)
+			{
 				MageClassPanel.SetActive(true);
+				UpdatePlayerToolTips(mageClassNodes);
+			}
 
 			closeClassTreeButtonObj.SetActive(true);
 			resetPlayerClassButtonObj.SetActive(true);
@@ -254,5 +274,15 @@ public class ClassesUi : MonoBehaviour
 		rogueClassPanel.SetActive(false);
 		rangerClassPanel.SetActive(false);
 		MageClassPanel.SetActive(false);
+	}
+
+	private void UpdatePlayerToolTips(List<GameObject> objList)
+	{
+		foreach (GameObject obj in objList)
+		{
+			if (obj.GetComponent<ToolTipUi>() == null) continue;
+			ToolTipUi tip = obj.GetComponent<ToolTipUi>();
+			tip.UpdatePlayerToolTip();
+		}
 	}
 }

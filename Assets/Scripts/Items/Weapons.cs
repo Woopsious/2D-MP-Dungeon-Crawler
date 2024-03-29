@@ -36,7 +36,6 @@ public class Weapons : Items
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
 	}
-	//sub this to EventManagerUI.OnPlayerStatChangeEvent
 	public override void SetToolTip(EntityStats playerStats)
 	{
 		base.SetToolTip(playerStats);
@@ -69,30 +68,10 @@ public class Weapons : Items
 			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
 			dps = $"{newDps} Dps";
 		}
-		string damageInfo = $"{dps} \n {damage} Damage \n " +
-			$"{weaponBaseRef.baseAttackSpeed}s Attack speed \n {weaponBaseRef.baseKnockback} Knockback \n {bonusMana} Mana bonus";
+		string damageInfo = $"{dps}\n{damage} Damage\n" +
+			$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 
-		toolTip.tipToShow = $"{info} \n {damageInfo}";
-	}
-	private void WeaponInitilization()
-	{
-		if (GetComponent<InventoryItemUi>() != null) return;  //return as this is an item in inventory
-		if (transform.parent == null) return;				//weapon is not equipped
-
-		parentObj = transform.parent.gameObject;
-		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
-		animator = GetComponent<Animator>();
-		boxCollider = gameObject.AddComponent<BoxCollider2D>();
-		boxCollider.enabled = false;
-		boxCollider.isTrigger = true;
-		canAttackAgain = true;
-		animator.SetBool("isMeleeAttack", false);
-
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
-			idleWeaponSprite.enabled = true;
-
+		toolTip.tipToShow = $"{info}\n{damageInfo}";
 	}
 	public void UpdateWeaponDamage(EntityStats playerStats, Weapons offHandWeapon)
 	{
@@ -105,7 +84,6 @@ public class Weapons : Items
 
 		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
 	}
-
 	public float GetWeaponDamageModifier(EntityStats playerStats)
 	{
 		float percentageMod = 0;
@@ -128,6 +106,27 @@ public class Weapons : Items
 			percentageMod += playerStats.rangedWeaponDamageModifier.finalPercentageValue - 1;
 
 		return percentageMod;
+	}
+
+	private void WeaponInitilization()
+	{
+		if (GetComponent<InventoryItemUi>() != null) return;  //return as this is an item in inventory
+		if (transform.parent == null) return;               //weapon is not equipped
+
+		parentObj = transform.parent.gameObject;
+		attackWeaponSprite = GetComponent<SpriteRenderer>();
+		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
+		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		animator = GetComponent<Animator>();
+		boxCollider = gameObject.AddComponent<BoxCollider2D>();
+		boxCollider.enabled = false;
+		boxCollider.isTrigger = true;
+		canAttackAgain = true;
+		animator.SetBool("isMeleeAttack", false);
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			idleWeaponSprite.enabled = true;
+
 	}
 
 	protected override void OnTriggerEnter2D(Collider2D other)

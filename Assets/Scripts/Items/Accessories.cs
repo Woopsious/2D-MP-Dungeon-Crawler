@@ -83,17 +83,17 @@ public class Accessories : Items
 			rarity = "Rare";
 		else
 			rarity = "Common";
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+		string info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price";
 
 		string extraInfo;
 
 		if (accessoryType == AccessoryType.isWarding)
 		{
-			extraInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetModifiers())} Extra Health \n " +
-				$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetModifiers())} Physical Res \n " +
-				$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetModifiers())} Poison Res \n " +
-				$"{(int)(bonusFireResistance * playerStats.fireResistance.GetModifiers())} Fire Res \n " +
-				$"{(int)(bonusIceResistance * playerStats.iceResistance.GetModifiers())} Ice Res";
+			extraInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
+				$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetPercentageModifiers())} Physical Res\n" +
+				$"{(int)(bonusPoisonResistance * playerStats.poisonResistance.GetPercentageModifiers())} Poison Res\n" +
+				$"{(int)(bonusFireResistance * playerStats.fireResistance.GetPercentageModifiers())} Fire Res\n" +
+				$"{(int)(bonusIceResistance * playerStats.iceResistance.GetPercentageModifiers())} Ice Res";
 		}
 		else if (accessoryType == AccessoryType.isDamaging)
 		{
@@ -107,12 +107,13 @@ public class Accessories : Items
 			else
 				damageType = $"{bonusPercentageValue}% Ice Damage Boost";
 
-			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n {damageType}";
+			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n{damageType}";
 		}
 		else
-			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetModifiers())} Extra Mana \n {bonusPercentageValue}% Bonus Healing";
+			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana" +
+				$"\n{bonusPercentageValue}% Bonus Healing";
 
-		toolTip.tipToShow = $"{info} \n {extraInfo}";
+		toolTip.tipToShow = $"{info}\n{extraInfo}";
 	}
 
 	public void SetRandomDamageTypeOnDrop()

@@ -18,7 +18,7 @@ public class SOClassStatBonuses : SOClassUnlocks
 
 	[Header("Damage boosts")]
 	public float physicalDamageBoostValue;
-	public float posionDamageBoostValue;
+	public float poisionDamageBoostValue;
 	public float fireDamageBoostValue;
 	public float iceDamageBoostValue;
 
