@@ -16,12 +16,24 @@ public class ToolTipManager : MonoBehaviour
 	{
 		OnMouseHover += ShowTip;
 		OnMouseLoseFocus += HideTip;
+
+		EventManagerUi.OnShowPlayerInventoryEvent += HideTip;
+		EventManagerUi.OnShowPlayerClassSelectionEvent += HideTip;
+		EventManagerUi.OnShowPlayerSkillTreeEvent += HideTip;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideTip;
+		EventManagerUi.OnShowPlayerJournalEvent += HideTip;
 	}
 
 	private void OnDisable()
 	{
 		OnMouseHover -= ShowTip;
 		OnMouseLoseFocus -= HideTip;
+
+		EventManagerUi.OnShowPlayerInventoryEvent -= HideTip;
+		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideTip;
+		EventManagerUi.OnShowPlayerSkillTreeEvent -= HideTip;
+		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideTip;
+		EventManagerUi.OnShowPlayerJournalEvent -= HideTip;
 	}
 
 	private void ShowTip(string tip, Vector2 mousePos)
