@@ -59,8 +59,6 @@ public class Armors : Items
 			rarity = "Common";
 		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
 
-		Debug.Log(playerStats.maxHealth.GetPercentageModifiers());
-
 		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
 			$"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n" +
 			$"{(int)(bonusPhysicalResistance * playerStats.physicalResistance.GetPercentageModifiers())} Physical Res\n" +

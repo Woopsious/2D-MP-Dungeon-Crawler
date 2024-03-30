@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 	public string tipToShow;
 	private float timeToWait = 0.5f;
+
+	public void OnPointerClick(PointerEventData eventData)
+	{
+		if (eventData.button.ToString() != "Right") return;
+
+		ToolTipManager.OnMouseRightClick(GetComponent<InventoryItemUi>(), eventData.position);
+	}
 
 	public void OnPointerEnter(PointerEventData eventData)
 	{
