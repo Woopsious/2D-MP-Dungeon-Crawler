@@ -241,9 +241,9 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	//ITEMS
 	//Adding new items to Ui
-	public void AddItemToInventory(Items item)
+	public void AddItemToInventory(Items item, bool tryStack)
 	{
-		if (item.isStackable)
+		if (item.isStackable && tryStack)
 			TryStackItem(ConvertPickupsToInventoryItem(item));
 		else
 			SpawnNewItemInInventory(ConvertPickupsToInventoryItem(item));

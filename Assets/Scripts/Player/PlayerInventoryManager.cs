@@ -205,9 +205,9 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 
 	//on item pickup
-	public void AddNewItemToPlayerInventory(Items item)
+	public void PickUpNewItem(Items item)
 	{
-		PlayerInventoryUi.Instance.AddItemToInventory(item);
+		PlayerInventoryUi.Instance.AddItemToInventory(item, true);
 	}
 	public bool CheckIfInventoryFull()
 	{

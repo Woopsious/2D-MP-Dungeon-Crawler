@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -14,6 +15,7 @@ public class ToolTipManager : MonoBehaviour
 	public RectTransform contextWindow;
 	public Button discardItemButton;
 	public Button handInItemButton;
+	public Button splitItemButton;
 
 	public static Action<string, Vector2> OnMouseHover;
 	public static Action OnMouseLoseFocus;
@@ -61,6 +63,7 @@ public class ToolTipManager : MonoBehaviour
 		EventManagerUi.OnShowPlayerJournalEvent -= HideContextMenu;
 	}
 
+	//context menu
 	private void HideShowContextMenu(InventoryItemUi item, Vector2 mousePos)
 	{
 		if (!contextWindow.gameObject.activeInHierarchy)
@@ -88,14 +91,18 @@ public class ToolTipManager : MonoBehaviour
 		}
 		else
 			handInItemButton.gameObject.SetActive(false);
+
+		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
 	}
 	private void HideContextMenu()
 	{
 		discardItemButton.onClick.RemoveAllListeners();
 		handInItemButton.onClick.RemoveAllListeners();
+		splitItemButton.onClick.RemoveAllListeners();
 		contextWindow.gameObject.SetActive(false);
 	}
 
+	//context menu button actions
 	private void DiscardItem(InventorySlotUi slot)
 	{
 		InventoryItemUi item = slot.itemInSlot;
@@ -119,7 +126,25 @@ public class ToolTipManager : MonoBehaviour
         else
 			Debug.Log("item doesnt match");
 	}
+	private void SplitItem(InventorySlotUi slot)
+	{
+		if (slot.itemInSlot.currentStackCount == 1) return;
 
+		if (slot.itemInSlot.currentStackCount % 2 == 0)
+		{
+			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount / 2);
+			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+		}
+		else
+		{
+			float newStackCount = slot.itemInSlot.currentStackCount / 2; //split stack count (round down copy)
+			slot.itemInSlot.SetStackCounter((int)newStackCount);
+			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount + 1); //(round up original)
+		}
+	}
+
+	//tips
 	private void ShowTip(string tip, Vector2 mousePos)
 	{
 		tipText.text = tip;

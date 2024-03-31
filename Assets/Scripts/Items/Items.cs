@@ -116,7 +116,7 @@ public class Items : MonoBehaviour, IInteractable
 			return;
 		}
 
-		playerInventory.AddNewItemToPlayerInventory(this);
+		playerInventory.PickUpNewItem(this);
 		Destroy(gameObject);
 	}
 	public void UnInteract(PlayerController playerController)
