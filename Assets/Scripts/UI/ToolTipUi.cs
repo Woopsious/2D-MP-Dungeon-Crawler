@@ -6,7 +6,7 @@ using UnityEngine.EventSystems;
 public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerClickHandler
 {
 	public string tipToShow;
-	private float timeToWait = 0.5f;
+	private readonly float timeToWait = 0.5f;
 
 	public void OnPointerClick(PointerEventData eventData)
 	{

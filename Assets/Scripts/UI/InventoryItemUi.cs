@@ -158,6 +158,12 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		uiItemStackCount.text = currentStackCount.ToString();
 	}
+	public void SetStackCounter(int newCount)
+	{
+		currentStackCount = newCount;
+		uiItemStackCount.text = currentStackCount.ToString();
+		GetComponent<Items>().currentStackCount = currentStackCount;
+	}
 	public void IncreaseStackCounter()
 	{
 		currentStackCount++;

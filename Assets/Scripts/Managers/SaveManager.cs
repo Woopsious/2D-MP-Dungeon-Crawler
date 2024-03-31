@@ -356,8 +356,8 @@ public class QuestItemData
 	{
 		isBossKillQuest, isKillQuest, isItemHandInQuest
 	}
-	public float amount;
-	public float currentAmount;
+	public int amount;
+	public int currentAmount;
 
 	[Header("Kill Quest Info")]
 	public SOEntityStats entityToKill;

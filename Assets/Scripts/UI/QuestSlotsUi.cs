@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem.Processors;
 using UnityEngine.UI;
 
 public class QuestSlotsUi : MonoBehaviour
@@ -26,8 +27,8 @@ public class QuestSlotsUi : MonoBehaviour
 		isBossKillQuest, isKillQuest, isItemHandInQuest
 	}
 	public bool isCurrentlyActiveQuest;
-	public float amount;
-	public float currentAmount;
+	public int amount;
+	public int currentAmount;
 
 	[Header("Kill Quest Info")]
 	public SOEntityStats entityToKill;
@@ -209,30 +210,56 @@ public class QuestSlotsUi : MonoBehaviour
         if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
 		{
 			if (entityToKill = entity.GetComponent<EntityStats>().entityBaseStats)
-			{
 				currentAmount++;
-				questTrackerUi.text = $"{currentAmount} / {amount} Killed";
-			}
 		}
+
+		questTrackerUi.text = $"{currentAmount} / {amount} Killed";
 
 		if (currentAmount >= amount)
 			CompleteThisQuest();
 	}
-	public void OnItemHandInCheckHandInAmount(InventoryItemUi item)
+	public void OnItemHandInCheckHandInAmount(QuestSlotsUi assignedQuest, InventorySlotUi slot)
 	{
-		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest) return;
+		if (assignedQuest != this) return;
 
-		if (itemTypeToHandIn == ItemType.isWeapon)
-			currentAmount++;
-		else if (itemTypeToHandIn == ItemType.isArmor)
-			currentAmount++;
-		else if (itemTypeToHandIn == ItemType.isAccessory)
-			currentAmount++;
-		else if (itemTypeToHandIn == ItemType.isConsumable)
-			currentAmount++;
+		if (DoesItemMatch(slot.itemInSlot))
+			currentAmount += slot.itemInSlot.currentStackCount;
+
+		questTrackerUi.text = $"{currentAmount} / {amount} Handed In";
 
 		if (currentAmount >= amount)
 			CompleteThisQuest();
+	}
+	public bool DoesItemMatch(InventoryItemUi item)
+	{
+		if (itemTypeToHandIn == ItemType.isWeapon)
+		{
+			if (weaponToHandIn == item.weaponBaseRef)
+				return true;
+			else return false;
+		}
+
+		else if (itemTypeToHandIn == ItemType.isArmor)
+		{
+			if (armorToHandIn == item.armorBaseRef)
+				return true;
+			else return false;
+		}
+
+		else if (itemTypeToHandIn == ItemType.isAccessory)
+		{
+			if (accessoryToHandIn == item.accessoryBaseRef)
+				return true;
+			else return false;
+		}
+
+		else if (itemTypeToHandIn == ItemType.isConsumable)
+		{
+			if (consumableToHandIn == item.consumableBaseRef)
+				return true;
+			else return false;
+		}
+		else return false;
 	}
 
 	public void OnQuestAccepted(QuestSlotsUi quest)

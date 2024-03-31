@@ -20,6 +20,8 @@ public class ToolTipManager : MonoBehaviour
 
 	public static Action<InventoryItemUi, Vector2> OnMouseRightClick;
 
+	public static Action<QuestSlotsUi, InventoryItemUi> OnTryHandInItem;
+
 	private void OnEnable()
 	{
 		OnMouseHover += ShowTip;
@@ -32,7 +34,6 @@ public class ToolTipManager : MonoBehaviour
 		EventManagerUi.OnShowPlayerJournalEvent += HideTip;
 
 		OnMouseRightClick += HideShowContextMenu;
-		OnMouseLoseFocus += HideContextMenu;
 
 		EventManagerUi.OnShowPlayerInventoryEvent += HideContextMenu;
 		EventManagerUi.OnShowPlayerClassSelectionEvent += HideContextMenu;
@@ -40,7 +41,6 @@ public class ToolTipManager : MonoBehaviour
 		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideContextMenu;
 		EventManagerUi.OnShowPlayerJournalEvent += HideContextMenu;
 	}
-
 	private void OnDisable()
 	{
 		OnMouseHover -= ShowTip;
@@ -53,7 +53,6 @@ public class ToolTipManager : MonoBehaviour
 		EventManagerUi.OnShowPlayerJournalEvent -= HideTip;
 
 		OnMouseRightClick -= HideShowContextMenu;
-		OnMouseLoseFocus -= HideContextMenu;
 
 		EventManagerUi.OnShowPlayerInventoryEvent -= HideContextMenu;
 		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideContextMenu;
@@ -61,6 +60,7 @@ public class ToolTipManager : MonoBehaviour
 		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideContextMenu;
 		EventManagerUi.OnShowPlayerJournalEvent -= HideContextMenu;
 	}
+
 	private void HideShowContextMenu(InventoryItemUi item, Vector2 mousePos)
 	{
 		if (!contextWindow.gameObject.activeInHierarchy)
@@ -68,7 +68,6 @@ public class ToolTipManager : MonoBehaviour
 		else
 			HideContextMenu();
 	}
-
 	private void ShowContextMenu(InventorySlotUi slot, Vector2 mousePos)
 	{
 		//keep hidden for learnt abilities inventory
@@ -80,12 +79,15 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.gameObject.SetActive(true);
 
 		discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); } );
-		handInItemButton.onClick.AddListener(delegate { HandInItem(slot); } );
 
-		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
-			handInItemButton.gameObject.SetActive(false);
-		else
+		QuestSlotsUi quest = CanItemBeHandedIn(slot.itemInSlot);
+		if (quest != null)
+		{
 			handInItemButton.gameObject.SetActive(true);
+			handInItemButton.onClick.AddListener(delegate { HandInItem(slot); });
+		}
+		else
+			handInItemButton.gameObject.SetActive(false);
 	}
 	private void HideContextMenu()
 	{
@@ -96,8 +98,6 @@ public class ToolTipManager : MonoBehaviour
 
 	private void DiscardItem(InventorySlotUi slot)
 	{
-		Debug.Log("discarding item");
-
 		InventoryItemUi item = slot.itemInSlot;
 		slot.RemoveItemFromSlot();
 		Destroy(item.gameObject);
@@ -105,11 +105,19 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private void HandInItem(InventorySlotUi slot)
 	{
-		Debug.Log("handing in item");
+		QuestSlotsUi questItem = CanItemBeHandedIn(slot.itemInSlot);
+		if (questItem != null)
+		{
+			int amountRequired = questItem.amount - questItem.currentAmount;
+			questItem.OnItemHandInCheckHandInAmount(questItem, slot);
 
-		//code to hand item in and add quest progress
-
-		DiscardItem(slot);
+			if (amountRequired > slot.itemInSlot.currentStackCount)
+				DiscardItem(slot);
+			else
+				slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount - amountRequired);
+		}
+        else
+			Debug.Log("item doesnt match");
 	}
 
 	private void ShowTip(string tip, Vector2 mousePos)
@@ -133,5 +141,59 @@ public class ToolTipManager : MonoBehaviour
 			return true;
 		else
 			return false;
+	}
+	private QuestSlotsUi CanItemBeHandedIn(InventoryItemUi item)
+	{
+		if (item.itemType == InventoryItemUi.ItemType.isAbility) return null;
+
+		QuestSlotsUi matchingQuest = null;
+		foreach(QuestSlotsUi quest in PlayerJournalUi.Instance.activeQuests)
+		{
+			if (quest.questType != QuestSlotsUi.QuestType.isItemHandInQuest)
+			{
+				Debug.Log("continue");
+				continue;
+			}
+
+			if (quest.itemTypeToHandIn == QuestSlotsUi.ItemType.isWeapon)
+			{
+				if (quest.weaponToHandIn == item.weaponBaseRef)
+				{
+					Debug.Log("weapon");
+					matchingQuest = quest;
+					return matchingQuest;
+				}
+			}
+			else if (quest.itemTypeToHandIn == QuestSlotsUi.ItemType.isArmor)
+			{
+				if (quest.armorToHandIn == item.armorBaseRef)
+				{
+					Debug.Log("armor");
+					matchingQuest = quest;
+					return matchingQuest;
+				}
+			}
+			else if (quest.itemTypeToHandIn == QuestSlotsUi.ItemType.isAccessory)
+			{
+				if (quest.accessoryToHandIn == item.accessoryBaseRef)
+				{
+					Debug.Log("accessory");
+					matchingQuest = quest;
+					return matchingQuest;
+				}
+			}
+			else if (quest.itemTypeToHandIn == QuestSlotsUi.ItemType.isConsumable)
+			{
+				if (quest.consumableToHandIn == item.consumableBaseRef)
+				{
+					Debug.Log("consumable");
+					matchingQuest = quest;
+					return matchingQuest;
+				}
+			}
+			else
+				return null;
+		}
+		return matchingQuest;
 	}
 }
