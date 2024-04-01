@@ -41,9 +41,9 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		GameObject droppeditem = eventData.pointerDrag;
 		InventoryItemUi item = droppeditem.GetComponent<InventoryItemUi>();
 
-		DragEquipItemToSlot(item);
+		EquipItemToSlot(item);
 	}
-	public void DragEquipItemToSlot(InventoryItemUi item) //dragging items
+	public void EquipItemToSlot(InventoryItemUi item) //dragging items
 	{
 		InventorySlotUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotUi>();
 		if (!IsCorrectSlotType(item)) return;
@@ -89,10 +89,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			AddItemToSlot(item);
 			oldInventorySlot.RemoveItemFromSlot();
 		}
-	}
-	public void EquipItemToSlot(InventoryItemUi item) //ui context menu
-	{
-		AddItemToSlot(item);
 	}
 
 	//types of item changes

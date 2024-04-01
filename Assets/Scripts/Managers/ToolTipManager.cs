@@ -13,9 +13,10 @@ public class ToolTipManager : MonoBehaviour
 	public TextMeshProUGUI tipText;
 
 	public RectTransform contextWindow;
+	public Button equipItemButton;
+	public Button splitItemButton;
 	public Button discardItemButton;
 	public Button handInItemButton;
-	public Button splitItemButton;
 
 	public static Action<string, Vector2> OnMouseHover;
 	public static Action OnMouseLoseFocus;
@@ -81,6 +82,9 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
 
+		equipItemButton.onClick.AddListener(delegate { EquipItem(slot); } );
+		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); } );
+
 		discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); } );
 
 		QuestSlotsUi quest = CanItemBeHandedIn(slot.itemInSlot);
@@ -91,18 +95,76 @@ public class ToolTipManager : MonoBehaviour
 		}
 		else
 			handInItemButton.gameObject.SetActive(false);
-
-		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
 	}
 	private void HideContextMenu()
 	{
 		discardItemButton.onClick.RemoveAllListeners();
 		handInItemButton.onClick.RemoveAllListeners();
 		splitItemButton.onClick.RemoveAllListeners();
+		equipItemButton.onClick.RemoveAllListeners();
 		contextWindow.gameObject.SetActive(false);
 	}
 
 	//context menu button actions
+	private void EquipItem(InventorySlotUi slot)
+	{
+		slot.itemInSlot.parentAfterDrag = slot.transform;
+
+		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isWeapon)
+		{
+			if (slot.itemInSlot.GetComponent<Weapons>().weaponBaseRef.weaponType == SOWeapons.WeaponType.isOffhand)
+				PlayerInventoryUi.Instance.offHandEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+			else
+				PlayerInventoryUi.Instance.weaponEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+		}
+		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isArmor)
+		{
+			if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.helmet)
+				PlayerInventoryUi.Instance.helmetEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+			else if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.chest)
+				PlayerInventoryUi.Instance.chestpieceEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+			else if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
+				PlayerInventoryUi.Instance.legsEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+		}
+		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAccessory)
+		{
+			if (slot.itemInSlot.GetComponent<Accessories>().accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.necklace)
+				PlayerInventoryUi.Instance.necklassEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+			else
+			{
+				//handle equiping to either ring slot 1 or 2, another button pop up with ring slot 1 or 2.
+				//set button text and delegate func for these buttons then show them, on click equip item to corrisponding slot for button
+			}
+		}
+		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isConsumable)
+		{
+			//do same here as for ring slots 1 an 2
+		}
+		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
+		{
+			//do same here as for ring slots 1 an 2 (maynot work as abilities are different)
+		}
+
+		HideContextMenu();
+		HideTip();
+	}
+	private void SplitItem(InventorySlotUi slot)
+	{
+		if (slot.itemInSlot.currentStackCount == 1) return;
+
+		if (slot.itemInSlot.currentStackCount % 2 == 0)
+		{
+			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount / 2);
+			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+		}
+		else
+		{
+			float newStackCount = slot.itemInSlot.currentStackCount / 2; //split stack count (round down copy)
+			slot.itemInSlot.SetStackCounter((int)newStackCount);
+			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount + 1); //(round up original)
+		}
+	}
 	private void DiscardItem(InventorySlotUi slot)
 	{
 		InventoryItemUi item = slot.itemInSlot;
@@ -125,23 +187,6 @@ public class ToolTipManager : MonoBehaviour
 		}
         else
 			Debug.Log("item doesnt match");
-	}
-	private void SplitItem(InventorySlotUi slot)
-	{
-		if (slot.itemInSlot.currentStackCount == 1) return;
-
-		if (slot.itemInSlot.currentStackCount % 2 == 0)
-		{
-			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount / 2);
-			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
-		}
-		else
-		{
-			float newStackCount = slot.itemInSlot.currentStackCount / 2; //split stack count (round down copy)
-			slot.itemInSlot.SetStackCounter((int)newStackCount);
-			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
-			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount + 1); //(round up original)
-		}
 	}
 
 	//tips
