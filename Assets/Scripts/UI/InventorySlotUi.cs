@@ -197,6 +197,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		//equipment class restriction/level checks
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
 			return true;
+		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
+			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))

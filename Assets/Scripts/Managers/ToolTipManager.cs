@@ -14,6 +14,12 @@ public class ToolTipManager : MonoBehaviour
 
 	public RectTransform contextWindow;
 	public Button equipItemButton;
+	public Button equipItemButtonOne;
+	public Button equipItemButtonTwo;
+	public Button equipItemButtonThree;
+	public Button equipItemButtonFour;
+	public Button equipItemButtonFive;
+	public Button unEquipItemButton;
 	public Button splitItemButton;
 	public Button discardItemButton;
 	public Button handInItemButton;
@@ -82,10 +88,28 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
 
-		equipItemButton.onClick.AddListener(delegate { EquipItem(slot); } );
-		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); } );
 
-		discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); } );
+		if (!slot.IsPlayerEquipmentSlot()) //show either equip/uneuip item button based on if equipment slot
+		{
+			EquipItem(slot);    //button delegating and setting active in here
+			equipItemButton.gameObject.SetActive(true);
+			unEquipItemButton.gameObject.SetActive(false);
+		}
+		else if (slot.IsPlayerEquipmentSlot())
+		{
+			//overwite equipItem button with UnEquipItem button
+			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });	
+			unEquipItemButton.gameObject.SetActive(true);
+		}
+
+		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
+		splitItemButton.gameObject.SetActive(true);
+
+		if (!slot.IsPlayerEquipmentSlot())
+		{
+			discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); });
+			discardItemButton.gameObject.SetActive(true);
+		}
 
 		QuestSlotsUi quest = CanItemBeHandedIn(slot.itemInSlot);
 		if (quest != null)
@@ -102,52 +126,113 @@ public class ToolTipManager : MonoBehaviour
 		handInItemButton.onClick.RemoveAllListeners();
 		splitItemButton.onClick.RemoveAllListeners();
 		equipItemButton.onClick.RemoveAllListeners();
+		equipItemButtonOne.onClick.RemoveAllListeners();
+		equipItemButtonTwo.onClick.RemoveAllListeners();
+		equipItemButtonThree.onClick.RemoveAllListeners();
+		equipItemButtonFour.onClick.RemoveAllListeners();
+		equipItemButtonFive.onClick.RemoveAllListeners();
+
 		contextWindow.gameObject.SetActive(false);
+		equipItemButton.gameObject.SetActive(false);
+		equipItemButtonOne.gameObject.SetActive(false);
+		equipItemButtonTwo.gameObject.SetActive(false);
+		equipItemButtonThree.gameObject.SetActive(false);
+		equipItemButtonFour.gameObject.SetActive(false);
+		equipItemButtonFive.gameObject.SetActive(false);
+		unEquipItemButton.gameObject.SetActive(false);
+		splitItemButton.gameObject.SetActive(false);
+		discardItemButton.gameObject.SetActive(false);
+		handInItemButton.gameObject.SetActive(false);
 	}
 
 	//context menu button actions
 	private void EquipItem(InventorySlotUi slot)
 	{
 		slot.itemInSlot.parentAfterDrag = slot.transform;
-
 		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isWeapon)
 		{
+			equipItemButton.gameObject.SetActive(true);
 			if (slot.itemInSlot.GetComponent<Weapons>().weaponBaseRef.weaponType == SOWeapons.WeaponType.isOffhand)
-				PlayerInventoryUi.Instance.offHandEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.offHandEquipmentSlot); });
 			else
-				PlayerInventoryUi.Instance.weaponEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.weaponEquipmentSlot); });
 		}
 		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isArmor)
 		{
 			if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.helmet)
-				PlayerInventoryUi.Instance.helmetEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
-			else if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.chest)
-				PlayerInventoryUi.Instance.chestpieceEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
-			else if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
-				PlayerInventoryUi.Instance.legsEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.helmetEquipmentSlot); });
+			if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.chest)
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.chestpieceEquipmentSlot); });
+			if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.legs)
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.legsEquipmentSlot); });
 		}
 		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAccessory)
 		{
 			if (slot.itemInSlot.GetComponent<Accessories>().accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.necklace)
-				PlayerInventoryUi.Instance.necklassEquipmentSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(slot.itemInSlot);
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.necklassEquipmentSlot); });
 			else
-			{
-				//handle equiping to either ring slot 1 or 2, another button pop up with ring slot 1 or 2.
-				//set button text and delegate func for these buttons then show them, on click equip item to corrisponding slot for button
-			}
+				equipItemButton.onClick.AddListener(
+					delegate { EquipItemWithMultipleSlotDestination(slot); });
 		}
-		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isConsumable)
-		{
-			//do same here as for ring slots 1 an 2
-		}
-		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
-		{
-			//do same here as for ring slots 1 an 2 (maynot work as abilities are different)
-		}
+		else
+			equipItemButton.onClick.AddListener(
+				delegate { EquipItemWithMultipleSlotDestination(slot); });
+	}
+	private void EquipItemWithMultipleSlotDestination(InventorySlotUi slot)
+	{
+		equipItemButtonOne.onClick.RemoveAllListeners();
+		equipItemButtonTwo.onClick.RemoveAllListeners();
+		equipItemButtonThree.onClick.RemoveAllListeners();
+		equipItemButtonFour.onClick.RemoveAllListeners();
+		equipItemButtonFive.onClick.RemoveAllListeners();
 
+		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAccessory)
+		{
+			equipItemButtonOne.gameObject.SetActive(true);
+			equipItemButtonTwo.gameObject.SetActive(true);
+			equipItemButtonOne.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.ringEquipmentSlotOne); });
+			equipItemButtonTwo.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.ringEquipmentSlotTwo); });
+		}
+		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isConsumable)
+		{
+			equipItemButtonOne.gameObject.SetActive(true);
+			equipItemButtonTwo.gameObject.SetActive(true);
+			equipItemButtonOne.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotOne); });
+			equipItemButtonTwo.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotTwo); });
+		}
+	}
+	private void UnEquipItem(InventorySlotUi oldSlot)
+	{
+		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
+		{
+			InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+			if (!slot.IsSlotEmpty()) continue;
+
+			slot.AddItemToSlot(oldSlot.itemInSlot);
+			HideContextMenu();
+			HideTip();
+			return;
+		}
+		Debug.LogError("inventory full");
+	}
+	private void EquipItemToThisSlot(InventorySlotUi oldSlot, GameObject newSlot)
+	{
+		oldSlot.itemInSlot.parentAfterDrag = oldSlot.transform;
+		newSlot.GetComponent<InventorySlotUi>().EquipItemToSlot(oldSlot.itemInSlot);
 		HideContextMenu();
 		HideTip();
 	}
+
 	private void SplitItem(InventorySlotUi slot)
 	{
 		if (slot.itemInSlot.currentStackCount == 1) return;
