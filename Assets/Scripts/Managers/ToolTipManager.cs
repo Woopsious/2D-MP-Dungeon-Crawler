@@ -80,14 +80,10 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private void ShowContextMenu(InventorySlotUi slot, Vector2 mousePos)
 	{
-		//keep hidden for learnt abilities inventory
-		if (CheckIfListContainsSlot(PlayerInventoryUi.Instance.LearntAbilitySlots, slot)) return;
-
 		contextWindow.sizeDelta = new Vector2(tipText.preferredWidth > 300 ? 300 :
 			tipText.preferredWidth * 1.25f, tipText.preferredHeight * 1.25f);
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
-
 
 		if (!slot.IsPlayerEquipmentSlot()) //show either equip/uneuip item button based on if equipment slot
 		{
@@ -98,9 +94,12 @@ public class ToolTipManager : MonoBehaviour
 		else if (slot.IsPlayerEquipmentSlot())
 		{
 			//overwite equipItem button with UnEquipItem button
-			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });	
+			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });
 			unEquipItemButton.gameObject.SetActive(true);
 		}
+
+		//keep rest hidden for learnt abilities inventory
+		if (CheckIfListContainsSlot(PlayerInventoryUi.Instance.LearntAbilitySlots, slot)) return;
 
 		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
 		splitItemButton.gameObject.SetActive(true);
@@ -209,6 +208,24 @@ public class ToolTipManager : MonoBehaviour
 				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotOne); });
 			equipItemButtonTwo.onClick.AddListener(
 				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotTwo); });
+		}
+		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
+		{
+			equipItemButtonOne.gameObject.SetActive(true);
+			equipItemButtonTwo.gameObject.SetActive(true);
+			equipItemButtonThree.gameObject.SetActive(true);
+			equipItemButtonFour.gameObject.SetActive(true);
+			equipItemButtonFive.gameObject.SetActive(true);
+			equipItemButtonOne.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotOne); });
+			equipItemButtonTwo.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotTwo); });
+			equipItemButtonThree.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotThree); });
+			equipItemButtonFour.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotFour); });
+			equipItemButtonFive.onClick.AddListener(
+				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotFive); });
 		}
 	}
 	private void UnEquipItem(InventorySlotUi oldSlot)
