@@ -16,6 +16,8 @@ MonoBehaviour:
   sprite: {fileID: -2090949032, guid: 76686699748622a48b566623ca98afc6, type: 3}
   npcType: 1
   shopType: 3
+  minNumOfShopItems: 3
+  maxNumOfShopItems: 8
   weaponSmithShopItems:
   - {fileID: 11400000, guid: 752560be2cf32244e8e66813eb3bbd92, type: 2}
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}

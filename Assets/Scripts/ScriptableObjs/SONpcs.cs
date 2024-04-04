@@ -20,6 +20,9 @@ public class SONpcs : ScriptableObject
 		isntShop, isWeaponSmith, isArmorer, isGoldSmith, isGeneralStore
 	}
 
+	public int minNumOfShopItems;
+	public int maxNumOfShopItems;
+
 	public List<SOItems> weaponSmithShopItems = new List<SOItems>();
 	public List<SOItems> armorerShopItems = new List<SOItems>();
 	public List<SOItems> goldSmithShopItems = new List<SOItems>();

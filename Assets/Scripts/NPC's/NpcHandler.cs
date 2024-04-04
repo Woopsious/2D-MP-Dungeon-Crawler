@@ -23,7 +23,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public GameObject npcContainer;
 
 	[Header("Ui Notif")]
-	public GameObject interactWithObj;
+	public TMP_Text NpcTypeText;
 	public TMP_Text interactWithText;
 
 	private void Start()
@@ -36,7 +36,8 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	}
 	private void Update()
 	{
-		DisplayInteractText();
+		UpdateInteractText();
+		UpdateNpcTypeText();
 	}
 
 	private void Initilize()
@@ -47,13 +48,16 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		spriteRenderer.sprite = npc.sprite;
 		name = npc.entityName;
 
-		interactWithObj.transform.SetParent(FindObjectOfType<Canvas>().transform);
-		interactWithText.text = $"Press F to interact with {name}";
-
+		NpcTypeText.transform.SetParent(FindObjectOfType<Canvas>().transform); //NpcTypeText.text set inside functions below
+		NpcTypeText.transform.SetAsFirstSibling();
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 			GenerateNewQuests();
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 			GenerateShopItems();
+
+		interactWithText.transform.SetParent(FindObjectOfType<Canvas>().transform);
+		interactWithText.transform.SetAsFirstSibling();
+		interactWithText.text = $"F to interact";
 	}
 
 	public void Interact(PlayerController player)
@@ -72,12 +76,9 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			player.isInteractingWithNpc = true;
 			PlayerInventoryUi.Instance.ShowInventory();
 			PlayerInventoryUi.Instance.ShowNpcShop();
-			PlayerInventoryUi.Instance.refreshShopButton.onClick.AddListener(delegate { RefreshThisNpcsShopItems(); });
 			PlayerInventoryUi.Instance.closeShopButton.onClick.AddListener(delegate { UnInteract(player); });
 			MoveShopItemsToUi();
 		}
-
-		interactWithText.gameObject.SetActive(false);
 	}
 	public void UnInteract(PlayerController player)
 	{
@@ -95,34 +96,34 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			player.isInteractingWithNpc = false;
 			PlayerInventoryUi.Instance.HideInventory();
 			PlayerInventoryUi.Instance.HideNpcShop();
-			PlayerInventoryUi.Instance.refreshShopButton.onClick.RemoveListener(delegate { RefreshThisNpcsShopItems(); });
 			PlayerInventoryUi.Instance.closeShopButton.onClick.RemoveListener(delegate { UnInteract(player); });
 			MoveShopItemsToContainer();
 		}
-
-		interactWithText.gameObject.SetActive(true);
 	}
-	private void DisplayInteractText()
+	private void UpdateNpcTypeText()
 	{
-		if (!interactWithObj.activeInHierarchy) return;
-		interactWithObj.transform.position = 
-			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1, 0));
+		if (!NpcTypeText.gameObject.activeInHierarchy) return;
+		NpcTypeText.transform.position =
+			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1f, 0));
+	}
+	private void UpdateInteractText()
+	{
+		if (!interactWithText.gameObject.activeInHierarchy) return;
+		interactWithText.transform.position = 
+			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 0.65f, 0));
 	}
 
 	//shop npc functions
 	public void GenerateShopItems()
 	{
 		for (int i = avalableShopItemsList.Count; i > 0; i--)
-		{
-			//if (!avalableShopItemsList[i - 1].isCurrentlyActiveQuest)
 			Destroy(avalableShopItemsList[i - 1].gameObject);
-		}
 		avalableShopItemsList.Clear();
 
 		//for now grab player level, later need a better way to do this if possible
 		int playerLevel = FindObjectOfType<PlayerController>().GetComponent<EntityStats>().entityLevel;
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < Utilities.GetRandomNumberBetween(npc.minNumOfShopItems, npc.maxNumOfShopItems + 1); i++)
 			GenerateItem(playerLevel);
 	}
 	public void GenerateItem(int playerLevel)
@@ -132,6 +133,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 		if (npc.shopType == SONpcs.ShopType.isWeaponSmith)
 		{
+			NpcTypeText.text = "Weapon Smith Npc";
 			Weapons weapon = go.AddComponent<Weapons>();
 			weapon.weaponBaseRef = (SOWeapons)npc.weaponSmithShopItems[Utilities.GetRandomNumber(npc.weaponSmithShopItems.Count)];
 			item.weaponBaseRef = weapon.weaponBaseRef;
@@ -140,6 +142,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		}
 		if (npc.shopType == SONpcs.ShopType.isArmorer)
 		{
+			NpcTypeText.text = "Armor Smith Npc";
 			Armors armor = go.AddComponent<Armors>();
 			armor.armorBaseRef = (SOArmors)npc.armorerShopItems[Utilities.GetRandomNumber(npc.armorerShopItems.Count)];
 			item.armorBaseRef = armor.armorBaseRef;
@@ -148,6 +151,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		}
 		if (npc.shopType == SONpcs.ShopType.isGoldSmith)
 		{
+			NpcTypeText.text = "Gold Smith Npc";
 			Accessories accessory = go.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = (SOAccessories)npc.goldSmithShopItems[Utilities.GetRandomNumber(npc.goldSmithShopItems.Count)];
 			item.accessoryBaseRef = accessory.accessoryBaseRef;
@@ -156,6 +160,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		}
 		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
 		{
+			NpcTypeText.text = "General Store Npc";
 			Consumables consumable = go.AddComponent<Consumables>();
 			consumable.consumableBaseRef = (SOConsumables)npc.generalStoreItems[Utilities.GetRandomNumber(npc.generalStoreItems.Count)];
 			item.consumableBaseRef = consumable.consumableBaseRef;
@@ -165,11 +170,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 		item.Initilize();
 		avalableShopItemsList.Add(item);
-	}
-	public void RefreshThisNpcsShopItems() //function delegated to button in ui
-	{
-		GenerateShopItems();
-		MoveShopItemsToUi();
 	}
 
 	//move shops items between NPC container/ui container
@@ -199,6 +199,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	//quest npc functions
 	public void GenerateNewQuests()
 	{
+		NpcTypeText.text = "Quest Npc";
 		for (int i = avalableQuestList.Count; i > 0; i--)
 		{
 			if (!avalableQuestList[i - 1].isCurrentlyActiveQuest)

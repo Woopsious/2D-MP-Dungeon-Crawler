@@ -45,7 +45,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	public TMP_Text transactionTrackerText;
 	public GameObject npcShopPanalUi;
 	public List<GameObject> shopSlots = new List<GameObject>();
-	public Button refreshShopButton;
 	public Button closeShopButton;
 
 	public int goldTransaction;

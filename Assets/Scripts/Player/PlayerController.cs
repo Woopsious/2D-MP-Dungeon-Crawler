@@ -104,6 +104,12 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 		PlayerMovement();
 	}
+	private void ReloadPlayerInfo()
+	{
+		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
+		playerStats.CalculateBaseStats();
+	}
+
 	private void PlayerMovement()
 	{
 		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
@@ -112,13 +118,6 @@ public class PlayerController : MonoBehaviour
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
-
-	private void ReloadPlayerInfo()
-	{
-		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
-		playerStats.CalculateBaseStats();
-	}
-
 	private void UpdateSpriteDirection()
 	{
 		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
@@ -248,14 +247,14 @@ public class PlayerController : MonoBehaviour
 		if (other.GetComponent<NpcHandler>() != null)
 		{
 			currentInteractedNpc = other.GetComponent<NpcHandler>();
-			currentInteractedNpc.interactWithObj.SetActive(true);
+			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
 		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<NpcHandler>() != null)
 		{
-			currentInteractedNpc.interactWithObj.SetActive(false);
+			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
 			currentInteractedNpc = null;
 		}
 	}
