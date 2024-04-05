@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
 
 	public readonly string mainMenuName = "MainMenu";
 	public readonly string hubAreaName = "HubArea";
+	public readonly string dungeonLayoutOneName = "DungeonOne";
+	public readonly string dungeonLayoutTwoName = "DungeonTwo";
 
 	private void Awake()
 	{
@@ -38,6 +40,14 @@ public class GameManager : MonoBehaviour
 	public void LoadHubArea(bool isNewGame)
 	{
 		StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
+	}
+	public void LoadDungeonOne()
+	{
+		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+	}
+	public void LoadDungeonTwo()
+	{
+		StartCoroutine(LoadNewSceneAsync(dungeonLayoutTwoName, false));
 	}
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{

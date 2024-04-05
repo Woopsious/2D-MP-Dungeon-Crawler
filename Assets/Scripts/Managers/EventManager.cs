@@ -6,6 +6,18 @@ using UnityEngine.Events;
 
 public static class EventManagerUi
 {
+	/// <summary>
+	/// SCENE CHANGE EVENTS
+	/// </summary>
+	public static Action<bool> OnSceneChange;
+	public static void ChangeScene(bool isNewGame)
+	{
+		OnSceneChange?.Invoke(isNewGame);
+	}
+
+	/// <summary>
+	/// UI EVENTS
+	/// </summary>
 	public static Action<int> OnGoldAmountChange;
 	public static void GoldAmountChange(int gold)
 	{
