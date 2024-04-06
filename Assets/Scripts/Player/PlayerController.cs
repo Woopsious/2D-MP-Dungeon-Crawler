@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
 	//interactions
 	[HideInInspector] public bool isInteractingWithNpc;
 	private NpcHandler currentInteractedNpc;
+	[HideInInspector] public bool isInteractingWithPortal;
+	private PortalHandler currentInteractedPortal;
 
 	private void Awake()
 	{
@@ -233,7 +235,7 @@ public class PlayerController : MonoBehaviour
 	//bool checks
 	private bool IsPlayerInteracting()
 	{
-		if (isInteractingWithNpc)
+		if (isInteractingWithNpc || isInteractingWithPortal)
 			return true;
 		else return false;
 	}
@@ -249,6 +251,11 @@ public class PlayerController : MonoBehaviour
 			currentInteractedNpc = other.GetComponent<NpcHandler>();
 			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
 		}
+		else if (other.GetComponent<PortalHandler>() != null)
+		{
+			currentInteractedPortal = other.GetComponent<PortalHandler>();
+			currentInteractedPortal.interactWithText.gameObject.SetActive(true);
+		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
@@ -256,6 +263,11 @@ public class PlayerController : MonoBehaviour
 		{
 			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
 			currentInteractedNpc = null;
+		}
+		else if (other.GetComponent<PortalHandler>() != null)
+		{
+			currentInteractedPortal.interactWithText.gameObject.SetActive(false);
+			currentInteractedPortal = null;
 		}
 	}
 
@@ -368,22 +380,22 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInventory()
 	{
-		EventManagerUi.ShowPlayerInventory();
+		EventManager.ShowPlayerInventory();
 	}
 	private void OnClassSelection()
 	{
-		EventManagerUi.ShowPlayerClassSelection();
+		EventManager.ShowPlayerClassSelection();
 	}
 	private void OnSkillTree()
 	{
-		EventManagerUi.ShowPlayerSkillTree();
+		EventManager.ShowPlayerSkillTree();
 	}
 	private void OnLearntAbilities()
 	{
-		EventManagerUi.ShowPlayerLearntAbilities();
+		EventManager.ShowPlayerLearntAbilities();
 	}
 	private void OnJournal()
 	{
-		EventManagerUi.ShowPlayerJournal();
+		EventManager.ShowPlayerJournal();
 	}
 }

@@ -44,7 +44,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	public void ReloadPlayerExp()
 	{
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
-		EventManagerUi.PlayerExpChange(maxExp, currentExp);
+		EventManager.PlayerExpChange(maxExp, currentExp);
 	}
 	public void AddExperience(GameObject Obj)
 	{
@@ -55,7 +55,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
 			currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
 		}
-		EventManagerUi.PlayerExpChange(maxExp, currentExp);
+		EventManager.PlayerExpChange(maxExp, currentExp);
 
 		if (!CheckIfPLayerCanLevelUp()) return;
 		OnPlayerLevelUp();
@@ -66,7 +66,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		int r = currentExp % maxExp;
 		currentExp = r;
 
-		EventManagerUi.PlayerExpChange(maxExp, currentExp);
+		EventManager.PlayerExpChange(maxExp, currentExp);
 		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
 	}
 	private bool CheckIfPLayerCanLevelUp()

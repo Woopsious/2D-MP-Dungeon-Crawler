@@ -67,17 +67,17 @@ public class PlayerInventoryUi : MonoBehaviour
 		InventorySlotUi.OnItemConfirmBuyEvent += OnItemConfirmBuy;
 		InventorySlotUi.OnItemCancelBuyEvent += OnItemCancelBuy;
 
-		EventManagerUi.OnShowPlayerInventoryEvent += ShowInventory;
-		EventManagerUi.OnShowPlayerClassSelectionEvent += HideInventory;
-		EventManagerUi.OnShowPlayerSkillTreeEvent += HideInventory;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideInventory;
-		EventManagerUi.OnShowPlayerJournalEvent += HideInventory;
+		EventManager.OnShowPlayerInventoryEvent += ShowInventory;
+		EventManager.OnShowPlayerClassSelectionEvent += HideInventory;
+		EventManager.OnShowPlayerSkillTreeEvent += HideInventory;
+		EventManager.OnShowPlayerLearntAbilitiesEvent += HideInventory;
+		EventManager.OnShowPlayerJournalEvent += HideInventory;
 
-		EventManagerUi.OnShowPlayerInventoryEvent += HideLearntAbilities;
-		EventManagerUi.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
-		EventManagerUi.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
-		EventManagerUi.OnShowPlayerJournalEvent += HideLearntAbilities;
+		EventManager.OnShowPlayerInventoryEvent += HideLearntAbilities;
+		EventManager.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
+		EventManager.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
+		EventManager.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
+		EventManager.OnShowPlayerJournalEvent += HideLearntAbilities;
 	}
 	private void OnDisable()
 	{
@@ -89,17 +89,17 @@ public class PlayerInventoryUi : MonoBehaviour
 		InventorySlotUi.OnItemConfirmBuyEvent -= OnItemConfirmBuy;
 		InventorySlotUi.OnItemCancelBuyEvent -= OnItemCancelBuy;
 
-		EventManagerUi.OnShowPlayerInventoryEvent -= ShowInventory;
-		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideInventory;
-		EventManagerUi.OnShowPlayerSkillTreeEvent -= HideInventory;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
-		EventManagerUi.OnShowPlayerJournalEvent -= HideInventory;
+		EventManager.OnShowPlayerInventoryEvent -= ShowInventory;
+		EventManager.OnShowPlayerClassSelectionEvent -= HideInventory;
+		EventManager.OnShowPlayerSkillTreeEvent -= HideInventory;
+		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
+		EventManager.OnShowPlayerJournalEvent -= HideInventory;
 
-		EventManagerUi.OnShowPlayerInventoryEvent -= HideLearntAbilities;
-		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
-		EventManagerUi.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
-		EventManagerUi.OnShowPlayerJournalEvent -= HideLearntAbilities;
+		EventManager.OnShowPlayerInventoryEvent -= HideLearntAbilities;
+		EventManager.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
+		EventManager.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
+		EventManager.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
+		EventManager.OnShowPlayerJournalEvent -= HideLearntAbilities;
 	}
 	private void Initilize()
 	{

@@ -17,11 +17,11 @@ public class PlayerInfoUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		EventManagerUi.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+		EventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
 	}
 	private void OnDisable()
 	{
-		EventManagerUi.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+		EventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
 	}
 
 	public void UpdatePlayerStatInfo(EntityStats stats)

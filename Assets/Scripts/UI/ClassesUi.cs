@@ -70,33 +70,33 @@ public class ClassesUi : MonoBehaviour
 	{
 		SaveManager.OnGameLoad += ReloadPlayerClass;
 
-		EventManagerUi.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
-		EventManagerUi.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerJournalEvent += HidePlayerClassSelection;
+		EventManager.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
+		EventManager.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
+		EventManager.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
+		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
+		EventManager.OnShowPlayerJournalEvent += HidePlayerClassSelection;
 
-		EventManagerUi.OnShowPlayerInventoryEvent += HideClassSkillTree;
-		EventManagerUi.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
-		EventManagerUi.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
-		EventManagerUi.OnShowPlayerJournalEvent += HideClassSkillTree;
+		EventManager.OnShowPlayerInventoryEvent += HideClassSkillTree;
+		EventManager.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
+		EventManager.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
+		EventManager.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
+		EventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerClass;
 
-		EventManagerUi.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
-		EventManagerUi.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
-		EventManagerUi.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
+		EventManager.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
+		EventManager.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
+		EventManager.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
+		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
+		EventManager.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
 
-		EventManagerUi.OnShowPlayerInventoryEvent -= HideClassSkillTree;
-		EventManagerUi.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
-		EventManagerUi.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
-		EventManagerUi.OnShowPlayerJournalEvent -= HideClassSkillTree;
+		EventManager.OnShowPlayerInventoryEvent -= HideClassSkillTree;
+		EventManager.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
+		EventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
+		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
+		EventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
 	}
 
 	private void Initilize()
@@ -191,7 +191,7 @@ public class ClassesUi : MonoBehaviour
 
 		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;
-		EventManagerUi.ShowPlayerSkillTree();
+		EventManager.ShowPlayerSkillTree();
 	}
 	public void ResetCurrentClassButton()
 	{

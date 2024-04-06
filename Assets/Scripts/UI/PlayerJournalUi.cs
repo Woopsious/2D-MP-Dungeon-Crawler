@@ -36,21 +36,21 @@ public class PlayerJournalUi : MonoBehaviour
 	{
 		SaveManager.OnGameLoad += ReloadPlayerBounties;
 
-		EventManagerUi.OnShowPlayerInventoryEvent += HidePlayerJournal;
-		EventManagerUi.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
-		EventManagerUi.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
-		EventManagerUi.OnShowPlayerJournalEvent += ShowPlayerJournal;
+		EventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
+		EventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
+		EventManager.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
+		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
+		EventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
 	}
 	private void OnDisable()
 	{
 		SaveManager.OnGameLoad -= ReloadPlayerBounties;
 
-		EventManagerUi.OnShowPlayerInventoryEvent -= HidePlayerJournal;
-		EventManagerUi.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
-		EventManagerUi.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
-		EventManagerUi.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
-		EventManagerUi.OnShowPlayerJournalEvent -= ShowPlayerJournal;
+		EventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
+		EventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
+		EventManager.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
+		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
+		EventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 	}
 
 	private void ReloadPlayerBounties()

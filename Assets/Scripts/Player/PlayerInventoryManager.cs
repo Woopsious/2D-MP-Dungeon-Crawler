@@ -137,7 +137,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
-		EventManagerUi.GoldAmountChange(playerGoldAmount);
+		EventManager.GoldAmountChange(playerGoldAmount);
 	}
 	public void OnItemTryBuy(InventoryItemUi item, InventorySlotUi newSlot, InventorySlotUi oldSlot)
 	{

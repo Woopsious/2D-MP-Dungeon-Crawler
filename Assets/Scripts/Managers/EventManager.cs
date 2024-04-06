@@ -4,16 +4,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public static class EventManagerUi
+public static class EventManager
 {
 	/// <summary>
 	/// SCENE CHANGE EVENTS
 	/// </summary>
+	/*
+	public static readonly string mainMenuName = "MainMenu";
+	public static readonly string hubAreaName = "HubArea";
+	public static readonly string dungeonLayoutOneName = "DungeonOne";
+	public static readonly string dungeonLayoutTwoName = "DungeonTwo";
 	public static Action<bool> OnSceneChange;
 	public static void ChangeScene(bool isNewGame)
 	{
 		OnSceneChange?.Invoke(isNewGame);
 	}
+	public static Action SaveGameData;
+	public static void SaveData()
+	{
+		SaveGameData?.Invoke();
+	}
+	public static Action LoadGameData;
+	public static void loadData()
+	{
+		SaveGameData?.Invoke();
+	}
+	*/
 
 	/// <summary>
 	/// UI EVENTS

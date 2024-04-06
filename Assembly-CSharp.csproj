@@ -86,7 +86,6 @@
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
-    <Compile Include="Assets\Scripts\Dungeons\Portal.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerJournalUi.cs" />
     <Compile Include="Assets\Scripts\Managers\EventManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
@@ -104,6 +103,7 @@
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
+    <Compile Include="Assets\Scripts\Dungeons\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryManager.cs" />
