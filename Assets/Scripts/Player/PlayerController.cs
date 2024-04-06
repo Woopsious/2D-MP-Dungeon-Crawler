@@ -109,6 +109,8 @@ public class PlayerController : MonoBehaviour
 	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
+		if (playerStats.entityLevel == 0)
+			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
 	}
 
@@ -307,20 +309,24 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInteract()
 	{
-		if (currentInteractedNpc == null) return;
-		if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)
+		if (currentInteractedPortal != null)
+			currentInteractedPortal.Interact(this);
+		else if (currentInteractedNpc != null)
 		{
-			if (PlayerJournalUi.Instance.npcJournalPanalUi.activeInHierarchy)
-				currentInteractedNpc.UnInteract(this);
-			else
-				currentInteractedNpc.Interact(this);
-		}
-		else if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isShopNpc)
-		{
-			if (PlayerInventoryUi.Instance.npcShopPanalUi.activeInHierarchy)
-				currentInteractedNpc.UnInteract(this);
-			else
-				currentInteractedNpc.Interact(this);
+			if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)
+			{
+				if (PlayerJournalUi.Instance.npcJournalPanalUi.activeInHierarchy)
+					currentInteractedNpc.UnInteract(this);
+				else
+					currentInteractedNpc.Interact(this);
+			}
+			else if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isShopNpc)
+			{
+				if (PlayerInventoryUi.Instance.npcShopPanalUi.activeInHierarchy)
+					currentInteractedNpc.UnInteract(this);
+				else
+					currentInteractedNpc.Interact(this);
+			}
 		}
 	}
 
