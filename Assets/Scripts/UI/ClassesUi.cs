@@ -50,7 +50,7 @@ public class ClassesUi : MonoBehaviour
 	public static event Action<SOClasses> OnClassChange;
 	public static event Action<SOClasses> OnClassReset;
 
-	public static event Action<PlayerClassHandler> OnClassNodeUnlocks;
+	public static event Action<EntityStats> OnClassNodeUnlocks;
 
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
 	public static event Action<SOClassAbilities> OnNewAbilityUnlock;
@@ -62,13 +62,14 @@ public class ClassesUi : MonoBehaviour
 	/// once player unlocks new node, event sent to PlayerClassHandler that applies stat bonuses, PlayerClassHandler calls another event
 	/// </summary>
 
-	private void Start()
+	private void Awake()
 	{
+		Instance = this;
 		Initilize();
 	}
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerClass;
+		SaveManager.RestoreData += ReloadPlayerClass;
 
 		EventManager.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
 		EventManager.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
@@ -84,7 +85,7 @@ public class ClassesUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerClass;
+		SaveManager.RestoreData -= ReloadPlayerClass;
 
 		EventManager.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
 		EventManager.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
@@ -101,8 +102,6 @@ public class ClassesUi : MonoBehaviour
 
 	private void Initilize()
 	{
-		Instance = this;
-
 		SetSkillTreeIndexes(knightClassPanel);
 		SetSkillTreeIndexes(warriorClassPanel);
 		SetSkillTreeIndexes(rogueClassPanel);
@@ -127,15 +126,17 @@ public class ClassesUi : MonoBehaviour
 		OnNewAbilityUnlock?.Invoke(ability);
 	}
 
-	public void UpdateNodesInClassTree(PlayerClassHandler playerClassHandler)
+	public void UpdateNodesInClassTree(EntityStats playerStats)
 	{
-		OnClassNodeUnlocks?.Invoke(playerClassHandler);
+		OnClassNodeUnlocks?.Invoke(playerStats);
 	}
 
 	//reload player class
 	public void ReloadPlayerClass()
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
+
+		Debug.Log("test: " + SaveManager.Instance.GameData.currentPlayerClass);
 
 		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
 

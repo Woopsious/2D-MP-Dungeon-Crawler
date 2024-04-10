@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class EntityClassHandler : MonoBehaviour
@@ -22,15 +23,14 @@ public class EntityClassHandler : MonoBehaviour
 	public event Action<SOClassStatBonuses> OnStatUnlock;
 	public event Action<SOClassAbilities> OnAbilityUnlock;
 
-	private void Start()
-	{
-		Initilize();
-	}
 
-	protected void Initilize()
+	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
-
+		Initilize();
+	}
+	protected virtual void Initilize()
+	{
 		if (GetComponent<PlayerController>() == null)
 			SetRandomClass();
 	}

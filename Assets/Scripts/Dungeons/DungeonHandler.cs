@@ -11,12 +11,12 @@ public class DungeonHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += SetPlayerSpawn;
+		SaveManager.RestoreData += SetPlayerSpawn;
 	}
 
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= SetPlayerSpawn;
+		SaveManager.RestoreData -= SetPlayerSpawn;
 	}
 
 	public void SetPlayerSpawn()

@@ -81,7 +81,7 @@ public class PlayerController : MonoBehaviour
 			playerInputs = new PlayerInputActions();
 		playerInputs.Enable();
 
-		SaveManager.OnGameLoad += ReloadPlayerInfo;
+		SaveManager.RestoreData += ReloadPlayerInfo;
 		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 	private void OnDisable()
@@ -95,7 +95,7 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities -= OnUseQueuedAbility;
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
-		SaveManager.OnGameLoad -= ReloadPlayerInfo;
+		SaveManager.RestoreData -= ReloadPlayerInfo;
 		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 

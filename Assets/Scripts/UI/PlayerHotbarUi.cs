@@ -72,9 +72,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void Awake()
 	{
 		Instance = this;
-	}
-	private void Start()
-	{
 		Initilize();
 	}
 	private void Update()

@@ -34,7 +34,7 @@ public class PlayerJournalUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerBounties;
+		SaveManager.RestoreData += ReloadPlayerBounties;
 
 		EventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
 		EventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
@@ -44,7 +44,7 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerBounties;
+		SaveManager.RestoreData -= ReloadPlayerBounties;
 
 		EventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
 		EventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;

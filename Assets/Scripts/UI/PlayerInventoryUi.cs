@@ -52,14 +52,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;
-	}
-	private void Start()
-	{
 		Initilize();
 	}
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerInventory;
+		SaveManager.RestoreData += ReloadPlayerInventory;
 		ClassesUi.OnClassReset += OnClassReset;
 		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
 
@@ -81,7 +78,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerInventory;
+		SaveManager.RestoreData -= ReloadPlayerInventory;
 		ClassesUi.OnClassReset -= OnClassReset;
 		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 

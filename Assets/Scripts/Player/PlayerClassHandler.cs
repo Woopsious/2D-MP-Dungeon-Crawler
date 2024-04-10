@@ -5,11 +5,6 @@ using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
 {
-	private void Start()
-	{
-		Initilize();
-	}
-
 	private void OnEnable()
 	{
 		ClassesUi.OnClassChange += OnClassChanges;
@@ -38,9 +33,11 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void UpdateClassTreeUi()
 	{
+		Debug.Log("classes ref: " + ClassesUi.Instance);
+
 		if (ClassesUi.Instance == null)
 			Debug.LogError("ClassesUi component instance not set, ignore if intentional");
 		else
-			ClassesUi.Instance.UpdateNodesInClassTree(this);
+			ClassesUi.Instance.UpdateNodesInClassTree(GetComponent<EntityStats>());
 	}
 }

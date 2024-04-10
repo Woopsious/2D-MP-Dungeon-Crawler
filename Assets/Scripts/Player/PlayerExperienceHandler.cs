@@ -24,12 +24,12 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerExp;
+		SaveManager.RestoreData += ReloadPlayerExp;
 	}
 
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerExp;
+		SaveManager.RestoreData -= ReloadPlayerExp;
 	}
 
 	/// <summary>

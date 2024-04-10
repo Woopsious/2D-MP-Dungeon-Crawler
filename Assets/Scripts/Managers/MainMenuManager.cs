@@ -16,20 +16,6 @@ public class MainMenuManager : MonoBehaviour
 		Instance = this;
 	}
 
-	private void OnEnable()
-	{
-		GameManager.OnSceneChange += ShowClassSelectionOnNewGameStart;
-	}
-	private void OnDisable()
-	{
-		GameManager.OnSceneChange -= ShowClassSelectionOnNewGameStart;
-	}
-
-	private void ShowClassSelectionOnNewGameStart(bool isNewGame)
-	{
-		//PlayerClassesUi.Instance.gameObject
-	}
-
 	//button actions
 	public void ButtonFunctionNotSetUp()
 	{

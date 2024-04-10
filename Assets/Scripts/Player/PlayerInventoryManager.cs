@@ -35,7 +35,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		if (debugSpawnStartingItems)
+		if (GameManager.isNewGame)
 		{
 			SpawnStartingItems();
 			UpdateGoldAmount(startingGold);
@@ -44,7 +44,7 @@ public class PlayerInventoryManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.OnGameLoad += ReloadPlayerInventory;
+		SaveManager.RestoreData += ReloadPlayerInventory;
 		InventorySlotUi.OnItemSellEvent += OnItemSell;
 		InventorySlotUi.OnItemTryBuyEvent += OnItemTryBuy;
 
@@ -54,7 +54,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.OnGameLoad -= ReloadPlayerInventory;
+		SaveManager.RestoreData -= ReloadPlayerInventory;
 		InventorySlotUi.OnItemSellEvent -= OnItemSell;
 		InventorySlotUi.OnItemTryBuyEvent -= OnItemTryBuy;
 
@@ -116,16 +116,8 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 
-		if (!hasRecievedStartingItems)
-		{
-			UpdateGoldAmount(startingGold);
-			SpawnStartingItems();
-		}
-		else
-		{
-			UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
-			ReloadActiveQuests();
-		}
+		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
+		ReloadActiveQuests();
 	}
 
 	//player gold

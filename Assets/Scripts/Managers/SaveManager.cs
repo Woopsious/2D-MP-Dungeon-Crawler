@@ -13,7 +13,7 @@ public class SaveManager : MonoBehaviour
 {
 	public static SaveManager Instance;
 
-	public static event Action OnGameLoad; //event for data that needs to be restored
+	public static event Action RestoreData; //event for data that needs to be restored
 
 	[SerializeReference] public GameData GameData = new GameData();
 	[SerializeReference] public SlotData SlotData = new SlotData();
@@ -36,22 +36,13 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		//GameManager.OnSceneChange += OnGameReload;
-		GameManager.OnSceneChange += AutoSaveData;
-		SceneManager.sceneLoaded += OnGameReload;
+		GameManager.OnSceneChangeStart += AutoSaveData;
+		GameManager.OnSceneChangeFinish += AutoLoadData;
 	}
 	private void OnDisable()
 	{
-		//GameManager.OnSceneChange -= OnGameReload;
-		GameManager.OnSceneChange -= AutoSaveData;
-		SceneManager.sceneLoaded -= OnGameReload;
-	}
-	private void OnGameReload(Scene scene, LoadSceneMode mode)
-	{
-		//may need checks here to see if data does need to be reloaded but
-		//might not need to due to it being event based and refs arnt hard coded
-		Debug.Log("loaded scene: " + scene.name);
-		OnGameLoad?.Invoke();
+		GameManager.OnSceneChangeStart -= AutoSaveData;
+		GameManager.OnSceneChangeFinish -= AutoLoadData;
 	}
 
 	public void ReloadSaveSlots(GameObject saveSlotContainer)
@@ -117,9 +108,10 @@ public class SaveManager : MonoBehaviour
 		SlotData.level = Utilities.GetRandomNumber(50).ToString();
 		SlotData.date = System.DateTime.Now.ToString();
 	}
-	public void AutoSaveData(bool isNewGame)
+	public void AutoSaveData()
 	{
 		Debug.Log("Saving Data");
+		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	public void AutoLoadData()
@@ -141,6 +133,7 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadGameData(string directory)
 	{
+		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
@@ -177,7 +170,7 @@ public class SaveManager : MonoBehaviour
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		GameData = JsonUtility.FromJson<GameData>(inventoryData);
 
-		OnGameLoad?.Invoke();
+		RestoreData?.Invoke();
 	}
 	private void DeleteJsonFile(string directory)
 	{
