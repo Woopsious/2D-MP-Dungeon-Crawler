@@ -308,7 +308,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		transactionInfoText.text = "Item Sold";
 		slot.AddItemToSlot(item);
 	}
-	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotUi slot)
+	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotUi newSlot)
 	{
 		Debug.Log("confirm buy");
 
@@ -316,9 +316,9 @@ public class PlayerInventoryUi : MonoBehaviour
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 		transactionInfoText.text = "Item Brought";
 
-		slot.AddItemToSlot(item);
+		newSlot.AddItemToSlot(item);
 	}
-	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotUi slot, string reason)
+	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotUi oldSlot, string reason)
 	{
 		Debug.Log("cancel buy");
 
@@ -326,7 +326,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 		transactionInfoText.text = reason;
 
-		slot.AddItemToSlot(item);
+		oldSlot.AddItemToSlot(item);
 	}
 
 	//adding new item to ui

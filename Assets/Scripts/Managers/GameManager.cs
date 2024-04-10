@@ -52,10 +52,10 @@ public class GameManager : MonoBehaviour
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
+		OnSceneChange?.Invoke(isNewGame);
 
 		while (!asyncLoad.isDone)
 			yield return null;
-		OnSceneChange?.Invoke(isNewGame);
 	}
 
 	public void PauseGame()

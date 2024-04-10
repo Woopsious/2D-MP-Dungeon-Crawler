@@ -82,6 +82,7 @@ public class PlayerController : MonoBehaviour
 		playerInputs.Enable();
 
 		SaveManager.OnGameLoad += ReloadPlayerInfo;
+		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 	private void OnDisable()
 	{
@@ -95,6 +96,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 		SaveManager.OnGameLoad -= ReloadPlayerInfo;
+		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 
 	private void Update()
@@ -112,6 +114,11 @@ public class PlayerController : MonoBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
+	}
+	private void SetSpawnPoint(Vector2 portal)
+	{
+		Debug.Log("setting player spawn to: " + portal);
+		this.transform.position = portal;
 	}
 
 	private void PlayerMovement()

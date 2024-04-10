@@ -64,6 +64,8 @@ public static class EventManager
 		OnPlayerStatChangeEvent?.Invoke(playerStats);
 	}
 
+
+
 	public static event Action OnShowPlayerInventoryEvent;
 	public static void ShowPlayerInventory()
 	{

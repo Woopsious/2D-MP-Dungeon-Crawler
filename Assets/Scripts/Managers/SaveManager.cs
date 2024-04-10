@@ -3,8 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
+using UnityEditor.SearchService;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
+using Scene = UnityEngine.SceneManagement.Scene;
 
 public class SaveManager : MonoBehaviour
 {
@@ -33,16 +36,21 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		GameManager.OnSceneChange += OnGameReLoad;
+		//GameManager.OnSceneChange += OnGameReload;
+		GameManager.OnSceneChange += AutoSaveData;
+		SceneManager.sceneLoaded += OnGameReload;
 	}
 	private void OnDisable()
 	{
-		GameManager.OnSceneChange -= OnGameReLoad;
+		//GameManager.OnSceneChange -= OnGameReload;
+		GameManager.OnSceneChange -= AutoSaveData;
+		SceneManager.sceneLoaded -= OnGameReload;
 	}
-	private void OnGameReLoad(bool isNewGame)
+	private void OnGameReload(Scene scene, LoadSceneMode mode)
 	{
 		//may need checks here to see if data does need to be reloaded but
 		//might not need to due to it being event based and refs arnt hard coded
+		Debug.Log("loaded scene: " + scene.name);
 		OnGameLoad?.Invoke();
 	}
 
@@ -109,9 +117,14 @@ public class SaveManager : MonoBehaviour
 		SlotData.level = Utilities.GetRandomNumber(50).ToString();
 		SlotData.date = System.DateTime.Now.ToString();
 	}
-	public void AutoSaveData()
+	public void AutoSaveData(bool isNewGame)
 	{
+		Debug.Log("Saving Data");
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
+	}
+	public void AutoLoadData()
+	{
+		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	//directory checks/creation
 	public void SaveGameData(string directory)
@@ -186,6 +199,7 @@ public class SaveManager : MonoBehaviour
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
 	private void SavePlayerInfoData()
 	{
+		if (FindObjectOfType<PlayerController>() == null) return;
 		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
 
 		SlotData.name = Utilities.GetRandomNumber(1000).ToString();

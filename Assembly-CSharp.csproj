@@ -112,6 +112,7 @@
     <Compile Include="Assets\Scripts\UI\QuestSlotsUi.cs" />
     <Compile Include="Assets\Scripts\UI\ClassesUi.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
+    <Compile Include="Assets\Scripts\Dungeons\DungeonHandler.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
