@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using UnityEditor.Experimental.GraphView;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.AI;
@@ -50,18 +51,6 @@ public class PlayerController : MonoBehaviour
 	{
 		Initilize();
 	}
-	public void Initilize()
-	{
-		playerInputs = new PlayerInputActions();
-		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
-		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
-		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		animator = GetComponent<Animator>();
-		playerCamera.transform.parent = null;
-	}
-
 	private void Start()
 	{
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
@@ -71,10 +60,8 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities += OnUseQueuedAbility;
 		OnCancelQueuedAbilities += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities += OnCancelQueuedAbility;
-
-		playerStats.entityLevel = 20;
-		playerStats.CalculateBaseStats();
 	}
+
 	private void OnEnable()
 	{
 		if (playerInputs == null)
@@ -82,7 +69,7 @@ public class PlayerController : MonoBehaviour
 		playerInputs.Enable();
 
 		SaveManager.RestoreData += ReloadPlayerInfo;
-		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
+		//DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 	private void OnDisable()
 	{
@@ -96,7 +83,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 		SaveManager.RestoreData -= ReloadPlayerInfo;
-		DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
+		//DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
 	}
 
 	private void Update()
@@ -108,6 +95,21 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 		PlayerMovement();
 	}
+
+	public void Initilize()
+	{
+		playerInputs = new PlayerInputActions();
+		playerStats = GetComponent<EntityStats>();
+		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
+		playerCamera.transform.parent = null;
+
+		playerStats.entityLevel = 20;
+		playerStats.CalculateBaseStats();
+	}
 	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
@@ -118,7 +120,8 @@ public class PlayerController : MonoBehaviour
 	private void SetSpawnPoint(Vector2 portal)
 	{
 		Debug.Log("setting player spawn to: " + portal);
-		this.transform.position = portal;
+		Debug.Log(gameObject);
+		transform.position = portal;
 	}
 
 	private void PlayerMovement()

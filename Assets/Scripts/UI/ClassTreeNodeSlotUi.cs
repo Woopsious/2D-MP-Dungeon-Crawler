@@ -197,9 +197,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	//node update checks
 	public void CheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
 	{
-		Debug.Log("player stats: " + playerStats);
-		Debug.Log("player level: " + playerStats.entityLevel);
-
 		if (isAlreadyUnlocked)
 		{
 			LockNode();

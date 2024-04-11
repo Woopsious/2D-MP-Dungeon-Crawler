@@ -113,6 +113,7 @@ public class EntityStats : MonoBehaviour
 
 		CalculateBaseStats();
 		int numOfTries = 0;
+		if (GetComponent<PlayerController>() != null) return;
 		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
 	}
 

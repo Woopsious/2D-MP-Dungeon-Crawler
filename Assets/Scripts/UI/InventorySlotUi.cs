@@ -171,8 +171,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		//ability checks
 		if (item.itemType == InventoryItemUi.ItemType.isAbility)
 		{
-			//if (item.itemType == InventoryItemUi.ItemType.isAbility && slotType == SlotType.ability)
-				//return false;
 			if (item.itemType == InventoryItemUi.ItemType.isAbility && slotType == SlotType.equippedAbilities)
 				return true;
 			else
@@ -182,7 +180,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		//shop checks
 		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
 		{
-			Debug.Log("shop slot logic");
 			if (IsShopSlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
 				return true;
 			if (IsPlayerInventorySlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
@@ -192,10 +189,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		//equipment class restriction/level checks
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
-		{
-			Debug.Log("inventory slots logic");
 			return true;
-		}
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)

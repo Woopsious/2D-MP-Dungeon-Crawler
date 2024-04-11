@@ -11750,4 +11750,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be5d7c0431f09fc4ba18239b7e44c863, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerPrefab: {fileID: 1405763340389273497, guid: e799ccb934566574cb460f5dbb57b669, type: 3}
   dungeonPortalsList: []

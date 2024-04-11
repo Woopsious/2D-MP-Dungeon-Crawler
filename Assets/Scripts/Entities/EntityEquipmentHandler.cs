@@ -66,7 +66,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	public IEnumerator SpawnEntityEquipment(int numOfTries)
 	{
 		if (numOfTries >= 5 || isPlayerEquipment)
-			Debug.LogWarning("Unable to Spawn Entity Equipment");
+			Debug.LogError("Unable to Spawn Entity Equipment");
 
 		else if (entityStats == null)
 		{
@@ -75,9 +75,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			StartCoroutine(SpawnEntityEquipment(numOfTries));
 		}
 		else
-		{
 			EquipRandomItems();
-		}
 	}
 
 	//for entitys other then player to randomly equip items when they spawn in

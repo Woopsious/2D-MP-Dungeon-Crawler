@@ -18,8 +18,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public Image uiItemImage;
 	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
-	public Transform parentAfterDrag;
-	private float timeToWait = 0.5f;
+	[HideInInspector] public Transform parentAfterDrag;
 
 	[Header("Item Base Ref")]
 	public SOClassAbilities abilityBaseRef;

@@ -349,9 +349,8 @@ public class PlayerInventoryUi : MonoBehaviour
 			InventorySlotUi inventroySlot = InventorySlots[i].GetComponent<InventorySlotUi>();
 
 			if (!inventroySlot.IsSlotEmpty())
-			{
 				AddToStackCount(inventroySlot, newItem);
-			}
+
 			else if (newItem.currentStackCount > 0)
 			{
 				SpawnNewItemInInventory(newItem);

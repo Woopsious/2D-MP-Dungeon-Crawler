@@ -136,8 +136,6 @@ public class ClassesUi : MonoBehaviour
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
 
-		Debug.Log("test: " + SaveManager.Instance.GameData.currentPlayerClass);
-
 		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
 
 		if (currentPlayerClass == knightClass)

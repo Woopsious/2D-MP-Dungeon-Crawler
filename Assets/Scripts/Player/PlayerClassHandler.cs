@@ -33,8 +33,6 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void UpdateClassTreeUi()
 	{
-		Debug.Log("classes ref: " + ClassesUi.Instance);
-
 		if (ClassesUi.Instance == null)
 			Debug.LogError("ClassesUi component instance not set, ignore if intentional");
 		else

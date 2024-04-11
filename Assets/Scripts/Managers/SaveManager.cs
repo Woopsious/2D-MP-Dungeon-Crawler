@@ -110,7 +110,6 @@ public class SaveManager : MonoBehaviour
 	}
 	public void AutoSaveData()
 	{
-		Debug.Log("Saving Data");
 		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
