@@ -35,7 +35,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	}
 	public void Start()
 	{
-		if (GameManager.isNewGame)
+		if (GameManager.isNewGame || debugSpawnStartingItems)
 		{
 			SpawnStartingItems();
 			UpdateGoldAmount(startingGold);

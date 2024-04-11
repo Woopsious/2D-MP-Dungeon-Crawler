@@ -335,12 +335,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 			if (inventorySlot.IsSlotEmpty())
 			{
-				item.inventorySlotIndex = i;
-				item.transform.SetParent(inventorySlot.transform);
-				item.SetTextColour();
-				inventorySlot.itemInSlot = item;
-				inventorySlot.UpdateSlotSize();
-
+				inventorySlot.AddItemToSlot(item);
 				return;
 			}
 		}

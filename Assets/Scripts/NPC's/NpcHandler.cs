@@ -26,7 +26,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public TMP_Text NpcTypeText;
 	public TMP_Text interactWithText;
 
-	private void Start()
+	private void Awake()
 	{
 		Initilize();
 	}

@@ -74,7 +74,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else //swapping items
 			{
 				if (!oldInventorySlot.IsCorrectSlotType(itemInSlot)) return;
-				SwapItemInSlot(item, oldInventorySlot);
+				oldInventorySlot.AddItemToSlot(itemInSlot);
+				AddItemToSlot(item);
 			}
 		}
 		else if (IsShopSlot() || oldInventorySlot.IsShopSlot())
@@ -96,6 +97,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	{
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
+		item.SetTextColour();
+
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
@@ -106,14 +109,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
-	}
-	private void SwapItemInSlot(InventoryItemUi item, InventorySlotUi oldInventorySlot)
-	{
-		itemInSlot.transform.SetParent(item.parentAfterDrag, false);
-		itemInSlot.inventorySlotIndex = item.inventorySlotIndex;
-		oldInventorySlot.itemInSlot = itemInSlot;
-		oldInventorySlot.UpdateSlotSize();
-		oldInventorySlot.CheckIfItemInEquipmentSlot(oldInventorySlot.itemInSlot);
 	}
 	public void CheckIfItemInEquipmentSlot(InventoryItemUi item)
 	{
@@ -187,6 +182,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		//shop checks
 		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
 		{
+			Debug.Log("shop slot logic");
 			if (IsShopSlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
 				return true;
 			if (IsPlayerInventorySlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
@@ -196,7 +192,10 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		//equipment class restriction/level checks
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
+		{
+			Debug.Log("inventory slots logic");
 			return true;
+		}
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
