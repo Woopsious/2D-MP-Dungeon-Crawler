@@ -64,8 +64,7 @@ public static class EventManager
 		OnPlayerStatChangeEvent?.Invoke(playerStats);
 	}
 
-
-
+	//player ui
 	public static event Action OnShowPlayerInventoryEvent;
 	public static void ShowPlayerInventory()
 	{
@@ -90,5 +89,39 @@ public static class EventManager
 	public static void ShowPlayerJournal()
 	{
 		OnShowPlayerJournalEvent?.Invoke();
+	}
+
+	//npcs ui
+	public static event Action<NpcHandler> OnShowNpcJournal;
+	public static void ShowNpcJournal(NpcHandler npc)
+	{
+		OnShowNpcJournal?.Invoke(npc);
+	}
+	public static event Action<NpcHandler> OnHideNpcJournal;
+	public static void HideNpcJournal(NpcHandler npc)
+	{
+		OnHideNpcJournal?.Invoke(npc);
+	}
+	public static event Action<NpcHandler> OnShowNpcShopInventory;
+	public static void ShowNpcShopInventory(NpcHandler npc)
+	{
+		OnShowNpcShopInventory?.Invoke(npc);
+	}
+	public static event Action<NpcHandler> OnHideNpcShopInventory;
+	public static void HideNpcShopInventory(NpcHandler npc)
+	{
+		OnHideNpcShopInventory?.Invoke(npc);
+	}
+
+	//portal ui
+	public static event Action<PortalHandler> OnShowPortalUi;
+	public static void ShowPortalUi(PortalHandler portal)
+	{
+		OnShowPortalUi?.Invoke(portal);
+	}
+	public static event Action<PortalHandler> OnHidePortalUi;
+	public static void HidePortalUi(PortalHandler portal)
+	{
+		OnHidePortalUi?.Invoke(portal);
 	}
 }

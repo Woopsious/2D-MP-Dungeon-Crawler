@@ -41,6 +41,9 @@ public class PlayerJournalUi : MonoBehaviour
 		EventManager.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
 		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
 		EventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
+
+		EventManager.OnShowNpcJournal += ShowNpcJournal;
+		EventManager.OnHideNpcJournal += HideNpcJournal;
 	}
 	private void OnDisable()
 	{
@@ -51,6 +54,9 @@ public class PlayerJournalUi : MonoBehaviour
 		EventManager.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
 		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
 		EventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
+
+		EventManager.OnShowNpcJournal -= ShowNpcJournal;
+		EventManager.OnHideNpcJournal -= HideNpcJournal;
 	}
 
 	private void ReloadPlayerBounties()
@@ -109,12 +115,19 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 
 	//npc Journal
-	public void ShowNpcJournal()
+	public void ShowNpcJournal(NpcHandler npc)
 	{
+		foreach (QuestSlotsUi quest in npc.avalableQuestList)
+			quest.transform.SetParent(avalableQuestContainer.transform);
+
 		npcJournalPanalUi.SetActive(true);
 	}
-	public void HideNpcJournal()
+	public void HideNpcJournal(NpcHandler npc)
 	{
+		foreach (QuestSlotsUi quest in npc.avalableQuestList)
+			quest.transform.SetParent(npc.npcContainer.transform);
+
 		npcJournalPanalUi.SetActive(false);
+		HidePlayerJournal();
 	}
 }

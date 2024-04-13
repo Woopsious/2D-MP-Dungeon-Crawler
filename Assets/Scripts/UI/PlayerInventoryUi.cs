@@ -75,6 +75,9 @@ public class PlayerInventoryUi : MonoBehaviour
 		EventManager.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
 		EventManager.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
 		EventManager.OnShowPlayerJournalEvent += HideLearntAbilities;
+
+		EventManager.OnShowNpcShopInventory += ShowNpcShop;
+		EventManager.OnHideNpcShopInventory += HideNpcShop;
 	}
 	private void OnDisable()
 	{
@@ -97,6 +100,9 @@ public class PlayerInventoryUi : MonoBehaviour
 		EventManager.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
 		EventManager.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
 		EventManager.OnShowPlayerJournalEvent -= HideLearntAbilities;
+
+		EventManager.OnShowNpcShopInventory -= ShowNpcShop;
+		EventManager.OnHideNpcShopInventory -= HideNpcShop;
 	}
 	private void Initilize()
 	{
@@ -408,16 +414,35 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//npc shop
-	public void ShowNpcShop()
+	public void ShowNpcShop(NpcHandler npc)
 	{
+		for (int i = 0; i < npc.avalableShopItemsList.Count; i++)
+		{
+			InventorySlotUi slot = shopSlots[i].GetComponent<InventorySlotUi>();
+			slot.AddItemToSlot(npc.avalableShopItemsList[i]);
+		}
+
 		transactionTrackerText.text = "Gold: 0";
 		transactionInfoText.text = "No Item Sold/Brought";
 		npcShopPanalUi.SetActive(true);
 		UpdatePlayerToolTips(shopSlots);
 	}
-	public void HideNpcShop()
+	public void HideNpcShop(NpcHandler npc)
 	{
+		npc.avalableShopItemsList.Clear();
+
+		foreach (GameObject obj in shopSlots)
+		{
+			InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+			if (slot.IsSlotEmpty()) continue;
+
+			npc.avalableShopItemsList.Add(slot.itemInSlot); //add new items
+			slot.itemInSlot.transform.SetParent(npc.npcContainer.transform);
+			slot.RemoveItemFromSlot();
+		}
+
 		npcShopPanalUi.SetActive(false);
+		HideInventory();
 	}
 
 	private void UpdatePlayerToolTips(List<GameObject> objList)

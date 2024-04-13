@@ -39,3 +39,9 @@ public class DungeonHandler : MonoBehaviour
 		//OnSetPlayerSpawn?.Invoke(portalSpawnPoint.transform.position);
 	}
 }
+
+[System.Serializable]
+public class DungeonStatModifier
+{
+
+}

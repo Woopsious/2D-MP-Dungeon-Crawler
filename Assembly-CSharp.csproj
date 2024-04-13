@@ -70,6 +70,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityClassHandler.cs" />
+    <Compile Include="Assets\Scripts\UI\DungeonSlotUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassStatBonuses.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveSlotManager.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerDetection.cs" />
@@ -90,6 +91,7 @@
     <Compile Include="Assets\Scripts\Managers\EventManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryItemUi.cs" />
+    <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
