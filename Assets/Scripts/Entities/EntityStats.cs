@@ -51,7 +51,6 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
-	//public event Action<EntityStats> OnStatChangeEvent;
 	public event Action<GameObject> OnDeathEvent;
 
 	private void Start()

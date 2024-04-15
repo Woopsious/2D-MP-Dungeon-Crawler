@@ -39,18 +39,21 @@ public class PortalHandler : MonoBehaviour, IInteractable
 			int i = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 2); //(not including hub and main menu scene)
 			if (i == 0)
 			{
-				GameManager.Instance.LoadDungeonOne();
+				EventManager.ShowPortalUi(this);
+				//GameManager.Instance.LoadDungeonOne();
 				//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.dungeonLayoutOneName, false));
 			}
 			else if (i == 1)
 			{
-				GameManager.Instance.LoadDungeonTwo();
+				EventManager.ShowPortalUi(this);
+				//GameManager.Instance.LoadDungeonTwo();
 				//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.dungeonLayoutTwoName, false));
 			}
 		}
 		else
 		{
-			GameManager.Instance.LoadHubArea(false);
+			EventManager.ShowPortalUi(this);
+			//GameManager.Instance.LoadHubArea(false);
 			//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.hubAreaName, false));
 		}
 	}

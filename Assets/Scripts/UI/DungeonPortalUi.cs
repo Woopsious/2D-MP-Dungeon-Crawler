@@ -13,7 +13,9 @@ public class DungeonPortalUi : MonoBehaviour
 	public TMP_Text dungeonListInfoText;
 	public GameObject portalEnterenceUi;
 	public GameObject activeDungeonListPanel;
+	public GameObject activeDungeonListContent;
 	public GameObject savedDungeonListPanel;
+	public GameObject savedDungeonListContent;
 	public GameObject portalExitUi;
 
 	public List<DungeonSlotUi> activeDungeonLists = new List<DungeonSlotUi>();
@@ -22,29 +24,91 @@ public class DungeonPortalUi : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
+		Initilize();
 	}
 
 	private void OnEnable()
 	{
 		EventManager.OnShowPortalUi += ShowPortalUi;
 		EventManager.OnHidePortalUi += HidePortalUi;
+
+		DungeonSlotUi.OnDungeonSave += OnSaveDungeon;
+		DungeonSlotUi.OnDungeonDelete += OnDeleteDungeon;
 	}
 	private void OnDisable()
 	{
 		EventManager.OnShowPortalUi -= ShowPortalUi;
 		EventManager.OnHidePortalUi -= HidePortalUi;
+
+		DungeonSlotUi.OnDungeonSave -= OnSaveDungeon;
+		DungeonSlotUi.OnDungeonDelete -= OnDeleteDungeon;
+	}
+
+	private void Initilize()
+	{
+		GenerateNewDungeons();
+	}
+	private void GenerateNewDungeons()
+	{
+		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.hubAreaName)) return; //if not hub area return
+
+		activeDungeonLists.Clear();
+
+		for (int i = 0; i < 5; i++)
+		{
+			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
+			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			dungeonSlot.Initilize();
+			activeDungeonLists.Add(dungeonSlot);
+		}
+	}	
+	public void GenerateNewRandomDungeonsButton()
+	{
+		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
+		{
+			activeDungeonLists[i].DeleteDungeon();
+		}
+
+		GenerateNewDungeons();
+	}
+
+	//Events
+	public void OnSaveDungeon(DungeonSlotUi dungeonSlot)
+	{
+		dungeonSlot.transform.SetParent(savedDungeonListContent.transform);
+		dungeonSlot.saveDungeonButtonObj.SetActive(false);
+		dungeonSlot.deleteDungeonButtonObj.SetActive(true);
+
+		activeDungeonLists.Remove(dungeonSlot);
+		savedDungeonLists.Add(dungeonSlot);
+	}
+	public void OnDeleteDungeon(DungeonSlotUi dungeonSlot)
+	{
+		activeDungeonLists.Remove(dungeonSlot);
+		savedDungeonLists.Remove(dungeonSlot);
+
+		Destroy(dungeonSlot.gameObject);
 	}
 
 	//UI CHANGES
 	public void ShowPortalUi(PortalHandler portal)
 	{
-		if (portal.isDungeonEnterencePortal)
+		if (portalPanelUi.activeInHierarchy)
 		{
-			portalEnterenceUi.SetActive(true);
-			ShowActiveDungeonListUi();
+			HidePortalUi();
 		}
 		else
-			portalExitUi.SetActive(true);
+		{
+			portalPanelUi.SetActive(true);
+
+			if (portal.isDungeonEnterencePortal)
+			{
+				portalEnterenceUi.SetActive(true);
+				ShowActiveDungeonListUi();
+			}
+			else
+				portalExitUi.SetActive(true);
+		}
 	}
 	public void ShowActiveDungeonListUi() //button click
 	{
@@ -58,8 +122,9 @@ public class DungeonPortalUi : MonoBehaviour
 		activeDungeonListPanel.SetActive(false);
 		savedDungeonListPanel.SetActive(true);
 	}
-	public void HidePortalUi(PortalHandler portal)
+	public void HidePortalUi()
 	{
+		portalPanelUi.SetActive(false);
 		portalEnterenceUi.SetActive(false);
 		portalExitUi.SetActive(false);
 	}

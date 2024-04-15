@@ -389,9 +389,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SaveSlotManager, Assembly-CSharp
-        m_MethodName: SaveGame
+      - m_Target: {fileID: 3286049670402901301}
+        m_TargetAssemblyTypeName: DungeonSlotUi, Assembly-CSharp
+        m_MethodName: SaveDungeon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -522,9 +522,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SaveSlotManager, Assembly-CSharp
-        m_MethodName: DeleteGame
+      - m_Target: {fileID: 3286049670402901301}
+        m_TargetAssemblyTypeName: DungeonSlotUi, Assembly-CSharp
+        m_MethodName: EnterDungeon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -627,6 +627,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6980d635d0df6294d8c30a909ad06f7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  saveDungeonButtonObj: {fileID: 4041248023949442013}
+  deleteDungeonButtonObj: {fileID: 5371224632907642263}
   dungeonDifficultyText: {fileID: 2634872586238428159}
   dungeonModifiersText: {fileID: 444695567295311962}
   isDungeonSaved: 0
@@ -755,9 +757,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: SaveSlotManager, Assembly-CSharp
-        m_MethodName: DeleteGame
+      - m_Target: {fileID: 3286049670402901301}
+        m_TargetAssemblyTypeName: DungeonSlotUi, Assembly-CSharp
+        m_MethodName: DeleteDungeon
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

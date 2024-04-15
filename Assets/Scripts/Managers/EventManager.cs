@@ -119,9 +119,9 @@ public static class EventManager
 	{
 		OnShowPortalUi?.Invoke(portal);
 	}
-	public static event Action<PortalHandler> OnHidePortalUi;
-	public static void HidePortalUi(PortalHandler portal)
+	public static event Action OnHidePortalUi;
+	public static void HidePortalUi()
 	{
-		OnHidePortalUi?.Invoke(portal);
+		OnHidePortalUi?.Invoke();
 	}
 }
