@@ -101,12 +101,12 @@ public class DungeonPortalUi : MonoBehaviour
 	public void ShowPortalUi(PortalHandler portal)
 	{
 		if (portalPanelUi.activeInHierarchy)
-		{
 			HidePortalUi();
-		}
 		else
 		{
 			portalPanelUi.SetActive(true);
+			portalEnterenceUi.SetActive(false);
+			portalExitUi.SetActive(false);
 
 			if (portal.isDungeonEnterencePortal)
 			{
