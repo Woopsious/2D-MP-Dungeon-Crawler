@@ -62,6 +62,8 @@ public class DungeonPortalUi : MonoBehaviour
 			activeDungeonLists.Add(dungeonSlot);
 		}
 	}	
+
+	//button actions
 	public void GenerateNewRandomDungeonsButton()
 	{
 		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
@@ -70,6 +72,10 @@ public class DungeonPortalUi : MonoBehaviour
 		}
 
 		GenerateNewDungeons();
+	}
+	public void ReturnToHubButton()
+	{
+		GameManager.Instance.LoadHubArea(false);
 	}
 
 	//Events

@@ -66,28 +66,23 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		OnDeathEvent += playerExperienceHandler.AddExperience;
-		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
-
 		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
 		entityClassHandler.OnClassChange += OnClassChanges;
 		entityClassHandler.OnStatUnlock += OnStatUnlock;
 
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
+
+		//for mp needs to be a list of ExpHandlers for each player
+		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+		OnDeathEvent += playerExperienceHandler.AddExperience;
+		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
 	{
 		OnRecieveHealingEvent -= RecieveHealing;
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
-
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		OnDeathEvent -= playerExperienceHandler.AddExperience;
-		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 
 		PlayerJournalUi.OnQuestComplete -= UnSubToNewQuestAtRuntime;
 		PlayerJournalUi.OnQuestAbandon -= UnSubToNewQuestAtRuntime;
@@ -98,6 +93,11 @@ public class EntityStats : MonoBehaviour
 
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
+
+		//for mp needs to be a list of ExpHandlers for each player
+		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
+		OnDeathEvent -= playerExperienceHandler.AddExperience;
+		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
 	private void Update()
