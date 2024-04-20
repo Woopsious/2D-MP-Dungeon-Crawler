@@ -25,11 +25,13 @@ public class PlayerExperienceHandler : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerExp;
+		EventManager.OnDeathEvent += AddExperience;
 	}
 
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerExp;
+		EventManager.OnDeathEvent -= AddExperience;
 	}
 
 	/// <summary>

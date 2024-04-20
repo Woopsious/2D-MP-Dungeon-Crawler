@@ -211,8 +211,6 @@ public class QuestSlotsUi : MonoBehaviour
 		{
 			if (entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
 				currentAmount++;
-
-			Debug.Log("kill amount: " + currentAmount);
 		}
 
 		questTrackerUi.text = $"{currentAmount} / {amount} Killed";

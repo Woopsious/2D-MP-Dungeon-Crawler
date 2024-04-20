@@ -51,8 +51,6 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
-	//public event Action<GameObject> OnDeathEvent;
-
 	private void Start()
 	{
 		Initilize();
@@ -72,7 +70,6 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		//OnDeathEvent += playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
@@ -90,7 +87,6 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		//OnDeathEvent -= playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 

@@ -266,7 +266,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
-		if (selectedTarget.gameObject != obj) return;
+		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
 
 		if (selectedTargetUi.activeInHierarchy)
 			selectedTargetUi.SetActive(false);
