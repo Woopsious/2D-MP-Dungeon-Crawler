@@ -12,15 +12,15 @@ public class DungeonHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		//SceneManager.sceneLoaded += SetPlayerSpawn;
+		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
 	}
 
 	private void OnDisable()
 	{
-		//SceneManager.sceneLoaded += SetPlayerSpawn;
+		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
 	}
 
-	public void SetPlayerSpawn(Scene scene, LoadSceneMode mode)
+	public void SetPlayerSpawn()
 	{
 		if (dungeonPortalsList.Count <= 0) return;
 

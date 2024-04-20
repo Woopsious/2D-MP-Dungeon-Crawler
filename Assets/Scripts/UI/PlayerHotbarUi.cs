@@ -86,6 +86,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		EventManager.OnPlayerExpChangeEvent += OnExperienceChange;
 		EventManager.OnPlayerHealthChangeEvent += OnHealthChange;
 		EventManager.OnPlayerManaChangeEvent += OnManaChange;
+
+		EventManager.OnDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
@@ -95,6 +97,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		EventManager.OnPlayerExpChangeEvent -= OnExperienceChange;
 		EventManager.OnPlayerHealthChangeEvent -= OnHealthChange;
 		EventManager.OnPlayerManaChangeEvent -= OnManaChange;
+
+		EventManager.OnDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
 	{
@@ -235,7 +239,6 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		if (selectedTarget != null)
 		{
-			selectedTarget.OnDeathEvent -= OnTargetDeathUnSelect;
 			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
 			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
 		}
@@ -243,7 +246,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTarget = entityStats;
 		selectedTargetUiImage.sprite = entityStats.entityBaseStats.sprite;
 		selectedTargetUiName.text = entityStats.entityBaseStats.entityName;
-		selectedTarget.OnDeathEvent += OnTargetDeathUnSelect;
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
 
@@ -255,23 +257,22 @@ public class PlayerHotbarUi : MonoBehaviour
 		float percentage = (float)currentValue / MaxValue;
 		selectedTargetHealthBarFiller.fillAmount = percentage;
 		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
-		Debug.Log("health fill amount %: " + percentage);
 	}
 	private void OnTargetManaChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		selectedTargetManaBarFiller.fillAmount = percentage;
 		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
-		Debug.Log("mana fill amount %: " + percentage);
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
+		if (selectedTarget.gameObject != obj) return;
+
 		if (selectedTargetUi.activeInHierarchy)
 			selectedTargetUi.SetActive(false);
 		if (!unSelectedTargetUi.activeInHierarchy)
 			unSelectedTargetUi.SetActive(true);
 
-		obj.GetComponent<EntityStats>().OnDeathEvent -= OnTargetDeathUnSelect;
 		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;
 		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnTargetManaChange;
 	}

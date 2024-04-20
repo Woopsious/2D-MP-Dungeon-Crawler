@@ -51,14 +51,11 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
-	public event Action<GameObject> OnDeathEvent;
+	//public event Action<GameObject> OnDeathEvent;
 
 	private void Start()
 	{
 		Initilize();
-
-		PlayerJournalUi.OnNewQuestAccepted += SubToNewQuestAtRuntime;
-		SubToActiveQuestsOnSpawn();
 	}
 	private void OnEnable()
 	{
@@ -75,7 +72,7 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		OnDeathEvent += playerExperienceHandler.AddExperience;
+		//OnDeathEvent += playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
@@ -83,9 +80,6 @@ public class EntityStats : MonoBehaviour
 		OnRecieveHealingEvent -= RecieveHealing;
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
-
-		PlayerJournalUi.OnQuestComplete -= UnSubToNewQuestAtRuntime;
-		PlayerJournalUi.OnQuestAbandon -= UnSubToNewQuestAtRuntime;
 
 		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
 		entityClassHandler.OnClassChange -= OnClassChanges;
@@ -96,7 +90,7 @@ public class EntityStats : MonoBehaviour
 
 		//for mp needs to be a list of ExpHandlers for each player
 		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		OnDeathEvent -= playerExperienceHandler.AddExperience;
+		//OnDeathEvent -= playerExperienceHandler.AddExperience;
 		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
@@ -144,7 +138,7 @@ public class EntityStats : MonoBehaviour
 	{
         if (isDestroyedInOneHit)
         {
-			OnDeathEvent.Invoke(gameObject);
+			EventManager.DeathEvent(gameObject);
 			return;
         }
 
@@ -201,7 +195,8 @@ public class EntityStats : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
-			OnDeathEvent?.Invoke(gameObject);
+			EventManager.DeathEvent(gameObject);
+			Debug.Log("entity died");
 			Destroy(gameObject);
 		}
 
@@ -322,21 +317,6 @@ public class EntityStats : MonoBehaviour
 		}
 
 		currentStatusEffects.Remove(statusEffect);
-	}
-
-	//sub to questEvents
-	private void SubToActiveQuestsOnSpawn()
-	{
-		foreach (QuestSlotsUi quest in PlayerJournalUi.Instance.activeQuests)
-			OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
-	}
-	private void SubToNewQuestAtRuntime(QuestSlotsUi quest)
-	{
-		OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
-	}
-	private void UnSubToNewQuestAtRuntime(QuestSlotsUi quest)
-	{
-		OnDeathEvent -= quest.OnEntityDeathCheckKillAmount;
 	}
 
 	/// <summary>

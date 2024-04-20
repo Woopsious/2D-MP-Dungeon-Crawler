@@ -69,7 +69,7 @@ public class PlayerController : MonoBehaviour
 		playerInputs.Enable();
 
 		SaveManager.RestoreData += ReloadPlayerInfo;
-		//DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
+		EventManager.OnDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
@@ -83,7 +83,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 		SaveManager.RestoreData -= ReloadPlayerInfo;
-		//DungeonHandler.OnSetPlayerSpawn += SetSpawnPoint;
+		EventManager.OnDeathEvent -= OnSelectedTargetDeath;
 	}
 
 	private void Update()
@@ -116,12 +116,6 @@ public class PlayerController : MonoBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
-	}
-	private void SetSpawnPoint(Vector2 portal)
-	{
-		Debug.Log("setting player spawn to: " + portal);
-		Debug.Log(gameObject);
-		transform.position = portal;
 	}
 
 	private void PlayerMovement()
@@ -159,19 +153,13 @@ public class PlayerController : MonoBehaviour
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
 		if (!entityStats.IsPlayerEntity())
 		{
-			Debug.Log("new target selected");
 			OnNewTargetSelected?.Invoke(entityStats);
-				
-			if (selectedTarget != null)
-				selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
-
 			selectedTarget = entityStats;
-			selectedTarget.OnDeathEvent += OnSelectedTargetDeath;
 		}
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		selectedTarget.OnDeathEvent -= OnSelectedTargetDeath;
+		if (gameObject != obj) return;
 		selectedTarget = null;
 	}
 
@@ -278,8 +266,13 @@ public class PlayerController : MonoBehaviour
 		}
 		else if (other.GetComponent<PortalHandler>() != null)
 		{
-			currentInteractedPortal.interactWithText.gameObject.SetActive(false);
-			currentInteractedPortal = null;
+			if (currentInteractedPortal.interactWithText == null) //remove null error when using portal to travel
+				currentInteractedPortal = null;
+			else
+			{
+				currentInteractedPortal.interactWithText.gameObject.SetActive(false);
+				currentInteractedPortal = null;
+			}
 		}
 	}
 

@@ -179,6 +179,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	public void OnQuestAccept(QuestSlotsUi quest)
 	{
 		quest.isCurrentlyActiveQuest = true;
+		EventManager.OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
 		activeQuests.Add(quest);
 	}
 	public void OnQuestComplete(QuestSlotsUi quest)

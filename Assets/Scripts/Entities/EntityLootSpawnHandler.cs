@@ -10,14 +10,16 @@ public class EntityLootSpawnHandler : MonoBehaviour
 	//invoked from event
 	private void OnEnable()
 	{
-		GetComponent<EntityStats>().OnDeathEvent += OnDeathEvent;
+		EventManager.OnDeathEvent += OnDeathEvent;
 	}
 	private void OnDisable()
 	{
-		GetComponent<EntityStats>().OnDeathEvent -= OnDeathEvent;
+		EventManager.OnDeathEvent -= OnDeathEvent;
 	}
 	private void OnDeathEvent(GameObject obj)
 	{
+		if (gameObject != obj) return;
+
 		for (int i = 0; i < lootPool.minDroppedItemsAmount; i++) //spawn item from loot pool at death location
 		{
 			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count);

@@ -205,12 +205,14 @@ public class QuestSlotsUi : MonoBehaviour
 			acceptQuestButtonObj.SetActive(false);
 	}
 
-	public void OnEntityDeathCheckKillAmount(GameObject entity)
+	public void OnEntityDeathCheckKillAmount(GameObject obj)
 	{
-        if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
+		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
 		{
-			if (entityToKill = entity.GetComponent<EntityStats>().entityBaseStats)
+			if (entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
 				currentAmount++;
+
+			Debug.Log("kill amount: " + currentAmount);
 		}
 
 		questTrackerUi.text = $"{currentAmount} / {amount} Killed";

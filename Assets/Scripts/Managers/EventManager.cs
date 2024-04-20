@@ -32,6 +32,20 @@ public static class EventManager
 	*/
 
 	/// <summary>
+	/// GAME EVENTS
+	/// </summary>
+	public static event Action<GameObject> OnDeathEvent;
+	public static void DeathEvent(GameObject gameObject)
+	{
+		OnDeathEvent?.Invoke(gameObject);
+	}
+	public static Action<List<PlayerExperienceHandler>> OnAddExpToPlayers;
+	public static void AddExpToPlayers(List<PlayerExperienceHandler> playerList)
+	{
+		OnAddExpToPlayers?.Invoke(playerList);
+	}
+
+	/// <summary>
 	/// UI EVENTS
 	/// </summary>
 	public static Action<int> OnGoldAmountChange;
