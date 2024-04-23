@@ -37,13 +37,6 @@ public class DungeonHandler : MonoBehaviour
 [System.Serializable]
 public class DungeonStatModifier
 {
-	public ModifierType possibleModifiers;
-	public enum ModifierType
-	{
-		healthMod, manaMod, physicalResistanceMod, poisonResistanceMod, fireResistanceMod, iceResistanceMod, 
-		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
-	}
-
 	public float difficultyModifier;
 
 	public float healthModifier;

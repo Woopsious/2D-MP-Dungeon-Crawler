@@ -149,9 +149,10 @@ public class SaveManager : MonoBehaviour
 	//saving/loading/deleting json file
 	private void SaveDataToJson(string directory)
 	{
+		SaveSavedDungeonData();
 		SavePlayerInfoData();
-		SavePlayerInventoryData();
 		SavePlayerClassData();
+		SavePlayerInventoryData();
 
 		string filePath = directory + "/GameData.json";
 		string inventoryData = JsonUtility.ToJson(GameData);
@@ -189,9 +190,31 @@ public class SaveManager : MonoBehaviour
 	}
 
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
+	private void SaveSavedDungeonData()
+	{
+		Debug.Log("Ui count 1: " + DungeonPortalUi.instance.savedDungeonLists.Count);
+		Debug.Log("GameData count 1: " + GameData.savedDungeonsList.Count);
+		GameData.savedDungeonsList.Clear();
+		Debug.Log("Ui count 2: " + DungeonPortalUi.instance.savedDungeonLists.Count);
+		Debug.Log("GameData count 2: " + GameData.savedDungeonsList.Count);
+
+		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
+		{
+			SavedDungeonData dungeonData = new SavedDungeonData
+			{ 
+				dungeonNumber = dungeon.dungeonNumber,
+				dungeonStatModifiers = dungeon.dungeonStatModifiers 
+			};
+			GameData.savedDungeonsList.Add(dungeonData);
+		}
+
+		Debug.Log("Ui count 3: " + DungeonPortalUi.instance.savedDungeonLists.Count);
+		Debug.Log("GameData count 3: " + GameData.savedDungeonsList.Count);
+	}
 	private void SavePlayerInfoData()
 	{
 		if (FindObjectOfType<PlayerController>() == null) return;
+		//need reworking for mp
 		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
 
 		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
@@ -204,8 +227,18 @@ public class SaveManager : MonoBehaviour
 		GameData.playerCurrentMana = playerStats.currentMana;
 		GameData.playerGoldAmount = playerStats.GetComponent<PlayerInventoryManager>().GetGoldAmount();
 	}
+	private void SavePlayerClassData()
+	{
+		//need reworking for mp
+		GameData.currentPlayerClass = ClassesUi.Instance.currentPlayerClass;
+		GameData.unlockedClassNodeIndexesList.Clear();
+
+		foreach (ClassTreeNodeSlotUi node in ClassesUi.Instance.currentUnlockedClassNodes)
+			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
+	}
 	private void SavePlayerInventoryData()
 	{
+		//need reworking for mp
 		GameData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
 
 		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
@@ -213,14 +246,6 @@ public class SaveManager : MonoBehaviour
 		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
 		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
 		GrabQuestDataFromActiveOnes(GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
-	}
-	private void SavePlayerClassData()
-	{
-		GameData.currentPlayerClass = ClassesUi.Instance.currentPlayerClass;
-		GameData.unlockedClassNodeIndexesList.Clear();
-
-		foreach (ClassTreeNodeSlotUi node in ClassesUi.Instance.currentUnlockedClassNodes)
-			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
@@ -325,6 +350,7 @@ public class GameData
 	public List<InventoryItemData> consumableItems = new List<InventoryItemData>();
 	public List<InventoryItemData> abilityItems = new List<InventoryItemData>();
 
+	public List<SavedDungeonData> savedDungeonsList = new List<SavedDungeonData>();
 	public List<QuestItemData> activePlayerQuests = new List<QuestItemData>();
 }
 
@@ -387,4 +413,10 @@ public class QuestItemData
 		isExpReward, isGoldReward
 	}
 	public int rewardToAdd;
+}
+[System.Serializable]
+public class SavedDungeonData
+{
+	public int dungeonNumber;
+	public DungeonStatModifier dungeonStatModifiers;
 }

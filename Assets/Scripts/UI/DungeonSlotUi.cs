@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static DungeonSlotUi;
 
 public class DungeonSlotUi : MonoBehaviour
 {
@@ -18,6 +19,13 @@ public class DungeonSlotUi : MonoBehaviour
 
 	public int maxDungeonModifiers;
 	public DungeonStatModifier dungeonStatModifiers;
+
+	public ModifierType possibleModifiers;
+	public enum ModifierType
+	{
+		healthMod, manaMod, physicalResistanceMod, poisonResistanceMod, fireResistanceMod, iceResistanceMod,
+		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
+	}
 
 	public static event Action<DungeonSlotUi> OnDungeonSave;
 	public static event Action<DungeonSlotUi> OnDungeonDelete;
@@ -51,12 +59,65 @@ public class DungeonSlotUi : MonoBehaviour
 			int chanceOfModifier = Utilities.GetRandomNumber(101);
 			if (chanceOfModifier <= 50) continue;
 
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(DungeonStatModifier.ModifierType)).Length);
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length);
 			SetModifierForDungeon(modifierType);
 		}
 
 		saveDungeonButtonObj.SetActive(true);
 		deleteDungeonButtonObj.SetActive(false);
+	}
+	public void Initilize(SavedDungeonData dungeonData)
+	{
+		dungeonNumber = dungeonData.dungeonNumber;
+		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
+
+		if (dungeonStatModifiers.difficultyModifier == 0)
+		{
+			maxDungeonModifiers = 1;
+			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
+		}
+		else if (dungeonStatModifiers.difficultyModifier == 0.1f)
+		{
+			maxDungeonModifiers = 3;
+			dungeonDifficultyText.text = "Difficulty: Hard \n(10% bonus to all enemy stats)";
+		}
+		else
+		{
+			maxDungeonModifiers = 5;
+			dungeonDifficultyText.text = "Difficulty: Hell \n(25% bonus to all enemy stats)";
+		}
+
+		if (dungeonStatModifiers.healthModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.healthModifier)}% more Health";
+		if (dungeonStatModifiers.manaModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.manaModifier)}% more Mana";
+
+		if (dungeonStatModifiers.physicalResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.physicalResistanceModifier)}% more Physical Resistance";
+		if (dungeonStatModifiers.poisonResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.poisonResistanceModifier)}% more Poison Resistance";
+		if (dungeonStatModifiers.fireResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.fireResistanceModifier)}% more Fire Resistance";
+		if (dungeonStatModifiers.iceResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.iceResistanceModifier)}% more Ice Resistance";
+
+		if (dungeonStatModifiers.physicalDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.physicalDamageModifier)}% more Physical Damage";
+		if (dungeonStatModifiers.poisonDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.poisonDamageModifier)}% more Poison Damage";
+		if (dungeonStatModifiers.fireDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.fireDamageModifier)}% more Fire Damage";
+		if (dungeonStatModifiers.iceDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.iceDamageModifier)}% more Ice Damage";
+
+		if (dungeonStatModifiers.mainWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.mainWeaponDamageModifier)}% more Main Weapon Damage";
+		if (dungeonStatModifiers.dualWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.dualWeaponDamageModifier)}% more Dual Weapon Damage";
+		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
+
+		SaveDungeon();
 	}
 	private void SetModifierForDungeon(int modifierType)
 	{
@@ -133,7 +194,6 @@ public class DungeonSlotUi : MonoBehaviour
 		else
 			Debug.LogError("modifer type out of range");
 	}
-
 	public void EnterDungeon()
 	{
 		GameManager.dungeonStatModifiers = dungeonStatModifiers;

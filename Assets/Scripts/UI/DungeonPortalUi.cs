@@ -29,6 +29,7 @@ public class DungeonPortalUi : MonoBehaviour
 
 	private void OnEnable()
 	{
+		SaveManager.RestoreData += ReloadSavedDungeons;
 		EventManager.OnShowPortalUi += ShowPortalUi;
 		EventManager.OnHidePortalUi += HidePortalUi;
 
@@ -37,6 +38,7 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
+		SaveManager.RestoreData -= ReloadSavedDungeons;
 		EventManager.OnShowPortalUi -= ShowPortalUi;
 		EventManager.OnHidePortalUi -= HidePortalUi;
 
@@ -80,6 +82,22 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 
 	//Events
+	public void ReloadSavedDungeons()
+	{
+		for (int i = savedDungeonLists.Count; i > 0; i--)
+			Destroy(savedDungeonLists[i]);
+
+		savedDungeonLists.Clear();
+		Debug.Log("saved dungeons count: " + SaveManager.Instance.GameData.savedDungeonsList.Count);
+
+		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
+		{
+			GameObject go = Instantiate(dungeonInfoSlotPrefab, savedDungeonListContent.transform);
+			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i]);
+			//savedDungeonLists.Add(dungeonSlot);
+		}
+	}
 	public void OnSaveDungeon(DungeonSlotUi dungeonSlot)
 	{
 		dungeonSlot.transform.SetParent(savedDungeonListContent.transform);
