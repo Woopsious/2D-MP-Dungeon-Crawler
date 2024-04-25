@@ -29,6 +29,9 @@ public class EntityBehaviour : MonoBehaviour
 	public PlayerController player;
 	public CircleCollider2D viewRangeCollider;
 
+	public GameObject AbilityAoePrefab;
+	public GameObject projectilePrefab;
+
 	private void Start()
 	{
 		Initilize();

@@ -782,6 +782,8 @@ MonoBehaviour:
   playersLastKnownPosition: {x: 0, y: 0}
   player: {fileID: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
+  AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
+  projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
 --- !u!114 &5524032958697930596
 MonoBehaviour:
   m_ObjectHideFlags: 0

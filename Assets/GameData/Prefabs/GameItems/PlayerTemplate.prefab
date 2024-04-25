@@ -516,8 +516,8 @@ MonoBehaviour:
   playerEquipmentHandler: {fileID: 0}
   selectedTarget: {fileID: 0}
   debugUseMouseDirectionForProjectiles: 0
-  AbilityDirectionalPrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
+  projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   queuedAbility: {fileID: 0}
   isInteractingWithNpc: 0
   isInteractingWithPortal: 0

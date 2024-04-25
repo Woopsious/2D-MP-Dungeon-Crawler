@@ -82,7 +82,7 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 
 	//Events
-	public void ReloadSavedDungeons()
+	private void ReloadSavedDungeons()
 	{
 		for (int i = savedDungeonLists.Count; i > 0; i--)
 			Destroy(savedDungeonLists[i]);
@@ -98,7 +98,7 @@ public class DungeonPortalUi : MonoBehaviour
 			//savedDungeonLists.Add(dungeonSlot);
 		}
 	}
-	public void OnSaveDungeon(DungeonSlotUi dungeonSlot)
+	private void OnSaveDungeon(DungeonSlotUi dungeonSlot)
 	{
 		dungeonSlot.transform.SetParent(savedDungeonListContent.transform);
 		dungeonSlot.saveDungeonButtonObj.SetActive(false);
@@ -107,7 +107,7 @@ public class DungeonPortalUi : MonoBehaviour
 		activeDungeonLists.Remove(dungeonSlot);
 		savedDungeonLists.Add(dungeonSlot);
 	}
-	public void OnDeleteDungeon(DungeonSlotUi dungeonSlot)
+	private void OnDeleteDungeon(DungeonSlotUi dungeonSlot)
 	{
 		activeDungeonLists.Remove(dungeonSlot);
 		savedDungeonLists.Remove(dungeonSlot);

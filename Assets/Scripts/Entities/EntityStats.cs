@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EntityStats : MonoBehaviour
 {
@@ -101,7 +102,9 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
 		CalculateBaseStats();
-		ApplyDungeonModifiers(GameManager.dungeonStatModifiers);
+		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.dungeonStatModifiers != null)
+			ApplyDungeonModifiers(GameManager.dungeonStatModifiers); //only apply dungeon mods outside of testing scene
+
 		int numOfTries = 0;
 		if (GetComponent<PlayerController>() != null) return;
 		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
