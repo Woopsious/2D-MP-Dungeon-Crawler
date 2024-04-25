@@ -65,37 +65,20 @@ public class Projectiles : MonoBehaviour
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-		{
-			Debug.Log("projectile hit obstacle");
 			Destroy(gameObject);
-		}
-
-		Debug.Log("is player projectile: " + isPlayerProjectile);
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
 		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerProjectile ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !isPlayerProjectile)
-		{
-			Debug.Log("projectile hit something");
+			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerProjectile)
 			return;
-		}
-
-		//other.GetComponent<Damageable>().OnHitFromDamageSource(other ,projectileDamage, (IDamagable.DamageType)damageType, 0,
-			//abilityBaseRef.isDamagePercentageBased ,isPlayerProjectile);
 
 		if (abilityBaseRef != null)
-		{
-			Debug.Log("test 1");
 			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile);
-		}
 		else
-		{
-			Debug.Log("test 2");
 			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				false, isPlayerProjectile);
-		}
 
 		Destroy(gameObject);
 	}
