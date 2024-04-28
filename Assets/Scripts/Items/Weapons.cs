@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Playables;
 using UnityEngine;
 
 public class Weapons : Items
@@ -152,11 +153,26 @@ public class Weapons : Items
 		other.GetComponent<Damageable>().OnHitFromDamageSource(boxCollider, damage, 
 			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
 	}
-	public void Attack(Vector3 positionOfThingToAttack)
+	public void MeleeAttack(Vector3 positionOfThingToAttack)
+	{
+		if (!canAttackAgain) return;
+		MeleeDirectionToAttack(positionOfThingToAttack);
+		OnWeaponAttack();
+		StartCoroutine(WeaponCooldown());
+	}
+	public void RangedAttack(Vector3 positionOfThingToAttack, GameObject projectilePrefab)
 	{
 		if (!canAttackAgain) return;
 
-		MeleeDirectionToAttack(positionOfThingToAttack);
+		GameObject go = Instantiate(projectilePrefab, transform, true);
+		go.transform.SetParent(null);
+		go.transform.position = (Vector2)transform.position;
+		go.GetComponent<Projectiles>().Initilize(this);
+
+		Vector3 rotation = positionOfThingToAttack - transform.position; ;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -170,10 +186,13 @@ public class Weapons : Items
 
 	private void OnWeaponAttack()
 	{
-		animator.SetBool("isMeleeAttack", true);
-		boxCollider.enabled = true;
-		idleWeaponSprite.enabled = false;
-		attackWeaponSprite.enabled = true;
+		if (!weaponBaseRef.isRangedWeapon)
+		{
+			animator.SetBool("isMeleeAttack", true);
+			boxCollider.enabled = true;
+			idleWeaponSprite.enabled = false;
+			attackWeaponSprite.enabled = true;
+		}
 		canAttackAgain = false;
 	}
 	private void OnWeaponCooldown()

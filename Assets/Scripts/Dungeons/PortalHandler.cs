@@ -30,37 +30,11 @@ public class PortalHandler : MonoBehaviour, IInteractable
 
 	public void Interact(PlayerController playerController)
 	{
-		//may have a confirm teleport button pop up on interact instead of instantly teleporting
-
-		//EventManager.AutoSaveGame();
-
-		if (isDungeonEnterencePortal)
-		{
-			int i = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 2); //(not including hub and main menu scene)
-			if (i == 0)
-			{
-				EventManager.ShowPortalUi(this);
-				//GameManager.Instance.LoadDungeonOne();
-				//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.dungeonLayoutOneName, false));
-			}
-			else if (i == 1)
-			{
-				EventManager.ShowPortalUi(this);
-				//GameManager.Instance.LoadDungeonTwo();
-				//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.dungeonLayoutTwoName, false));
-			}
-		}
-		else
-		{
-			EventManager.ShowPortalUi(this);
-			//GameManager.Instance.LoadHubArea(false);
-			//StartCoroutine(EventManager.ChangeSceneAsync(EventManager.hubAreaName, false));
-		}
+		EventManager.ShowPortalUi(this);
 	}
-
 	public void UnInteract(PlayerController playerController)
 	{
-
+		EventManager.HidePortalUi();
 	}
 
 	private void UpdateInteractText()

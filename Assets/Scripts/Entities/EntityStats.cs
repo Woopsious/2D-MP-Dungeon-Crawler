@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class EntityStats : MonoBehaviour
 {
@@ -101,6 +102,9 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
 		CalculateBaseStats();
+		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.dungeonStatModifiers != null)
+			ApplyDungeonModifiers(GameManager.dungeonStatModifiers); //only apply dungeon mods outside of testing scene
+
 		int numOfTries = 0;
 		if (GetComponent<PlayerController>() != null) return;
 		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
@@ -319,7 +323,7 @@ public class EntityStats : MonoBehaviour
 	/// recalculate stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for example
 	/// changes a piece of armor etc, so stats are consistant in how they are applied, especially when percentage modifiers are included
 	/// hard numbers added so far: equipment values, 
-	/// percentage numbers added so far: level modifier, 
+	/// percentage numbers added so far: level modifier
 	/// </summary>
 	private void OnPlayerLevelUp(int newPlayerLevel)
 	{
@@ -379,6 +383,37 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
+	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
+	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
+		{
+			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
+			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
+			physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
+			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
+			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
+			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+
+			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
+			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
+			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
+			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
+			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
+			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
+			rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
+		}
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfoUi();
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		UpdatePlayerStatInfoUi();
+	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
@@ -432,29 +467,44 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
+	public void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
 			oldCurrentHealthEqualToOldMaxHealth = true;
 
-		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
+		if (!IsPlayerEntity())
 		{
-			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
-			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
-			physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
-			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
-			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
-			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+			maxHealth.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			maxMana.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			physicalResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			poisonResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			fireResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			iceResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
 
-			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
-			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
-			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
-			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
-			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
-			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
-			rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
+			physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			iceDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			mainWeaponDamageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			dualWeaponDamageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
+			rangedWeaponDamageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 		}
+
+		maxHealth.AddPercentageValue(dungeonModifiers.healthModifier);
+		maxMana.AddPercentageValue(dungeonModifiers.manaModifier);
+		physicalResistance.AddPercentageValue(dungeonModifiers.physicalResistanceModifier);
+		poisonResistance.AddPercentageValue(dungeonModifiers.poisonResistanceModifier);
+		fireResistance.AddPercentageValue(dungeonModifiers.fireResistanceModifier);
+		iceResistance.AddPercentageValue(dungeonModifiers.iceResistanceModifier);
+
+		physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.physicalDamageModifier);
+		poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.poisonDamageModifier);
+		fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.fireDamageModifier);
+		iceDamagePercentageModifier.AddPercentageValue(dungeonModifiers.iceDamageModifier);
+		mainWeaponDamageModifier.AddPercentageValue(dungeonModifiers.mainWeaponDamageModifier);
+		dualWeaponDamageModifier.AddPercentageValue(dungeonModifiers.dualWeaponDamageModifier);
+		rangedWeaponDamageModifier.AddPercentageValue(dungeonModifiers.rangedWeaponDamageModifier);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();

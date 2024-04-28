@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\KeybindsManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
+    <Compile Include="Assets\Scripts\Dungeons\SpawnHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyBaseState.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
@@ -96,7 +97,6 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
-    <Compile Include="Assets\Scripts\Abilities\AbilityDirectional.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
@@ -105,6 +105,7 @@
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
+    <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
     <Compile Include="Assets\Scripts\Dungeons\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
+using Unity.Services.Lobbies.Models;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.ShaderGraph;
 using UnityEngine;
@@ -36,8 +37,8 @@ public class PlayerController : MonoBehaviour
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
 	public event Action<Abilities> OnCancelQueuedAbilities;
 	public bool debugUseMouseDirectionForProjectiles;
-	public GameObject AbilityDirectionalPrefab;
 	public GameObject AbilityAoePrefab;
+	public GameObject projectilePrefab;
 
 	public Abilities queuedAbility;
 
@@ -209,10 +210,10 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(AbilityDirectionalPrefab, transform, true);
+		GameObject go = Instantiate(projectilePrefab, transform, true);
 		go.transform.SetParent(null);
 		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<AbilityDirectional>().Initilize(ability, playerStats);
+		go.GetComponent<Projectiles>().Initilize(ability, playerStats);
 
 		Vector3 rotation;
 		if (debugUseMouseDirectionForProjectiles)
@@ -289,7 +290,23 @@ public class PlayerController : MonoBehaviour
 		{
 			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
 				return;
-			playerEquipmentHandler.equippedWeapon.Attack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+			Weapons weapon = playerEquipmentHandler.equippedWeapon;
+
+			if (weapon.weaponBaseRef.isRangedWeapon)
+			{
+				if (debugUseMouseDirectionForProjectiles)
+					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
+				else
+					weapon.RangedAttack(selectedTarget.transform.position, projectilePrefab);
+			}
+			else
+			{
+				if (debugUseMouseDirectionForProjectiles)
+					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+				else
+					weapon.MeleeAttack(selectedTarget.transform.position);
+			}
+
 		}
 		else
 			CastQueuedAbility(queuedAbility);

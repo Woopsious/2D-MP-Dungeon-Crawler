@@ -14,6 +14,8 @@ public class GameManager : MonoBehaviour
 
 	public static bool isNewGame;
 
+	public static DungeonStatModifier dungeonStatModifiers;
+
 	public readonly string mainMenuName = "MainMenu";
 	public readonly string hubAreaName = "HubArea";
 	public readonly string dungeonLayoutOneName = "DungeonOne";
@@ -28,11 +30,8 @@ public class GameManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
-	}
 
-	public void Update()
-	{
-		//Debug.Log(Time.timeScale);
+		dungeonStatModifiers = new DungeonStatModifier();
 	}
 
 	private void OnEnable()
@@ -57,6 +56,7 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadHubArea(bool isNewGame)
 	{
+		dungeonStatModifiers = new DungeonStatModifier();
 		GameManager.isNewGame = isNewGame;
 		StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
 	}

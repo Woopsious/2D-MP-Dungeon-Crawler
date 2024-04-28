@@ -6,8 +6,6 @@ using UnityEngine.SceneManagement;
 
 public class DungeonHandler : MonoBehaviour
 {
-	//public static event Action<Vector2> OnSetPlayerSpawn;
-
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
 
 	private void OnEnable()
@@ -33,22 +31,26 @@ public class DungeonHandler : MonoBehaviour
 
 		foreach (PlayerController player in players)
 			player.transform.position = portalSpawnPoint.transform.position;
-
-		//Debug.Log("invoke set player spawn");
-		//GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
-		//OnSetPlayerSpawn?.Invoke(portalSpawnPoint.transform.position);
 	}
 }
 
 [System.Serializable]
 public class DungeonStatModifier
 {
-	public float percentageValue;
+	public float difficultyModifier;
 
-	public ModifierType modifierType;
-	public enum ModifierType
-	{
-		healthMod, manaMod, physicalResistanceMod, poisonResistanceMod, fireResistanceMod, iceResistanceMod, 
-		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
-	}
+	public float healthModifier;
+	public float manaModifier;
+	public float physicalResistanceModifier;
+	public float poisonResistanceModifier;
+	public float fireResistanceModifier;
+	public float iceResistanceModifier;
+
+	public float physicalDamageModifier;
+	public float poisonDamageModifier;
+	public float fireDamageModifier;
+	public float iceDamageModifier;
+	public float mainWeaponDamageModifier;
+	public float dualWeaponDamageModifier;
+	public float rangedWeaponDamageModifier;
 }

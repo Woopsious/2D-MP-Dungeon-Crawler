@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static DungeonSlotUi;
 
 public class DungeonSlotUi : MonoBehaviour
 {
@@ -17,8 +18,14 @@ public class DungeonSlotUi : MonoBehaviour
 	public int dungeonNumber;
 
 	public int maxDungeonModifiers;
-	public float dungeonDifficultyModifier;
-	public List<DungeonStatModifier> dungeonModifiers;
+	public DungeonStatModifier dungeonStatModifiers;
+
+	public ModifierType possibleModifiers;
+	public enum ModifierType
+	{
+		healthMod, manaMod, physicalResistanceMod, poisonResistanceMod, fireResistanceMod, iceResistanceMod,
+		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
+	}
 
 	public static event Action<DungeonSlotUi> OnDungeonSave;
 	public static event Action<DungeonSlotUi> OnDungeonDelete;
@@ -31,19 +38,19 @@ public class DungeonSlotUi : MonoBehaviour
 		if (modifier == 0)
 		{
 			maxDungeonModifiers = 1;
-			dungeonDifficultyModifier = 0;
+			dungeonStatModifiers.difficultyModifier = 0;
 			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
 		}
 		else if (modifier == 1)
 		{
 			maxDungeonModifiers = 3;
-			dungeonDifficultyModifier = 0.1f;
+			dungeonStatModifiers.difficultyModifier = 0.1f;
 			dungeonDifficultyText.text = "Difficulty: Hard \n(10% bonus to all enemy stats)";
 		}
 		else
 		{
 			maxDungeonModifiers = 5;
-			dungeonDifficultyModifier = 0.25f;
+			dungeonStatModifiers.difficultyModifier = 0.25f;
 			dungeonDifficultyText.text = "Difficulty: Hell \n(25% bonus to all enemy stats)";
 		}
 
@@ -52,105 +59,145 @@ public class DungeonSlotUi : MonoBehaviour
 			int chanceOfModifier = Utilities.GetRandomNumber(101);
 			if (chanceOfModifier <= 50) continue;
 
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(DungeonStatModifier.ModifierType)).Length);
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length);
 			SetModifierForDungeon(modifierType);
 		}
 
 		saveDungeonButtonObj.SetActive(true);
 		deleteDungeonButtonObj.SetActive(false);
 	}
+	public void Initilize(SavedDungeonData dungeonData)
+	{
+		dungeonNumber = dungeonData.dungeonNumber;
+		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
+
+		if (dungeonStatModifiers.difficultyModifier == 0)
+		{
+			maxDungeonModifiers = 1;
+			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
+		}
+		else if (dungeonStatModifiers.difficultyModifier == 0.1f)
+		{
+			maxDungeonModifiers = 3;
+			dungeonDifficultyText.text = "Difficulty: Hard \n(10% bonus to all enemy stats)";
+		}
+		else
+		{
+			maxDungeonModifiers = 5;
+			dungeonDifficultyText.text = "Difficulty: Hell \n(25% bonus to all enemy stats)";
+		}
+
+		if (dungeonStatModifiers.healthModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.healthModifier)}% more Health";
+		if (dungeonStatModifiers.manaModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.manaModifier)}% more Mana";
+
+		if (dungeonStatModifiers.physicalResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.physicalResistanceModifier)}% more Physical Resistance";
+		if (dungeonStatModifiers.poisonResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.poisonResistanceModifier)}% more Poison Resistance";
+		if (dungeonStatModifiers.fireResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.fireResistanceModifier)}% more Fire Resistance";
+		if (dungeonStatModifiers.iceResistanceModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.iceResistanceModifier)}% more Ice Resistance";
+
+		if (dungeonStatModifiers.physicalDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.physicalDamageModifier)}% more Physical Damage";
+		if (dungeonStatModifiers.poisonDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.poisonDamageModifier)}% more Poison Damage";
+		if (dungeonStatModifiers.fireDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.fireDamageModifier)}% more Fire Damage";
+		if (dungeonStatModifiers.iceDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.iceDamageModifier)}% more Ice Damage";
+
+		if (dungeonStatModifiers.mainWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.mainWeaponDamageModifier)}% more Main Weapon Damage";
+		if (dungeonStatModifiers.dualWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.dualWeaponDamageModifier)}% more Dual Weapon Damage";
+		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
+
+		SaveDungeon();
+	}
 	private void SetModifierForDungeon(int modifierType)
 	{
-		DungeonStatModifier modifier = new()
-		{ percentageValue = 0.25f };
+		float modifierValue = 0.25f;
 
 		if (modifierType == 0)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.healthMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Health";
+			dungeonStatModifiers.healthModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Health";
 		}
 		else if (modifierType == 1)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.manaMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Mana";
+			dungeonStatModifiers.manaModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Mana";
 		}
 
 		else if (modifierType == 2)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.physicalResistanceMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Physical Resistance";
+			dungeonStatModifiers.physicalResistanceModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Physical Resistance";
 		}
 		else if (modifierType == 3)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.poisonResistanceMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Poison Resistance";
+			dungeonStatModifiers.poisonResistanceModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Poison Resistance";
 		}
 		else if (modifierType == 4)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.fireResistanceMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Fire Resistance";
+			dungeonStatModifiers.fireResistanceModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Fire Resistance";
 		}
 		else if (modifierType == 5)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.iceResistanceMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Ice Resistance";
+			dungeonStatModifiers.iceResistanceModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Ice Resistance";
 		}
 
 		else if (modifierType == 6)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.physicalDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Physical Damage";
+			dungeonStatModifiers.physicalDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Physical Damage";
 		}
 		else if (modifierType == 7)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.poisonDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Poison Damage";
+			dungeonStatModifiers.poisonDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Poison Damage";
 		}
 		else if (modifierType == 8)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.fireDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Fire Damage";
+			dungeonStatModifiers.fireDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Fire Damage";
 		}
 		else if (modifierType == 9)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.iceDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Ice Damage";
+			dungeonStatModifiers.iceDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Ice Damage";
 		}
 
 		else if (modifierType == 10)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.mainWeaponDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Main Weapon Damage";
+			dungeonStatModifiers.mainWeaponDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Main Weapon Damage";
 		}
 		else if (modifierType == 11)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.dualWeaponDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Dual Weapon Damage";
+			dungeonStatModifiers.dualWeaponDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Dual Weapon Damage";
 		}
 		else if (modifierType == 12)
 		{
-			modifier.modifierType = DungeonStatModifier.ModifierType.rangedWeaponDamageMod;
-			dungeonModifiers.Add(modifier);
-			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifier.percentageValue)}% more Ranged Weapon Damage";
+			dungeonStatModifiers.rangedWeaponDamageModifier = modifierValue;
+			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(modifierValue)}% more Ranged Weapon Damage";
 		}
 		else
 			Debug.LogError("modifer type out of range");
 	}
-
 	public void EnterDungeon()
 	{
+		GameManager.dungeonStatModifiers = dungeonStatModifiers;
+
 		if (dungeonNumber == 0)
 			GameManager.Instance.LoadDungeonOne();
 		else if (dungeonNumber == 1)

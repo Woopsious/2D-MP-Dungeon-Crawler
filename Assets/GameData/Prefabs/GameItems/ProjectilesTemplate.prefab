@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 6940990866402099174}
   - component: {fileID: 1070226345070780776}
   m_Layer: 11
-  m_Name: AbilityDirectionalTemplate
+  m_Name: ProjectilesTemplate
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,7 +47,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716fe59503b5a6544929ef8b772e3ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  abilityBaseRef: {fileID: 11400000, guid: 796edff530cad9147af817a9ee1167f2, type: 2}
+  abilityBaseRef: {fileID: 0}
+  weaponBaseRef: {fileID: 0}
 --- !u!212 &7416781565138428768
 SpriteRenderer:
   m_ObjectHideFlags: 0

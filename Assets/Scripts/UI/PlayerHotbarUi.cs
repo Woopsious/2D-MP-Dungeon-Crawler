@@ -224,12 +224,8 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		PlayerJournalUi.Instance.ShowPlayerJournal();
 	}
-	public void OnGoldAmountChange(int amount)
-	{
-		goldAmountText.text = $"Gold: {amount}";
-	}
 
-	//UI TargetSelection
+	//Select Target event
 	public void OnNewTargetSelected(EntityStats entityStats)
 	{
 		if (!selectedTargetUi.activeInHierarchy)
@@ -252,6 +248,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
 		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
 	}
+
+	//UI Selected Target events
 	private void OnTargetHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
@@ -321,6 +319,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI Player Updates
+	public void OnGoldAmountChange(int amount)
+	{
+		goldAmountText.text = $"Gold: {amount}";
+	}
 	public void OnExperienceChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;

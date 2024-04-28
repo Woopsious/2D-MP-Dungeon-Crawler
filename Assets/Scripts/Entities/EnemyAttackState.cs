@@ -27,9 +27,12 @@ public class EnemyAttackState : EnemyBaseState
 		///	and doesnt take into account the length of the weapon (dagger only has a reach of about 1, the rest have about 2)
 		///<summary>
 
-		if (distanceToPlayer <= 2)
+		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.baseMaxAttackRange)
 		{
-			equippedWeapon.Attack(entity.player.transform.position);
+			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
+				equippedWeapon.RangedAttack(entity.player.transform.position, entity.projectilePrefab);
+			else
+				equippedWeapon.MeleeAttack(entity.player.transform.position);
 		}
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)

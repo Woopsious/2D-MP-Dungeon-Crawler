@@ -30,4 +30,5 @@ MonoBehaviour:
   baseDamageType: 0
   isRangedWeapon: 0
   baseMaxAttackRange: 0
+  baseMinAttackRange: 0
   baseBonusMana: 0

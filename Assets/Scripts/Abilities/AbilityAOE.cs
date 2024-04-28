@@ -65,7 +65,7 @@ public class AbilityAOE : MonoBehaviour
 		{
 			//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
 			if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-				other.gameObject.layer == LayerMask.NameToLayer("Enemy") && !isPlayerAoe)
+				other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
 				return;
 
 			EntityStats stats = other.gameObject.GetComponent<EntityStats>();
