@@ -224,7 +224,6 @@ public class PlayerInventoryUi : MonoBehaviour
 			{
 				item.inventorySlotIndex = i;
 				item.transform.SetParent(inventorySlot.transform);
-				item.SetTextColour();
 				inventorySlot.itemInSlot = item;
 				inventorySlot.UpdateSlotSize();
 				item.Initilize();
@@ -391,8 +390,8 @@ public class PlayerInventoryUi : MonoBehaviour
 		else
 			PlayerInfoAndInventoryPanelUi.SetActive(true);
 
-		UpdatePlayerToolTips(InventorySlots);
-		UpdatePlayerToolTips(EquipmentSlots);
+		UpdatePlayerInventoryItemsUi(InventorySlots);
+		UpdatePlayerInventoryItemsUi(EquipmentSlots);
 	}
 	public void HideInventory()
 	{
@@ -406,7 +405,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		else
 			LearntAbilitiesPanelUi.SetActive(true);
 
-		UpdatePlayerToolTips(LearntAbilitySlots);
+		UpdatePlayerInventoryItemsUi(LearntAbilitySlots);
 	}
 	public void HideLearntAbilities()
 	{
@@ -425,7 +424,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		transactionTrackerText.text = "Gold: 0";
 		transactionInfoText.text = "No Item Sold/Brought";
 		npcShopPanalUi.SetActive(true);
-		UpdatePlayerToolTips(shopSlots);
+		UpdatePlayerInventoryItemsUi(shopSlots);
 	}
 	public void HideNpcShop(NpcHandler npc)
 	{
@@ -445,13 +444,23 @@ public class PlayerInventoryUi : MonoBehaviour
 		HideInventory();
 	}
 
-	private void UpdatePlayerToolTips(List<GameObject> objList)
+	private void UpdatePlayerInventoryItemsUi(List<GameObject> objList)
 	{
 		foreach (GameObject obj in objList)
 		{
 			if (obj.GetComponent<InventorySlotUi>().itemInSlot == null) continue;
-			ToolTipUi tip = obj.GetComponent<InventorySlotUi>().itemInSlot.GetComponent<ToolTipUi>();
-			tip.UpdatePlayerToolTip();
+			UpdateCanEquipItem(obj);
+			UpdateToolTip(obj);
 		}
+	}
+	private void UpdateToolTip(GameObject obj)
+	{
+		ToolTipUi tip = obj.GetComponent<InventorySlotUi>().itemInSlot.GetComponent<ToolTipUi>();
+		tip.UpdatePlayerToolTip();
+	}
+	private void UpdateCanEquipItem(GameObject obj)
+	{
+		InventoryItemUi itemUi = obj.GetComponent<InventorySlotUi>().itemInSlot;
+		itemUi.CheckIfCanEquipItem();
 	}
 }

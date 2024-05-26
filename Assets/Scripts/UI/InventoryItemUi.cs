@@ -5,6 +5,7 @@ using UnityEditor;
 using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 [System.Serializable]
@@ -18,6 +19,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public Image uiItemImage;
 	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
+	public TMP_Text uiCantEquipNotif;
 	[HideInInspector] public Transform parentAfterDrag;
 
 	[Header("Item Base Ref")]
@@ -69,7 +71,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		else if (GetComponent<Abilities>() != null)
 			SetUpAbilities();
 
-		UpdateUi();
+		SetUpUi();
 	}
 	private void SetUpItems()
 	{
@@ -124,6 +126,29 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		else if (accessoryBaseRef != null) return accessoryBaseRef.MaxStackCount;
 		else return consumableBaseRef.MaxStackCount;
 	}
+	private void SetUpUi()
+	{
+		gameObject.name = itemName;
+		uiItemName.text = itemName;
+		uiItemImage.sprite = itemSprite;
+		uiItemLevel.text = "LVL: " + itemLevel;
+		uiItemStackCount.text = currentStackCount.ToString();
+
+		if (rarity == Rarity.isRare)
+			SetColour(Color.blue);
+		else if (rarity == Rarity.isEpic)
+			SetColour(Color.magenta);
+		else if (rarity == Rarity.isLegendary)
+			SetColour(new Color(1f, 0.4f, 0f));
+		else
+			SetColour(Color.white);
+	}
+	private void SetColour(Color colour)
+	{
+		uiItemName.color = colour;
+		uiItemLevel.color = colour;
+		uiItemStackCount.color = colour;
+	}
 
 	//functions for dragging
 	public void OnBeginDrag(PointerEventData eventData)
@@ -144,18 +169,33 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	}
 
 	//update data
-	public void UpdateUi()
+	public void CheckIfCanEquipItem()
 	{
-		gameObject.name = itemName;
-		uiItemName.text = itemName;
-		uiItemImage.sprite = itemSprite;
-		uiItemLevel.text = "LVL: " + itemLevel;
-		UpdateStackCount();
-		SetTextColour();
-	}
-	public void UpdateStackCount()
-	{
-		uiItemStackCount.text = currentStackCount.ToString();
+		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable)
+		{
+			uiCantEquipNotif.gameObject.SetActive(false);
+			return;
+		}
+		uiCantEquipNotif.gameObject.SetActive(true);
+
+		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel < itemLevel)
+			uiCantEquipNotif.text = "Cant Equip \n low level";
+		else if (itemType == ItemType.isWeapon)
+		{
+			if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
+				uiCantEquipNotif.text = "Cant Equip \n too heavy";
+			else
+				uiCantEquipNotif.gameObject.SetActive(false);
+		}
+		else if (itemType == ItemType.isArmor)
+		{
+			if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
+				uiCantEquipNotif.text = "Cant Equip \n too heavy";
+			else
+				uiCantEquipNotif.gameObject.SetActive(false);
+		}
+		else
+			uiCantEquipNotif.gameObject.SetActive(false);
 	}
 	public void SetStackCounter(int newCount)
 	{
@@ -177,25 +217,6 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 		if (currentStackCount <= 0)
 			Destroy(gameObject);
-	}
-
-	//update Ui color based on rarity
-	public void SetTextColour()
-	{
-		if (rarity == Rarity.isRare)
-			SetColour(Color.blue);
-		else if (rarity == Rarity.isEpic)
-			SetColour(Color.magenta);
-		else if (rarity == Rarity.isLegendary)
-			SetColour(new Color(1f, 0.4f, 0f));
-		else
-			SetColour(Color.white);
-	}
-	private void SetColour(Color colour)
-	{
-		uiItemName.color = colour;
-		uiItemLevel.color = colour;
-		uiItemStackCount.color = colour;
 	}
 
 	//Debug functions

@@ -97,7 +97,6 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	{
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
-		item.SetTextColour();
 
 		itemInSlot = item;
 		UpdateSlotSize();

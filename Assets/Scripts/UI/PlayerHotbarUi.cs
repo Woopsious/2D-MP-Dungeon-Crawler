@@ -161,7 +161,6 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		item.inventorySlotIndex = slotToEquipTo.slotIndex;
 		item.transform.SetParent(slotToEquipTo.transform);
-		item.SetTextColour();
 		slotToEquipTo.itemInSlot = item;
 		slotToEquipTo.UpdateSlotSize();
 		item.Initilize();
@@ -206,23 +205,23 @@ public class PlayerHotbarUi : MonoBehaviour
 	//UI CHANGES
 	public void OpenInventoryButton()
 	{
-		PlayerInventoryUi.Instance.ShowInventory();
+		EventManager.ShowPlayerInventory();
 	}
 	public void OpenLearntAbilitiesButton()
 	{
-		PlayerInventoryUi.Instance.ShowLearntAbilities();
+		EventManager.ShowPlayerLearntAbilities();
 	}
 	public void OpenClassSelectionButton()
 	{
-		ClassesUi.Instance.ShowPlayerClassSelection();
+		EventManager.ShowPlayerClassSelection();
 	}
 	public void OpenClassSkillTreeButton()
 	{
-		ClassesUi.Instance.ShowClassSkillTree();
+		EventManager.ShowPlayerSkillTree();
 	}
 	public void OpenPlayerJournalButton()
 	{
-		PlayerJournalUi.Instance.ShowPlayerJournal();
+		EventManager.ShowPlayerJournal();
 	}
 
 	//Select Target event
