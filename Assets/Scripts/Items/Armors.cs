@@ -62,7 +62,7 @@ public class Armors : Items
 		if (armorBaseRef.classRestriction == SOArmors.ClassRestriction.heavy)
 			weightClass = "Heavy Weight Restriction";
 		else if (armorBaseRef.classRestriction == SOArmors.ClassRestriction.medium)
-			weightClass = "<color=purple>Epic</color> Weight Restriction";
+			weightClass = "Medium Weight Restriction";
 		else
 			weightClass = "Light Weight Restriction";
 
