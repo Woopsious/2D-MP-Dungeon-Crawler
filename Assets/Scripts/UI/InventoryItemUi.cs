@@ -183,13 +183,13 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public void SetTextColour()
 	{
 		if (rarity == Rarity.isRare)
-			SetColour(Color.cyan);
+			SetColour(Color.blue);
 		else if (rarity == Rarity.isEpic)
 			SetColour(Color.magenta);
 		else if (rarity == Rarity.isLegendary)
-			SetColour(Color.red);
+			SetColour(new Color(1f, 0.4f, 0f));
 		else
-			SetColour(Color.black);
+			SetColour(Color.white);
 	}
 	private void SetColour(Color colour)
 	{
