@@ -88,14 +88,12 @@ public class DungeonPortalUi : MonoBehaviour
 			Destroy(savedDungeonLists[i]);
 
 		savedDungeonLists.Clear();
-		Debug.Log("saved dungeons count: " + SaveManager.Instance.GameData.savedDungeonsList.Count);
 
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, savedDungeonListContent.transform);
 			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
 			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i]);
-			//savedDungeonLists.Add(dungeonSlot);
 		}
 	}
 	private void OnSaveDungeon(DungeonSlotUi dungeonSlot)

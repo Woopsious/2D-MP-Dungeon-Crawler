@@ -47,6 +47,8 @@ public class Utilities
 
 		if (itemLvl <= 4) //stop items from dropping below lvl 0
 			itemLvl = 5;
+		else if (itemLvl > 20) //stop items from dropping above max lvl (20 atm)
+			itemLvl = 24;
 		return itemLvl - 4;
 	}
 

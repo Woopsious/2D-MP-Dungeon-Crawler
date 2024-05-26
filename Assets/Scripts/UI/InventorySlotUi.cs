@@ -187,16 +187,41 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else return false;
 		}
 
-		//equipment class restriction/level checks
+		//unequipping/moving item checks
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
 			return true;
 		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isWeapon && CheckClassRestriction((int)item.classRestriction))
+
+		//equipping item checks: level/class restriction
+		if (!IsCorrectLevel(item))
 		{
-			if (!IsCorrectLevel(item)) return false;
+			Debug.Log("Player Level Too Low");
+			return false;
+		}
+
+		if (item.itemType == InventoryItemUi.ItemType.isAccessory)
+		{
+			Accessories accessory = item.GetComponent<Accessories>();
+
+			if (accessory.accessorySlot == Accessories.AccessorySlot.necklace && slotType == SlotType.necklace)
+				return true;
+			else if (accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringOne ||
+			accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringTwo)
+				return true;
+			else
+				return false;
+		}
+		else if (!CheckClassRestriction((int)item.classRestriction))
+		{
+			Debug.Log("Equipment weight too heavy");
+			return false;
+		}
+
+		if (item.itemType == InventoryItemUi.ItemType.isWeapon)
+		{
 			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
 
 			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
@@ -208,9 +233,8 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 			else
 				return false;
 		}
-		else if (item.itemType == InventoryItemUi.ItemType.isArmor && CheckClassRestriction((int)item.classRestriction))
+		else if (item.itemType == InventoryItemUi.ItemType.isArmor)
 		{
-			if (!IsCorrectLevel(item)) return false;
 			Armors armor = item.GetComponent<Armors>();
 
 			if (armor.armorSlot == Armors.ArmorSlot.helmet && slotType == SlotType.helmet)
@@ -221,20 +245,11 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 				return true;
 			else return false;
 		}
-		else if (item.itemType == InventoryItemUi.ItemType.isAccessory)
+		else
 		{
-			if (!IsCorrectLevel(item)) return false;
-			Accessories accessory = item.GetComponent<Accessories>();
-
-			if (accessory.accessorySlot == Accessories.AccessorySlot.necklace && slotType == SlotType.necklace)
-				return true;
-			else if (accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringOne ||
-			accessory.accessorySlot == Accessories.AccessorySlot.ring && slotType == SlotType.ringTwo)
-				return true;
-			else
-				return false;
+			Debug.Log("slot checks failed");
+			return false;
 		}
-		else return false;
 	}
 	public bool IsCorrectLevel(InventoryItemUi item)
 	{

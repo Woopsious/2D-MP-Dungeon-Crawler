@@ -192,11 +192,7 @@ public class SaveManager : MonoBehaviour
 	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
 	private void SaveSavedDungeonData()
 	{
-		Debug.Log("Ui count 1: " + DungeonPortalUi.instance.savedDungeonLists.Count);
-		Debug.Log("GameData count 1: " + GameData.savedDungeonsList.Count);
 		GameData.savedDungeonsList.Clear();
-		Debug.Log("Ui count 2: " + DungeonPortalUi.instance.savedDungeonLists.Count);
-		Debug.Log("GameData count 2: " + GameData.savedDungeonsList.Count);
 
 		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
@@ -207,9 +203,6 @@ public class SaveManager : MonoBehaviour
 			};
 			GameData.savedDungeonsList.Add(dungeonData);
 		}
-
-		Debug.Log("Ui count 3: " + DungeonPortalUi.instance.savedDungeonLists.Count);
-		Debug.Log("GameData count 3: " + GameData.savedDungeonsList.Count);
 	}
 	private void SavePlayerInfoData()
 	{

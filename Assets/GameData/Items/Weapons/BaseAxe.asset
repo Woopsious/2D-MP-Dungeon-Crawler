@@ -31,4 +31,6 @@ MonoBehaviour:
   isRangedWeapon: 0
   baseMaxAttackRange: 2
   baseMinAttackRange: 0
+  projectileSprite: {fileID: 0}
+  projectileSpeed: 0
   baseBonusMana: 0

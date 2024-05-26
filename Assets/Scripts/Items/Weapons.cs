@@ -52,14 +52,23 @@ public class Weapons : Items
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
-			rarity = "Legendary";
+			rarity = "<color=orange>Legendary</color>";
 		else if (this.rarity == Rarity.isEpic)
-			rarity = "Epic";
+			rarity = "<color=purple>Epic</color>";
 		else if (this.rarity == Rarity.isRare)
-			rarity = "Rare";
+			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+
+		string weightClass;
+		if (weaponBaseRef.classRestriction == SOWeapons.ClassRestriction.heavy)
+			weightClass = "Heavy Weight Restriction";
+		else if (weaponBaseRef.classRestriction == SOWeapons.ClassRestriction.medium)
+			weightClass = "Medium Weight Restriction";
+		else
+			weightClass = "Light Weight Restriction";
+
+		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price \n {weightClass}";
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			info += "\n Main hand ";
@@ -84,7 +93,15 @@ public class Weapons : Items
 		string damageInfo = $"{dps}\n{damage} Damage\n" +
 			$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 
-		toolTip.tipToShow = $"{info}\n{damageInfo}";
+		string equipInfo;
+		if (playerStats.entityLevel < itemLevel)
+			equipInfo = "<color=red>Cant Equip Weapon \n Level Too High</color>";
+		else if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
+			equipInfo = "<color=red>Cant Equip Weapon \n Weight too heavy</color>";
+		else
+			equipInfo = "<color=green>Can Equip Weapon</color>";
+
+		toolTip.tipToShow = $"{info}\n{damageInfo}\n{equipInfo}";
 	}
 	public void UpdateWeaponDamage(EntityStats playerStats, Weapons offHandWeapon)
 	{

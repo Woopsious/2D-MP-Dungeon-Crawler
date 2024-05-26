@@ -76,13 +76,14 @@ public class Accessories : Items
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
-			rarity = "Legendary";
+			rarity = "<color=orange>Legendary</color>";
 		else if (this.rarity == Rarity.isEpic)
-			rarity = "Epic";
+			rarity = "<color=purple>Epic</color>";
 		else if (this.rarity == Rarity.isRare)
-			rarity = "Rare";
+			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
+
 		string info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price";
 
 		string extraInfo;
@@ -113,7 +114,13 @@ public class Accessories : Items
 			extraInfo = $"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana" +
 				$"\n{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Extra Healing";
 
-		toolTip.tipToShow = $"{info}\n{extraInfo}";
+		string equipInfo;
+		if (playerStats.entityLevel < itemLevel)
+			equipInfo = "<color=red>Cant Equip Accessory \n Level Too High</color>";
+		else
+			equipInfo = "<color=green>Can Equip Accessory</color>";
+
+		toolTip.tipToShow = $"{info}\n{extraInfo}\n{equipInfo}";
 	}
 
 	public void SetRandomDamageTypeOnDrop()
