@@ -144,15 +144,15 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return true;
 	}
-	public bool CheckDistanceToPlayer()
+	public bool CheckDistanceToPlayerIsBigger(float distanceToCheck)
 	{
 		if (player == null) return false;
 		float distance = Vector2.Distance(transform.position, player.transform.position);
 
-		if (distance < entityBehaviour.maxChaseRange)
-			return false;
-		else
+		if (distance > distanceToCheck)
 			return true;
+		else
+			return false;
 	}
 
 	//STATE CHANGES

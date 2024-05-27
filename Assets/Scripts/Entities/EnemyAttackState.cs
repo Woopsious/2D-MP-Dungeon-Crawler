@@ -8,6 +8,7 @@ public class EnemyAttackState : EnemyBaseState
 {
 	Weapons equippedWeapon;
 	float distanceToPlayer;
+	bool idleInWeaponRange;
 
 	public override void Enter(EntityBehaviour entity)
 	{
@@ -27,7 +28,7 @@ public class EnemyAttackState : EnemyBaseState
 		///	and doesnt take into account the length of the weapon (dagger only has a reach of about 1, the rest have about 2)
 		///<summary>
 
-		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.baseMaxAttackRange)
+		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)
 		{
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
 				equippedWeapon.RangedAttack(entity.player.transform.position, entity.projectilePrefab);
@@ -43,24 +44,54 @@ public class EnemyAttackState : EnemyBaseState
 		{
 			distanceToPlayer = Vector3.Distance(entity.transform.position, entity.player.transform.position);
 
-			if (entity.CheckDistanceToPlayer()) //player outside of max chase range
+			if (entity.CheckDistanceToPlayerIsBigger(entity.entityBehaviour.maxChaseRange)) //player outside of max chase range
 			{
 				entity.player = null;
 				entity.ChangeStateIdle();
 			}
 
-			if (entity.CheckDistanceToDestination())
-				ChasePlayer(entity);
+			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
+				KeepDistanceFromPlayer(entity);
+			else
+			{
+				//if melee weapon charge at player
+				if (entity.CheckDistanceToDestination())
+					ChasePlayer(entity);
+			}
 		}
 	}
 
 	//attack behaviour
-	public void UpdatePlayerPosition(EntityBehaviour entity)
+	private void UpdatePlayerPosition(EntityBehaviour entity)
 	{
 		if (entity.player != null && entity.CheckIfPlayerVisible())
 			entity.playersLastKnownPosition = entity.player.transform.position;
 	}
-	public void ChasePlayer(EntityBehaviour entity)
+	private void KeepDistanceFromPlayer(EntityBehaviour entity)
+	{
+		//idle when within ranges of max range		eg: 10 / 1.25 = 8		eg: 10 / 1.5 = 6.25
+		//chase player when out of max attack range till inside max range / 1.25f
+		//flee when player inside min attack range * 2	eg: 2 * 2 = 4
+
+		if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.25f) &&
+			entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.5f) && idleInWeaponRange == false)
+		{
+			entity.CheckAndSetNewPath(entity.transform.position);
+			idleInWeaponRange = true;
+		}
+		else if (entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange))
+		{
+			ChasePlayer(entity);
+			idleInWeaponRange = false;
+		}
+		else if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.minAttackRange * 2))
+		{
+			Vector3 fleeDir = new Vector2(entity.transform.position.x, entity.transform.position.y) - entity.playersLastKnownPosition;
+			Vector2 fleePos = entity.SampleNewMovePosition(entity.transform.position + fleeDir);
+			entity.CheckAndSetNewPath(fleePos);
+		}
+	}
+	private void ChasePlayer(EntityBehaviour entity)
 	{
 		Vector2 movePosition = entity.SampleNewMovePosition(entity.playersLastKnownPosition);
 		entity.CheckAndSetNewPath(movePosition);

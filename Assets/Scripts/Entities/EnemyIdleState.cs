@@ -22,10 +22,12 @@ public class EnemyIdleState : EnemyBaseState
 	{
 		if (!entity.CheckIfPlayerVisible())
 		{
+			InvestigatePlayersLastKnownPos(entity);
+
 			if (entity.CheckDistanceToDestination())
 				IdleAtPositionTimer(entity);
 
-			if (entity.CheckDistanceToPlayer()) //player outside of max chase range
+			if (entity.CheckDistanceToPlayerIsBigger(entity.entityBehaviour.maxChaseRange)) //player outside of max chase range
 				entity.player = null;
 		}
 		else if (entity.CheckIfPlayerVisible())
@@ -33,6 +35,18 @@ public class EnemyIdleState : EnemyBaseState
 	}
 
 	//idle behaviour
+	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
+	{
+		if (entity.playersLastKnownPosition != new Vector2(0, 0))
+		{
+			entity.SampleNewMovePosition(entity.playersLastKnownPosition);
+			if (entity.CheckDistanceToDestination())
+			{
+				entity.playersLastKnownPosition = new Vector2(0, 0);
+				IdleAtPositionTimer(entity);
+			}
+		}
+	}
 	public void IdleAtPositionTimer(EntityBehaviour entity)
 	{
 		if (entity.HasReachedDestination == true)

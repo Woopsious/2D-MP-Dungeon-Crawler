@@ -39,14 +39,17 @@ public class PlayerInfoUi : MonoBehaviour
 
 			weaponInfo = $"\r\n\r\nWeapon DPS: {dps} \r\nWeapon Damage: {stats.equipmentHandler.equippedWeapon.damage} \r\n " +
 				$"Weapon Knockback: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseKnockback}";
+
 			string rangeInfo;
-
 			if (stats.equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
-				rangeInfo = $"\r\nWeapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseMaxAttackRange}";
+			{
+				rangeInfo = $"\r\nMax Weapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange}";
+				rangeInfo += $"\r\nMin Weapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.minAttackRange}";
+			}
 			else
-				rangeInfo = $"\r\nWeapon Range: Melee";
+				rangeInfo = $"\r\nWeapon Reach: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange}";
 
-			weaponInfo += $"\r\nWeapon Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}{rangeInfo}";
+			weaponInfo += $"\r\nWeapon Attack Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}{rangeInfo}";
 		}
 		else
 			weaponInfo = "\r\n\r\nNo main weapon equipped";

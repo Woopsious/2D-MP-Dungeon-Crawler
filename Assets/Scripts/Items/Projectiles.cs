@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -18,6 +19,9 @@ public class Projectiles : MonoBehaviour
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
+
+	Vector2 projectileOrigin;
+	float distanceTraveled;
 
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
@@ -59,6 +63,7 @@ public class Projectiles : MonoBehaviour
 		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
 		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
 		projectileDamage = weaponRef.damage;
+		projectileOrigin = transform.position;
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
@@ -77,14 +82,23 @@ public class Projectiles : MonoBehaviour
 			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile);
 		else
+		{
+			//half ranged weapon damage
+			if (distanceTraveled < weaponBaseRef.minAttackRange)
+				projectileDamage /= 2;
+
 			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				false, isPlayerProjectile);
-
+		}
 		Destroy(gameObject);
 	}
 
 	private void FixedUpdate()
 	{
+		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
+
+		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
+			Destroy(gameObject);
 	}
 }

@@ -146,10 +146,10 @@ public class EntityStats : MonoBehaviour
 	}
 	private void RecieveDamage(float damage, IDamagable.DamageType damageType, bool isPercentageValue)
 	{
-		//Debug.Log(gameObject.name + " recieved :" + damage);
+		//Debug.Log(gameObject.name + " recieved: " + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
 		{
-			//Debug.Log("Poison Dmg res: " + poisonResistance);
+			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - poisonResistance.finalValue;
 			else
@@ -157,7 +157,7 @@ public class EntityStats : MonoBehaviour
 		}
 		if (damageType == IDamagable.DamageType.isFireDamageType)
 		{
-			//Debug.Log("Fire Dmg res: " + fireResistance);
+			//Debug.Log("Fire Dmg res: " + fireResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - fireResistance.finalValue;
 			else
@@ -165,7 +165,7 @@ public class EntityStats : MonoBehaviour
 		}
 		if (damageType == IDamagable.DamageType.isIceDamageType)
 		{
-			//Debug.Log("Ice Dmg res: " + iceResistance);
+			//Debug.Log("Ice Dmg res: " + iceResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - iceResistance.finalValue;
 			else
@@ -173,7 +173,7 @@ public class EntityStats : MonoBehaviour
 		}
 		else
 		{
-			//Debug.Log("Physical Dmg res: " + physicalResistance);
+			//Debug.Log("Physical Dmg res: " + physicalResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - physicalResistance.finalValue;
 			else
@@ -183,6 +183,7 @@ public class EntityStats : MonoBehaviour
 		if (damage < 3) //always deal 3 damage
 			damage = 3;
 
+		//Debug.Log("FinalDmg: " + damage);
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
 

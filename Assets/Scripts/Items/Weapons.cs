@@ -77,21 +77,25 @@ public class Weapons : Items
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
 			info += "\n Dual hand ";
 
-		if (weaponBaseRef.isRangedWeapon)
-			info += "ranged weapon";
-		else
-			info += "melee weapon";
-
-		string dps;
 		if (isShield)
-			dps = $"Blocks {damage}";
+			info += "";
+		else if (weaponBaseRef.isRangedWeapon)
+		{
+			info += "Ranged Weapon\nHalf Damage At Min Range\n" +
+				$"{weaponBaseRef.maxAttackRange} Max Range\n{weaponBaseRef.minAttackRange} Min Range";
+		}
+		else
+			info += $"Melee Weapon\n{weaponBaseRef.maxAttackRange} Reach";
+
+		string damageInfo;
+		if (isShield)
+			damageInfo = $"{damage} Extra Health\n{damage} To All Res";
 		else
 		{
-			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
-			dps = $"{newDps} Dps";
+			int dps = (int)(damage / weaponBaseRef.baseAttackSpeed);
+			damageInfo = $"\n{dps} Dps\n{damage} Damage\n" +
+				$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 		}
-		string damageInfo = $"{dps}\n{damage} Damage\n" +
-			$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 
 		string equipInfo;
 		if (playerStats.entityLevel < itemLevel)
