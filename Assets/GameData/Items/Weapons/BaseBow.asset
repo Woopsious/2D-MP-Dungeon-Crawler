@@ -29,8 +29,8 @@ MonoBehaviour:
   weaponType: 0
   baseDamageType: 0
   isRangedWeapon: 1
-  baseMaxAttackRange: 10
-  baseMinAttackRange: 4
+  maxAttackRange: 10
+  minAttackRange: 2
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   baseBonusMana: 0
