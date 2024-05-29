@@ -29,7 +29,7 @@ MonoBehaviour:
   weaponType: 2
   baseDamageType: 0
   isRangedWeapon: 0
-  maxAttackRange: 1
+  maxAttackRange: 1.5
   minAttackRange: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

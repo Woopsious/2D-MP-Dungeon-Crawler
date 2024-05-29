@@ -29,6 +29,9 @@ public class SOEntityStats : ScriptableObject
 	public float manaRegenPercentage;
 	public float manaRegenCooldown;
 
+	[Header("Possible Classes")]
+	public List<SOClasses> possibleClassesList = new List<SOClasses>();
+
 	[Header("Possible Weapons")]
 	public List<SOWeapons> possibleWeaponsList = new List<SOWeapons>();
 

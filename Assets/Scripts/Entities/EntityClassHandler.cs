@@ -8,10 +8,6 @@ using UnityEngine;
 public class EntityClassHandler : MonoBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
-
-	[Header("Current Class")]
-	public List<SOClasses> possibleClassesList = new List<SOClasses>();
-
 	[Header("Current Class")]
 	public SOClasses currentEntityClass;
 	public GameObject itemPrefab;
@@ -36,8 +32,8 @@ public class EntityClassHandler : MonoBehaviour
 	}
 	private void SetRandomClass()
 	{
-		int num = Utilities.GetRandomNumber(possibleClassesList.Count);
-		currentEntityClass = possibleClassesList[num];
+		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count);
+		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
 
 		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
 		{

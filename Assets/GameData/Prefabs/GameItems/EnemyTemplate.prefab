@@ -797,8 +797,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
-  possibleClassesList: []
-  currentEntityClass: {fileID: 0}
+  currentEntityClass: {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
   itemPrefab: {fileID: 0}
   unlockedAbilitiesList: []
   unlockedStatBoostList: []

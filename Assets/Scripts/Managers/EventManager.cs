@@ -44,6 +44,11 @@ public static class EventManager
 	{
 		OnAddExpToPlayers?.Invoke(playerList);
 	}
+	public static Action<EntityStats> OnPlayerLevelUpEvent;
+	public static void PlayerLevelUp(EntityStats playerStats)
+	{
+		OnPlayerLevelUpEvent?.Invoke(playerStats);
+	}
 
 	/// <summary>
 	/// UI EVENTS

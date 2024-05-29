@@ -7,6 +7,10 @@ public class SpawnHandler : MonoBehaviour
 {
 	public List<GameObject> possibleEntitiesPrefabsToSpawn = new List<GameObject>();
 
+	public int debugSpawnerLevel;
+	public bool debugSpawnEnemiesAtSetLevel;
+
+	public int spawnerLevel;
 	public int maxNumOfEnemiesToSpawn;
 	private List<GameObject> listOfSpawnedEnemies = new List<GameObject>();
 
@@ -20,12 +24,14 @@ public class SpawnHandler : MonoBehaviour
 	private void OnEnable()
 	{
 		EventManager.OnDeathEvent += OnEntityDeath;
+		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntity;
 	}
 
 	private void OnDisable()
 	{
 		EventManager.OnDeathEvent -= OnEntityDeath;
+		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntity;
 	}
 
@@ -46,6 +52,11 @@ public class SpawnHandler : MonoBehaviour
 		}
 	}
 
+	private void OnPlayerLevelUpUpdateSpawnerLevel(EntityStats playerStats)
+	{
+		Debug.Log("setting spawner level");
+		spawnerLevel = playerStats.entityLevel;
+	}
 	private void OnEntityDeath(GameObject obj)
 	{
 		if (listOfSpawnedEnemies.Contains(obj))
@@ -62,13 +73,14 @@ public class SpawnHandler : MonoBehaviour
 
 		SpawnRandomEntity();
 	}
-
 	private void SpawnRandomEntity()
 	{
 		int num = Utilities.GetRandomNumber(possibleEntitiesPrefabsToSpawn.Count);
-		Debug.Log(num);
 		GameObject go = Instantiate(possibleEntitiesPrefabsToSpawn[num], transform.position, transform.rotation);
 		listOfSpawnedEnemies.Add(go);
+
+		if (debugSpawnEnemiesAtSetLevel)
+			go.GetComponent<EntityStats>().entityLevel = debugSpawnerLevel;
 
 		TrySpawnEntity();
 	}

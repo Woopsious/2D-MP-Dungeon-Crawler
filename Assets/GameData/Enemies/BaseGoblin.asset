@@ -24,7 +24,12 @@ MonoBehaviour:
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 3
+  possibleClassesList:
+  - {fileID: 11400000, guid: 42ee38bbdb9a4f24eab27497a00bb1ec, type: 2}
+  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
   possibleWeaponsList:
+  - {fileID: 11400000, guid: 329f5669713f10c44902f70b88ded74e, type: 2}
+  - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
   possibleHelmetsList:
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}

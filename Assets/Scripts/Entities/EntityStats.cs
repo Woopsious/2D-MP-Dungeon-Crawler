@@ -69,9 +69,8 @@ public class EntityStats : MonoBehaviour
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
 
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
+		//for mp needs to be a list for each player
+		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
 	{
@@ -86,9 +85,8 @@ public class EntityStats : MonoBehaviour
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
 
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
+		//for mp needs to be a list for each player
+		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
 	private void Update()
@@ -326,11 +324,11 @@ public class EntityStats : MonoBehaviour
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier
 	/// </summary>
-	private void OnPlayerLevelUp(int newPlayerLevel)
+	private void OnPlayerLevelUp(EntityStats playerStats)
 	{
 		if (currentHealth <= 0) return;
 
-		entityLevel = newPlayerLevel;
+		entityLevel = playerStats.entityLevel;
 		bool wasDamaged = true;
 
 		if (maxHealth.finalValue == currentHealth)

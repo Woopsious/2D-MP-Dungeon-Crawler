@@ -14,8 +14,6 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private EntityStats playerStats;
 
-	public event Action<int> OnPlayerLevelUpEvent;
-
 	private void Start()
 	{
 		playerController = GetComponent<PlayerController>();
@@ -69,7 +67,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		currentExp = r;
 
 		EventManager.PlayerExpChange(maxExp, currentExp);
-		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
+		EventManager.PlayerLevelUp(playerStats);
 	}
 	private bool CheckIfPLayerCanLevelUp()
 	{
