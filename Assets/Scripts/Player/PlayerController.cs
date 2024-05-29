@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
 	//abilities
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
 	public event Action<Abilities> OnCancelQueuedAbilities;
-	public bool debugUseMouseDirectionForProjectiles;
+	public bool debugUseSelectedTargetForAttackDirection;
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
@@ -117,6 +117,7 @@ public class PlayerController : MonoBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
+		EventManager.PlayerLevelUp(playerStats);
 	}
 
 	private void PlayerMovement()
@@ -216,7 +217,7 @@ public class PlayerController : MonoBehaviour
 		go.GetComponent<Projectiles>().Initilize(ability, playerStats);
 
 		Vector3 rotation;
-		if (debugUseMouseDirectionForProjectiles)
+		if (!debugUseSelectedTargetForAttackDirection)
 			rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
 		else
 			rotation = selectedTarget.transform.position - transform.position;
@@ -294,14 +295,14 @@ public class PlayerController : MonoBehaviour
 
 			if (weapon.weaponBaseRef.isRangedWeapon)
 			{
-				if (debugUseMouseDirectionForProjectiles)
+				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
 				else
 					weapon.RangedAttack(selectedTarget.transform.position, projectilePrefab);
 			}
 			else
 			{
-				if (debugUseMouseDirectionForProjectiles)
+				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 				else
 					weapon.MeleeAttack(selectedTarget.transform.position);

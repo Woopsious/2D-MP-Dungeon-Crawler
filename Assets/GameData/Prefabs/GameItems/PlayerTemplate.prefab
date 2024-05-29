@@ -534,7 +534,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
-  possibleClassesList: []
   currentEntityClass: {fileID: 0}
   itemPrefab: {fileID: 0}
   unlockedAbilitiesList: []

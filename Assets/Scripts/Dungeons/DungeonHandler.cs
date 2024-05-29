@@ -27,17 +27,17 @@ public class DungeonHandler : MonoBehaviour
 		//then probably call an event to equip the gear the player is actually supposed to be wearing as well as when ever they change
 		//damage, spells, skill etc should just work if i call them through the rpc network manager events
 
+		/*
 		PlayerController player = PlayerInventoryManager.Instance.GetComponent<PlayerController>();
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 		player.transform.position = portalSpawnPoint.transform.position;
+		*/
 
-		/*
 		PlayerController[] players = FindObjectsOfType<PlayerController>();
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 
 		foreach (PlayerController player in players)
 			player.transform.position = portalSpawnPoint.transform.position;
-		*/
 	}
 }
 

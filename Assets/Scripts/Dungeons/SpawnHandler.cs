@@ -54,7 +54,6 @@ public class SpawnHandler : MonoBehaviour
 
 	private void OnPlayerLevelUpUpdateSpawnerLevel(EntityStats playerStats)
 	{
-		Debug.Log("setting spawner level");
 		spawnerLevel = playerStats.entityLevel;
 	}
 	private void OnEntityDeath(GameObject obj)
@@ -81,6 +80,8 @@ public class SpawnHandler : MonoBehaviour
 
 		if (debugSpawnEnemiesAtSetLevel)
 			go.GetComponent<EntityStats>().entityLevel = debugSpawnerLevel;
+		else
+			go.GetComponent<EntityStats>().entityLevel = spawnerLevel;
 
 		TrySpawnEntity();
 	}
