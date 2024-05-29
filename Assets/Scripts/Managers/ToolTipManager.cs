@@ -280,7 +280,7 @@ public class ToolTipManager : MonoBehaviour
 		if (questItem != null)
 		{
 			int amountRequired = questItem.amount - questItem.currentAmount;
-			questItem.OnItemHandInCheckHandInAmount(questItem, slot);
+			questItem.HandInItem(questItem, slot);
 
 			if (amountRequired > slot.itemInSlot.currentStackCount)
 				DiscardItem(slot);

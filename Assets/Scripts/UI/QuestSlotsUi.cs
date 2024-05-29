@@ -68,6 +68,7 @@ public class QuestSlotsUi : MonoBehaviour
 	private void OnDisable()
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
+		EventManager.OnDeathEvent -= OnEntityDeathCheckKillAmount;
 	}
 	public void InitilizeBossKillQuest()
 	{
@@ -218,7 +219,7 @@ public class QuestSlotsUi : MonoBehaviour
 		if (currentAmount >= amount)
 			CompleteThisQuest();
 	}
-	public void OnItemHandInCheckHandInAmount(QuestSlotsUi assignedQuest, InventorySlotUi slot)
+	public void HandInItem(QuestSlotsUi assignedQuest, InventorySlotUi slot)
 	{
 		if (assignedQuest != this) return;
 
