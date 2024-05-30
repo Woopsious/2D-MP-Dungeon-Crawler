@@ -10,7 +10,6 @@ public class EntityClassHandler : MonoBehaviour
 	[HideInInspector] public EntityStats entityStats;
 	[Header("Current Class")]
 	public SOClasses currentEntityClass;
-	public GameObject itemPrefab;
 
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();

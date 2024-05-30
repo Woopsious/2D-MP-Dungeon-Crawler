@@ -24,6 +24,10 @@ MonoBehaviour:
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 3
+  itemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
+  projectilesPrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
+  AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
+  statusEffectPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   possibleClassesList:
   - {fileID: 11400000, guid: 42ee38bbdb9a4f24eab27497a00bb1ec, type: 2}
   - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
@@ -40,3 +44,4 @@ MonoBehaviour:
   possibleLegsList:
   - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
   - {fileID: 11400000, guid: 820b16f51400afa418909af5e95b60cd, type: 2}
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
