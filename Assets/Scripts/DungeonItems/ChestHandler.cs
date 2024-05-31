@@ -36,8 +36,6 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		spriteRenderer.sprite = chestClosedSprite;
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
-		lootSpawnHandler.lootSpawnBounds.min = new Vector3(transform.position.x - 1, transform.position.y - 1, 0);
-		lootSpawnHandler.lootSpawnBounds.max = new Vector3(transform.position.x + 1, transform.position.y + 1, 0);
 		chestStateOpened = false;
 
 		interactWithText.transform.SetParent(FindObjectOfType<Canvas>().transform);
@@ -59,7 +57,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	private void ChangeChestStateToOpen()
 	{
 		chestStateOpened = true;
-		lootSpawnHandler.SpawnChestLoot();
+		lootSpawnHandler.SpawnLoot();
 		spriteRenderer.sprite = chestOpenedSprite;
 	}
 

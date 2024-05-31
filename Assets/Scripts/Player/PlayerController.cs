@@ -16,6 +16,9 @@ using UnityEngine.UIElements;
 public class PlayerController : MonoBehaviour
 {
 	public bool debugSetStartingItems;
+	public bool debugUseSelectedTargetForAttackDirection;
+	public bool debugSetPlayerLevelOnStart;
+	public int debugPlayerLevel;
 	public Camera playerCamera;
 	public LayerMask includeMe;
 	private EntityStats playerStats;
@@ -36,7 +39,6 @@ public class PlayerController : MonoBehaviour
 	//abilities
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
 	public event Action<Abilities> OnCancelQueuedAbilities;
-	public bool debugUseSelectedTargetForAttackDirection;
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
@@ -110,7 +112,11 @@ public class PlayerController : MonoBehaviour
 		animator = GetComponent<Animator>();
 		playerCamera.transform.parent = null;
 
-		playerStats.entityLevel = 20;
+		if (debugSetPlayerLevelOnStart)
+			playerStats.entityLevel = debugPlayerLevel;
+		else
+			playerStats.entityLevel = 1;
+		EventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
 	private void ReloadPlayerInfo()

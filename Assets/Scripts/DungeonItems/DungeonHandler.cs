@@ -9,6 +9,10 @@ public class DungeonHandler : MonoBehaviour
 {
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
 
+	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
+	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
+	public List<ChestHandler> dungeonChestLists = new List<ChestHandler>();
+
 	private void OnEnable()
 	{
 		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
@@ -19,7 +23,7 @@ public class DungeonHandler : MonoBehaviour
 		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
 	}
 
-	public void SetPlayerSpawn()
+	private void SetPlayerSpawn()
 	{
 		if (dungeonPortalsList.Count <= 0) return;
 

@@ -5,26 +5,40 @@ using UnityEngine;
 
 public class LootSpawnHandler : MonoBehaviour
 {
-	[HideInInspector] public Bounds lootSpawnBounds;
 	public GameObject droppedItemPrefab;
 	public SOLootPools lootPool;
+	public int lootSpawnerLevel;
 
 	//invoked from event
 	private void OnEnable()
 	{
-		//EventManager.OnDeathEvent += OnDeathEvent;
+		EventManager.OnDeathEvent += OnDeathEvent;
+		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateLootSpawnerLevel;
 	}
 	private void OnDisable()
 	{
-		//EventManager.OnDeathEvent -= OnDeathEvent;
+		EventManager.OnDeathEvent -= OnDeathEvent;
+		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateLootSpawnerLevel;
 	}
 
-	public void SpawnChestLoot()
+	private void OnDeathEvent(GameObject obj)
 	{
-		for (int i = 0; i < lootPool.minDroppedItemsAmount; i++) //spawn item from loot pool at death location
+		if (obj != gameObject) return;
+
+		SpawnLoot();
+	}
+	private void OnPlayerLevelUpUpdateLootSpawnerLevel(EntityStats playerStats)
+	{
+		lootSpawnerLevel = playerStats.entityLevel;
+	}
+
+	public void SpawnLoot()
+	{
+		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);
+		for (int i = 0; i < numOfItemsToSpawn; i++) //spawn item from loot pool at death location
 		{
 			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count);
-			GameObject go = Instantiate(droppedItemPrefab, GetLootSpawnPos(), Quaternion.identity);
+			GameObject go = Instantiate(droppedItemPrefab, transform.position, Quaternion.identity);
 
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isWeapon)
 				SetUpWeaponItem(go, index);
@@ -42,16 +56,10 @@ public class LootSpawnHandler : MonoBehaviour
 
 			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
 			//im just not sure of a better way to do it atm
-			go.GetComponent<Items>().Initilize(Utilities.SetRarity(), 
-				Utilities.SetItemLevel(PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel));
+			go.GetComponent<Items>().Initilize(Utilities.SetRarity(), Utilities.SetItemLevel(lootSpawnerLevel));
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}
-	}
-	private Vector2 GetLootSpawnPos()
-	{
-		Vector2 spawnPos = Utilities.GetRandomPointInBounds(lootSpawnBounds);
-		return spawnPos;
 	}
 
 	private void SetUpItem(GameObject go, int index)
@@ -86,17 +94,5 @@ public class LootSpawnHandler : MonoBehaviour
 		Consumables consumables = go.AddComponent<Consumables>();
 		consumables.consumableBaseRef = (SOConsumables)lootPool.lootPoolList[index];
 		consumables.SetCurrentStackCount(3);
-	}
-
-	private bool WillDropExtraloot()
-	{
-		return false;
-	}
-
-	//utility
-	public void OnDrawGizmos()
-	{
-		Gizmos.color = Color.red;
-		Gizmos.DrawWireCube(lootSpawnBounds.center, lootSpawnBounds.size);
 	}
 }

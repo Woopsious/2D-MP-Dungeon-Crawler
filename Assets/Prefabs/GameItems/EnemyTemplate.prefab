@@ -469,7 +469,7 @@ GameObject:
   - component: {fileID: 8171261531979810465}
   - component: {fileID: 5524032958697930596}
   - component: {fileID: 7819874737091508958}
-  - component: {fileID: 6932110736758406040}
+  - component: {fileID: -3271526235124138567}
   - component: {fileID: 8699016188329775386}
   - component: {fileID: 3956036049374441388}
   m_Layer: 9
@@ -798,7 +798,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
   currentEntityClass: {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
-  itemPrefab: {fileID: 0}
   unlockedAbilitiesList: []
   unlockedStatBoostList: []
 --- !u!114 &7819874737091508958
@@ -843,7 +842,7 @@ MonoBehaviour:
   poisonDamagePercentage: 0
   fireDamagePercentage: 0
   iceDamagePercentage: 0
---- !u!114 &6932110736758406040
+--- !u!114 &-3271526235124138567
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -852,11 +851,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 8615628319028095835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 777eb1983a79a0a40b7d5bab4c14b1a0, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f9797c0b6fc1ac49980369cefc466db, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
   lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
+  lootSpawnerLevel: 0
 --- !u!114 &8699016188329775386
 MonoBehaviour:
   m_ObjectHideFlags: 0

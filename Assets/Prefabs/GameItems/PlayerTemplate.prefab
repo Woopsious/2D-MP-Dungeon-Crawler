@@ -227,9 +227,9 @@ GameObject:
   - component: {fileID: 5266391747594527150}
   - component: {fileID: 5970125703919304695}
   - component: {fileID: 3468300136831603170}
+  - component: {fileID: 4193777512436036858}
   - component: {fileID: 4412705391860920891}
   - component: {fileID: 1965868520373403594}
-  - component: {fileID: 4193777512436036858}
   - component: {fileID: 3812097260653837204}
   - component: {fileID: 120328194627084056}
   - component: {fileID: 5724620505289801652}
@@ -334,6 +334,34 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &4193777512436036858
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763340389273497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eaaf8b75dd8890458bc28cd5e210002, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugSetStartingItems: 0
+  debugUseSelectedTargetForAttackDirection: 0
+  debugSetPlayerLevelOnStart: 0
+  debugPlayerLevel: 1
+  playerCamera: {fileID: 2531859271035774187}
+  includeMe:
+    serializedVersion: 2
+    m_Bits: 512
+  playerEquipmentHandler: {fileID: 0}
+  selectedTarget: {fileID: 0}
+  AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
+  projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
+  queuedAbility: {fileID: 0}
+  isInteractingWithPortal: 0
+  isInteractingWithChest: 0
+  isInteractingWithNpc: 0
 --- !u!114 &4412705391860920891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -496,31 +524,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugInvincible: 0
   isDestroyedInOneHit: 0
---- !u!114 &4193777512436036858
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405763340389273497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2eaaf8b75dd8890458bc28cd5e210002, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  debugSetStartingItems: 0
-  playerCamera: {fileID: 2531859271035774187}
-  includeMe:
-    serializedVersion: 2
-    m_Bits: 512
-  playerEquipmentHandler: {fileID: 0}
-  selectedTarget: {fileID: 0}
-  debugUseMouseDirectionForProjectiles: 0
-  AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
-  projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
-  queuedAbility: {fileID: 0}
-  isInteractingWithNpc: 0
-  isInteractingWithPortal: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -535,7 +538,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
   currentEntityClass: {fileID: 0}
-  itemPrefab: {fileID: 0}
   unlockedAbilitiesList: []
   unlockedStatBoostList: []
 --- !u!114 &120328194627084056

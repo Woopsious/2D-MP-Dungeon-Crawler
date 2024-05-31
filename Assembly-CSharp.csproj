@@ -106,7 +106,6 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeSlotUi.cs" />
-    <Compile Include="Assets\Scripts\Entities\EntityLootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
