@@ -127,7 +127,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		if (weapon == null) return;
 
-		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+		if (weapon.isShield)	//shield is a unique use damage value to store bonus health and resists it adds
 		{
 			equipmentHealth -= weapon.damage;
 			equipmentPhysicalResistance -= weapon.damage;
@@ -138,6 +138,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana -= weapon.bonusMana;
 
+		Destroy(weapon);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
@@ -169,6 +170,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
 
+		Destroy(armor);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
@@ -205,6 +207,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 
+		Destroy(accessory);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)

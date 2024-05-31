@@ -22,6 +22,7 @@ public class EnemyAttackState : EnemyBaseState
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
 		UpdatePlayerPosition(entity);
+		if (equippedWeapon == null) return;
 
 		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)
 		{
