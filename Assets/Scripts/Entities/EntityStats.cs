@@ -95,6 +95,7 @@ public class EntityStats : MonoBehaviour
 	}
 	public void Initilize()
 	{
+		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = entityBaseStats.sprite;

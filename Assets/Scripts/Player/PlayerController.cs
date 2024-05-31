@@ -43,10 +43,12 @@ public class PlayerController : MonoBehaviour
 	public Abilities queuedAbility;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithNpc;
-	private NpcHandler currentInteractedNpc;
 	[HideInInspector] public bool isInteractingWithPortal;
 	private PortalHandler currentInteractedPortal;
+	[HideInInspector] public bool isInteractingWithChest;
+	private ChestHandler currentInteractedChest;
+	[HideInInspector] public bool isInteractingWithNpc;
+	private NpcHandler currentInteractedNpc;
 
 	private void Awake()
 	{
@@ -248,25 +250,25 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.GetComponent<NpcHandler>() != null)
-		{
-			currentInteractedNpc = other.GetComponent<NpcHandler>();
-			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
-		}
-		else if (other.GetComponent<PortalHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null)
 		{
 			currentInteractedPortal = other.GetComponent<PortalHandler>();
 			currentInteractedPortal.interactWithText.gameObject.SetActive(true);
 		}
+		else if (other.GetComponent<ChestHandler>() != null)
+		{
+			currentInteractedChest = other.GetComponent<ChestHandler>();
+			currentInteractedChest.interactWithText.gameObject.SetActive(true);
+		}
+		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			currentInteractedNpc = other.GetComponent<NpcHandler>();
+			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
+		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.GetComponent<NpcHandler>() != null)
-		{
-			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
-			currentInteractedNpc = null;
-		}
-		else if (other.GetComponent<PortalHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null)
 		{
 			if (currentInteractedPortal.interactWithText == null) //remove null error when using portal to travel
 				currentInteractedPortal = null;
@@ -275,6 +277,16 @@ public class PlayerController : MonoBehaviour
 				currentInteractedPortal.interactWithText.gameObject.SetActive(false);
 				currentInteractedPortal = null;
 			}
+		}
+		else if (other.GetComponent<ChestHandler>() != null)
+		{
+			currentInteractedChest.interactWithText.gameObject.SetActive(false);
+			currentInteractedChest = null;
+		}
+		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
+			currentInteractedNpc = null;
 		}
 	}
 
@@ -332,6 +344,8 @@ public class PlayerController : MonoBehaviour
 	{
 		if (currentInteractedPortal != null)
 			currentInteractedPortal.Interact(this);
+		else if (currentInteractedChest != null)
+			currentInteractedChest.Interact(this);
 		else if (currentInteractedNpc != null)
 		{
 			if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)

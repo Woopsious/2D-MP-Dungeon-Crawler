@@ -93,6 +93,7 @@
     <Compile Include="Assets\Scripts\Managers\EventManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryItemUi.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\LootSpawnHandler.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Assets\Scripts\UI\ClassesUi.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\ChestHandler.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
