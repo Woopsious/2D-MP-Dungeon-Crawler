@@ -11,9 +11,11 @@ public class DungeonSlotUi : MonoBehaviour
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
 
+	public TMP_Text dungeonUnExploredText;
 	public TMP_Text dungeonDifficultyText;
 	public TMP_Text dungeonModifiersText;
 
+	public bool hasExploredDungeon;
 	public bool isDungeonSaved;
 	public int dungeonNumber;
 
@@ -32,8 +34,14 @@ public class DungeonSlotUi : MonoBehaviour
 
 	public void Initilize()
 	{
+		hasExploredDungeon = false;
 		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 2); //(not including hub and main menu scene)
 		int modifier = Utilities.GetRandomNumber(3);
+
+		if (hasExploredDungeon == false)
+			dungeonUnExploredText.gameObject.SetActive(true);
+		else
+			dungeonUnExploredText.gameObject.SetActive(false);
 
 		if (modifier == 0)
 		{
@@ -45,13 +53,13 @@ public class DungeonSlotUi : MonoBehaviour
 		{
 			maxDungeonModifiers = 3;
 			dungeonStatModifiers.difficultyModifier = 0.1f;
-			dungeonDifficultyText.text = "Difficulty: Hard \n(10% bonus to all enemy stats)";
+			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
 		}
 		else
 		{
 			maxDungeonModifiers = 5;
 			dungeonStatModifiers.difficultyModifier = 0.25f;
-			dungeonDifficultyText.text = "Difficulty: Hell \n(25% bonus to all enemy stats)";
+			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
 		}
 
 		for (int i = 0; i < maxDungeonModifiers; i++)
@@ -62,14 +70,20 @@ public class DungeonSlotUi : MonoBehaviour
 			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length);
 			SetModifierForDungeon(modifierType);
 		}
-
+		
 		saveDungeonButtonObj.SetActive(true);
 		deleteDungeonButtonObj.SetActive(false);
 	}
-	public void Initilize(SavedDungeonData dungeonData)
+	public void Initilize(DungeonData dungeonData)
 	{
+		hasExploredDungeon = dungeonData.hasExploredDungeon;
 		dungeonNumber = dungeonData.dungeonNumber;
 		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
+
+		if (hasExploredDungeon == false)
+			dungeonUnExploredText.gameObject.SetActive(true);
+		else
+			dungeonUnExploredText.gameObject.SetActive(false);
 
 		if (dungeonStatModifiers.difficultyModifier == 0)
 		{
@@ -79,12 +93,12 @@ public class DungeonSlotUi : MonoBehaviour
 		else if (dungeonStatModifiers.difficultyModifier == 0.1f)
 		{
 			maxDungeonModifiers = 3;
-			dungeonDifficultyText.text = "Difficulty: Hard \n(10% bonus to all enemy stats)";
+			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
 		}
 		else
 		{
 			maxDungeonModifiers = 5;
-			dungeonDifficultyText.text = "Difficulty: Hell \n(25% bonus to all enemy stats)";
+			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
 		}
 
 		if (dungeonStatModifiers.healthModifier != 0)
@@ -116,8 +130,6 @@ public class DungeonSlotUi : MonoBehaviour
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.dualWeaponDamageModifier)}% more Dual Weapon Damage";
 		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
-
-		SaveDungeon();
 	}
 	private void SetModifierForDungeon(int modifierType)
 	{
@@ -196,6 +208,7 @@ public class DungeonSlotUi : MonoBehaviour
 	}
 	public void EnterDungeon()
 	{
+		hasExploredDungeon = true;
 		GameManager.dungeonStatModifiers = dungeonStatModifiers;
 
 		if (dungeonNumber == 0)

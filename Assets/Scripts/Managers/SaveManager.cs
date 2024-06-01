@@ -193,15 +193,27 @@ public class SaveManager : MonoBehaviour
 	private void SaveSavedDungeonData()
 	{
 		GameData.savedDungeonsList.Clear();
-
 		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
-			SavedDungeonData dungeonData = new SavedDungeonData
+			DungeonData dungeonData = new DungeonData
 			{ 
+				hasExploredDungeon = dungeon.hasExploredDungeon,
 				dungeonNumber = dungeon.dungeonNumber,
 				dungeonStatModifiers = dungeon.dungeonStatModifiers 
 			};
 			GameData.savedDungeonsList.Add(dungeonData);
+		}
+
+		GameData.activeDungeonsList.Clear();
+		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
+		{
+			DungeonData dungeonData = new DungeonData
+			{
+				hasExploredDungeon = dungeon.hasExploredDungeon,
+				dungeonNumber = dungeon.dungeonNumber,
+				dungeonStatModifiers = dungeon.dungeonStatModifiers
+			};
+			GameData.activeDungeonsList.Add(dungeonData);
 		}
 	}
 	private void SavePlayerInfoData()
@@ -343,7 +355,8 @@ public class GameData
 	public List<InventoryItemData> consumableItems = new List<InventoryItemData>();
 	public List<InventoryItemData> abilityItems = new List<InventoryItemData>();
 
-	public List<SavedDungeonData> savedDungeonsList = new List<SavedDungeonData>();
+	public List<DungeonData> activeDungeonsList = new List<DungeonData>();
+	public List<DungeonData> savedDungeonsList = new List<DungeonData>();
 	public List<QuestItemData> activePlayerQuests = new List<QuestItemData>();
 }
 
@@ -408,8 +421,9 @@ public class QuestItemData
 	public int rewardToAdd;
 }
 [System.Serializable]
-public class SavedDungeonData
+public class DungeonData
 {
+	public bool hasExploredDungeon;
 	public int dungeonNumber;
 	public DungeonStatModifier dungeonStatModifiers;
 }

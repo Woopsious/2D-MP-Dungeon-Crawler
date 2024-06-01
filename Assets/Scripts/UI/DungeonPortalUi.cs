@@ -24,7 +24,7 @@ public class DungeonPortalUi : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
-		Initilize();
+		//GenerateNewDungeons();
 	}
 
 	private void OnEnable()
@@ -46,10 +46,6 @@ public class DungeonPortalUi : MonoBehaviour
 		DungeonSlotUi.OnDungeonDelete -= OnDeleteDungeon;
 	}
 
-	private void Initilize()
-	{
-		GenerateNewDungeons();
-	}
 	private void GenerateNewDungeons()
 	{
 		if (GameManager.Instance == null) return; //disables for test scene
@@ -70,9 +66,7 @@ public class DungeonPortalUi : MonoBehaviour
 	public void GenerateNewRandomDungeonsButton()
 	{
 		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
-		{
 			activeDungeonLists[i].DeleteDungeon();
-		}
 
 		GenerateNewDungeons();
 	}
@@ -84,16 +78,21 @@ public class DungeonPortalUi : MonoBehaviour
 	//Events
 	private void ReloadSavedDungeons()
 	{
-		for (int i = savedDungeonLists.Count; i > 0; i--)
-			Destroy(savedDungeonLists[i]);
-
-		savedDungeonLists.Clear();
-
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, savedDungeonListContent.transform);
 			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
 			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i]);
+			activeDungeonLists.Add(dungeonSlot);
+			OnSaveDungeon(dungeonSlot);
+		}
+
+		for (int i = 0; i < SaveManager.Instance.GameData.activeDungeonsList.Count; i++)
+		{
+			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
+			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			dungeonSlot.Initilize(SaveManager.Instance.GameData.activeDungeonsList[i]);
+			activeDungeonLists.Add(dungeonSlot);
 		}
 	}
 	private void OnSaveDungeon(DungeonSlotUi dungeonSlot)
@@ -141,7 +140,7 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ShowSavedDungeonListUi() //button click
 	{
-		dungeonListInfoText.text = "Current Saved Dungeons";
+		dungeonListInfoText.text = "Currently Saved Dungeons";
 		activeDungeonListPanel.SetActive(false);
 		savedDungeonListPanel.SetActive(true);
 	}

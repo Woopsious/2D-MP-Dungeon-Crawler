@@ -2941,7 +2941,7 @@ GameObject:
   - component: {fileID: 6481619788943801185}
   - component: {fileID: 1718324378077225824}
   m_Layer: 5
-  m_Name: Content
+  m_Name: ActiveDungeonContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -15037,7 +15037,7 @@ GameObject:
   - component: {fileID: 4667055789026818183}
   - component: {fileID: 5926952147555126672}
   m_Layer: 5
-  m_Name: Content
+  m_Name: SavedDungeonContent
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
