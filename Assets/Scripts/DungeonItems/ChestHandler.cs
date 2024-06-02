@@ -9,6 +9,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	public Sprite chestOpenedSprite;
 	private SpriteRenderer spriteRenderer;
 	private LootSpawnHandler lootSpawnHandler;
+	public bool chestActive;
 	public bool chestStateOpened;
 
 	[Header("Ui Notif")]

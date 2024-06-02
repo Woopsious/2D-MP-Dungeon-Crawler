@@ -57,7 +57,7 @@ public class DungeonPortalUi : MonoBehaviour
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
 			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
-			dungeonSlot.Initilize();
+			dungeonSlot.Initilize(i);
 			activeDungeonLists.Add(dungeonSlot);
 		}
 	}	
@@ -82,7 +82,7 @@ public class DungeonPortalUi : MonoBehaviour
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, savedDungeonListContent.transform);
 			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
-			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i]);
+			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i], i);
 			activeDungeonLists.Add(dungeonSlot);
 			OnSaveDungeon(dungeonSlot);
 		}
@@ -91,7 +91,7 @@ public class DungeonPortalUi : MonoBehaviour
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
 			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
-			dungeonSlot.Initilize(SaveManager.Instance.GameData.activeDungeonsList[i]);
+			dungeonSlot.Initilize(SaveManager.Instance.GameData.activeDungeonsList[i], i);
 			activeDungeonLists.Add(dungeonSlot);
 		}
 	}
@@ -100,6 +100,7 @@ public class DungeonPortalUi : MonoBehaviour
 		dungeonSlot.transform.SetParent(savedDungeonListContent.transform);
 		dungeonSlot.saveDungeonButtonObj.SetActive(false);
 		dungeonSlot.deleteDungeonButtonObj.SetActive(true);
+		dungeonSlot.dungeonIndex = savedDungeonLists.Count;
 
 		activeDungeonLists.Remove(dungeonSlot);
 		savedDungeonLists.Add(dungeonSlot);

@@ -17,10 +17,12 @@ public class DungeonSlotUi : MonoBehaviour
 
 	public bool hasExploredDungeon;
 	public bool isDungeonSaved;
+	public int dungeonIndex;
 	public int dungeonNumber;
 
 	public int maxDungeonModifiers;
 	public DungeonStatModifier dungeonStatModifiers;
+	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 
 	public ModifierType possibleModifiers;
 	public enum ModifierType
@@ -32,9 +34,11 @@ public class DungeonSlotUi : MonoBehaviour
 	public static event Action<DungeonSlotUi> OnDungeonSave;
 	public static event Action<DungeonSlotUi> OnDungeonDelete;
 
-	public void Initilize()
+	public void Initilize(int index)
 	{
 		hasExploredDungeon = false;
+		isDungeonSaved = false;
+		dungeonIndex = index;
 		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 2); //(not including hub and main menu scene)
 		int modifier = Utilities.GetRandomNumber(3);
 
@@ -74,9 +78,11 @@ public class DungeonSlotUi : MonoBehaviour
 		saveDungeonButtonObj.SetActive(true);
 		deleteDungeonButtonObj.SetActive(false);
 	}
-	public void Initilize(DungeonData dungeonData)
+	public void Initilize(DungeonData dungeonData, int index)
 	{
 		hasExploredDungeon = dungeonData.hasExploredDungeon;
+		isDungeonSaved = dungeonData.isDungeonSaved;
+		dungeonIndex = index;
 		dungeonNumber = dungeonData.dungeonNumber;
 		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
 

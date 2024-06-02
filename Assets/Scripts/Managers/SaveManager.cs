@@ -98,7 +98,7 @@ public class SaveManager : MonoBehaviour
 	}
 
 	/// <summary>
-	/// public funcs called from ui buttons etc, pass in corrisponding directory path run bool checks, then call private func that save/load 
+	/// public funcs called from ui buttons etc, pass in directory path run bool checks, call private func that save/load 
 	/// Json data to disk, or delete Json data and files
 	/// auto save is normal save but only has 1 slot and cant be called by player (may add keybind later)
 	/// </summary>
@@ -196,10 +196,13 @@ public class SaveManager : MonoBehaviour
 		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
-			{ 
+			{
 				hasExploredDungeon = dungeon.hasExploredDungeon,
+				isDungeonSaved = dungeon.isDungeonSaved,
+				dungeonIndex = dungeon.dungeonIndex,
 				dungeonNumber = dungeon.dungeonNumber,
-				dungeonStatModifiers = dungeon.dungeonStatModifiers 
+				dungeonStatModifiers = dungeon.dungeonStatModifiers,
+				dungeonChestData = dungeon.dungeonChestData
 			};
 			GameData.savedDungeonsList.Add(dungeonData);
 		}
@@ -210,8 +213,11 @@ public class SaveManager : MonoBehaviour
 			DungeonData dungeonData = new DungeonData
 			{
 				hasExploredDungeon = dungeon.hasExploredDungeon,
+				isDungeonSaved = dungeon.isDungeonSaved,
+				dungeonIndex = dungeon.dungeonIndex,
 				dungeonNumber = dungeon.dungeonNumber,
-				dungeonStatModifiers = dungeon.dungeonStatModifiers
+				dungeonStatModifiers = dungeon.dungeonStatModifiers,
+				dungeonChestData = dungeon.dungeonChestData
 			};
 			GameData.activeDungeonsList.Add(dungeonData);
 		}
@@ -424,6 +430,15 @@ public class QuestItemData
 public class DungeonData
 {
 	public bool hasExploredDungeon;
+	public bool isDungeonSaved;
+	public int dungeonIndex;
 	public int dungeonNumber;
 	public DungeonStatModifier dungeonStatModifiers;
+	public List<DungeonChestData> dungeonChestData;
+}
+[System.Serializable]
+public class DungeonChestData
+{
+	public bool chestActive;
+	public bool chestStateOpened;
 }
