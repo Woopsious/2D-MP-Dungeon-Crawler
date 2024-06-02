@@ -522,7 +522,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugInvincible: 0
+  DebugInvincible: 1
   isDestroyedInOneHit: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
