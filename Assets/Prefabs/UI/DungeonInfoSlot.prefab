@@ -769,6 +769,7 @@ MonoBehaviour:
   dungeonModifiersText: {fileID: 444695567295311962}
   hasExploredDungeon: 0
   isDungeonSaved: 0
+  dungeonIndex: 0
   dungeonNumber: 0
   maxDungeonModifiers: 0
   dungeonStatModifiers:
@@ -786,6 +787,7 @@ MonoBehaviour:
     mainWeaponDamageModifier: 0
     dualWeaponDamageModifier: 0
     rangedWeaponDamageModifier: 0
+  dungeonChestData: []
   possibleModifiers: 0
 --- !u!1 &5371224632907642263
 GameObject:

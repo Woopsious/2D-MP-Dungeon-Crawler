@@ -15,6 +15,7 @@ public class GameManager : MonoBehaviour
 	public static bool isNewGame;
 
 	public static DungeonStatModifier dungeonStatModifiers;
+	public static List<DungeonChestData> dungeonChestData;
 
 	public readonly string mainMenuName = "MainMenu";
 	public readonly string hubAreaName = "HubArea";

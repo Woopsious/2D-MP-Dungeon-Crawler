@@ -216,6 +216,7 @@ public class DungeonSlotUi : MonoBehaviour
 	{
 		hasExploredDungeon = true;
 		GameManager.dungeonStatModifiers = dungeonStatModifiers;
+		GameManager.dungeonChestData = dungeonChestData;
 
 		if (dungeonNumber == 0)
 			GameManager.Instance.LoadDungeonOne();
