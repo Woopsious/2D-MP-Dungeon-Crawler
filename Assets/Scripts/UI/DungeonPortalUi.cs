@@ -24,7 +24,6 @@ public class DungeonPortalUi : MonoBehaviour
 	private void Awake()
 	{
 		instance = this;
-		//GenerateNewDungeons();
 	}
 
 	private void OnEnable()
@@ -72,6 +71,26 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ReturnToHubButton()
 	{
+		List<DungeonChestData> chestData = new List<DungeonChestData>();
+
+		foreach (ChestHandler chest in DungeonHandler.Instance.dungeonChestLists)
+		{
+			DungeonChestData data = new DungeonChestData()
+			{
+				chestActive = chest.chestActive,
+				chestStateOpened = chest.chestStateOpened,
+			};
+			chestData.Add(data);
+		}
+
+		GameManager.Instance.currentDungeonData.dungeonChestData = chestData;
+		//save data to corrisponding DungeonSlotUi, where SaveManager will then save/reload all DungeonSlotUi's
+		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
+			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
+		else
+			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
+
+		SaveManager.Instance.AutoSaveData();
 		GameManager.Instance.LoadHubArea(false);
 	}
 

@@ -55,18 +55,20 @@ public class ChestHandler : MonoBehaviour, IInteractable
 			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 0.65f, 0));
 	}
 
-	private void ChangeChestStateToOpen()
+	public void ChangeChestStateToOpen(bool spawnLoot)
 	{
+		Debug.Log("changing chest state");
 		chestStateOpened = true;
-		lootSpawnHandler.SpawnLoot();
 		spriteRenderer.sprite = chestOpenedSprite;
+		if (spawnLoot)
+			lootSpawnHandler.SpawnLoot();
 	}
 
 	public void Interact(PlayerController player)
 	{
 		if (chestStateOpened ==  true) return;
 
-		ChangeChestStateToOpen();
+		ChangeChestStateToOpen(true);
 	}
 	public void UnInteract(PlayerController player)
 	{

@@ -149,6 +149,7 @@ public class ClassesUi : MonoBehaviour
 		if (currentPlayerClass == mageClass)
 			ReloadPlayerClassTreeNodes(MageClassPanel);
 
+		HidePlayerClassSelection();
 		/// <summery>
 		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
 		/// of said classes Nodes, and reunlock those bypassing checks

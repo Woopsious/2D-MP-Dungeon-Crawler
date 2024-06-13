@@ -353,6 +353,7 @@ public class GameData
 
 	public bool hasRecievedStartingItems;
 
+	public DungeonData currentDungeon;
 	public SOClasses currentPlayerClass;
 	public List<int> unlockedClassNodeIndexesList = new List<int>();
 
@@ -434,7 +435,7 @@ public class DungeonData
 	public int dungeonIndex;
 	public int dungeonNumber;
 	public DungeonStatModifier dungeonStatModifiers;
-	public List<DungeonChestData> dungeonChestData;
+	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 }
 [System.Serializable]
 public class DungeonChestData

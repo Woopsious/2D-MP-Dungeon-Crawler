@@ -85,6 +85,7 @@ public class DungeonSlotUi : MonoBehaviour
 		dungeonIndex = index;
 		dungeonNumber = dungeonData.dungeonNumber;
 		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
+		dungeonChestData = dungeonData.dungeonChestData;
 
 		if (hasExploredDungeon == false)
 			dungeonUnExploredText.gameObject.SetActive(true);
@@ -215,8 +216,13 @@ public class DungeonSlotUi : MonoBehaviour
 	public void EnterDungeon()
 	{
 		hasExploredDungeon = true;
-		GameManager.dungeonStatModifiers = dungeonStatModifiers;
-		GameManager.dungeonChestData = dungeonChestData;
+
+		GameManager.Instance.currentDungeonData.hasExploredDungeon = hasExploredDungeon;
+		GameManager.Instance.currentDungeonData.isDungeonSaved = isDungeonSaved;
+		GameManager.Instance.currentDungeonData.dungeonIndex = dungeonIndex;
+		GameManager.Instance.currentDungeonData.dungeonNumber = dungeonNumber;
+		GameManager.Instance.currentDungeonData.dungeonStatModifiers = dungeonStatModifiers;
+		GameManager.Instance.currentDungeonData.dungeonChestData = dungeonChestData;
 
 		if (dungeonNumber == 0)
 			GameManager.Instance.LoadDungeonOne();

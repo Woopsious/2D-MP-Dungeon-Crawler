@@ -101,8 +101,8 @@ public class EntityStats : MonoBehaviour
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
 		CalculateBaseStats();
-		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.dungeonStatModifiers != null)
-			ApplyDungeonModifiers(GameManager.dungeonStatModifiers); //only apply dungeon mods outside of testing scene
+		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
+			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
 
 		int numOfTries = 0;
 		if (GetComponent<PlayerController>() != null) return;

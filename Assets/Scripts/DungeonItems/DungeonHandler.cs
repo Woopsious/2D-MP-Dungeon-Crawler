@@ -7,22 +7,42 @@ using UnityEngine.SceneManagement;
 
 public class DungeonHandler : MonoBehaviour
 {
+	public static DungeonHandler Instance;
+
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
 
 	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
 	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
 	public List<ChestHandler> dungeonChestLists = new List<ChestHandler>();
 
+	private void Awake()
+	{
+		Instance = this;
+	}
 	private void OnEnable()
 	{
 		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
+		SaveManager.RestoreData += RestoreDungeonChestData;
 	}
-
 	private void OnDisable()
 	{
 		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
+		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
+	private void RestoreDungeonChestData()
+	{
+		Debug.Log("restoring chest data");
+		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0) return; //return when dungeon first entered
+
+		int i = 0;
+		foreach (DungeonChestData chestData in GameManager.Instance.currentDungeonData.dungeonChestData)
+		{
+			if (chestData.chestStateOpened)
+				dungeonChestLists[i].ChangeChestStateToOpen(false);
+			i++;
+		}
+	}
 	private void SetPlayerSpawn()
 	{
 		if (dungeonPortalsList.Count <= 0) return;
