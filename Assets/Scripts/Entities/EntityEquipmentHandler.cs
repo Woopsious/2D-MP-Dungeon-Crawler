@@ -94,7 +94,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		GameObject go;
 		int index;
-		index = Utilities.GetRandomNumber(listOfPossibleWeapons.Count);
+		index = Utilities.GetRandomNumber(listOfPossibleWeapons.Count - 1);
 
 		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedWeaponRef = go.AddComponent<Weapons>();
@@ -110,7 +110,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		GameObject go;
 		int index;
-		index = Utilities.GetRandomNumber(listOfPossibleArmors.Count);
+		index = Utilities.GetRandomNumber(listOfPossibleArmors.Count - 1);
 
 		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedArmorRef = go.AddComponent<Armors>();

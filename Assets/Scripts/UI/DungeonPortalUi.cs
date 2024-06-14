@@ -73,7 +73,7 @@ public class DungeonPortalUi : MonoBehaviour
 	{
 		List<DungeonChestData> chestData = new List<DungeonChestData>();
 
-		foreach (ChestHandler chest in DungeonHandler.Instance.dungeonChestLists)
+		foreach (ChestHandler chest in DungeonHandler.Instance.dungeonChestList)
 		{
 			DungeonChestData data = new DungeonChestData()
 			{

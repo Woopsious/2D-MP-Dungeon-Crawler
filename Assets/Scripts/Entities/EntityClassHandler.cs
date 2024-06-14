@@ -31,7 +31,7 @@ public class EntityClassHandler : MonoBehaviour
 	}
 	private void SetRandomClass()
 	{
-		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count);
+		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
 		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
 
 		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)

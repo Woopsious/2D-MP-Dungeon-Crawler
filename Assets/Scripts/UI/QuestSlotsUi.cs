@@ -73,40 +73,40 @@ public class QuestSlotsUi : MonoBehaviour
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
-		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count)];
+		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count - 1)];
 		amount = 1;
 		InitilizeText();
 	}
 	public void InitilizeKillQuest()
 	{
 		questType = QuestType.isKillQuest;
-		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count)];
-		amount = Utilities.GetRandomNumberBetween(5, 9);
+		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count - 1)];
+		amount = Utilities.GetRandomNumberBetween(5, 8);
 		InitilizeText();
 	}
 	public void InitilizeItemHandInQuest()
 	{
 		questType = QuestType.isItemHandInQuest;
-		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(4);
+		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(3);
 
 		if (itemTypeToHandIn == ItemType.isWeapon)
 		{
-			weaponToHandIn = possibleWeapons[Utilities.GetRandomNumber(possibleWeapons.Count)];
+			weaponToHandIn = possibleWeapons[Utilities.GetRandomNumber(possibleWeapons.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isArmor)
 		{
-			armorToHandIn = possibleArmors[Utilities.GetRandomNumber(possibleArmors.Count)];
+			armorToHandIn = possibleArmors[Utilities.GetRandomNumber(possibleArmors.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isAccessory)
 		{
-			accessoryToHandIn = possibleAccessories[Utilities.GetRandomNumber(possibleAccessories.Count)];
+			accessoryToHandIn = possibleAccessories[Utilities.GetRandomNumber(possibleAccessories.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == ItemType.isConsumable)
 		{
-			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count)];
+			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count - 1)];
 			amount = 5;
 		}
 		InitilizeText();
@@ -189,16 +189,16 @@ public class QuestSlotsUi : MonoBehaviour
 	}
 	private void SetUpQuestReward()
 	{
-		questRewardType = (RewardType)Utilities.GetRandomNumber(2);
+		questRewardType = (RewardType)Utilities.GetRandomNumber(1);
 
 		if (questRewardType == RewardType.isExpReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(150, 301);
+			rewardToAdd = Utilities.GetRandomNumberBetween(150, 300);
 			questRewardUi.text = $"Reward: {rewardToAdd} Exp";
 		}
 		if (questRewardType == RewardType.isGoldReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(300, 501);
+			rewardToAdd = Utilities.GetRandomNumberBetween(300, 500);
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
 

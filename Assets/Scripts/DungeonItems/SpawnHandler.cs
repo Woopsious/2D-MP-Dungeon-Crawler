@@ -74,7 +74,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void SpawnRandomEntity()
 	{
-		int num = Utilities.GetRandomNumber(possibleEntitiesPrefabsToSpawn.Count);
+		int num = Utilities.GetRandomNumber(possibleEntitiesPrefabsToSpawn.Count - 1);
 		GameObject go = Instantiate(possibleEntitiesPrefabsToSpawn[num], transform.position, transform.rotation);
 		listOfSpawnedEnemies.Add(go);
 

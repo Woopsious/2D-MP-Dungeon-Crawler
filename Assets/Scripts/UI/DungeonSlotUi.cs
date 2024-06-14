@@ -39,8 +39,8 @@ public class DungeonSlotUi : MonoBehaviour
 		hasExploredDungeon = false;
 		isDungeonSaved = false;
 		dungeonIndex = index;
-		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 2); //(not including hub and main menu scene)
-		int modifier = Utilities.GetRandomNumber(3);
+		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 3); //(not including hub and main menu scene)
+		int modifier = Utilities.GetRandomNumber(2);
 
 		if (hasExploredDungeon == false)
 			dungeonUnExploredText.gameObject.SetActive(true);
@@ -68,10 +68,10 @@ public class DungeonSlotUi : MonoBehaviour
 
 		for (int i = 0; i < maxDungeonModifiers; i++)
 		{
-			int chanceOfModifier = Utilities.GetRandomNumber(101);
+			int chanceOfModifier = Utilities.GetRandomNumber(100);
 			if (chanceOfModifier <= 50) continue;
 
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length);
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
 			SetModifierForDungeon(modifierType);
 		}
 		

@@ -48,6 +48,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityBaseRef: {fileID: 11400000, guid: 1cc7e53592c66eb488bf4c772a6fbc14, type: 2}
+  abilityDurationTime: 0
+  abilityDurationTimer: 0
   aoeDamage: 0
 --- !u!212 &3884023891650096865
 SpriteRenderer:
@@ -89,7 +91,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 4
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0

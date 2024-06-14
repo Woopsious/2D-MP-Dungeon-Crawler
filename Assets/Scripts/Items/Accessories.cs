@@ -125,7 +125,7 @@ public class Accessories : Items
 
 	public void SetRandomDamageTypeOnDrop()
 	{
-		int num = Utilities.GetRandomNumber(4);
+		int num = Utilities.GetRandomNumber(3);
 		if (num == 0)
 			damageTypeToBoost = DamageTypeToBoost.isPhysicalDamageType;
 		else if (num == 1)

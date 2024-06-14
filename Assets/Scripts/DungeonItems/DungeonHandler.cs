@@ -13,11 +13,17 @@ public class DungeonHandler : MonoBehaviour
 
 	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
 	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
-	public List<ChestHandler> dungeonChestLists = new List<ChestHandler>();
+	public List<ChestHandler> dungeonChestList = new List<ChestHandler>();
+	private int chanceForChestToActivate = 50;
 
 	private void Awake()
 	{
 		Instance = this;
+		ActivateRandomChests();
+	}
+	private void Start()
+	{
+		//ActivateRandomChests();
 	}
 	private void OnEnable()
 	{
@@ -30,16 +36,37 @@ public class DungeonHandler : MonoBehaviour
 		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
+	private void ActivateRandomChests()
+	{
+		foreach (ChestHandler chest in dungeonChestList)
+		{
+			int chance = Utilities.GetRandomNumberBetween(0, 100);
+			Debug.Log("chance of chest: " + chance);
+
+			if (chance > chanceForChestToActivate)
+				chest.ActivateChest();
+			else
+				chest.DeactivateChest();
+		}
+	}
+
 	private void RestoreDungeonChestData()
 	{
 		Debug.Log("restoring chest data");
-		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0) return; //return when dungeon first entered
+		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
+			dungeonChestList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
 
 		int i = 0;
 		foreach (DungeonChestData chestData in GameManager.Instance.currentDungeonData.dungeonChestData)
 		{
-			if (chestData.chestStateOpened)
-				dungeonChestLists[i].ChangeChestStateToOpen(false);
+			if (chestData.chestActive)
+			{
+				dungeonChestList[i].ActivateChest();
+				if (chestData.chestStateOpened)
+					dungeonChestList[i].ChangeChestStateToOpen(false);
+			}
+			else
+				dungeonChestList[i].DeactivateChest();
 			i++;
 		}
 	}

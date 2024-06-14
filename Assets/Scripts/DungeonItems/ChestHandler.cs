@@ -55,6 +55,15 @@ public class ChestHandler : MonoBehaviour, IInteractable
 			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 0.65f, 0));
 	}
 
+	public void ActivateChest()
+	{
+		chestActive = true;
+	}
+	public void DeactivateChest()
+	{
+		chestActive = false;
+		gameObject.SetActive(false);
+	}
 	public void ChangeChestStateToOpen(bool spawnLoot)
 	{
 		Debug.Log("changing chest state");
