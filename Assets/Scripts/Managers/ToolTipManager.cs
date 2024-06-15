@@ -276,19 +276,7 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private void HandInItem(InventorySlotUi slot)
 	{
-		QuestSlotsUi questItem = CanItemBeHandedIn(slot.itemInSlot);
-		if (questItem != null)
-		{
-			int amountRequired = questItem.amount - questItem.currentAmount;
-			questItem.HandInItem(questItem, slot);
-
-			if (amountRequired > slot.itemInSlot.currentStackCount)
-				DiscardItem(slot);
-			else
-				slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount - amountRequired);
-		}
-        else
-			Debug.Log("item doesnt match");
+		PlayerJournalUi.Instance.HandInItemQuests(slot);
 	}
 
 	//tips
@@ -322,10 +310,7 @@ public class ToolTipManager : MonoBehaviour
 		foreach(QuestSlotsUi quest in PlayerJournalUi.Instance.activeQuests)
 		{
 			if (quest.questType != QuestSlotsUi.QuestType.isItemHandInQuest)
-			{
-				Debug.Log("continue");
 				continue;
-			}
 
 			if (quest.itemTypeToHandIn == QuestSlotsUi.ItemType.isWeapon)
 			{
@@ -349,7 +334,6 @@ public class ToolTipManager : MonoBehaviour
 			{
 				if (quest.accessoryToHandIn == item.accessoryBaseRef)
 				{
-					Debug.Log("accessory");
 					matchingQuest = quest;
 					return matchingQuest;
 				}

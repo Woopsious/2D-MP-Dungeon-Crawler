@@ -46,6 +46,7 @@ public class EnemyAttackState : EnemyBaseState
 				entity.ChangeStateIdle();
 			}
 
+			if (equippedWeapon == null) return;
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
 				KeepDistanceFromPlayer(entity);
 			else

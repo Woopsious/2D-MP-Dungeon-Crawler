@@ -623,6 +623,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b6a0471c492e634f804ffd5b33b42bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  debugDisablePlayerLevelUp: 1
   currentExp: 0
 --- !u!114 &7384192646310340082
 MonoBehaviour:

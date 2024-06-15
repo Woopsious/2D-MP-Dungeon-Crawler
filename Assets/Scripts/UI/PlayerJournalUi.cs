@@ -34,7 +34,7 @@ public class PlayerJournalUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerBounties;
+		SaveManager.RestoreData += ReloadActiveQuests;
 
 		EventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
 		EventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
@@ -42,12 +42,13 @@ public class PlayerJournalUi : MonoBehaviour
 		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
 		EventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
 
+		EventManager.OnDeathEvent += OnEntityDeathUpdateKillQuests;
 		EventManager.OnShowNpcJournal += ShowNpcJournal;
 		EventManager.OnHideNpcJournal += HideNpcJournal;
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerBounties;
+		SaveManager.RestoreData -= ReloadActiveQuests;
 
 		EventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
 		EventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
@@ -55,13 +56,9 @@ public class PlayerJournalUi : MonoBehaviour
 		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
 		EventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 
+		EventManager.OnDeathEvent += OnEntityDeathUpdateKillQuests;
 		EventManager.OnShowNpcJournal -= ShowNpcJournal;
 		EventManager.OnHideNpcJournal -= HideNpcJournal;
-	}
-
-	private void ReloadPlayerBounties()
-	{
-		UpdateActiveQuestTracker();
 	}
 
 	public void AcceptQuest(QuestSlotsUi quest)
@@ -71,7 +68,7 @@ public class PlayerJournalUi : MonoBehaviour
 			Debug.Log("max of 5 active quests reached");
 			return;
 		}
-
+		quest.isCurrentlyActiveQuest = true;
 		quest.acceptQuestButtonObj.SetActive(false);
 		quest.transform.SetParent(activeQuestContainer.transform);
 		activeQuests.Add(quest);
@@ -94,6 +91,69 @@ public class PlayerJournalUi : MonoBehaviour
 
 		OnQuestAbandon?.Invoke(quest);
 		UpdateActiveQuestTracker();
+	}
+
+	//player quests
+	private void ReloadActiveQuests()
+	{
+		List<QuestItemData> questData = SaveManager.Instance.GameData.activePlayerQuests;
+		for (int i = 0; i < questData.Count; i++)
+		{
+			GameObject go = Instantiate(questPrefab, activeQuestContainer.transform);
+			QuestSlotsUi quest = go.GetComponent<QuestSlotsUi>();
+
+			quest.isCurrentlyActiveQuest = questData[i].isCurrentlyActiveQuest;
+			quest.questType = (QuestSlotsUi.QuestType)questData[i].questType;
+			quest.amount = questData[i].amount;
+			quest.currentAmount = questData[i].currentAmount;
+			quest.entityToKill = questData[i].entityToKill;
+			quest.weaponToHandIn = questData[i].weaponToHandIn;
+			quest.armorToHandIn = questData[i].armorToHandIn;
+			quest.accessoryToHandIn = questData[i].accessoryToHandIn;
+			quest.consumableToHandIn = questData[i].consumableToHandIn;
+			quest.itemTypeToHandIn = (QuestSlotsUi.ItemType)questData[i].itemTypeToHandIn;
+			quest.questRewardType = (QuestSlotsUi.RewardType)questData[i].questRewardType;
+			quest.rewardToAdd = questData[i].rewardToAdd;
+
+			quest.InitilizeText();
+			quest.AcceptThisQuest();
+		}
+		UpdateActiveQuestTracker();
+	}
+	private void OnEntityDeathUpdateKillQuests(GameObject obj)
+	{
+		foreach (QuestSlotsUi quest in activeQuests)
+		{
+			if (quest.questType == QuestSlotsUi.QuestType.isItemHandInQuest) continue;
+
+			if (quest.entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
+				quest.currentAmount++;
+
+			quest.questTrackerUi.text = $"{quest.currentAmount} / {quest.amount} Killed";
+
+			if (quest.currentAmount >= quest.amount)
+				quest.CompleteThisQuest();
+		}
+	}
+	public void HandInItemQuests(InventorySlotUi slot)
+	{
+		foreach (QuestSlotsUi quest in activeQuests)
+		{
+			if (quest.questType != QuestSlotsUi.QuestType.isItemHandInQuest) continue;
+
+			if (quest.DoesHandInItemMatch(slot.itemInSlot))
+			{
+				quest.currentAmount += 1;
+				slot.itemInSlot.DecreaseStackCounter();
+			}
+
+			quest.questTrackerUi.text = $"{quest.currentAmount} / {quest.amount} Handed In";
+
+			if (quest.currentAmount >= quest.amount)
+				quest.CompleteThisQuest();
+
+			break;
+		}
 	}
 
 	//UI CHANGES

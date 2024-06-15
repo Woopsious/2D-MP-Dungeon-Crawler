@@ -296,6 +296,7 @@ public class SaveManager : MonoBehaviour
 		{
 			QuestItemData questData = new()
 			{
+				isCurrentlyActiveQuest = quest.isCurrentlyActiveQuest,
 				questType = (QuestItemData.QuestType)quest.questType,
 				amount = quest.amount,
 				currentAmount = quest.currentAmount,
@@ -304,7 +305,7 @@ public class SaveManager : MonoBehaviour
 				armorToHandIn = quest.armorToHandIn,
 				accessoryToHandIn = quest.accessoryToHandIn,
 				consumableToHandIn = quest.consumableToHandIn,
-				itemTypeToHandIn = (QuestItemData.ItemType)quest.questType,
+				itemTypeToHandIn = (QuestItemData.ItemType)quest.itemTypeToHandIn,
 				questRewardType = (QuestItemData.RewardType)quest.questRewardType,
 				rewardToAdd = quest.rewardToAdd
 			};
@@ -395,6 +396,8 @@ public class InventoryItemData
 [System.Serializable]
 public class QuestItemData
 {
+	public bool isCurrentlyActiveQuest;
+
 	[Header("Quest Info")]
 	public QuestType questType;
 	public enum QuestType

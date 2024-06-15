@@ -25,10 +25,6 @@ public class PlayerInventoryManager : MonoBehaviour
 	public int playerGoldAmount;
 	public int startingGold;
 
-	[Header("Player Quests")]
-	public GameObject questPrefab;
-	public List<QuestSlotsUi> activeQuests = new List<QuestSlotsUi>();
-
 	public void Awake()
 	{
 		Instance = this;
@@ -48,9 +44,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		InventorySlotUi.OnItemSellEvent += OnItemSell;
 		InventorySlotUi.OnItemTryBuyEvent += OnItemTryBuy;
 
-		PlayerJournalUi.OnNewQuestAccepted += OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
-		PlayerJournalUi.OnQuestAbandon += OnQuestAbandon;
 	}
 	private void OnDisable()
 	{
@@ -58,9 +52,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		InventorySlotUi.OnItemSellEvent -= OnItemSell;
 		InventorySlotUi.OnItemTryBuyEvent -= OnItemTryBuy;
 
-		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccept;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
-		PlayerJournalUi.OnQuestAbandon -= OnQuestAbandon;
 	}
 
 	private void SpawnStartingItems()
@@ -117,7 +109,6 @@ public class PlayerInventoryManager : MonoBehaviour
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 
 		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
-		ReloadActiveQuests();
 	}
 
 	//player gold
@@ -125,7 +116,7 @@ public class PlayerInventoryManager : MonoBehaviour
 	{
 		return playerGoldAmount;
 	}
-	private void UpdateGoldAmount(int gold)
+	public void UpdateGoldAmount(int gold)
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
@@ -150,51 +141,10 @@ public class PlayerInventoryManager : MonoBehaviour
 		newgold += item.itemPrice * item.currentStackCount;
 		UpdateGoldAmount(newgold);
 	}
-
-	//player quests
-	public void ReloadActiveQuests()
-	{
-		List<QuestItemData> questData = SaveManager.Instance.GameData.activePlayerQuests;
-		for (int i = 0; i < questData.Count; i++)
-		{
-			GameObject go = Instantiate(questPrefab, PlayerJournalUi.Instance.activeQuestContainer.transform);
-			QuestSlotsUi quest = go.GetComponent<QuestSlotsUi>();
-
-			quest.questType = (QuestSlotsUi.QuestType)questData[i].questType;
-			quest.amount = questData[i].amount;
-			quest.currentAmount = questData[i].currentAmount;
-			quest.entityToKill = questData[i].entityToKill;
-			quest.weaponToHandIn = questData[i].weaponToHandIn;
-			quest.armorToHandIn = questData[i].armorToHandIn;
-			quest.accessoryToHandIn = questData[i].accessoryToHandIn;
-			quest.consumableToHandIn = questData[i].consumableToHandIn;
-			quest.itemTypeToHandIn = (QuestSlotsUi.ItemType)questData[i].questType;
-			quest.questRewardType = (QuestSlotsUi.RewardType)questData[i].questRewardType;
-			quest.rewardToAdd = questData[i].rewardToAdd;
-
-			quest.InitilizeText();
-			quest.AcceptThisQuest();
-		}
-	}
-	public void OnQuestAccept(QuestSlotsUi quest)
-	{
-		quest.isCurrentlyActiveQuest = true;
-		EventManager.OnDeathEvent += quest.OnEntityDeathCheckKillAmount;
-		activeQuests.Add(quest);
-	}
 	public void OnQuestComplete(QuestSlotsUi quest)
 	{
-		//do stuff to complete quest
-		if (quest.questRewardType == QuestSlotsUi.RewardType.isExpReward)
-			GetComponent<PlayerExperienceHandler>().AddExperience(quest.gameObject);
-		else if (quest.questRewardType == QuestSlotsUi.RewardType.isGoldReward)
+		if (quest.questRewardType == QuestSlotsUi.RewardType.isGoldReward)
 			UpdateGoldAmount(quest.rewardToAdd);
-
-		activeQuests.Remove(quest);
-	}
-	public void OnQuestAbandon(QuestSlotsUi quest)
-	{
-		activeQuests.Remove(quest);
 	}
 
 	//on item pickup

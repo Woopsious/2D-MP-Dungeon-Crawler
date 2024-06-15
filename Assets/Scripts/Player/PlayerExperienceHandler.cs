@@ -8,7 +8,8 @@ public class PlayerExperienceHandler : MonoBehaviour
 {
 	[HideInInspector] private PlayerController playerController;
 
-	private int maxLevel = 50;
+	public bool debugDisablePlayerLevelUp;
+	private int maxLevel = 25;
 	private int maxExp = 1000;
 	public int currentExp;
 
@@ -24,12 +25,14 @@ public class PlayerExperienceHandler : MonoBehaviour
 	{
 		SaveManager.RestoreData += ReloadPlayerExp;
 		EventManager.OnDeathEvent += AddExperience;
+		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerExp;
 		EventManager.OnDeathEvent -= AddExperience;
+		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}
 
 	/// <summary>
@@ -46,6 +49,12 @@ public class PlayerExperienceHandler : MonoBehaviour
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
 		EventManager.PlayerExpChange(maxExp, currentExp);
 	}
+
+	private void OnQuestComplete(QuestSlotsUi quest)
+	{
+		if (quest.questRewardType == QuestSlotsUi.RewardType.isExpReward)
+			AddExperience(quest.gameObject);
+	}
 	public void AddExperience(GameObject Obj)
 	{
 		if (Obj.GetComponent<QuestSlotsUi>() != null)
@@ -57,7 +66,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		}
 		EventManager.PlayerExpChange(maxExp, currentExp);
 
-		if (!CheckIfPLayerCanLevelUp()) return;
+		if (CheckIfPLayerCanLevelUp()) return;
 		OnPlayerLevelUp();
 	}
 
@@ -71,6 +80,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	}
 	private bool CheckIfPLayerCanLevelUp()
 	{
+		if (debugDisablePlayerLevelUp) return false;
 		if (playerStats.entityLevel >= maxLevel ) return false;
 
 		if (currentExp >= maxExp)

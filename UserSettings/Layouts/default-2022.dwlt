@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 64
+  controlID: 118
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 65
+  controlID: 119
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -495,7 +495,7 @@ MonoBehaviour:
       scrollPos: {x: 0, y: 0}
       m_SelectedIDs: 
       m_LastClickedID: 0
-      m_ExpandedIDs: c672fcff6697fdff74b1fdff8acbfdff7ee5fdff72fffdff181bfeff4844feffc054feffcc54feff2455feff2855feff086cfeff0673fefff6ddfeff02defeff5adefeff5edefeff3ef5feff4efcfeff0889ffff1489ffff6c89ffff7089ffff50a0ffff64a7ffff16fbfffff4ffffff
+      m_ExpandedIDs: 3037fcff4690fcffe8e2fcff6412fdffe84ffdfff44ffdff4c50fdff5050fdff3067fdff9067fdff1eb6fdff78d0fdff5cecfdffc809feff2c26fefffa4cfeff4e10ffffe638fffff0f6ffffc6f8ffff16fbffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1223,9 +1223,9 @@ MonoBehaviour:
   m_PlayAudio: 0
   m_AudioPlay: 0
   m_Position:
-    m_Target: {x: -0.75560975, y: -1.5931381, z: 0.014518738}
+    m_Target: {x: -3.1673505, y: 0.36554584, z: 0.09101373}
     speed: 2
-    m_Value: {x: -0.75560975, y: -1.5931381, z: 0.014518738}
+    m_Value: {x: -3.1673505, y: 0.36554584, z: 0.09101373}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -1275,9 +1275,9 @@ MonoBehaviour:
     speed: 2
     m_Value: {x: 0, y: 0, z: 0, w: 1}
   m_Size:
-    m_Target: 12.91695
+    m_Target: 12.573736
     speed: 2
-    m_Value: 12.91695
+    m_Value: 12.573736
   m_Ortho:
     m_Target: 1
     speed: 2
@@ -1431,7 +1431,7 @@ MonoBehaviour:
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 332}
+    scrollPos: {x: 0, y: 452}
     m_SelectedIDs: 88880000
     m_LastClickedID: 34952
     m_ExpandedIDs: 000000001a8800001c8800001e88000020880000228800002488000026880000288800002a8800002c8800002e8800003088000032880000348800003688000038880000
@@ -1588,7 +1588,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 44514
+  m_LastSelectedObjectID: -2296
 --- !u!114 &24
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -1672,10 +1672,10 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_ShowAlpha: 0
   m_MipLevel: 0
-  m_Zoom: 3.0539675
-  m_ScrollPosition: {x: -33.756702, y: 204.57208}
+  m_Zoom: -1
+  m_ScrollPosition: {x: 0, y: 0}
   m_SelectedObject: {fileID: 0}
-  m_SelectedSpriteRectGUID: 00000000000000000000000000000000
+  m_SelectedSpriteRectGUID: eb6a9ce7f6785f14fa1b7f0aabe6bd3b
   m_LastUsedModuleTypeName: UnityEditor.U2D.Sprites.SpriteFrameModule
 --- !u!114 &26
 MonoBehaviour:

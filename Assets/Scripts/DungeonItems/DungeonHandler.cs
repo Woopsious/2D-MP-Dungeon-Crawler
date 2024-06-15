@@ -41,8 +41,6 @@ public class DungeonHandler : MonoBehaviour
 		foreach (ChestHandler chest in dungeonChestList)
 		{
 			int chance = Utilities.GetRandomNumberBetween(0, 100);
-			Debug.Log("chance of chest: " + chance);
-
 			if (chance > chanceForChestToActivate)
 				chest.ActivateChest();
 			else
@@ -52,7 +50,6 @@ public class DungeonHandler : MonoBehaviour
 
 	private void RestoreDungeonChestData()
 	{
-		Debug.Log("restoring chest data");
 		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
 			dungeonChestList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
 

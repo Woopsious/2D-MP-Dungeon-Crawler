@@ -68,13 +68,13 @@ public class QuestSlotsUi : MonoBehaviour
 	private void OnDisable()
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
-		EventManager.OnDeathEvent -= OnEntityDeathCheckKillAmount;
 	}
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
 		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count - 1)];
 		amount = 1;
+		InitilizeReward();
 		InitilizeText();
 	}
 	public void InitilizeKillQuest()
@@ -82,6 +82,7 @@ public class QuestSlotsUi : MonoBehaviour
 		questType = QuestType.isKillQuest;
 		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count - 1)];
 		amount = Utilities.GetRandomNumberBetween(5, 8);
+		InitilizeReward();
 		InitilizeText();
 	}
 	public void InitilizeItemHandInQuest()
@@ -109,17 +110,33 @@ public class QuestSlotsUi : MonoBehaviour
 			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count - 1)];
 			amount = 5;
 		}
+		InitilizeReward();
 		InitilizeText();
+	}
+	public void InitilizeReward()
+	{
+		questRewardType = (RewardType)Utilities.GetRandomNumber(1);
+
+		if (questRewardType == RewardType.isExpReward)
+		{
+			rewardToAdd = Utilities.GetRandomNumberBetween(150, 300);
+			questRewardUi.text = $"Reward: {rewardToAdd} Exp";
+		}
+		if (questRewardType == RewardType.isGoldReward)
+		{
+			rewardToAdd = Utilities.GetRandomNumberBetween(300, 500);
+			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
+		}
 	}
 
 	//set up ui text
 	public void InitilizeText()
 	{
-		SetUpQuestName();
-		SetUpQuestDescription();
-		SetUpQuestReward();
+		SetUpQuestNameUi();
+		SetUpQuestDescriptionUi();
+		SetUpQuestRewardUi();
 	}
-	private void SetUpQuestName()
+	private void SetUpQuestNameUi()
 	{
 		string questName = "";
 
@@ -144,12 +161,16 @@ public class QuestSlotsUi : MonoBehaviour
 
 			else if (itemTypeToHandIn == ItemType.isConsumable)
 				questName = $"Hand In {amount} {consumableToHandIn.itemName}";
+			else
+				Debug.LogError("no match for hand in item quest");
 		}
+		else
+			Debug.LogError("no match for quest type");
 
 		questNameUi.text = questName;
 		this.questName = questName;
 	}
-	private void SetUpQuestDescription()
+	private void SetUpQuestDescriptionUi()
 	{
 		string questDescription = "";
 
@@ -187,51 +208,17 @@ public class QuestSlotsUi : MonoBehaviour
 		questDescriptionUi.text = questDescription;
 		this.questDescription = questDescription;
 	}
-	private void SetUpQuestReward()
+	private void SetUpQuestRewardUi()
 	{
-		questRewardType = (RewardType)Utilities.GetRandomNumber(1);
-
 		if (questRewardType == RewardType.isExpReward)
-		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(150, 300);
 			questRewardUi.text = $"Reward: {rewardToAdd} Exp";
-		}
 		if (questRewardType == RewardType.isGoldReward)
-		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(300, 500);
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
-		}
 
 		if (isCurrentlyActiveQuest) //hide accept quest button (for when reloading active quests OnGameLoad)
 			acceptQuestButtonObj.SetActive(false);
 	}
-
-	public void OnEntityDeathCheckKillAmount(GameObject obj)
-	{
-		if (questType == QuestType.isBossKillQuest || questType == QuestType.isKillQuest)
-		{
-			if (entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
-				currentAmount++;
-		}
-
-		questTrackerUi.text = $"{currentAmount} / {amount} Killed";
-
-		if (currentAmount >= amount)
-			CompleteThisQuest();
-	}
-	public void HandInItem(QuestSlotsUi assignedQuest, InventorySlotUi slot)
-	{
-		if (assignedQuest != this) return;
-
-		if (DoesItemMatch(slot.itemInSlot))
-			currentAmount += slot.itemInSlot.currentStackCount;
-
-		questTrackerUi.text = $"{currentAmount} / {amount} Handed In";
-
-		if (currentAmount >= amount)
-			CompleteThisQuest();
-	}
-	public bool DoesItemMatch(InventoryItemUi item)
+	public bool DoesHandInItemMatch(InventoryItemUi item)
 	{
 		if (itemTypeToHandIn == ItemType.isWeapon)
 		{
