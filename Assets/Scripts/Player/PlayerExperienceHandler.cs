@@ -50,15 +50,15 @@ public class PlayerExperienceHandler : MonoBehaviour
 		EventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
-	private void OnQuestComplete(QuestSlotsUi quest)
+	private void OnQuestComplete(QuestDataSlotUi quest)
 	{
-		if (quest.questRewardType == QuestSlotsUi.RewardType.isExpReward)
+		if (quest.questRewardType == QuestDataSlotUi.RewardType.isExpReward)
 			AddExperience(quest.gameObject);
 	}
 	public void AddExperience(GameObject Obj)
 	{
-		if (Obj.GetComponent<QuestSlotsUi>() != null)
-			currentExp += Obj.GetComponent<QuestSlotsUi>().rewardToAdd;
+		if (Obj.GetComponent<QuestDataSlotUi>() != null)
+			currentExp += Obj.GetComponent<QuestDataSlotUi>().rewardToAdd;
 		else
 		{
 			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;

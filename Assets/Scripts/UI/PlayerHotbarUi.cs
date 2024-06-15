@@ -80,8 +80,8 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		ClassesUi.OnClassReset += ResetEquippedAbilities;
-		InventorySlotUi.OnHotbarItemEquip += EquipHotbarItem;
+		PlayerClassesUi.OnClassReset += ResetEquippedAbilities;
+		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
 		EventManager.OnGoldAmountChange += OnGoldAmountChange;
 		EventManager.OnPlayerExpChangeEvent += OnExperienceChange;
 		EventManager.OnPlayerHealthChangeEvent += OnHealthChange;
@@ -91,8 +91,8 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		ClassesUi.OnClassReset -= ResetEquippedAbilities;
-		InventorySlotUi.OnHotbarItemEquip -= EquipHotbarItem;
+		PlayerClassesUi.OnClassReset -= ResetEquippedAbilities;
+		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
 		EventManager.OnGoldAmountChange -= OnGoldAmountChange;
 		EventManager.OnPlayerExpChangeEvent -= OnExperienceChange;
 		EventManager.OnPlayerHealthChangeEvent -= OnHealthChange;
@@ -103,10 +103,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void Initilize()
 	{
 		foreach (GameObject slot in ConsumableSlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		foreach (GameObject slot in AbilitySlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.SetActive(false);
@@ -128,7 +128,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	//Equip Consumables/Abilities
 	//not physically spawned in
-	private void EquipHotbarItem(InventoryItemUi item, InventorySlotUi slot)
+	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
@@ -138,14 +138,14 @@ public class PlayerHotbarUi : MonoBehaviour
 		else if (item.itemType == InventoryItemUi.ItemType.isAbility)
 			EquipAbility(item.abilityBaseRef, slot);
 	}
-	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
+	private void EquipConsumables(Consumables consumableToEquip, InventorySlotDataUi slotEquippedTo)
 	{
 		if (slotEquippedTo.slotIndex == 0)
 			equippedConsumableOne = consumableToEquip;
 		else if (slotEquippedTo.slotIndex == 1)
 			equippedConsumableTwo = consumableToEquip;
 	}
-	private void EquipAbility(SOClassAbilities newAbility, InventorySlotUi slotToEquipTo)
+	private void EquipAbility(SOClassAbilities newAbility, InventorySlotDataUi slotToEquipTo)
 	{
 		if (slotToEquipTo.itemInSlot != null)
 		{
@@ -178,16 +178,16 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		equippedAbilities.Add(newAbility);
 	}
-	private void HandleEmptySlots(InventorySlotUi slot)
+	private void HandleEmptySlots(InventorySlotDataUi slot)
 	{
-		if (slot.slotType == InventorySlotUi.SlotType.consumables)
+		if (slot.slotType == InventorySlotDataUi.SlotType.consumables)
 		{
 			if (slot.slotIndex == 0)
 				equippedConsumableOne = null;
 			if (slot.slotIndex == 1)
 				equippedConsumableTwo = null;
 		}
-		if (slot.slotType == InventorySlotUi.SlotType.ability)
+		if (slot.slotType == InventorySlotDataUi.SlotType.ability)
 		{
 			if (slot.slotIndex == 0)
 				equippedAbilityOne = null;

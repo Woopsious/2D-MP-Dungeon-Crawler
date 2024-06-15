@@ -53,7 +53,7 @@ public class SaveManager : MonoBehaviour
 		for (int i = 0; i < maxSaveSlots; i++)
 		{
 			GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
-			SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
+			SaveSlotDataUi saveSlot = go.GetComponent<SaveSlotDataUi>();
 
 			if (DoesDirectoryExist(Application.persistentDataPath + "/GameData/Save" + i))
 			{
@@ -78,7 +78,7 @@ public class SaveManager : MonoBehaviour
 			Destroy(child.gameObject);
 
 		GameObject go = Instantiate(saveSlotCardPrefab, saveSlotContainer.transform);
-		SaveSlotManager saveSlot = go.GetComponent<SaveSlotManager>();
+		SaveSlotDataUi saveSlot = go.GetComponent<SaveSlotDataUi>();
 
 		if (DoesDirectoryExist(Application.persistentDataPath + "/GameData/AutoSave"))
 		{
@@ -193,7 +193,7 @@ public class SaveManager : MonoBehaviour
 	private void SaveSavedDungeonData()
 	{
 		GameData.savedDungeonsList.Clear();
-		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
+		foreach (DungeonDataSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
 			{
@@ -208,7 +208,7 @@ public class SaveManager : MonoBehaviour
 		}
 
 		GameData.activeDungeonsList.Clear();
-		foreach (DungeonSlotUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
+		foreach (DungeonDataSlotUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
 			{
@@ -236,21 +236,21 @@ public class SaveManager : MonoBehaviour
 		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
 		GameData.playerCurrenthealth = playerStats.currentHealth;
 		GameData.playerCurrentMana = playerStats.currentMana;
-		GameData.playerGoldAmount = playerStats.GetComponent<PlayerInventoryManager>().GetGoldAmount();
+		GameData.playerGoldAmount = playerStats.GetComponent<PlayerInventoryHandler>().GetGoldAmount();
 	}
 	private void SavePlayerClassData()
 	{
 		//need reworking for mp
-		GameData.currentPlayerClass = ClassesUi.Instance.currentPlayerClass;
+		GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
 		GameData.unlockedClassNodeIndexesList.Clear();
 
-		foreach (ClassTreeNodeSlotUi node in ClassesUi.Instance.currentUnlockedClassNodes)
+		foreach (ClassTreeNodeSlotUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
 			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
 	}
 	private void SavePlayerInventoryData()
 	{
 		//need reworking for mp
-		GameData.hasRecievedStartingItems = PlayerInventoryManager.Instance.hasRecievedStartingItems;
+		GameData.hasRecievedStartingItems = PlayerInventoryHandler.Instance.hasRecievedStartingItems;
 
 		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
 		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
@@ -264,10 +264,10 @@ public class SaveManager : MonoBehaviour
 
 		foreach (GameObject slot in gameObjects)
 		{
-			if (slot.GetComponent<InventorySlotUi>().IsSlotEmpty()) continue;
+			if (slot.GetComponent<InventorySlotDataUi>().IsSlotEmpty()) continue;
 			else
 			{
-				InventoryItemUi inventoryItem = slot.GetComponent<InventorySlotUi>().itemInSlot;
+				InventoryItemUi inventoryItem = slot.GetComponent<InventorySlotDataUi>().itemInSlot;
 				InventoryItemData itemData = new()
 				{
 					weaponBaseRef = inventoryItem.weaponBaseRef,
@@ -288,11 +288,11 @@ public class SaveManager : MonoBehaviour
 			}
 		}
 	}
-	private void GrabQuestDataFromActiveOnes(List<QuestItemData> questDataList, List<QuestSlotsUi> activeQuestList)
+	private void GrabQuestDataFromActiveOnes(List<QuestItemData> questDataList, List<QuestDataSlotUi> activeQuestList)
 	{
 		questDataList.Clear();
 
-		foreach (QuestSlotsUi quest in activeQuestList)
+		foreach (QuestDataSlotUi quest in activeQuestList)
 		{
 			QuestItemData questData = new()
 			{

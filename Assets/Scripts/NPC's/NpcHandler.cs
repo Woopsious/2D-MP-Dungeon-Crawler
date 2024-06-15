@@ -14,7 +14,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	[Header("Quests")]
 	public GameObject questPrefab;
-	public List<QuestSlotsUi> avalableQuestList = new List<QuestSlotsUi>();
+	public List<QuestDataSlotUi> avalableQuestList = new List<QuestDataSlotUi>();
 
 	[Header("Shop Items")]
 	public GameObject ItemPrefab;
@@ -115,7 +115,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void GenerateQuest()
 	{
 		GameObject go = Instantiate(questPrefab, npcContainer.transform);
-		QuestSlotsUi quest = go.GetComponent<QuestSlotsUi>();
+		QuestDataSlotUi quest = go.GetComponent<QuestDataSlotUi>();
 
 		int percentage = Utilities.GetRandomNumber(100);
 		if (percentage >= 86)
@@ -190,7 +190,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		avalableShopItemsList.Add(item);
 	}
 
-	public void OnQuestAccepted(QuestSlotsUi quest)
+	public void OnQuestAccepted(QuestDataSlotUi quest)
 	{
 		avalableQuestList.Remove(quest);
 		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;

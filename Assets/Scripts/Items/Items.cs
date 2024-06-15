@@ -109,7 +109,7 @@ public class Items : MonoBehaviour, IInteractable
 	//item interactions
 	public void Interact(PlayerController playerController)
 	{
-		PlayerInventoryManager playerInventory = playerController.GetComponent<PlayerInventoryManager>();
+		PlayerInventoryHandler playerInventory = playerController.GetComponent<PlayerInventoryHandler>();
 		if (playerInventory.CheckIfInventoryFull())
 		{
 			Debug.LogWarning("Inventory is full");

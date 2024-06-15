@@ -7,17 +7,17 @@ public class PlayerClassHandler : EntityClassHandler
 {
 	private void OnEnable()
 	{
-		ClassesUi.OnClassChange += OnClassChanges;
-		ClassesUi.OnClassReset += OnClassReset;
-		ClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
-		ClassesUi.OnNewAbilityUnlock += UnlockAbility;
+		PlayerClassesUi.OnClassChange += OnClassChanges;
+		PlayerClassesUi.OnClassReset += OnClassReset;
+		PlayerClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
+		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
 	}
 	private void OnDisable()
 	{
-		ClassesUi.OnClassChange -= OnClassChanges;
-		ClassesUi.OnClassReset -= OnClassReset;
-		ClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
-		ClassesUi.OnNewAbilityUnlock -= UnlockAbility;
+		PlayerClassesUi.OnClassChange -= OnClassChanges;
+		PlayerClassesUi.OnClassReset -= OnClassReset;
+		PlayerClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
+		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 	}
 
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
@@ -33,9 +33,9 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void UpdateClassTreeUi()
 	{
-		if (ClassesUi.Instance == null)
+		if (PlayerClassesUi.Instance == null)
 			Debug.LogError("ClassesUi component instance not set, ignore if intentional");
 		else
-			ClassesUi.Instance.UpdateNodesInClassTree(GetComponent<EntityStats>());
+			PlayerClassesUi.Instance.UpdateNodesInClassTree(GetComponent<EntityStats>());
 	}
 }

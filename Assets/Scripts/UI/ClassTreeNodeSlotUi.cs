@@ -31,13 +31,13 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		ClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
-		ClassesUi.OnClassReset += ResetNode;
+		PlayerClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassReset += ResetNode;
 	}
 	private void OnDisable()
 	{
-		ClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
-		ClassesUi.OnClassReset -= ResetNode;
+		PlayerClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassReset -= ResetNode;
 	}
 	public void Initilize()
 	{
@@ -189,9 +189,9 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		isAlreadyUnlocked = true;
 
 		if (statBonus != null)
-			ClassesUi.Instance.UnlockStatBonus(this, statBonus);
+			PlayerClassesUi.Instance.UnlockStatBonus(this, statBonus);
 		else if (ability != null)
-			ClassesUi.Instance.UnlockAbility(this, ability);
+			PlayerClassesUi.Instance.UnlockAbility(this, ability);
 	}
 
 	//node update checks
@@ -232,7 +232,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 
 		foreach (ClassTreeNodeSlotUi node in hardExclusions)
 		{
-			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+			if (PlayerClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
 				return true;
 		}
 		return false;
@@ -245,7 +245,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		int numOfMatches = 0;
 		foreach (ClassTreeNodeSlotUi node in exclusions)
 		{
-			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+			if (PlayerClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
 				numOfMatches++;
 		}
 		if (numOfMatches == exclusions.Count)
@@ -259,7 +259,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		{
 			foreach (ClassTreeNodeSlotUi node in preRequisites)
 			{
-				if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
+				if (PlayerClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
 					return true;
 			}
 			return false;

@@ -32,7 +32,7 @@ public class PlayerInfoUi : MonoBehaviour
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";
 
 		string weaponInfo;
-		if (PlayerInventoryUi.Instance.weaponEquipmentSlot.GetComponent<InventorySlotUi>().itemInSlot != null &&
+		if (PlayerInventoryUi.Instance.weaponEquipmentSlot.GetComponent<InventorySlotDataUi>().itemInSlot != null &&
 			stats.equipmentHandler != null && stats.equipmentHandler.equippedWeapon != null)
 		{
 			int dps = (int)(stats.equipmentHandler.equippedWeapon.damage /

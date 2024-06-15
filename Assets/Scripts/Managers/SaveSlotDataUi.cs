@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using JetBrains.Annotations;
 
-public class SaveSlotManager : MonoBehaviour
+public class SaveSlotDataUi : MonoBehaviour
 {
 	[SerializeField] private string folderDirectory;
 

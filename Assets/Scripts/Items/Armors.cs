@@ -78,7 +78,7 @@ public class Armors : Items
 		string equipInfo;
 		if (playerStats.entityLevel < itemLevel)
 			equipInfo = "<color=red>Cant Equip Armor \n Level Too High</color>";
-		else if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
+		else if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
 			equipInfo = "<color=red>Cant Equip Armor \n Weight too heavy</color>";
 		else
 			equipInfo = "<color=green>Can Equip Armor</color>";

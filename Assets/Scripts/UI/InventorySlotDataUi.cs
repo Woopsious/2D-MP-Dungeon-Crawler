@@ -10,15 +10,15 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class InventorySlotUi : MonoBehaviour, IDropHandler
+public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 {
-	public static event Action<InventoryItemUi, InventorySlotUi> OnItemEquip;
-	public static event Action<InventoryItemUi, InventorySlotUi> OnHotbarItemEquip;
+	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemEquip;
+	public static event Action<InventoryItemUi, InventorySlotDataUi> OnHotbarItemEquip;
 
-	public static event Action<InventoryItemUi, InventorySlotUi> OnItemSellEvent;
-	public static event Action<InventoryItemUi, InventorySlotUi, InventorySlotUi> OnItemTryBuyEvent;
-	public static event Action<InventoryItemUi, InventorySlotUi> OnItemConfirmBuyEvent;
-	public static event Action<InventoryItemUi, InventorySlotUi, string> OnItemCancelBuyEvent;
+	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemSellEvent;
+	public static event Action<InventoryItemUi, InventorySlotDataUi, InventorySlotDataUi> OnItemTryBuyEvent;
+	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemConfirmBuyEvent;
+	public static event Action<InventoryItemUi, InventorySlotDataUi, string> OnItemCancelBuyEvent;
 
 	public SlotType slotType;
 	public enum SlotType
@@ -45,7 +45,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public void EquipItemToSlot(InventoryItemUi item) //dragging items
 	{
-		InventorySlotUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotUi>();
+		InventorySlotDataUi oldInventorySlot = item.parentAfterDrag.GetComponent<InventorySlotDataUi>();
 		if (!IsCorrectSlotType(item)) return;
 		if (IsNewSlotSameAsOldSlot(oldInventorySlot)) return;
 
@@ -60,7 +60,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 
 		if (!IsSlotEmpty()) //swap slot data
 		{
-			if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot()) //disable swapping of shop items
+			if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsShopSlot()) //disable swapping of shop items
 			{
 				ItemCancelBuy(item, oldInventorySlot, "Slot not empty");
 				return;
@@ -127,17 +127,17 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 
 	//invoke shop events
-	public void ItemConfirmBuy(InventoryItemUi item, InventorySlotUi slot)
+	public void ItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		OnItemConfirmBuyEvent?.Invoke(item, slot);
 	}
-	public void ItemCancelBuy(InventoryItemUi item, InventorySlotUi slot, string reason)
+	public void ItemCancelBuy(InventoryItemUi item, InventorySlotDataUi slot, string reason)
 	{
 		OnItemCancelBuyEvent?.Invoke(item, slot, reason);
 	}
 
 	//bool checks
-	public bool IsNewSlotSameAsOldSlot(InventorySlotUi oldInventorySlot)
+	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
 	{
 		if (oldInventorySlot == this)
 			return true;
@@ -177,19 +177,19 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 		}
 
 		//shop checks
-		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
+		if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsShopSlot())
 		{
-			if (IsShopSlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot())
+			if (IsShopSlot() && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
 				return true;
-			if (IsPlayerInventorySlot() && item.parentAfterDrag.GetComponent<InventorySlotUi>().IsShopSlot())
+			if (IsPlayerInventorySlot() && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsShopSlot())
 				return true;
 			else return false;
 		}
 
 		//unequipping/moving item checks
-		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
+		if (item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
 			return true;
-		if (item.parentAfterDrag.GetComponent<InventorySlotUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
+		if (item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
@@ -276,7 +276,7 @@ public class InventorySlotUi : MonoBehaviour, IDropHandler
 	}
 	public bool CheckClassRestriction(int itemClassRestrictionNum)
 	{
-		int classRestrictionNum = (int)ClassesUi.Instance.currentPlayerClass.classRestriction;
+		int classRestrictionNum = (int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction;
 		if (classRestrictionNum >= itemClassRestrictionNum)
 			return true;
 		else

@@ -182,14 +182,14 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			uiCantEquipNotif.text = "Cant Equip \n low level";
 		else if (itemType == ItemType.isWeapon)
 		{
-			if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
+			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
 				uiCantEquipNotif.text = "Cant Equip \n too heavy";
 			else
 				uiCantEquipNotif.gameObject.SetActive(false);
 		}
 		else if (itemType == ItemType.isArmor)
 		{
-			if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
+			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
 				uiCantEquipNotif.text = "Cant Equip \n too heavy";
 			else
 				uiCantEquipNotif.gameObject.SetActive(false);

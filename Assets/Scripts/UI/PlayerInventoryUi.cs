@@ -57,12 +57,12 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInventory;
-		ClassesUi.OnClassReset += OnClassReset;
-		ClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
+		PlayerClassesUi.OnClassReset += OnClassReset;
+		PlayerClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
 
-		InventorySlotUi.OnItemSellEvent += OnItemSell;
-		InventorySlotUi.OnItemConfirmBuyEvent += OnItemConfirmBuy;
-		InventorySlotUi.OnItemCancelBuyEvent += OnItemCancelBuy;
+		InventorySlotDataUi.OnItemSellEvent += OnItemSell;
+		InventorySlotDataUi.OnItemConfirmBuyEvent += OnItemConfirmBuy;
+		InventorySlotDataUi.OnItemCancelBuyEvent += OnItemCancelBuy;
 
 		EventManager.OnShowPlayerInventoryEvent += ShowInventory;
 		EventManager.OnShowPlayerClassSelectionEvent += HideInventory;
@@ -82,12 +82,12 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerInventory;
-		ClassesUi.OnClassReset -= OnClassReset;
-		ClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
+		PlayerClassesUi.OnClassReset -= OnClassReset;
+		PlayerClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 
-		InventorySlotUi.OnItemSellEvent -= OnItemSell;
-		InventorySlotUi.OnItemConfirmBuyEvent -= OnItemConfirmBuy;
-		InventorySlotUi.OnItemCancelBuyEvent -= OnItemCancelBuy;
+		InventorySlotDataUi.OnItemSellEvent -= OnItemSell;
+		InventorySlotDataUi.OnItemConfirmBuyEvent -= OnItemConfirmBuy;
+		InventorySlotDataUi.OnItemCancelBuyEvent -= OnItemCancelBuy;
 
 		EventManager.OnShowPlayerInventoryEvent -= ShowInventory;
 		EventManager.OnShowPlayerClassSelectionEvent -= HideInventory;
@@ -109,13 +109,13 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
 
 		foreach (GameObject slot in LearntAbilitySlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		foreach (GameObject slot in InventorySlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		foreach (GameObject slot in EquipmentSlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 	}
 
 	//reload player inventory
@@ -134,7 +134,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
 
 			ReloadItemData(newInventoryItem, itemData);
-			InventorySlotUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotUi>();
+			InventorySlotDataUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
 
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);
@@ -218,7 +218,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 		for (int i = 0; i < LearntAbilitySlots.Count; i++)
 		{
-			InventorySlotUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotUi>();
+			InventorySlotDataUi inventorySlot = LearntAbilitySlots[i].GetComponent<InventorySlotDataUi>();
 
 			if (inventorySlot.IsSlotEmpty())
 			{
@@ -303,14 +303,14 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//buying/selling items
-	public void OnItemSell(InventoryItemUi item, InventorySlotUi slot)
+	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		goldTransaction = item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 		transactionInfoText.text = "Item Sold";
 		slot.AddItemToSlot(item);
 	}
-	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotUi newSlot)
+	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi newSlot)
 	{
 		Debug.Log("confirm buy");
 
@@ -320,7 +320,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 		newSlot.AddItemToSlot(item);
 	}
-	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotUi oldSlot, string reason)
+	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotDataUi oldSlot, string reason)
 	{
 		Debug.Log("cancel buy");
 
@@ -336,7 +336,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
 		{
-			InventorySlotUi inventorySlot = InventorySlots[i].GetComponent<InventorySlotUi>();
+			InventorySlotDataUi inventorySlot = InventorySlots[i].GetComponent<InventorySlotDataUi>();
 
 			if (inventorySlot.IsSlotEmpty())
 			{
@@ -351,7 +351,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
 		{
-			InventorySlotUi inventroySlot = InventorySlots[i].GetComponent<InventorySlotUi>();
+			InventorySlotDataUi inventroySlot = InventorySlots[i].GetComponent<InventorySlotDataUi>();
 
 			if (!inventroySlot.IsSlotEmpty())
 				AddToStackCount(inventroySlot, newItem);
@@ -363,7 +363,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			}
 		}
 	}
-	public void AddToStackCount(InventorySlotUi inventroySlot, InventoryItemUi newItem)
+	public void AddToStackCount(InventorySlotDataUi inventroySlot, InventoryItemUi newItem)
 	{
 		InventoryItemUi itemInSlot = inventroySlot.GetComponentInChildren<InventoryItemUi>();
 		if (inventroySlot.IsItemInSlotSameAs(newItem) && itemInSlot.currentStackCount < itemInSlot.maxStackCount)
@@ -417,7 +417,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		for (int i = 0; i < npc.avalableShopItemsList.Count; i++)
 		{
-			InventorySlotUi slot = shopSlots[i].GetComponent<InventorySlotUi>();
+			InventorySlotDataUi slot = shopSlots[i].GetComponent<InventorySlotDataUi>();
 			slot.AddItemToSlot(npc.avalableShopItemsList[i]);
 		}
 
@@ -432,7 +432,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 		foreach (GameObject obj in shopSlots)
 		{
-			InventorySlotUi slot = obj.GetComponent<InventorySlotUi>();
+			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
 			if (slot.IsSlotEmpty()) continue;
 
 			npc.avalableShopItemsList.Add(slot.itemInSlot); //add new items
@@ -448,19 +448,19 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		foreach (GameObject obj in objList)
 		{
-			if (obj.GetComponent<InventorySlotUi>().itemInSlot == null) continue;
+			if (obj.GetComponent<InventorySlotDataUi>().itemInSlot == null) continue;
 			UpdateCanEquipItem(obj);
 			UpdateToolTip(obj);
 		}
 	}
 	private void UpdateToolTip(GameObject obj)
 	{
-		ToolTipUi tip = obj.GetComponent<InventorySlotUi>().itemInSlot.GetComponent<ToolTipUi>();
+		ToolTipUi tip = obj.GetComponent<InventorySlotDataUi>().itemInSlot.GetComponent<ToolTipUi>();
 		tip.UpdatePlayerToolTip();
 	}
 	private void UpdateCanEquipItem(GameObject obj)
 	{
-		InventoryItemUi itemUi = obj.GetComponent<InventorySlotUi>().itemInSlot;
+		InventoryItemUi itemUi = obj.GetComponent<InventorySlotDataUi>().itemInSlot;
 		itemUi.CheckIfCanEquipItem();
 	}
 }

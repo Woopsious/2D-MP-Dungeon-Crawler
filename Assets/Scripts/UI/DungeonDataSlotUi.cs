@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static DungeonSlotUi;
+using static DungeonDataSlotUi;
 
-public class DungeonSlotUi : MonoBehaviour
+public class DungeonDataSlotUi : MonoBehaviour
 {
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
@@ -31,8 +31,8 @@ public class DungeonSlotUi : MonoBehaviour
 		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
 	}
 
-	public static event Action<DungeonSlotUi> OnDungeonSave;
-	public static event Action<DungeonSlotUi> OnDungeonDelete;
+	public static event Action<DungeonDataSlotUi> OnDungeonSave;
+	public static event Action<DungeonDataSlotUi> OnDungeonDelete;
 
 	public void Initilize(int index)
 	{

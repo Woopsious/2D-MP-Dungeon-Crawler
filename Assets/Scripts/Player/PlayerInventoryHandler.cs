@@ -11,9 +11,9 @@ using UnityEngine.UI;
 using static UnityEditor.Progress;
 using Random = UnityEngine.Random;
 
-public class PlayerInventoryManager : MonoBehaviour
+public class PlayerInventoryHandler : MonoBehaviour
 {
-	public static PlayerInventoryManager Instance;
+	public static PlayerInventoryHandler Instance;
 
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
@@ -41,16 +41,16 @@ public class PlayerInventoryManager : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInventory;
-		InventorySlotUi.OnItemSellEvent += OnItemSell;
-		InventorySlotUi.OnItemTryBuyEvent += OnItemTryBuy;
+		InventorySlotDataUi.OnItemSellEvent += OnItemSell;
+		InventorySlotDataUi.OnItemTryBuyEvent += OnItemTryBuy;
 
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerInventory;
-		InventorySlotUi.OnItemSellEvent -= OnItemSell;
-		InventorySlotUi.OnItemTryBuyEvent -= OnItemTryBuy;
+		InventorySlotDataUi.OnItemSellEvent -= OnItemSell;
+		InventorySlotDataUi.OnItemTryBuyEvent -= OnItemTryBuy;
 
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}
@@ -122,7 +122,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		GetGoldAmount();
 		EventManager.GoldAmountChange(playerGoldAmount);
 	}
-	public void OnItemTryBuy(InventoryItemUi item, InventorySlotUi newSlot, InventorySlotUi oldSlot)
+	public void OnItemTryBuy(InventoryItemUi item, InventorySlotDataUi newSlot, InventorySlotDataUi oldSlot)
 	{
 		if (item.itemPrice * item.currentStackCount > playerGoldAmount)
 			oldSlot.ItemCancelBuy(item, oldSlot, "Cant Afford Item");
@@ -135,15 +135,15 @@ public class PlayerInventoryManager : MonoBehaviour
 			UpdateGoldAmount(gold);
 		}
 	}
-	public void OnItemSell(InventoryItemUi item, InventorySlotUi slot)
+	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		int newgold = 0;
 		newgold += item.itemPrice * item.currentStackCount;
 		UpdateGoldAmount(newgold);
 	}
-	public void OnQuestComplete(QuestSlotsUi quest)
+	public void OnQuestComplete(QuestDataSlotUi quest)
 	{
-		if (quest.questRewardType == QuestSlotsUi.RewardType.isGoldReward)
+		if (quest.questRewardType == QuestDataSlotUi.RewardType.isGoldReward)
 			UpdateGoldAmount(quest.rewardToAdd);
 	}
 
@@ -157,7 +157,7 @@ public class PlayerInventoryManager : MonoBehaviour
 		int numOfFilledSlots = 0;
 		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
 		{
-			InventorySlotUi inventorySlot = obj.GetComponent<InventorySlotUi>();
+			InventorySlotDataUi inventorySlot = obj.GetComponent<InventorySlotDataUi>();
 
 			if (!inventorySlot.IsSlotEmpty())
 				numOfFilledSlots++;

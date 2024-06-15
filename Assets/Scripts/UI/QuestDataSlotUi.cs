@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Processors;
 using UnityEngine.UI;
 
-public class QuestSlotsUi : MonoBehaviour
+public class QuestDataSlotUi : MonoBehaviour
 {
 	[Header("Quest Ui")]
 	public TMP_Text questNameUi;
@@ -250,7 +250,7 @@ public class QuestSlotsUi : MonoBehaviour
 		else return false;
 	}
 
-	public void OnQuestAccepted(QuestSlotsUi quest)
+	public void OnQuestAccepted(QuestDataSlotUi quest)
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}

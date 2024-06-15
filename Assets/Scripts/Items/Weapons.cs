@@ -100,7 +100,7 @@ public class Weapons : Items
 		string equipInfo;
 		if (playerStats.entityLevel < itemLevel)
 			equipInfo = "<color=red>Cant Equip Weapon \n Level Too High</color>";
-		else if ((int)ClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
+		else if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
 			equipInfo = "<color=red>Cant Equip Weapon \n Weight too heavy</color>";
 		else
 			equipInfo = "<color=green>Can Equip Weapon</color>";

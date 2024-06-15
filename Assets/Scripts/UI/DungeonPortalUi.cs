@@ -18,8 +18,8 @@ public class DungeonPortalUi : MonoBehaviour
 	public GameObject savedDungeonListContent;
 	public GameObject portalExitUi;
 
-	public List<DungeonSlotUi> activeDungeonLists = new List<DungeonSlotUi>();
-	public List<DungeonSlotUi> savedDungeonLists = new List<DungeonSlotUi>();
+	public List<DungeonDataSlotUi> activeDungeonLists = new List<DungeonDataSlotUi>();
+	public List<DungeonDataSlotUi> savedDungeonLists = new List<DungeonDataSlotUi>();
 
 	private void Awake()
 	{
@@ -32,8 +32,8 @@ public class DungeonPortalUi : MonoBehaviour
 		EventManager.OnShowPortalUi += ShowPortalUi;
 		EventManager.OnHidePortalUi += HidePortalUi;
 
-		DungeonSlotUi.OnDungeonSave += OnSaveDungeon;
-		DungeonSlotUi.OnDungeonDelete += OnDeleteDungeon;
+		DungeonDataSlotUi.OnDungeonSave += OnSaveDungeon;
+		DungeonDataSlotUi.OnDungeonDelete += OnDeleteDungeon;
 	}
 	private void OnDisable()
 	{
@@ -41,8 +41,8 @@ public class DungeonPortalUi : MonoBehaviour
 		EventManager.OnShowPortalUi -= ShowPortalUi;
 		EventManager.OnHidePortalUi -= HidePortalUi;
 
-		DungeonSlotUi.OnDungeonSave -= OnSaveDungeon;
-		DungeonSlotUi.OnDungeonDelete -= OnDeleteDungeon;
+		DungeonDataSlotUi.OnDungeonSave -= OnSaveDungeon;
+		DungeonDataSlotUi.OnDungeonDelete -= OnDeleteDungeon;
 	}
 
 	private void GenerateNewDungeons()
@@ -55,7 +55,7 @@ public class DungeonPortalUi : MonoBehaviour
 		for (int i = 0; i < 5; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
-			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			DungeonDataSlotUi dungeonSlot = go.GetComponent<DungeonDataSlotUi>();
 			dungeonSlot.Initilize(i);
 			activeDungeonLists.Add(dungeonSlot);
 		}
@@ -100,7 +100,7 @@ public class DungeonPortalUi : MonoBehaviour
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, savedDungeonListContent.transform);
-			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			DungeonDataSlotUi dungeonSlot = go.GetComponent<DungeonDataSlotUi>();
 			dungeonSlot.Initilize(SaveManager.Instance.GameData.savedDungeonsList[i], i);
 			activeDungeonLists.Add(dungeonSlot);
 			OnSaveDungeon(dungeonSlot);
@@ -109,12 +109,12 @@ public class DungeonPortalUi : MonoBehaviour
 		for (int i = 0; i < SaveManager.Instance.GameData.activeDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, activeDungeonListContent.transform);
-			DungeonSlotUi dungeonSlot = go.GetComponent<DungeonSlotUi>();
+			DungeonDataSlotUi dungeonSlot = go.GetComponent<DungeonDataSlotUi>();
 			dungeonSlot.Initilize(SaveManager.Instance.GameData.activeDungeonsList[i], i);
 			activeDungeonLists.Add(dungeonSlot);
 		}
 	}
-	private void OnSaveDungeon(DungeonSlotUi dungeonSlot)
+	private void OnSaveDungeon(DungeonDataSlotUi dungeonSlot)
 	{
 		dungeonSlot.transform.SetParent(savedDungeonListContent.transform);
 		dungeonSlot.saveDungeonButtonObj.SetActive(false);
@@ -124,7 +124,7 @@ public class DungeonPortalUi : MonoBehaviour
 		activeDungeonLists.Remove(dungeonSlot);
 		savedDungeonLists.Add(dungeonSlot);
 	}
-	private void OnDeleteDungeon(DungeonSlotUi dungeonSlot)
+	private void OnDeleteDungeon(DungeonDataSlotUi dungeonSlot)
 	{
 		activeDungeonLists.Remove(dungeonSlot);
 		savedDungeonLists.Remove(dungeonSlot);

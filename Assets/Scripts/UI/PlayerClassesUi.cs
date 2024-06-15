@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ClassesUi : MonoBehaviour
+public class PlayerClassesUi : MonoBehaviour
 {
-	public static ClassesUi Instance;
+	public static PlayerClassesUi Instance;
 
 	[Header("Class Selection")]
 	public GameObject playerClassSelectionPanel;
