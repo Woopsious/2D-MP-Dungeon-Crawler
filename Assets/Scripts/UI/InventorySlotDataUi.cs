@@ -15,11 +15,6 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemEquip;
 	public static event Action<InventoryItemUi, InventorySlotDataUi> OnHotbarItemEquip;
 
-	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemSellEvent;
-	public static event Action<InventoryItemUi, InventorySlotDataUi, InventorySlotDataUi> OnItemTryBuyEvent;
-	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemConfirmBuyEvent;
-	public static event Action<InventoryItemUi, InventorySlotDataUi, string> OnItemCancelBuyEvent;
-
 	public SlotType slotType;
 	public enum SlotType
 	{
@@ -62,7 +57,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		{
 			if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsShopSlot()) //disable swapping of shop items
 			{
-				ItemCancelBuy(item, oldInventorySlot, "Slot not empty");
+				PlayerInventoryUi.Instance.OnItemCancelBuy(item, oldInventorySlot, "Slot not empty");
 				return;
 			}
 
@@ -81,9 +76,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		else if (IsShopSlot() || oldInventorySlot.IsShopSlot())
 		{
 			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
-				OnItemSellEvent?.Invoke(item, this);
+				PlayerInventoryUi.Instance.OnItemSell(item, this);
 			else if (oldInventorySlot.IsShopSlot() && IsPlayerInventorySlot())
-				OnItemTryBuyEvent?.Invoke(item, this, oldInventorySlot);
+				PlayerInventoryUi.Instance.OnItemTryBuy(item, this, oldInventorySlot);
 		}
 		else
 		{
@@ -124,16 +119,6 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(50, 100);
 		else
 			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
-	}
-
-	//invoke shop events
-	public void ItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi slot)
-	{
-		OnItemConfirmBuyEvent?.Invoke(item, slot);
-	}
-	public void ItemCancelBuy(InventoryItemUi item, InventorySlotDataUi slot, string reason)
-	{
-		OnItemCancelBuyEvent?.Invoke(item, slot, reason);
 	}
 
 	//bool checks

@@ -29,4 +29,7 @@ public class SOClasses : ScriptableObject
 	{
 		light, medium, heavy
 	}
+
+	[Header("Starting Items")]
+	public List<SOItems> startingItems = new List<SOItems>();
 }

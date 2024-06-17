@@ -135,7 +135,6 @@ public class PlayerClassesUi : MonoBehaviour
 	public void ReloadPlayerClass()
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
-
 		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
 
 		if (currentPlayerClass == knightClass)
@@ -150,10 +149,6 @@ public class PlayerClassesUi : MonoBehaviour
 			ReloadPlayerClassTreeNodes(MageClassPanel);
 
 		HidePlayerClassSelection();
-		/// <summery>
-		/// based on indexes in	SaveManager.Instance.GameData.unlockedClassNodeIndexesList and current, loop through a list
-		/// of said classes Nodes, and reunlock those bypassing checks
-		/// <summery>
 	}
 	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
 	{
@@ -188,6 +183,8 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		if (currentPlayerClass != null)
 			ResetCurrentClassButton();
+		if (GameManager.isNewGame && currentPlayerClass == null)
+			SaveManager.Instance.GameData.hasRecievedStartingItems = false;
 
 		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;

@@ -25,12 +25,10 @@ MonoBehaviour:
   abilityLists: []
   canUseSpells: 0
   classRestriction: 2
-  possibleWeaponsListForClass:
+  startingItems:
   - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
-  - {fileID: 11400000, guid: 3d3734054398be248bac2a8d0b37c4de, type: 2}
-  - {fileID: 11400000, guid: b3fa23e0e7c297d479878bd653e40ced, type: 2}
-  possibleHelmetsList:
   - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
-  - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
-  possibleChestpiecesList: []
-  possibleLegsList: []
+  - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
+  - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

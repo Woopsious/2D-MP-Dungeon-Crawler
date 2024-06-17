@@ -20,6 +20,12 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 	}
 
+	protected override void OnClassChanges(SOClasses newPlayerClass)
+	{
+		base.OnClassChanges(newPlayerClass);
+		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
+	}
+
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
 		base.UnlockStatBoost(statBoost);

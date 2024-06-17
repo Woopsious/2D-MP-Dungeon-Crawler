@@ -17,9 +17,9 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
-	public bool debugSpawnStartingItems;
 	public bool hasRecievedStartingItems;
-	public List<SOItems> startingItems = new List<SOItems>();
+	public bool debugSpawnStartingItems;
+	public List<SOItems> debugStartingItems = new List<SOItems>();
 
 	[Header("Player Gold")]
 	public int playerGoldAmount;
@@ -29,76 +29,110 @@ public class PlayerInventoryHandler : MonoBehaviour
 	{
 		Instance = this;
 	}
-	public void Start()
-	{
-		if (GameManager.isNewGame || debugSpawnStartingItems)
-		{
-			SpawnStartingItems();
-			UpdateGoldAmount(startingGold);
-		}
-	}
 
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInventory;
-		InventorySlotDataUi.OnItemSellEvent += OnItemSell;
-		InventorySlotDataUi.OnItemTryBuyEvent += OnItemTryBuy;
-
-		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerInventory;
-		InventorySlotDataUi.OnItemSellEvent -= OnItemSell;
-		InventorySlotDataUi.OnItemTryBuyEvent -= OnItemTryBuy;
-
-		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}
 
-	private void SpawnStartingItems()
+	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
+		if (SaveManager.Instance.GameData.hasRecievedStartingItems) return;
 		hasRecievedStartingItems = true;
+		SaveManager.Instance.GameData.hasRecievedStartingItems = true;
 
-		for (int i = 0; i < startingItems.Count; i++) //spawn item from loot pool at death location
+		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
+
+		for (int i = 0; i < playerClass.startingItems.Count; i++)
 		{
 			GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
 
-			if (startingItems[i].itemType == SOItems.ItemType.isWeapon)
+			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isWeapon)
 			{
 				Weapons weapon = go.AddComponent<Weapons>();
-				weapon.weaponBaseRef = (SOWeapons)startingItems[i];
+				weapon.weaponBaseRef = (SOWeapons)playerClass.startingItems[i];
 				weapon.SetCurrentStackCount(1);
 			}
 
-			if (startingItems[i].itemType == SOItems.ItemType.isArmor)
+			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isArmor)
 			{
 				Armors armor = go.AddComponent<Armors>();
-				armor.armorBaseRef = (SOArmors)startingItems[i];
+				armor.armorBaseRef = (SOArmors)playerClass.startingItems[i];
 				armor.SetCurrentStackCount(1);
 			}
 
-			if (startingItems[i].itemType == SOItems.ItemType.isAccessory)
+			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isAccessory)
 			{
 				Accessories accessories = go.AddComponent<Accessories>();
-				accessories.accessoryBaseRef = (SOAccessories)startingItems[i];
+				accessories.accessoryBaseRef = (SOAccessories)playerClass.startingItems[i];
 				accessories.SetCurrentStackCount(1);
 			}
 
-			if (startingItems[i].itemType == SOItems.ItemType.isConsumable)
+			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isConsumable)
 			{
 				Consumables consumables = go.AddComponent<Consumables>();
-				consumables.consumableBaseRef = (SOConsumables)startingItems[i];
+				consumables.consumableBaseRef = (SOConsumables)playerClass.startingItems[i];
 				consumables.SetCurrentStackCount(3);
 			}
 
 			Items item = go.GetComponent<Items>();
-			item.gameObject.name = startingItems[i].name;
-			item.itemName = startingItems[i].name;
-			item.itemSprite = startingItems[i].itemImage;
-			item.itemPrice = startingItems[i].itemPrice;
+			item.gameObject.name = playerClass.startingItems[i].name;
+			item.itemName = playerClass.startingItems[i].name;
+			item.itemSprite = playerClass.startingItems[i].itemImage;
+			item.itemPrice = playerClass.startingItems[i].itemPrice;
 
-			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
-			//im just not sure of a better way to do it atm
+			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
+			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
+			collider.isTrigger = true;
+		}
+
+		if (debugSpawnStartingItems)
+			SpawnDebugStartingItems();
+	}
+	private void SpawnDebugStartingItems()
+	{
+		for (int i = 0; i < debugStartingItems.Count; i++)
+		{
+			GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
+
+			if (debugStartingItems[i].itemType == SOItems.ItemType.isWeapon)
+			{
+				Weapons weapon = go.AddComponent<Weapons>();
+				weapon.weaponBaseRef = (SOWeapons)debugStartingItems[i];
+				weapon.SetCurrentStackCount(1);
+			}
+
+			if (debugStartingItems[i].itemType == SOItems.ItemType.isArmor)
+			{
+				Armors armor = go.AddComponent<Armors>();
+				armor.armorBaseRef = (SOArmors)debugStartingItems[i];
+				armor.SetCurrentStackCount(1);
+			}
+
+			if (debugStartingItems[i].itemType == SOItems.ItemType.isAccessory)
+			{
+				Accessories accessories = go.AddComponent<Accessories>();
+				accessories.accessoryBaseRef = (SOAccessories)debugStartingItems[i];
+				accessories.SetCurrentStackCount(1);
+			}
+
+			if (debugStartingItems[i].itemType == SOItems.ItemType.isConsumable)
+			{
+				Consumables consumables = go.AddComponent<Consumables>();
+				consumables.consumableBaseRef = (SOConsumables)debugStartingItems[i];
+				consumables.SetCurrentStackCount(3);
+			}
+
+			Items item = go.GetComponent<Items>();
+			item.gameObject.name = debugStartingItems[i].name;
+			item.itemName = debugStartingItems[i].name;
+			item.itemSprite = debugStartingItems[i].itemImage;
+			item.itemPrice = debugStartingItems[i].itemPrice;
+
 			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
@@ -107,44 +141,6 @@ public class PlayerInventoryHandler : MonoBehaviour
 	private void ReloadPlayerInventory()
 	{
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
-
-		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
-	}
-
-	//player gold
-	public int GetGoldAmount()
-	{
-		return playerGoldAmount;
-	}
-	public void UpdateGoldAmount(int gold)
-	{
-		playerGoldAmount += gold;
-		GetGoldAmount();
-		EventManager.GoldAmountChange(playerGoldAmount);
-	}
-	public void OnItemTryBuy(InventoryItemUi item, InventorySlotDataUi newSlot, InventorySlotDataUi oldSlot)
-	{
-		if (item.itemPrice * item.currentStackCount > playerGoldAmount)
-			oldSlot.ItemCancelBuy(item, oldSlot, "Cant Afford Item");
-		else
-		{
-			newSlot.ItemConfirmBuy(item, newSlot);
-
-			int gold = 0;
-			gold -= item.itemPrice * item.currentStackCount;
-			UpdateGoldAmount(gold);
-		}
-	}
-	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
-	{
-		int newgold = 0;
-		newgold += item.itemPrice * item.currentStackCount;
-		UpdateGoldAmount(newgold);
-	}
-	public void OnQuestComplete(QuestDataSlotUi quest)
-	{
-		if (quest.questRewardType == QuestDataSlotUi.RewardType.isGoldReward)
-			UpdateGoldAmount(quest.rewardToAdd);
 	}
 
 	//on item pickup

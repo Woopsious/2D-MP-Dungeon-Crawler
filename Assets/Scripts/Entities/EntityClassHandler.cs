@@ -52,14 +52,14 @@ public class EntityClassHandler : MonoBehaviour
 	///	
 	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
 	///	<summery>
-	protected void OnClassChanges(SOClasses newPlayerClass)
+	protected virtual void OnClassChanges(SOClasses newClass)
 	{
 		OnClassChange?.Invoke(this);
 
 		unlockedAbilitiesList.Clear();
 		unlockedStatBoostList.Clear();
 
-		currentEntityClass = newPlayerClass;
+		currentEntityClass = newClass;
 	}
 	///	<summery>
 	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has

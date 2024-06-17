@@ -236,7 +236,8 @@ public class SaveManager : MonoBehaviour
 		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
 		GameData.playerCurrenthealth = playerStats.currentHealth;
 		GameData.playerCurrentMana = playerStats.currentMana;
-		GameData.playerGoldAmount = playerStats.GetComponent<PlayerInventoryHandler>().GetGoldAmount();
+		GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
+		GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
 	}
 	private void SavePlayerClassData()
 	{
@@ -250,8 +251,6 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerInventoryData()
 	{
 		//need reworking for mp
-		GameData.hasRecievedStartingItems = PlayerInventoryHandler.Instance.hasRecievedStartingItems;
-
 		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
 		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
 		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
@@ -371,13 +370,14 @@ public class GameData
 [System.Serializable]
 public class InventoryItemData
 {
-	public SOClassAbilities abilityBaseRef;
+	public int slotIndexRef;
 
 	[Header("Item Base Ref")]
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
+	public SOClassAbilities abilityBaseRef;
 
 	[Header("Item Info")]
 	public int itemLevel;
