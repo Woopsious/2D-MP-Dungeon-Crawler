@@ -12,6 +12,14 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	public bool chestActive;
 	public bool chestStateOpened;
 
+	[Header("Player Chest Info")]
+	public bool isPlayerStorageChest;
+	public GameObject ItemPrefab;
+	public List<InventoryItemUi> itemList = new List<InventoryItemUi>();
+
+	[Header("Container Ref")]
+	public GameObject itemContainer;
+
 	[Header("Ui Notif")]
 	public TMP_Text interactWithText;
 
@@ -75,12 +83,19 @@ public class ChestHandler : MonoBehaviour, IInteractable
 
 	public void Interact(PlayerController player)
 	{
-		if (chestStateOpened ==  true) return;
-
-		ChangeChestStateToOpen(true);
+		if (!isPlayerStorageChest)
+		{
+			if (chestStateOpened == true) return;
+			ChangeChestStateToOpen(true);
+		}
+		else
+		{
+			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
+		}
 	}
 	public void UnInteract(PlayerController player)
 	{
-		return; //no uninteract required
+		if (!isPlayerStorageChest) return;
+		PlayerInventoryUi.Instance.HidePlayerStorageChest(this);
 	}
 }

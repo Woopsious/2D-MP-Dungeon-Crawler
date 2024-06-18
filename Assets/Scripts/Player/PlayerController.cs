@@ -245,7 +245,7 @@ public class PlayerController : MonoBehaviour
 	//bool checks
 	private bool IsPlayerInteracting()
 	{
-		if (isInteractingWithNpc || isInteractingWithPortal)
+		if (isInteractingWithNpc || isInteractingWithPortal || isInteractingWithChest)
 			return true;
 		else return false;
 	}
@@ -351,7 +351,12 @@ public class PlayerController : MonoBehaviour
 		if (currentInteractedPortal != null)
 			currentInteractedPortal.Interact(this);
 		else if (currentInteractedChest != null)
-			currentInteractedChest.Interact(this);
+		{
+			if (PlayerInventoryUi.Instance.interactedInventorySlotsUi.activeInHierarchy)
+				currentInteractedChest.UnInteract(this);
+			else
+				currentInteractedChest.Interact(this);
+		}
 		else if (currentInteractedNpc != null)
 		{
 			if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)

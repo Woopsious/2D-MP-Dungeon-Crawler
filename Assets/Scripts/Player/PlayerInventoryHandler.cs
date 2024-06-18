@@ -3,13 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Analytics;
 using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditorInternal.Profiling.Memory.Experimental;
 using UnityEngine;
-using UnityEngine.Events;
-using UnityEngine.UI;
-using static UnityEditor.Progress;
-using Random = UnityEngine.Random;
 
 public class PlayerInventoryHandler : MonoBehaviour
 {
@@ -41,9 +35,13 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
-		if (SaveManager.Instance.GameData.hasRecievedStartingItems) return;
+		if (SaveManager.Instance != null) //skip when in testing scene
+		{
+			if (SaveManager.Instance.GameData.hasRecievedStartingItems) return;
+			SaveManager.Instance.GameData.hasRecievedStartingItems = true;
+		}
+
 		hasRecievedStartingItems = true;
-		SaveManager.Instance.GameData.hasRecievedStartingItems = true;
 
 		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
 

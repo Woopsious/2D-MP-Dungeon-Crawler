@@ -40,7 +40,10 @@ public class DungeonHandler : MonoBehaviour
 	{
 		foreach (ChestHandler chest in dungeonChestList)
 		{
+			if (chest.isPlayerStorageChest) continue;
+
 			int chance = Utilities.GetRandomNumberBetween(0, 100);
+
 			if (chance > chanceForChestToActivate)
 				chest.ActivateChest();
 			else

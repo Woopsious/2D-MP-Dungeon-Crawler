@@ -7,19 +7,23 @@ public class DungeonPortalUi : MonoBehaviour
 {
 	public static DungeonPortalUi instance;
 
+	[Header("Dungeon Panel")]
 	public GameObject portalPanelUi;
 	public GameObject dungeonInfoSlotPrefab;
-
 	public TMP_Text dungeonListInfoText;
+
+	[Header("Dungeon Enterence Ui")]
 	public GameObject portalEnterenceUi;
 	public GameObject activeDungeonListPanel;
 	public GameObject activeDungeonListContent;
 	public GameObject savedDungeonListPanel;
 	public GameObject savedDungeonListContent;
-	public GameObject portalExitUi;
 
 	public List<DungeonDataSlotUi> activeDungeonLists = new List<DungeonDataSlotUi>();
 	public List<DungeonDataSlotUi> savedDungeonLists = new List<DungeonDataSlotUi>();
+
+	[Header("Dungeon Exit Ui")]
+	public GameObject portalExitUi;
 
 	private void Awake()
 	{

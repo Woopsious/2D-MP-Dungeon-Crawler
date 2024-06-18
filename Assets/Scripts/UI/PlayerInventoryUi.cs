@@ -19,19 +19,12 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	[Header("Player Gold")]
 	public int playerGoldAmount;
-	public int startingGold;
 
-	[Header("Inventory items")]
-	public GameObject InventoryUi;
+	[Header("Inventory Slots")]
 	public List<GameObject> InventorySlots = new List<GameObject>();
 
-	[Header("Equipment items")]
-	public GameObject EquipmentUi;
+	[Header("Equipment Slots")]
 	public List<GameObject> EquipmentSlots = new List<GameObject>();
-
-	[Header("Learnt Ability Items")]
-	public GameObject LearntAbilitiesUi;
-	public List<GameObject> LearntAbilitySlots = new List<GameObject>();
 
 	public GameObject weaponEquipmentSlot;
 	public GameObject offHandEquipmentSlot;
@@ -44,14 +37,25 @@ public class PlayerInventoryUi : MonoBehaviour
 	public GameObject ringEquipmentSlotOne;
 	public GameObject ringEquipmentSlotTwo;
 
-	[Header("Interacted Npc Ui")]
+	[Header("Learnt Ability Slots")]
+	public List<GameObject> LearntAbilitySlots = new List<GameObject>();
+
+	[Header("Shop Npc Ui")]
+	public GameObject npcShopPanalUi;
 	public TMP_Text transactionInfoText;
 	public TMP_Text transactionTrackerText;
-	public GameObject npcShopPanalUi;
-	public List<GameObject> shopSlots = new List<GameObject>();
 	public Button closeShopButton;
 
 	public int goldTransaction;
+
+	[Header("Storage Chest Ui")]
+	private ChestHandler interactedChest;
+	public GameObject storageChestPanelUi;
+	public int itemTypeToShow;
+
+	[Header("Interacted Slots Ui")]
+	public GameObject interactedInventorySlotsUi;
+	public List<GameObject> interactedInventorySlots = new List<GameObject>();
 
 	private void Awake()
 	{
@@ -113,6 +117,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		foreach (GameObject slot in EquipmentSlots)
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
+
+		foreach (GameObject slot in interactedInventorySlots)
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 	}
 
@@ -431,7 +438,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	public void ShowLearntAbilities()
 	{
-		if (LearntAbilitiesUi.activeInHierarchy)
+		if (LearntAbilitiesPanelUi.activeInHierarchy)
 			HideLearntAbilities();
 		else
 			LearntAbilitiesPanelUi.SetActive(true);
@@ -446,22 +453,29 @@ public class PlayerInventoryUi : MonoBehaviour
 	//npc shop
 	public void ShowNpcShop(NpcHandler npc)
 	{
-		for (int i = 0; i < npc.avalableShopItemsList.Count; i++)
+		foreach (GameObject obj in interactedInventorySlots) //change slotType
 		{
-			InventorySlotDataUi slot = shopSlots[i].GetComponent<InventorySlotDataUi>();
+			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
+			slot.slotType = InventorySlotDataUi.SlotType.shopSlot;
+		}
+
+		for (int i = 0; i < npc.avalableShopItemsList.Count; i++) //move items to ui slots
+		{
+			InventorySlotDataUi slot = interactedInventorySlots[i].GetComponent<InventorySlotDataUi>();
 			slot.AddItemToSlot(npc.avalableShopItemsList[i]);
 		}
 
 		transactionTrackerText.text = "Gold: 0";
 		transactionInfoText.text = "No Item Sold/Brought";
+		interactedInventorySlotsUi.SetActive(true);
 		npcShopPanalUi.SetActive(true);
-		UpdatePlayerInventoryItemsUi(shopSlots);
+		UpdatePlayerInventoryItemsUi(interactedInventorySlots);
 	}
 	public void HideNpcShop(NpcHandler npc)
 	{
 		npc.avalableShopItemsList.Clear();
 
-		foreach (GameObject obj in shopSlots)
+		foreach (GameObject obj in interactedInventorySlots) //move to container, rest slot data
 		{
 			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
 			if (slot.IsSlotEmpty()) continue;
@@ -471,7 +485,100 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.RemoveItemFromSlot();
 		}
 
+		interactedInventorySlotsUi.SetActive(false);
 		npcShopPanalUi.SetActive(false);
+		HideInventory();
+	}
+
+	//playerStorageChest
+	public void ShowPlayerStoredWeaponsButton()
+	{
+		HidePlayerStorageChest(interactedChest);
+		ShowPlayerStorageChest(interactedChest, 0);
+	}
+	public void ShowPlayerStoredArmourButton()
+	{
+		HidePlayerStorageChest(interactedChest);
+		ShowPlayerStorageChest(interactedChest, 1);
+	}
+	public void ShowPlayerStoredAccessoriesButton()
+	{
+		HidePlayerStorageChest(interactedChest);
+		ShowPlayerStorageChest(interactedChest, 2);
+	}
+	public void ShowPlayerStoredConsumablesButton()
+	{
+		HidePlayerStorageChest(interactedChest);
+		ShowPlayerStorageChest(interactedChest, 3);
+	}
+	public void ShowPlayerStorageChest(ChestHandler chest, int itemTypeToShow)
+	{
+		foreach (GameObject obj in interactedInventorySlots) //change slotType
+		{
+			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
+
+			if (itemTypeToShow == 0)
+				slot.slotType = InventorySlotDataUi.SlotType.weapons;
+			else if (itemTypeToShow == 1)
+				slot.slotType = InventorySlotDataUi.SlotType.armour;
+			else if (itemTypeToShow == 2)
+				slot.slotType = InventorySlotDataUi.SlotType.accessories;
+			else if (itemTypeToShow == 3)
+				slot.slotType = InventorySlotDataUi.SlotType.consumables;
+		}
+
+		for (int i = 0; i < chest.itemList.Count; i++) //move items to ui slots
+		{
+			InventorySlotDataUi slot = interactedInventorySlots[i].GetComponent<InventorySlotDataUi>();
+
+			if (itemTypeToShow == 0 && chest.itemList[i].weaponBaseRef != null)
+			{
+				slot.slotType = InventorySlotDataUi.SlotType.weapons;
+				slot.AddItemToSlot(chest.itemList[i]);
+			}
+			else if (itemTypeToShow == 1 && chest.itemList[i].armorBaseRef != null)
+			{
+				slot.slotType = InventorySlotDataUi.SlotType.armour;
+				slot.AddItemToSlot(chest.itemList[i]);
+			}
+			else if (itemTypeToShow == 2 && chest.itemList[i].accessoryBaseRef != null)
+			{
+				slot.slotType = InventorySlotDataUi.SlotType.accessories;
+				slot.AddItemToSlot(chest.itemList[i]);
+			}
+			else if (itemTypeToShow == 3 && chest.itemList[i].consumableBaseRef != null)
+			{
+				slot.slotType = InventorySlotDataUi.SlotType.consumables;
+				slot.AddItemToSlot(chest.itemList[i]);
+			}
+		}
+
+		interactedChest = chest;
+		this.itemTypeToShow = itemTypeToShow;
+		EventManager.ShowPlayerInventory();
+		interactedInventorySlotsUi.SetActive(true);
+		storageChestPanelUi.SetActive(true);
+		UpdatePlayerInventoryItemsUi(interactedInventorySlots);
+	}
+	public void HidePlayerStorageChest(ChestHandler chest)
+	{
+		chest.itemList.Clear();
+
+		foreach (GameObject obj in interactedInventorySlots) //move to container, rest slot data
+		{
+			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
+			if (slot.IsSlotEmpty()) continue;
+
+			slot.itemInSlot.transform.SetParent(chest.itemContainer.transform);
+			slot.RemoveItemFromSlot();
+		}
+
+		for (int i = chest.itemContainer.transform.childCount - 1;  i >= 0; i--)
+			chest.itemList.Add(chest.itemContainer.transform.GetChild(i).GetComponent<InventoryItemUi>()); //re-add all/new items
+
+		EventManager.ShowPlayerInventory();
+		interactedInventorySlotsUi.SetActive(false);
+		storageChestPanelUi.SetActive(false);
 		HideInventory();
 	}
 

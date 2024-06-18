@@ -120,7 +120,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 156
+  controlID: 164
 --- !u!114 &6
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -140,8 +140,8 @@ MonoBehaviour:
     y: 0
     width: 272
     height: 987
-  m_MinSize: {x: 200, y: 200}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 201, y: 221}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 16}
   m_Panes:
   - {fileID: 16}
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 119
+  controlID: 65
 --- !u!114 &8
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -276,7 +276,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 120
+  controlID: 78
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -349,8 +349,8 @@ MonoBehaviour:
     y: 0
     width: 308
     height: 987
-  m_MinSize: {x: 275, y: 50}
-  m_MaxSize: {x: 4000, y: 4000}
+  m_MinSize: {x: 276, y: 71}
+  m_MaxSize: {x: 4001, y: 4021}
   m_ActualView: {fileID: 24}
   m_Panes:
   - {fileID: 24}
@@ -493,9 +493,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
-      m_LastClickedID: 0
-      m_ExpandedIDs: 206fefff2c6fefff306fefffea81effff881efff3e89efff94ddefff98ddefffc2ddefff5ce4efffca17f0ffce17f0fff817f0ff3c37f0ffd0e7f0ffd4e7f0fffee7f0ffe8eef0ff24e0f1ff30e0f1ff34e0f1ffeef2f1fffcf2f1ff76faf1ff82fff3ff3006f4ff5aa8f4ffb0bcf4ffbcbcf4ffc0bcf4ff7acff4ff88cff4ffb2d6f4ffc297f5ffce97f5ffd297f5ff8caaf5ff9aaaf5ff4ab1f5ff36ccf5ff42ccf5ff46ccf5ff00dff5ff0edff5ff68dff5ff34e0f5ff1230f8ff1272f8ff1672f8ff4072f8ffbc91f8ff48d6f8ff54d6f8ff58d6f8ff12e9f8ff20e9f8ff2af0f8ff2c7af9ff347af9ff407af9ff447af9fffe8cf9ff0c8df9ffa693f9ff983ffaff6c40faff80e2faff94e2faff98e2faff52f5faff60f5faff70f6faffc6d4fbff04f8fffff0f8ffff16fbffff
+      m_SelectedIDs: 6c850000
+      m_LastClickedID: 34156
+      m_ExpandedIDs: 16fbfffff8840000
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1417,7 +1417,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Prefabs/SceneComponents
+    - Assets/GameData/Items/Consumables
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -1425,16 +1425,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Prefabs/SceneComponents
+  - Assets/GameData/Items/Consumables
   m_LastFoldersGridSize: -1
   m_LastProjectPath: E:\Unity\Unity Projects\2D MP Dungeon Crawler
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 332}
-    m_SelectedIDs: 82880000
-    m_LastClickedID: 34946
-    m_ExpandedIDs: 000000001a8800001c8800001e88000020880000228800002488000026880000288800002a8800002c8800002e8800003088000032880000348800003688000038880000
+    scrollPos: {x: 0, y: 60}
+    m_SelectedIDs: 64880000
+    m_LastClickedID: 34916
+    m_ExpandedIDs: 000000001a8800001c8800001e88000020880000228800002488000026880000288800002a8800002c8800002e880000308800003288000034880000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1462,7 +1462,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 000000001a8800001c8800001e88000020880000228800002488000026880000288800002a8800002c8800002e8800003088000032880000348800003688000038880000
+    m_ExpandedIDs: 000000001a8800001c8800001e88000020880000228800002488000026880000288800002a8800002c8800002e880000308800003288000034880000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1588,7 +1588,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 113038
+  m_LastSelectedObjectID: 92726
 --- !u!114 &24
 MonoBehaviour:
   m_ObjectHideFlags: 52
