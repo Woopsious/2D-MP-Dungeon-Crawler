@@ -36,13 +36,13 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		GameManager.OnSceneChangeStart += AutoSaveData;
-		GameManager.OnSceneChangeFinish += AutoLoadData;
+		//GameManager.OnSceneChangeStart += AutoSaveData;
+		GameManager.OnSceneChangeFinish += RestoreGameData;
 	}
 	private void OnDisable()
 	{
-		GameManager.OnSceneChangeStart -= AutoSaveData;
-		GameManager.OnSceneChangeFinish -= AutoLoadData;
+		//GameManager.OnSceneChangeStart -= AutoSaveData;
+		GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
 	public void ReloadSaveSlots(GameObject saveSlotContainer)
@@ -111,10 +111,13 @@ public class SaveManager : MonoBehaviour
 	public void AutoSaveData()
 	{
 		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		Debug.Log("auto saving data");
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	public void AutoLoadData()
 	{
+		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		Debug.Log("auto loading data");
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	//directory checks/creation
@@ -132,9 +135,12 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadGameData(string directory)
 	{
+
 		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
+
+		Debug.Log("loading Game Data from drive");
 
 		LoadDataToJson(directory);
 	}
@@ -145,6 +151,10 @@ public class SaveManager : MonoBehaviour
 
 		DeleteJsonFile(directory);
 	}
+	public void RestoreGameData()
+	{
+		RestoreData?.Invoke();
+	}
 
 	//saving/loading/deleting json file
 	private void SaveDataToJson(string directory)
@@ -152,6 +162,7 @@ public class SaveManager : MonoBehaviour
 		SaveSavedDungeonData();
 		SavePlayerInfoData();
 		SavePlayerClassData();
+		SavePlayerStorageChestData();
 		SavePlayerInventoryData();
 
 		string filePath = directory + "/GameData.json";
@@ -169,8 +180,6 @@ public class SaveManager : MonoBehaviour
 		string filePath = directory + "/GameData.json";
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		GameData = JsonUtility.FromJson<GameData>(inventoryData);
-
-		RestoreData?.Invoke();
 	}
 	private void DeleteJsonFile(string directory)
 	{
@@ -248,13 +257,41 @@ public class SaveManager : MonoBehaviour
 		foreach (ClassTreeNodeSlotUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
 			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
 	}
+	private void SavePlayerStorageChestData()
+	{
+		if (DungeonHandler.Instance.playerStorageChest == null) return;
+
+		GameData.playerStorageChestItems.Clear();
+		ChestHandler playerStorageChest = DungeonHandler.Instance.playerStorageChest;
+
+		foreach (InventoryItemUi item in playerStorageChest.itemList)
+		{
+			InventoryItemData itemData = new()
+			{
+				weaponBaseRef = item.weaponBaseRef,
+				armorBaseRef = item.armorBaseRef,
+				accessoryBaseRef = item.accessoryBaseRef,
+				consumableBaseRef = item.consumableBaseRef,
+				abilityBaseRef = item.abilityBaseRef,
+
+				itemLevel = item.itemLevel,
+				rarity = (InventoryItemData.Rarity)item.rarity,
+
+				inventorySlotIndex = item.inventorySlotIndex,
+				isStackable = item.isStackable,
+				maxStackCount = item.maxStackCount,
+				currentStackCount = item.currentStackCount
+			};
+			GameData.playerStorageChestItems.Add(itemData);
+		}
+	}
 	private void SavePlayerInventoryData()
 	{
 		//need reworking for mp
-		GrabInventoryItemsFromUi(GameData.inventoryItems, PlayerInventoryUi.Instance.InventorySlots);
-		GrabInventoryItemsFromUi(GameData.equipmentItems, PlayerInventoryUi.Instance.EquipmentSlots);
-		GrabInventoryItemsFromUi(GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
-		GrabInventoryItemsFromUi(GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
+		GrabInventoryItemsFromUi(GameData.playerInventoryItems, PlayerInventoryUi.Instance.InventorySlots);
+		GrabInventoryItemsFromUi(GameData.playerEquippedItems, PlayerInventoryUi.Instance.EquipmentSlots);
+		GrabInventoryItemsFromUi(GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
+		GrabInventoryItemsFromUi(GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
 		GrabQuestDataFromActiveOnes(GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
@@ -357,10 +394,11 @@ public class GameData
 	public SOClasses currentPlayerClass;
 	public List<int> unlockedClassNodeIndexesList = new List<int>();
 
-	public List<InventoryItemData> inventoryItems = new List<InventoryItemData>();
-	public List<InventoryItemData> equipmentItems = new List<InventoryItemData>();
-	public List<InventoryItemData> consumableItems = new List<InventoryItemData>();
-	public List<InventoryItemData> abilityItems = new List<InventoryItemData>();
+	public List<InventoryItemData> playerStorageChestItems = new List<InventoryItemData>();
+	public List<InventoryItemData> playerInventoryItems = new List<InventoryItemData>();
+	public List<InventoryItemData> playerEquippedItems = new List<InventoryItemData>();
+	public List<InventoryItemData> PlayerEquippedConsumables = new List<InventoryItemData>();
+	public List<InventoryItemData> playerEquippedAbilities = new List<InventoryItemData>();
 
 	public List<DungeonData> activeDungeonsList = new List<DungeonData>();
 	public List<DungeonData> savedDungeonsList = new List<DungeonData>();

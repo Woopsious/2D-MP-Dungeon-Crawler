@@ -128,10 +128,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
 
-		RestoreInventoryItems(SaveManager.Instance.GameData.inventoryItems, InventorySlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.equipmentItems, EquipmentSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.consumableItems, PlayerHotbarUi.Instance.ConsumableSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.abilityItems, PlayerHotbarUi.Instance.AbilitySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.playerInventoryItems, InventorySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedItems, EquipmentSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
 	}
 	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{
@@ -149,8 +149,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventorySlot.AddItemToSlot(newInventoryItem);
 		}
 	}
-	private void ReloadItemData(InventoryItemUi inventoryItem, InventoryItemData itemData)
+	public void ReloadItemData(InventoryItemUi inventoryItem, InventoryItemData itemData)
 	{
+		inventoryItem.inventorySlotIndex = itemData.inventorySlotIndex;
+
 		if (itemData.weaponBaseRef != null)
 		{
 			inventoryItem.weaponBaseRef = itemData.weaponBaseRef;
@@ -518,38 +520,39 @@ public class PlayerInventoryUi : MonoBehaviour
 			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
 
 			if (itemTypeToShow == 0)
-				slot.slotType = InventorySlotDataUi.SlotType.weapons;
+				slot.slotType = InventorySlotDataUi.SlotType.weaponStorage;
 			else if (itemTypeToShow == 1)
-				slot.slotType = InventorySlotDataUi.SlotType.armour;
+				slot.slotType = InventorySlotDataUi.SlotType.armourStorage;
 			else if (itemTypeToShow == 2)
-				slot.slotType = InventorySlotDataUi.SlotType.accessories;
+				slot.slotType = InventorySlotDataUi.SlotType.accessoryStorage;
 			else if (itemTypeToShow == 3)
-				slot.slotType = InventorySlotDataUi.SlotType.consumables;
+				slot.slotType = InventorySlotDataUi.SlotType.consumablesStorage;
 		}
 
 		for (int i = 0; i < chest.itemList.Count; i++) //move items to ui slots
 		{
-			InventorySlotDataUi slot = interactedInventorySlots[i].GetComponent<InventorySlotDataUi>();
+			InventoryItemUi item = chest.itemList[i].GetComponent<InventoryItemUi>();
+			InventorySlotDataUi slot = interactedInventorySlots[item.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
 
-			if (itemTypeToShow == 0 && chest.itemList[i].weaponBaseRef != null)
+			if (itemTypeToShow == 0 && item.weaponBaseRef != null)
 			{
-				slot.slotType = InventorySlotDataUi.SlotType.weapons;
-				slot.AddItemToSlot(chest.itemList[i]);
+				slot.slotType = InventorySlotDataUi.SlotType.weaponStorage;
+				slot.AddItemToSlot(item);
 			}
-			else if (itemTypeToShow == 1 && chest.itemList[i].armorBaseRef != null)
+			else if (itemTypeToShow == 1 && item.armorBaseRef != null)
 			{
-				slot.slotType = InventorySlotDataUi.SlotType.armour;
-				slot.AddItemToSlot(chest.itemList[i]);
+				slot.slotType = InventorySlotDataUi.SlotType.armourStorage;
+				slot.AddItemToSlot(item);
 			}
-			else if (itemTypeToShow == 2 && chest.itemList[i].accessoryBaseRef != null)
+			else if (itemTypeToShow == 2 && item.accessoryBaseRef != null)
 			{
-				slot.slotType = InventorySlotDataUi.SlotType.accessories;
-				slot.AddItemToSlot(chest.itemList[i]);
+				slot.slotType = InventorySlotDataUi.SlotType.accessoryStorage;
+				slot.AddItemToSlot(item);
 			}
-			else if (itemTypeToShow == 3 && chest.itemList[i].consumableBaseRef != null)
+			else if (itemTypeToShow == 3 && item.consumableBaseRef != null)
 			{
-				slot.slotType = InventorySlotDataUi.SlotType.consumables;
-				slot.AddItemToSlot(chest.itemList[i]);
+				slot.slotType = InventorySlotDataUi.SlotType.consumablesStorage;
+				slot.AddItemToSlot(item);
 			}
 		}
 

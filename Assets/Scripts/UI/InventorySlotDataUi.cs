@@ -20,7 +20,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	{
 		playerInventory, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
 		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot,
-		weapons, armour, accessories
+		weaponStorage, armourStorage, accessoryStorage, consumablesStorage
 	}
 
 	public int slotIndex;
@@ -107,7 +107,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public void CheckIfItemInEquipmentSlot(InventoryItemUi item)
 	{
-		if (IsPlayerInventorySlot() || IsShopSlot()) return;
+		if (!IsPlayerEquipmentSlot()) return;
 
 		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			OnHotbarItemEquip?.Invoke(item, this);
@@ -123,6 +123,13 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 
 	//bool checks
+	public bool IsSlotEmpty()
+	{
+		if (GetComponentInChildren<InventoryItemUi>() == null)
+			return true;
+		else
+			return false;
+	}
 	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
 	{
 		if (oldInventorySlot == this)
@@ -130,12 +137,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		else
 			return false;
 	}
-	public bool IsSlotEmpty()
+	public bool IsNewSlotTypeSameAsOldSlotType(InventoryItemUi item)
 	{
-		if (GetComponentInChildren<InventoryItemUi>() == null)
+		if (slotType == item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType)
 			return true;
-		else
-			return false;
+		else return false;
 	}
 	public bool IsItemInSlotStackable()
 	{
@@ -173,16 +179,16 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		}
 
 		//unequipping/moving item checks
-		if (item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot() && IsPlayerInventorySlot())
+		if (IsPlayerInventorySlot() && item.itemType != InventoryItemUi.ItemType.isAbility)
 			return true;
-		if (item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerEquipmentSlot() && IsPlayerInventorySlot())
+		if (IsNewSlotTypeSameAsOldSlotType(item))
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumables)
 			return true;
 
 		//storage checks
-		if (slotType == SlotType.weapons || slotType == SlotType.armour || 
-			slotType == SlotType.accessories || slotType == SlotType.consumables)
+		if (slotType == SlotType.weaponStorage || slotType == SlotType.armourStorage || 
+			slotType == SlotType.accessoryStorage || slotType == SlotType.consumablesStorage)
 		{
 			if (IsCorrectStorageSlot(item))
 				return true;
@@ -258,35 +264,25 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsPlayerEquipmentSlot()
 	{
-		if (slotType != SlotType.playerInventory && slotType != SlotType.shopSlot && slotType != SlotType.ability)
+		if (slotType != SlotType.playerInventory && slotType != SlotType.shopSlot && slotType != SlotType.ability && 
+			slotType != SlotType.weaponStorage && slotType != SlotType.armourStorage && 
+			slotType != SlotType.accessoryStorage && slotType != SlotType.consumablesStorage)
 			return true;
 		else return false;
 	}
 	public bool IsCorrectStorageSlot(InventoryItemUi item)
 	{
 		if (item.itemType == InventoryItemUi.ItemType.isWeapon &&
-			slotType == SlotType.weapons && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+			slotType == SlotType.weaponStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isArmor &&
-			slotType == SlotType.armour && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+			slotType == SlotType.armourStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isAccessory &&
-			slotType == SlotType.accessories && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+			slotType == SlotType.accessoryStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
 			return true;
 		else if (item.itemType == InventoryItemUi.ItemType.isConsumable &&
-			slotType == SlotType.consumables && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isWeapon &&
-			slotType == SlotType.weapons && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType == SlotType.weapons)
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isArmor &&
-			slotType == SlotType.armour && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType == SlotType.armour)
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isAccessory &&
-			slotType == SlotType.accessories && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType == SlotType.accessories)
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isConsumable &&
-			slotType == SlotType.consumables && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType == SlotType.consumables)
+			slotType == SlotType.consumablesStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
 			return true;
 		else return false;
 	}

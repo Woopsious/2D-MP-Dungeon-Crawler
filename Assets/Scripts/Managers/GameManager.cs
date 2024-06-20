@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
 	public static event Action OnSceneChangeFinish;
 
 	public static bool isNewGame;
+	public static string currentGameDataDirectory;
 
 	public DungeonData currentDungeonData;
 

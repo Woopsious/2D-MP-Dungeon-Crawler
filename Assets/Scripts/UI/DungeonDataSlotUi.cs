@@ -224,6 +224,8 @@ public class DungeonDataSlotUi : MonoBehaviour
 		GameManager.Instance.currentDungeonData.dungeonStatModifiers = dungeonStatModifiers;
 		GameManager.Instance.currentDungeonData.dungeonChestData = dungeonChestData;
 
+		SaveManager.Instance.AutoSaveData();
+
 		if (dungeonNumber == 0)
 			GameManager.Instance.LoadDungeonOne();
 		else if (dungeonNumber == 1)

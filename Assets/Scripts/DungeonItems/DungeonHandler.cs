@@ -13,8 +13,9 @@ public class DungeonHandler : MonoBehaviour
 
 	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
 	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
-	public List<ChestHandler> dungeonChestList = new List<ChestHandler>();
-	private int chanceForChestToActivate = 50;
+	public ChestHandler playerStorageChest;
+	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
+	private readonly int chanceForChestToActivate = 50;
 
 	private void Awake()
 	{
@@ -38,7 +39,7 @@ public class DungeonHandler : MonoBehaviour
 
 	private void ActivateRandomChests()
 	{
-		foreach (ChestHandler chest in dungeonChestList)
+		foreach (ChestHandler chest in dungeonLootChestsList)
 		{
 			if (chest.isPlayerStorageChest) continue;
 
@@ -53,21 +54,44 @@ public class DungeonHandler : MonoBehaviour
 
 	private void RestoreDungeonChestData()
 	{
+		if (playerStorageChest == null) return;
+		RestorePlayerStorageChestData();
+
 		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
-			dungeonChestList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
+			dungeonLootChestsList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
 
 		int i = 0;
 		foreach (DungeonChestData chestData in GameManager.Instance.currentDungeonData.dungeonChestData)
 		{
 			if (chestData.chestActive)
 			{
-				dungeonChestList[i].ActivateChest();
+				dungeonLootChestsList[i].ActivateChest();
 				if (chestData.chestStateOpened)
-					dungeonChestList[i].ChangeChestStateToOpen(false);
+					dungeonLootChestsList[i].ChangeChestStateToOpen(false);
 			}
 			else
-				dungeonChestList[i].DeactivateChest();
+				dungeonLootChestsList[i].DeactivateChest();
 			i++;
+		}
+	}
+	private void RestorePlayerStorageChestData()
+	{
+		Debug.Log("restore player storage");
+
+		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.playerStorageChestItems)
+		{
+			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, playerStorageChest.itemContainer.transform);
+
+			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
+
+			PlayerInventoryUi.Instance.ReloadItemData(newInventoryItem, itemData);
+			//InventorySlotDataUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
+
+			newInventoryItem.Initilize();
+			playerStorageChest.itemList.Add(newInventoryItem);
+			//newInventoryItem.transform.SetParent(inventorySlot.transform);
+			//newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
+			//inventorySlot.AddItemToSlot(newInventoryItem);
 		}
 	}
 	private void SetPlayerSpawn()
