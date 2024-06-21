@@ -22,10 +22,6 @@ public class DungeonHandler : MonoBehaviour
 		Instance = this;
 		ActivateRandomChests();
 	}
-	private void Start()
-	{
-		//ActivateRandomChests();
-	}
 	private void OnEnable()
 	{
 		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
@@ -76,22 +72,14 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void RestorePlayerStorageChestData()
 	{
-		Debug.Log("restore player storage");
-
 		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.playerStorageChestItems)
 		{
 			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, playerStorageChest.itemContainer.transform);
-
 			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
 
 			PlayerInventoryUi.Instance.ReloadItemData(newInventoryItem, itemData);
-			//InventorySlotDataUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
-
 			newInventoryItem.Initilize();
 			playerStorageChest.itemList.Add(newInventoryItem);
-			//newInventoryItem.transform.SetParent(inventorySlot.transform);
-			//newInventoryItem.parentAfterDrag = InventorySlots[0].transform;
-			//inventorySlot.AddItemToSlot(newInventoryItem);
 		}
 	}
 	private void SetPlayerSpawn()

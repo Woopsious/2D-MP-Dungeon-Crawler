@@ -36,12 +36,10 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		//GameManager.OnSceneChangeStart += AutoSaveData;
 		GameManager.OnSceneChangeFinish += RestoreGameData;
 	}
 	private void OnDisable()
 	{
-		//GameManager.OnSceneChangeStart -= AutoSaveData;
 		GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
@@ -102,24 +100,19 @@ public class SaveManager : MonoBehaviour
 	/// Json data to disk, or delete Json data and files
 	/// auto save is normal save but only has 1 slot and cant be called by player (may add keybind later)
 	/// </summary>
-	public void CreateNewGameSave() //temporary test function
-	{
-		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
-		SlotData.level = Utilities.GetRandomNumber(50).ToString();
-		SlotData.date = System.DateTime.Now.ToString();
-	}
+
+	//auto features
 	public void AutoSaveData()
 	{
 		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
-		Debug.Log("auto saving data");
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
-	public void AutoLoadData()
+	public void AutoLoadData() //(redundent function, may reuse at some point)
 	{
 		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
-		Debug.Log("auto loading data");
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
+
 	//directory checks/creation
 	public void SaveGameData(string directory)
 	{
@@ -139,8 +132,6 @@ public class SaveManager : MonoBehaviour
 		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
-
-		Debug.Log("loading Game Data from drive");
 
 		LoadDataToJson(directory);
 	}
