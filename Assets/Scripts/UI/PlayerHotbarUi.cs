@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	public static event Action<Abilities, EntityStats> OnNewQueuedAbilities;
 
+	public TMP_Text playerLevelInfoText;
+	public TMP_Text playerClassInfoText;
 	public TMP_Text goldAmountText;
 
 	[Header("Hotbar Consumables")]
@@ -80,23 +83,27 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		EventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
+		PlayerClassesUi.OnClassChange += UpdatePlayerClassInfo;
 		PlayerClassesUi.OnClassReset += ResetEquippedAbilities;
 		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
-		EventManager.OnGoldAmountChange += OnGoldAmountChange;
-		EventManager.OnPlayerExpChangeEvent += OnExperienceChange;
-		EventManager.OnPlayerHealthChangeEvent += OnHealthChange;
-		EventManager.OnPlayerManaChangeEvent += OnManaChange;
+		EventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
+		EventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
+		EventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
+		EventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
 
 		EventManager.OnDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
+		EventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
+		PlayerClassesUi.OnClassChange -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnClassReset -= ResetEquippedAbilities;
 		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
-		EventManager.OnGoldAmountChange -= OnGoldAmountChange;
-		EventManager.OnPlayerExpChangeEvent -= OnExperienceChange;
-		EventManager.OnPlayerHealthChangeEvent -= OnHealthChange;
-		EventManager.OnPlayerManaChangeEvent -= OnManaChange;
+		EventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
+		EventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
+		EventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
+		EventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
 
 		EventManager.OnDeathEvent -= OnTargetDeathUnSelect;
 	}
@@ -318,23 +325,31 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI Player Updates
-	public void OnGoldAmountChange(int amount)
+	private void UpdatePlayerLevelInfo(EntityStats playerStats)
+	{
+		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
+	}
+	private void UpdatePlayerClassInfo(SOClasses newClass)
+	{
+		playerClassInfoText.text = newClass.className;
+	}
+	private void UpdatePlayerGoldAmount(int amount)
 	{
 		goldAmountText.text = $"Gold: {amount}";
 	}
-	public void OnExperienceChange(int MaxValue, int currentValue)
+	private void UpdatePlayerExpBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		expBarFiller.fillAmount = percentage;
 		expBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	public void OnHealthChange(int MaxValue, int currentValue)
+	private void UpdatePlayerHealthBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		healthBarFiller.fillAmount = percentage;
 		HealthBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	public void OnManaChange(int MaxValue, int currentValue)
+	private void UpdatePlayerManaBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		manaBarFiller.fillAmount = percentage;

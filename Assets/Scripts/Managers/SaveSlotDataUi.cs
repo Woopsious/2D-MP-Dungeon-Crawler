@@ -25,11 +25,11 @@ public class SaveSlotDataUi : MonoBehaviour
 	{
 		folderDirectory = directory;
 
-		saveSlotInfoText.text = $"Player Name: {Name} \n Player Level: {Level} \n Date: {Date}";
+		saveSlotInfoText.text = $"Player Name: {Name}\nPlayer Level: {Level}\nDate: {Date}";
 		saveSlotCountText.text = GrabSaveSlotNumber(directory);
 
 		if (isAutoSaveSlot)
-			saveSlotInfoText.text = "Auto Save Slot";
+			saveSlotCountText.text = "Save Slot:\nAuto Save";
 
 		if (isEmpty)
 		{

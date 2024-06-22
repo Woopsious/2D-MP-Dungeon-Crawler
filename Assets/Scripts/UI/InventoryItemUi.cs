@@ -171,11 +171,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	//update data
 	public void CheckIfCanEquipItem()
 	{
-		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable)
-		{
-			uiCantEquipNotif.gameObject.SetActive(false);
-			return;
-		}
+		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable) return;
 		uiCantEquipNotif.gameObject.SetActive(true);
 
 		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel < itemLevel)
