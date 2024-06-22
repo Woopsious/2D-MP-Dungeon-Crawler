@@ -1,21 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
-	[HideInInspector] private PlayerController playerController;
+	private PlayerController playerController;
+	private EntityStats playerStats;
 
 	public bool debugDisablePlayerLevelUp;
 	private int maxLevel = 25;
 	private int maxExp = 1000;
 	public int currentExp;
 
-	private EntityStats playerStats;
-
-	private void Start()
+	private void Awake()
 	{
 		playerController = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
@@ -55,15 +55,30 @@ public class PlayerExperienceHandler : MonoBehaviour
 		if (quest.questRewardType == QuestDataSlotUi.RewardType.isExpReward)
 			AddExperience(quest.gameObject);
 	}
-	public void AddExperience(GameObject Obj)
+	private void AddExperience(GameObject Obj)
 	{
 		if (Obj.GetComponent<QuestDataSlotUi>() != null)
 			currentExp += Obj.GetComponent<QuestDataSlotUi>().rewardToAdd;
-		else
+		else if (Obj.GetComponent<PlayerController>() == null && Obj.GetComponent<EntityStats>() != null)
 		{
-			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
-			currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
+			//if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
+			EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
+			int expToAdd = otherEntityStats.entityBaseStats.expOnDeath;
+
+			//lower exp given based on level difference (will rarely happen unless player levels up 3+ time in same dungeon)
+			int levelDifference = playerStats.entityLevel - otherEntityStats.entityLevel;
+			if (levelDifference == 3)
+				expToAdd = (int)(currentExp * 1.75f);
+			if (levelDifference == 4)
+				expToAdd = (int)(currentExp * 1.5f);
+			if (levelDifference >= 5)
+				expToAdd = (int)(currentExp * 1.25f);
+
+			currentExp += expToAdd;
 		}
+		else
+			Debug.LogError("Error no components match for adding exp");
+
 		EventManager.PlayerExpChange(maxExp, currentExp);
 
 		if (CheckIfPLayerCanLevelUp()) return;

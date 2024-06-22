@@ -27,14 +27,6 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	{
 		Initilize();
 	}
-	private void OnEnable()
-	{
-
-	}
-	private void OnDisable()
-	{
-
-	}
 	private void Update()
 	{
 		UpdateInteractText();
@@ -74,7 +66,6 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	}
 	public void ChangeChestStateToOpen(bool spawnLoot)
 	{
-		Debug.Log("changing chest state");
 		chestStateOpened = true;
 		spriteRenderer.sprite = chestOpenedSprite;
 		if (spawnLoot)
@@ -89,9 +80,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 			ChangeChestStateToOpen(true);
 		}
 		else
-		{
 			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
-		}
 	}
 	public void UnInteract(PlayerController player)
 	{

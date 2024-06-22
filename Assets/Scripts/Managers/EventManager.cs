@@ -7,42 +7,12 @@ using UnityEngine.Events;
 public static class EventManager
 {
 	/// <summary>
-	/// SCENE CHANGE EVENTS
-	/// </summary>
-	/*
-	public static readonly string mainMenuName = "MainMenu";
-	public static readonly string hubAreaName = "HubArea";
-	public static readonly string dungeonLayoutOneName = "DungeonOne";
-	public static readonly string dungeonLayoutTwoName = "DungeonTwo";
-	public static Action<bool> OnSceneChange;
-	public static void ChangeScene(bool isNewGame)
-	{
-		OnSceneChange?.Invoke(isNewGame);
-	}
-	public static Action SaveGameData;
-	public static void SaveData()
-	{
-		SaveGameData?.Invoke();
-	}
-	public static Action LoadGameData;
-	public static void loadData()
-	{
-		SaveGameData?.Invoke();
-	}
-	*/
-
-	/// <summary>
 	/// GAME EVENTS
 	/// </summary>
 	public static event Action<GameObject> OnDeathEvent;
 	public static void DeathEvent(GameObject gameObject)
 	{
 		OnDeathEvent?.Invoke(gameObject);
-	}
-	public static Action<List<PlayerExperienceHandler>> OnAddExpToPlayers;
-	public static void AddExpToPlayers(List<PlayerExperienceHandler> playerList)
-	{
-		OnAddExpToPlayers?.Invoke(playerList);
 	}
 	public static Action<EntityStats> OnPlayerLevelUpEvent;
 	public static void PlayerLevelUp(EntityStats playerStats)

@@ -68,9 +68,6 @@ public class EntityStats : MonoBehaviour
 
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
-
-		//for mp needs to be a list for each player
-		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUp;
 	}
 	private void OnDisable()
 	{
@@ -84,9 +81,6 @@ public class EntityStats : MonoBehaviour
 
 		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
 		entityEquipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
-
-		//for mp needs to be a list for each player
-		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
 	}
 
 	private void Update()

@@ -61,14 +61,6 @@ public class EntityClassHandler : MonoBehaviour
 
 		currentEntityClass = newClass;
 	}
-	///	<summery>
-	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
-	///	then clear unlockedLists
-	///	<summery>
-	protected virtual void OnClassReset(SOClasses currentClass)
-	{
-		OnClassChanges(currentEntityClass);
-	}
 
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{

@@ -13,12 +13,12 @@ public class LootSpawnHandler : MonoBehaviour
 	private void OnEnable()
 	{
 		EventManager.OnDeathEvent += OnDeathEvent;
-		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateLootSpawnerLevel;
+		EventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
 	}
 	private void OnDisable()
 	{
 		EventManager.OnDeathEvent -= OnDeathEvent;
-		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateLootSpawnerLevel;
+		EventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
 	}
 
 	private void OnDeathEvent(GameObject obj)
@@ -27,7 +27,7 @@ public class LootSpawnHandler : MonoBehaviour
 
 		SpawnLoot();
 	}
-	private void OnPlayerLevelUpUpdateLootSpawnerLevel(EntityStats playerStats)
+	private void UpdateLootSpawnerLevel(EntityStats playerStats)
 	{
 		lootSpawnerLevel = playerStats.entityLevel;
 	}
@@ -35,7 +35,7 @@ public class LootSpawnHandler : MonoBehaviour
 	public void SpawnLoot()
 	{
 		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);
-		for (int i = 0; i < numOfItemsToSpawn; i++) //spawn item from loot pool at death location
+		for (int i = 0; i < numOfItemsToSpawn; i++)
 		{
 			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count);
 			GameObject go = Instantiate(droppedItemPrefab, transform.position, Quaternion.identity);
@@ -54,14 +54,11 @@ public class LootSpawnHandler : MonoBehaviour
 
 			SetUpItem(go, index);
 
-			//generic data here, may change if i make unique droppables like keys as they might not have a need for item level etc.
-			//im just not sure of a better way to do it atm
 			go.GetComponent<Items>().Initilize(Utilities.SetRarity(), Utilities.SetItemLevel(lootSpawnerLevel));
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}
 	}
-
 	private void SetUpItem(GameObject go, int index)
 	{
 		Items item = go.GetComponent<Items>();

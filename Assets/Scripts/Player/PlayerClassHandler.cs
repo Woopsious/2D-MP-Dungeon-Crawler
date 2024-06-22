@@ -8,14 +8,12 @@ public class PlayerClassHandler : EntityClassHandler
 	private void OnEnable()
 	{
 		PlayerClassesUi.OnClassChange += OnClassChanges;
-		PlayerClassesUi.OnClassReset += OnClassReset;
 		PlayerClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
 	}
 	private void OnDisable()
 	{
 		PlayerClassesUi.OnClassChange -= OnClassChanges;
-		PlayerClassesUi.OnClassReset -= OnClassReset;
 		PlayerClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 	}
