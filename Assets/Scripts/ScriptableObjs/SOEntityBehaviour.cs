@@ -5,17 +5,17 @@ public class SOEntityBehaviour : ScriptableObject
 {
 	[Header("Idle Behaviour")]
 	public int idleWaitTime;
-	[Tooltip("10 is base value")]
+	[Tooltip("15 is min value")]
 	public int idleWanderRadius;
 
 	[Header("Attack Behaviour")]
-	[Tooltip("max radial distance from player, 10 is base value")]
+	[Tooltip("max distance from player, 8 is min value")]
 	public float aggroRange;
 	[Tooltip("max distance till player looses aggro while in view, cant be lower then aggroRange x1.1")]
 	public float maxChaseRange;
 
 	[Header("Movement Behaviour")]
-	[Tooltip("base value is 5, to match player Physics2D move speed")]
+	[Tooltip("base value is 6, to match player Physics2D move speed")]
 	public float navMeshMoveSpeed;
 	[Tooltip("base value is 60")]
 	public float navMeshTurnSpeed;

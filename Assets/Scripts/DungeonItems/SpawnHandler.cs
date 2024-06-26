@@ -14,18 +14,19 @@ public class SpawnHandler : MonoBehaviour
 	public int maxNumOfEnemiesToSpawn;
 	private List<GameObject> listOfSpawnedEnemies = new List<GameObject>();
 
-	private CircleCollider2D playerCollider;
-	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	//if player distance to spawner above 50 and enemies spawner tracks isnt engaging player despawn them
+	//if player distance below 50 and above 25 spawn enemies
+	private CircleCollider2D playerCollider; //radius set to 50 distance
+	private readonly int minSpawningDistance = 25;
+	public List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
 
-	private void Start()
-	{
-		TrySpawnEntity();
-	}
 	private void OnEnable()
 	{
 		EventManager.OnDeathEvent += OnEntityDeath;
 		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntity;
+
+		TrySpawnEntity();
 	}
 
 	private void OnDisable()
@@ -39,17 +40,26 @@ public class SpawnHandler : MonoBehaviour
 	{
 		if (other.GetComponent<PlayerController>() != null)
 			listOfPlayersInRange.Add(other.GetComponent<PlayerController>());
+
+		TrySpawnEntity();
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<PlayerController>() != null)
 		{
 			if (listOfPlayersInRange.Contains(other.GetComponent<PlayerController>()))
-			{
 				listOfPlayersInRange.Remove(other.GetComponent<PlayerController>());
-				TrySpawnEntity();
-			}
 		}
+	}
+
+	private bool IsPlayerInsideMinSpawningDistance()
+	{
+		foreach (PlayerController player in listOfPlayersInRange)
+		{
+			if (Vector2.Distance(player.transform.position, transform.position) <= minSpawningDistance)
+				return true;
+		}
+		return false;
 	}
 
 	private void OnPlayerLevelUpUpdateSpawnerLevel(EntityStats playerStats)
@@ -68,7 +78,8 @@ public class SpawnHandler : MonoBehaviour
 	private void TrySpawnEntity()
 	{
 		if (listOfSpawnedEnemies.Count >= maxNumOfEnemiesToSpawn) return;
-		if (listOfPlayersInRange.Count != 0) return;
+		if (listOfPlayersInRange.Count == 0) return;
+		if (IsPlayerInsideMinSpawningDistance()) return;
 
 		SpawnRandomEntity();
 	}

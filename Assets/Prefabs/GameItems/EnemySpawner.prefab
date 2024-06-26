@@ -47,9 +47,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   possibleEntitiesPrefabsToSpawn:
   - {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
-  - {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
+  debugSpawnerLevel: 0
+  debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
-  maxNumOfEnemiesToSpawn: 2
+  maxNumOfEnemiesToSpawn: 1
+  listOfPlayersInRange: []
 --- !u!58 &978756309994241589
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -84,4 +86,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 5
+  m_Radius: 50

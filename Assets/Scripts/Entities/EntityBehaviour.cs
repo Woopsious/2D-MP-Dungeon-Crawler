@@ -67,16 +67,16 @@ public class EntityBehaviour : MonoBehaviour
 		animator = GetComponent<Animator>();
 
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
-			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z - 3);
+			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z);
 
 		idleBounds.max = new Vector3(transform.position.x + entityBehaviour.idleWanderRadius,
-			transform.position.y + entityBehaviour.idleWanderRadius, transform.position.z + 3);
+			transform.position.y + entityBehaviour.idleWanderRadius, transform.position.z);
 
 		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
-			transform.position.y - entityBehaviour.maxChaseRange, transform.position.z - 3);
+			transform.position.y - entityBehaviour.maxChaseRange, transform.position.z);
 
 		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
-			transform.position.y + entityBehaviour.maxChaseRange, transform.position.z + 3);
+			transform.position.y + entityBehaviour.maxChaseRange, transform.position.z);
 
 		HasReachedDestination = true;
 
@@ -170,13 +170,13 @@ public class EntityBehaviour : MonoBehaviour
 	//utility
 	public void OnDrawGizmos()
 	{
-		Gizmos.color = Color.red;
+		Gizmos.color = Color.blue;
 		Gizmos.DrawWireCube(idleBounds.center, idleBounds.size);
 
 		if (player != null)
 			Gizmos.DrawLine(transform.position, player.transform.position);
 
-		Gizmos.color = Color.blue;
+		Gizmos.color = Color.red;
 		Gizmos.DrawWireCube(chaseBounds.center, chaseBounds.size);
 	}
 }

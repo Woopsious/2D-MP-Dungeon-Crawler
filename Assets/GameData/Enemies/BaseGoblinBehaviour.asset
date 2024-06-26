@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: BaseGoblinBehaviour
   m_EditorClassIdentifier: 
   idleWaitTime: 1
-  idleWanderRadius: 10
+  idleWanderRadius: 20
   aggroRange: 10
   maxChaseRange: 12
   navMeshMoveSpeed: 5

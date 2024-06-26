@@ -17,6 +17,8 @@ public class DungeonHandler : MonoBehaviour
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
 	private readonly int chanceForChestToActivate = 50;
 
+	public List<EntityStats> inActiveEnemies = new List<EntityStats>();
+
 	private void Awake()
 	{
 		Instance = this;

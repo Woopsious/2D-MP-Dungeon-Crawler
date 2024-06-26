@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 	public void LoadDungeonTwo()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(dungeonLayoutTwoName, false));
+		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
