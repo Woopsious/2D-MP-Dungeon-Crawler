@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class SpawnHandler : MonoBehaviour
@@ -12,7 +13,7 @@ public class SpawnHandler : MonoBehaviour
 
 	public int spawnerLevel;
 	public int maxNumOfEnemiesToSpawn;
-	private List<GameObject> listOfSpawnedEnemies = new List<GameObject>();
+	public List<EntityStats> listOfSpawnedEnemies = new List<EntityStats>();
 
 	//if player distance to spawner above 50 and enemies spawner tracks isnt engaging player despawn them
 	//if player distance below 50 and above 25 spawn enemies
@@ -45,10 +46,23 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.GetComponent<PlayerController>() != null)
+		if (other.GetComponent<PlayerController>() == null) return;
+
+		if (listOfPlayersInRange.Contains(other.GetComponent<PlayerController>()))
+			listOfPlayersInRange.Remove(other.GetComponent<PlayerController>());
+
+		if (listOfPlayersInRange.Count != 0) return;
+
+		for (int i = listOfSpawnedEnemies.Count - 1; i >= 0; i--)
 		{
-			if (listOfPlayersInRange.Contains(other.GetComponent<PlayerController>()))
-				listOfPlayersInRange.Remove(other.GetComponent<PlayerController>());
+			if (listOfSpawnedEnemies[i] == null) return;
+			Debug.Log(i);
+			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().player != null) continue; //leave entities in range of a player
+
+			listOfSpawnedEnemies[i].gameObject.SetActive(false);
+			listOfSpawnedEnemies[i].transform.position = Vector3.zero;
+			DungeonHandler.Instance.inActiveEnemies.Add(listOfSpawnedEnemies[i]);
+			listOfSpawnedEnemies.Remove(listOfSpawnedEnemies[i]);
 		}
 	}
 
@@ -68,9 +82,9 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEntityDeath(GameObject obj)
 	{
-		if (listOfSpawnedEnemies.Contains(obj))
+		if (listOfSpawnedEnemies.Contains(obj.GetComponent<EntityStats>()))
 		{
-			listOfSpawnedEnemies.Remove(obj);
+			listOfSpawnedEnemies.Remove(obj.GetComponent<EntityStats>());
 			TrySpawnEntity();
 		}
 	}
@@ -87,12 +101,13 @@ public class SpawnHandler : MonoBehaviour
 	{
 		int num = Utilities.GetRandomNumber(possibleEntitiesPrefabsToSpawn.Count - 1);
 		GameObject go = Instantiate(possibleEntitiesPrefabsToSpawn[num], transform.position, transform.rotation);
-		listOfSpawnedEnemies.Add(go);
+		EntityStats entityStats = go.GetComponent<EntityStats>();
+		listOfSpawnedEnemies.Add(entityStats);
 
 		if (debugSpawnEnemiesAtSetLevel)
-			go.GetComponent<EntityStats>().entityLevel = debugSpawnerLevel;
+			entityStats.entityLevel = debugSpawnerLevel;
 		else
-			go.GetComponent<EntityStats>().entityLevel = spawnerLevel;
+			entityStats.entityLevel = spawnerLevel;
 
 		TrySpawnEntity();
 	}
