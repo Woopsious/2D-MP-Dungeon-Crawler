@@ -53,16 +53,12 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 	public event Action<EntityEquipmentHandler> OnEquipmentChanges;
 
-	private void Start()
-	{
-		Initilize();
-	}
-
-	public virtual void Initilize()
+	private void Awake()
 	{
 		entityStats = GetComponentInParent<EntityStats>();
 		isPlayerEquipment = false;
 	}
+
 	public IEnumerator SpawnEntityEquipment(int numOfTries)
 	{
 		if (numOfTries >= 5 || isPlayerEquipment)

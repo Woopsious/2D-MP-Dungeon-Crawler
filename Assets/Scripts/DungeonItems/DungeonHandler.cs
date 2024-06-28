@@ -17,7 +17,7 @@ public class DungeonHandler : MonoBehaviour
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
 	private readonly int chanceForChestToActivate = 50;
 
-	public List<EntityStats> inActiveEnemies = new List<EntityStats>();
+	public List<EntityStats> inActiveEntityPool = new List<EntityStats>();
 
 	private void Awake()
 	{
@@ -26,13 +26,22 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		EventManager.OnDeathEvent += OnEntityDeath;
 		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
 		SaveManager.RestoreData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
+		EventManager.OnDeathEvent -= OnEntityDeath;
 		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
 		SaveManager.RestoreData -= RestoreDungeonChestData;
+	}
+
+	private void OnEntityDeath(GameObject obj)
+	{
+		obj.SetActive(false);
+		EntityStats entityStats = obj.GetComponent<EntityStats>();
+		inActiveEntityPool.Add(entityStats);
 	}
 
 	private void ActivateRandomChests()

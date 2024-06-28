@@ -54,10 +54,18 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
-		Initilize();
+		playerInputs = new PlayerInputActions();
+		playerStats = GetComponent<EntityStats>();
+		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
 	}
 	private void Start()
 	{
+		Initilize();
+
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities += OnNewQueuedAbility;
@@ -87,6 +95,7 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities -= OnUseQueuedAbility;
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
+
 		SaveManager.RestoreData -= ReloadPlayerInfo;
 		EventManager.OnDeathEvent -= OnSelectedTargetDeath;
 	}
@@ -103,13 +112,6 @@ public class PlayerController : MonoBehaviour
 
 	public void Initilize()
 	{
-		playerInputs = new PlayerInputActions();
-		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
-		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
-		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		animator = GetComponent<Animator>();
 		playerCamera.transform.parent = null;
 
 		if (debugSetPlayerLevelOnStart)

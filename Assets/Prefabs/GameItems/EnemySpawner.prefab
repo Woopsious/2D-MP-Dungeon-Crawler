@@ -45,13 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 726197d9da54162488997a4ee4f655fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  possibleEntitiesPrefabsToSpawn:
-  - {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
+  enemyTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
+  possibleEntityTypesToSpawn:
+  - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
   debugSpawnerLevel: 0
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
   maxNumOfEnemiesToSpawn: 1
-  listOfPlayersInRange: []
 --- !u!58 &978756309994241589
 CircleCollider2D:
   m_ObjectHideFlags: 0

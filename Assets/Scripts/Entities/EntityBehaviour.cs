@@ -11,7 +11,6 @@ public class EntityBehaviour : MonoBehaviour
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
 	private Rigidbody2D rb;
-	private SpriteRenderer spriteRenderer;
 	private Animator animator;
 
 	public SOEntityBehaviour entityBehaviour;
@@ -32,6 +31,12 @@ public class EntityBehaviour : MonoBehaviour
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
+	private void Awake()
+	{
+		rb = GetComponent<Rigidbody2D>();
+		entityStats = GetComponent<EntityStats>();
+		animator = GetComponent<Animator>();
+	}
 	private void Start()
 	{
 		Initilize();
@@ -58,13 +63,23 @@ public class EntityBehaviour : MonoBehaviour
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
-	public void Initilize()
+	private void Initilize()
 	{
-		rb = GetComponent<Rigidbody2D>();
-		entityStats = GetComponent<EntityStats>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		spriteRenderer.sprite = entityStats.entityBaseStats.sprite;
-		animator = GetComponent<Animator>();
+		ResetBehaviour();
+
+		HasReachedDestination = true;
+
+		viewRangeCollider.radius = entityBehaviour.aggroRange;
+		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
+
+		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
+		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;
+		navMeshAgent.acceleration = entityBehaviour.navMeshAcceleration;
+		navMeshAgent.stoppingDistance = entityBehaviour.navMeshStoppingDistance;
+	}
+	public void ResetBehaviour()
+	{
+		ChangeStateIdle();
 
 		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
 			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z);
@@ -77,18 +92,6 @@ public class EntityBehaviour : MonoBehaviour
 
 		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
 			transform.position.y + entityBehaviour.maxChaseRange, transform.position.z);
-
-		HasReachedDestination = true;
-
-		viewRangeCollider.radius = entityBehaviour.aggroRange;
-		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
-
-		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
-		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;
-		navMeshAgent.acceleration = entityBehaviour.navMeshAcceleration;
-		navMeshAgent.stoppingDistance = entityBehaviour.navMeshStoppingDistance;
-
-		ChangeStateIdle();
 	}
 
 	private void UpdateSpriteDirection()

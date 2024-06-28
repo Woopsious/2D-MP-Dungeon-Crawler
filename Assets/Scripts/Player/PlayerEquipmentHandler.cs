@@ -6,9 +6,10 @@ using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
-	private void Start()
+	private void Awake()
 	{
-		Initilize();
+		entityStats = GetComponent<EntityStats>();
+		isPlayerEquipment = true;
 	}
 	private void OnEnable()
 	{
@@ -17,12 +18,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void OnDisable()
 	{
 		InventorySlotDataUi.OnItemEquip -= EquipItem;
-	}
-
-	public override void Initilize()
-	{
-		entityStats = GetComponent<EntityStats>();
-		isPlayerEquipment = true;
 	}
 
 	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)

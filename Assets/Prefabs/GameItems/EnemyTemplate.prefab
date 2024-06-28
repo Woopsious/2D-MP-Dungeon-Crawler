@@ -616,7 +616,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa8324c379d8ce4eb7197d91f4fde73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBaseStats: {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
+  entityBaseStats: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
   entityLevel: 1
@@ -769,7 +769,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 320
   navMeshAgent: {fileID: 4604485509710965391}
-  entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
+  entityBehaviour: {fileID: 0}
   idleBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}

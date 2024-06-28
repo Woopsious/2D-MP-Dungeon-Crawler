@@ -13,6 +13,7 @@ public class EnemyAttackState : EnemyBaseState
 	public override void Enter(EntityBehaviour entity)
 	{
 		equippedWeapon = entity.GetComponentInChildren<EntityEquipmentHandler>().equippedWeapon;
+		equippedWeapon.canAttackAgain = true;
 		distanceToPlayer = entity.entityBehaviour.aggroRange;
 	}
 	public override void Exit(EntityBehaviour entity)
@@ -22,7 +23,7 @@ public class EnemyAttackState : EnemyBaseState
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
 		UpdatePlayerPosition(entity);
-		if (equippedWeapon == null) return;
+		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
 
 		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)
 		{

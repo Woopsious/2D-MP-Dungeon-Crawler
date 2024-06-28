@@ -15,6 +15,9 @@ public class SOEntityStats : ScriptableObject
 
 	public int expOnDeath;
 
+	[Header("behaviour")]
+	public SOEntityBehaviour entityBehaviour;
+
 	[Header("health")]
 	public int maxHealth;
 

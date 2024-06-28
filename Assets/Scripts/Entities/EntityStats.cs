@@ -52,6 +52,12 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
+	private void Awake()
+	{
+		classHandler = GetComponent<EntityClassHandler>();
+		equipmentHandler = GetComponent<EntityEquipmentHandler>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+	}
 	private void Start()
 	{
 		Initilize();
@@ -62,12 +68,10 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 
-		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
-		entityClassHandler.OnClassChange += OnClassChanges;
-		entityClassHandler.OnStatUnlock += OnStatUnlock;
+		classHandler.OnClassChange += OnClassChanges;
+		classHandler.OnStatUnlock += OnStatUnlock;
 
-		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
-		entityEquipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
+		equipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
 	}
 	private void OnDisable()
 	{
@@ -75,32 +79,37 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
 
-		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
-		entityClassHandler.OnClassChange -= OnClassChanges;
-		entityClassHandler.OnStatUnlock -= OnStatUnlock;
+		classHandler.OnClassChange -= OnClassChanges;
+		classHandler.OnStatUnlock -= OnStatUnlock;
 
-		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
-		entityEquipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
+		equipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
 	}
 
 	private void Update()
 	{
 		PassiveManaRegen();
 	}
-	public void Initilize()
+	private void Initilize()
 	{
-		classHandler = GetComponent<EntityClassHandler>();
-		equipmentHandler = GetComponent<EntityEquipmentHandler>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
+		int numOfTries = 0;
+		if (GetComponent<PlayerController>() == null)
+		{
+			classHandler.SetEntityClass();
+			equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
+		}
+
 		CalculateBaseStats();
+		if (GameManager.Instance == null) return; //for now leave this line in
 		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
 			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
-
-		int numOfTries = 0;
-		if (GetComponent<PlayerController>() != null) return;
-		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
+	}
+	public void ResetEntity()
+	{
+		spriteRenderer.color = Color.white;
+		CalculateBaseStats();
+		GetComponent<EntityBehaviour>().ResetBehaviour();
 	}
 
 	/// <summary>
@@ -188,11 +197,7 @@ public class EntityStats : MonoBehaviour
 		///
 
 		if (currentHealth <= 0)
-		{
 			EventManager.DeathEvent(gameObject);
-			Debug.Log("entity died");
-			Destroy(gameObject);
-		}
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		if (!IsPlayerEntity()) return;
@@ -319,29 +324,6 @@ public class EntityStats : MonoBehaviour
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier
 	/// </summary>
-	private void OnPlayerLevelUp(EntityStats playerStats)
-	{
-		if (currentHealth <= 0) return;
-
-		entityLevel = playerStats.entityLevel;
-		bool wasDamaged = true;
-
-		if (maxHealth.finalValue == currentHealth)
-			wasDamaged = false;
-
-		int oldMaxHP = maxHealth.baseValue;
-		int oldCurrentHP = currentHealth;
-		int oldcurrentMana = currentMana;
-		CalculateBaseStats();
-
-		if (GetComponent<PlayerController>() == null && !wasDamaged) //if not player or taken damage full heal entity
-			currentHealth = maxHealth.finalValue;
-		else
-			currentHealth = oldCurrentHP + (maxHealth.finalValue - oldMaxHP); //else return health + extra health from new level/modifiers
-
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-	}
 	public void CalculateBaseStats()
 	{
 		if (entityLevel == 1)  //get level modifier

@@ -22,14 +22,8 @@ public class EntityClassHandler : MonoBehaviour
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
-		Initilize();
 	}
-	protected virtual void Initilize()
-	{
-		if (GetComponent<PlayerController>() == null)
-			SetRandomClass();
-	}
-	private void SetRandomClass()
+	public void SetEntityClass()
 	{
 		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
 		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
