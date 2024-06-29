@@ -62,14 +62,23 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public void FindNewIdlePosition(EntityBehaviour entity)
 	{
+		Debug.Log("find new pos");
+
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
 		entity.movePosition = entity.SampleNewMovePosition(randomMovePosition);
-
-		if (double.IsInfinity(entity.movePosition.x)) return;
 
 		if (entity.CheckAndSetNewPath(entity.movePosition)) //occasionally throws invalid target position (infinity, infinity, 0.0000)
 			return;
 		else
 			FindNewIdlePosition(entity);
+	}
+
+	private void CheckNewIdlePosition()
+	{
+
+	}
+	private void SetIdlePostion()
+	{
+
 	}
 }

@@ -112,20 +112,20 @@ public class EntityBehaviour : MonoBehaviour
 	//idle + attack behaviour
 	public Vector2 SampleNewMovePosition(Vector2 position)
 	{
-		NavMesh.SamplePosition(position, out NavMeshHit navMeshHit, 10, navMeshAgent.areaMask);
+		NavMesh.SamplePosition(position, out NavMeshHit navMeshHit, 0.1f, navMeshAgent.areaMask);
 		return navMeshHit.position;
 	}
 	public bool CheckAndSetNewPath(Vector2 movePosition)
 	{
+		if (double.IsInfinity(movePosition.x)) return false;
+
 		NavMeshPath path = new NavMeshPath();
-		if (navMeshAgent.CalculatePath(movePosition, path))
-		{
-			navMeshAgent.SetPath(path);
-			HasReachedDestination = false;
-			return true;
-		}
-		else
-			return false;
+		if (!navMeshAgent.CalculatePath(movePosition, path)) return false;
+
+		Debug.Log("set path");
+		navMeshAgent.SetPath(path);
+		HasReachedDestination = false;
+		return true;
 	}
 	public bool CheckIfPlayerVisible()
 	{

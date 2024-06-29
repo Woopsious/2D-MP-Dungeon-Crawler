@@ -15,12 +15,11 @@ public class Utilities
 	{
 		return Random.Range(numOne, numTwo + 1);
 	}
-	public static Vector3 GetRandomPointInBounds(Bounds bounds)
+	public static Vector2 GetRandomPointInBounds(Bounds bounds)
 	{
-		return new Vector3(
+		return new Vector2(
 			Random.Range(bounds.min.x, bounds.max.x),
-			Random.Range(bounds.min.y, bounds.max.y),
-			Random.Range(bounds.min.z, bounds.max.z));
+			Random.Range(bounds.min.y, bounds.max.y));
 	}
 
 	//return random rarity
