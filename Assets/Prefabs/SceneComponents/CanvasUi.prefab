@@ -2129,6 +2129,41 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!1 &1028225287351415455
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2275219137943168606}
+  m_Layer: 5
+  m_Name: RuntimeUiContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2275219137943168606
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1028225287351415455}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5764492344290514191}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1055371010375777643
 GameObject:
   m_ObjectHideFlags: 0
@@ -10008,8 +10043,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2758578339775930081}
+  - component: {fileID: 8754419212987593026}
   m_Layer: 5
-  m_Name: DungeonPortalUiPanel
+  m_Name: DungeonUiPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -10036,6 +10072,29 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &8754419212987593026
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4131075794459089128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 65474dc3886bf4c40a16023480871425, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  portalPanelUi: {fileID: 4131075794459089128}
+  dungeonInfoSlotPrefab: {fileID: 5065303211986392817, guid: c400e7f6bc1c2cd428112058c036233c, type: 3}
+  dungeonListInfoText: {fileID: 99725108637773057}
+  portalEnterenceUi: {fileID: 2354824965160371721}
+  activeDungeonListPanel: {fileID: 1349624710191424296}
+  activeDungeonListContent: {fileID: 1548163323073715722}
+  savedDungeonListPanel: {fileID: 6132123012647444487}
+  savedDungeonListContent: {fileID: 6821613009861385746}
+  activeDungeonLists: []
+  savedDungeonLists: []
+  portalExitUi: {fileID: 4352316967900762123}
 --- !u!1 &4139849253120123232
 GameObject:
   m_ObjectHideFlags: 0
@@ -17364,7 +17423,7 @@ GameObject:
   - component: {fileID: 801471100283016594}
   - component: {fileID: 2760432186526828104}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: CanvasUi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17382,9 +17441,10 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3091877719613510580}
+  - {fileID: 2275219137943168606}
   - {fileID: 6909361374008907031}
   - {fileID: 7523165770652384876}
+  - {fileID: 3091877719613510580}
   - {fileID: 2758578339775930081}
   - {fileID: 6294842032293964706}
   - {fileID: 1243326411196486966}
@@ -17474,6 +17534,7 @@ MonoBehaviour:
   saveSlotsMenuObj: {fileID: 5896159354146467234}
   autoSaveContainer: {fileID: 8748527373990802425}
   saveSlotContainer: {fileID: 2839202380679118520}
+  runtimeUiContainer: {fileID: 1028225287351415455}
 --- !u!114 &2760432186526828104
 MonoBehaviour:
   m_ObjectHideFlags: 0

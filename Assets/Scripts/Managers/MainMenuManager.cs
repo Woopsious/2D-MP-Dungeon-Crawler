@@ -4,12 +4,15 @@ using UnityEngine;
 
 public class MainMenuManager : MonoBehaviour
 {
+	public static MainMenuManager Instance;
+
 	public GameObject mainMenuObj;
 	public GameObject saveSlotsMenuObj;
-	public static MainMenuManager Instance;
 
 	public GameObject autoSaveContainer;
 	public GameObject saveSlotContainer;
+
+	public GameObject runtimeUiContainer;
 
 	private void Start()
 	{

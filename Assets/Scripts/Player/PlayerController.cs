@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
 	public Abilities queuedAbility;
 
 	//interactions
+	private GameObject currentInteractedObj;
 	[HideInInspector] public bool isInteractingWithPortal;
 	private PortalHandler currentInteractedPortal;
 	[HideInInspector] public bool isInteractingWithChest;

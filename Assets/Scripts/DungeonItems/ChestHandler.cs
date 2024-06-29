@@ -25,6 +25,11 @@ public class ChestHandler : MonoBehaviour, IInteractable
 
 	private void Awake()
 	{
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		lootSpawnHandler = GetComponent<LootSpawnHandler>();
+	}
+	private void Start()
+	{
 		Initilize();
 	}
 	private void Update()
@@ -34,12 +39,10 @@ public class ChestHandler : MonoBehaviour, IInteractable
 
 	private void Initilize()
 	{
-		spriteRenderer = GetComponent<SpriteRenderer>();
 		spriteRenderer.sprite = chestClosedSprite;
-		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 		chestStateOpened = false;
 
-		interactWithText.transform.SetParent(FindObjectOfType<Canvas>().transform);
+		interactWithText.transform.SetParent(MainMenuManager.Instance.runtimeUiContainer.transform);
 		interactWithText.transform.SetAsFirstSibling();
 		interactWithText.text = $"F to interact";
 	}
