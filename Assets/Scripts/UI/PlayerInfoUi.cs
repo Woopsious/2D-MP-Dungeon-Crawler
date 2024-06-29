@@ -10,20 +10,40 @@ public class PlayerInfoUi : MonoBehaviour
 	public static PlayerController playerInstance;
 	public TMP_Text playerInfo;
 
+	public GameObject currentPlayerInteractedObj;
+	public TMP_Text InteractWithText;
+
 	private void Awake()
 	{
+		InteractWithText.gameObject.SetActive(false);
 		Instance = this;
+	}
+	private void Update()
+	{
+		if (currentPlayerInteractedObj != null)
+			InteractWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
+				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 
 	private void OnEnable()
 	{
 		EventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+		EventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 	private void OnDisable()
 	{
 		EventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+		EventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 
+	private void ShowHideInteractWithText(GameObject obj, bool showText)
+	{
+		if (showText)
+			InteractWithText.gameObject.SetActive(true);
+		else
+			InteractWithText.gameObject.SetActive(false);
+		currentPlayerInteractedObj = obj;
+	}
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
 		playerInstance = stats.GetComponent<PlayerController>();

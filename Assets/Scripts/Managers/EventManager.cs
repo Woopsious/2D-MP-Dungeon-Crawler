@@ -54,6 +54,12 @@ public static class EventManager
 	}
 
 	//player ui
+	public static event Action<GameObject, bool> OnDetectNewInteractedObject;
+	public static void DetectNewInteractedObject(GameObject obj, bool showText)
+	{
+		OnDetectNewInteractedObject?.Invoke(obj, showText);
+	}
+
 	public static event Action OnShowPlayerInventoryEvent;
 	public static void ShowPlayerInventory()
 	{

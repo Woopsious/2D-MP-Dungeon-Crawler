@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class ChestHandler : MonoBehaviour, IInteractable
@@ -20,9 +19,6 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	[Header("Container Ref")]
 	public GameObject itemContainer;
 
-	[Header("Ui Notif")]
-	public TMP_Text interactWithText;
-
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -32,30 +28,11 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	{
 		Initilize();
 	}
-	private void Update()
-	{
-		UpdateInteractText();
-	}
 
 	private void Initilize()
 	{
 		spriteRenderer.sprite = chestClosedSprite;
 		chestStateOpened = false;
-
-		interactWithText.transform.SetParent(MainMenuManager.Instance.runtimeUiContainer.transform);
-		interactWithText.transform.SetAsFirstSibling();
-		interactWithText.text = $"F to interact";
-	}
-	private void UpdateInteractText()
-	{
-		if (chestStateOpened == true)
-		{
-			interactWithText.gameObject.SetActive(false);
-			return;
-		}
-		if (!interactWithText.gameObject.activeInHierarchy) return;
-		interactWithText.transform.position =
-			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 0.65f, 0));
 	}
 
 	public void ActivateChest()
@@ -69,6 +46,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	}
 	public void ChangeChestStateToOpen(bool spawnLoot)
 	{
+		EventManager.DetectNewInteractedObject(gameObject, false);
 		chestStateOpened = true;
 		spriteRenderer.sprite = chestOpenedSprite;
 		if (spawnLoot)

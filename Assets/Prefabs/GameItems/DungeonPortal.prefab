@@ -84,7 +84,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   portalSpriteObj: {fileID: 3259987665536711695}
   interactWithText: {fileID: 6121190930730293754}
-  isDungeonEnterencePortal: 1
+  isDungeonEnterencePortal: 0
 --- !u!1 &3259987665536711695
 GameObject:
   m_ObjectHideFlags: 0

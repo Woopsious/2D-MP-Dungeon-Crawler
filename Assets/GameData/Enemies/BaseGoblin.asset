@@ -15,7 +15,7 @@ MonoBehaviour:
   entityName: Goblin
   sprite: {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 1
-  expOnDeath: 600
+  expOnDeath: 100
   entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
   maxHealth: 100
   physicalDamageResistance: 5

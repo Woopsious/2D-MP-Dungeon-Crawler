@@ -25,7 +25,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	[Header("Ui Notif")]
 	public TMP_Text NpcTypeText;
-	public TMP_Text interactWithText;
 
 	private void Awake()
 	{
@@ -37,7 +36,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	}
 	private void Update()
 	{
-		UpdateInteractText();
 		UpdateNpcTypeText();
 	}
 
@@ -55,10 +53,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			GenerateNewQuests();
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 			GenerateShopItems();
-
-		interactWithText.transform.SetParent(FindObjectOfType<Canvas>().transform);
-		interactWithText.transform.SetAsFirstSibling();
-		interactWithText.text = $"F to interact";
 	}
 
 	public void Interact(PlayerController player)
@@ -90,12 +84,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		if (!NpcTypeText.gameObject.activeInHierarchy) return;
 		NpcTypeText.transform.position =
 			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1f, 0));
-	}
-	private void UpdateInteractText()
-	{
-		if (!interactWithText.gameObject.activeInHierarchy) return;
-		interactWithText.transform.position = 
-			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 0.65f, 0));
 	}
 
 	//quest npc functions

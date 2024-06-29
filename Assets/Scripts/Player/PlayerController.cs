@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using Unity.Services.Lobbies.Models;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.ShaderGraph;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -45,13 +43,12 @@ public class PlayerController : MonoBehaviour
 	public Abilities queuedAbility;
 
 	//interactions
-	private GameObject currentInteractedObj;
 	[HideInInspector] public bool isInteractingWithPortal;
 	private PortalHandler currentInteractedPortal;
-	[HideInInspector] public bool isInteractingWithChest;
-	private ChestHandler currentInteractedChest;
 	[HideInInspector] public bool isInteractingWithNpc;
 	private NpcHandler currentInteractedNpc;
+	[HideInInspector] public bool isInteractingWithChest;
+	private ChestHandler currentInteractedChest;
 
 	private void Awake()
 	{
@@ -259,44 +256,31 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		EventManager.DetectNewInteractedObject(other.gameObject, true);
+
 		if (other.GetComponent<PortalHandler>() != null)
-		{
 			currentInteractedPortal = other.GetComponent<PortalHandler>();
-			currentInteractedPortal.interactWithText.gameObject.SetActive(true);
-		}
+		else if (other.GetComponent<NpcHandler>() != null)
+			currentInteractedNpc = other.GetComponent<NpcHandler>();
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
 			currentInteractedChest = other.GetComponent<ChestHandler>();
-			currentInteractedChest.interactWithText.gameObject.SetActive(true);
-		}
-		else if (other.GetComponent<NpcHandler>() != null)
-		{
-			currentInteractedNpc = other.GetComponent<NpcHandler>();
-			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
+			if (currentInteractedChest.chestStateOpened)
+				EventManager.DetectNewInteractedObject(other.gameObject, false);
+			else
+				EventManager.DetectNewInteractedObject(other.gameObject, true);
 		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
+		EventManager.DetectNewInteractedObject(other.gameObject, false);
+
 		if (other.GetComponent<PortalHandler>() != null)
-		{
-			if (currentInteractedPortal.interactWithText == null) //remove null error when using portal to travel
-				currentInteractedPortal = null;
-			else
-			{
-				currentInteractedPortal.interactWithText.gameObject.SetActive(false);
-				currentInteractedPortal = null;
-			}
-		}
-		else if (other.GetComponent<ChestHandler>() != null)
-		{
-			currentInteractedChest.interactWithText.gameObject.SetActive(false);
-			currentInteractedChest = null;
-		}
+			currentInteractedPortal = null;
 		else if (other.GetComponent<NpcHandler>() != null)
-		{
-			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
 			currentInteractedNpc = null;
-		}
+		else if (other.GetComponent<ChestHandler>() != null)
+			currentInteractedChest = null;
 	}
 
 	/// <summary>

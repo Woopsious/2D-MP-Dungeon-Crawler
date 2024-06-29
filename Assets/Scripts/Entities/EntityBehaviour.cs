@@ -122,7 +122,6 @@ public class EntityBehaviour : MonoBehaviour
 		NavMeshPath path = new NavMeshPath();
 		if (!navMeshAgent.CalculatePath(movePosition, path)) return false;
 
-		Debug.Log("set path");
 		navMeshAgent.SetPath(path);
 		HasReachedDestination = false;
 		return true;
