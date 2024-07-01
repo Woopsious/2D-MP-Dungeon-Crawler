@@ -20,7 +20,7 @@ public class PlayerInfoUi : MonoBehaviour
 	}
 	private void Update()
 	{
-		if (currentPlayerInteractedObj != null)
+		if (currentPlayerInteractedObj != null && InteractWithText.gameObject.activeInHierarchy)
 			InteractWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
 				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}

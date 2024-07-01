@@ -28,6 +28,11 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	private void Awake()
 	{
+		animator = GetComponent<Animator>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+	}
+	private void Start()
+	{
 		Initilize();
 	}
 	private void OnDisable()
@@ -41,13 +46,11 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	private void Initilize()
 	{
-		animator = GetComponent<Animator>();
 		animator.SetBool("isIdle", true);
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = npc.sprite;
 		name = npc.entityName;
 
-		NpcTypeText.transform.SetParent(FindObjectOfType<Canvas>().transform); //NpcTypeText.text set inside functions below
+		NpcTypeText.transform.SetParent(MainMenuManager.Instance.runtimeUiContainer.transform);
 		NpcTypeText.transform.SetAsFirstSibling();
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 			GenerateNewQuests();
