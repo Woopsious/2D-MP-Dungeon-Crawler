@@ -22,7 +22,7 @@ public class PlayerController : MonoBehaviour
 	private EntityStats playerStats;
 	private EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
-	private PlayerInputActions playerInputs;
+	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
 	private Animator animator;
@@ -52,7 +52,6 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
-		playerInputs = new PlayerInputActions();
 		playerStats = GetComponent<EntityStats>();
 		playerClassHandler = GetComponent<EntityClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
@@ -76,16 +75,13 @@ public class PlayerController : MonoBehaviour
 	private void OnEnable()
 	{
 		if (playerInputs == null)
-			playerInputs = new PlayerInputActions();
-		playerInputs.Enable();
+			playerInputs = PlayerInputHandler.Instance;
 
 		SaveManager.RestoreData += ReloadPlayerInfo;
 		EventManager.OnDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
-		playerInputs.Disable();
-
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities -= OnNewQueuedAbility;
@@ -130,8 +126,8 @@ public class PlayerController : MonoBehaviour
 
 	private void PlayerMovement()
 	{
-		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
-		rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
+		//moveDirection = playerInputs.MoveInput.x;
+		rb.velocity = new Vector2(playerInputs.MoveInput.x * speed, playerInputs.MoveInput.y * speed);
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
@@ -329,9 +325,9 @@ public class PlayerController : MonoBehaviour
 	private void OnCameraZoom()
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = playerInputs.Player.CameraZoom.ReadValue<float>();
-		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
-			playerCamera.orthographicSize -= value / 480;
+		//float value = playerInputs.Player.CameraZoom.ReadValue<float>();
+		//if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
+			//playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()
 	{

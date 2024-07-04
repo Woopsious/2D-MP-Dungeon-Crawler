@@ -36,6 +36,7 @@ public class MainMenuManager : MonoBehaviour
 	private void EnableMainMenuButtons()
 	{
 		//enable buttons unique to main menu scene
+		if (Utilities.GetCurrentlyActiveScene("TestingScene")) return;
 		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
 
 		quitGameButton.SetActive(true);

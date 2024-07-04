@@ -77,7 +77,6 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassStatBonuses.cs" />
     <Compile Include="Assets\Scripts\Entities\PlayerDetection.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
-    <Compile Include="Assets\Scripts\Player\PlayerInputActions.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
@@ -97,7 +96,6 @@
     <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
-    <Compile Include="Assets\Scripts\Player\InputActions.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveSlotDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
@@ -128,6 +126,7 @@
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerInputHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
