@@ -36,11 +36,24 @@ public class Consumables : Items
 
 	public void ConsumeItem(EntityStats entityStats)
 	{
-		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
+		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration && !EntityHealthFull(entityStats))
 			entityStats.OnHeal(consumableBaseRef.consumablePercentage, true);
-		else if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration)
+		else if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration && !EntityManaFull(entityStats))
 			entityStats.IncreaseMana(consumableBaseRef.consumablePercentage, true);
+		else return;
 
 		GetComponent<InventoryItemUi>().DecreaseStackCounter();
+	}
+	private bool EntityHealthFull(EntityStats entityStats)
+	{
+		if (entityStats.currentHealth >= entityStats.maxHealth.finalValue)
+			return true;
+        else return false;
+    }
+	private bool EntityManaFull(EntityStats entityStats)
+	{
+		if (entityStats.currentMana >= entityStats.maxMana.finalValue)
+			return true;
+		else return false;
 	}
 }

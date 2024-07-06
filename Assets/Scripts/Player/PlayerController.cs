@@ -74,9 +74,6 @@ public class PlayerController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (playerInputs == null)
-			playerInputs = PlayerInputHandler.Instance;
-
 		SaveManager.RestoreData += ReloadPlayerInfo;
 		EventManager.OnDeathEvent += OnSelectedTargetDeath;
 	}
@@ -106,6 +103,9 @@ public class PlayerController : MonoBehaviour
 
 	public void Initilize()
 	{
+		if (playerInputs == null)
+			playerInputs = PlayerInputHandler.Instance;
+
 		playerCamera.transform.parent = null;
 
 		if (debugSetPlayerLevelOnStart)
@@ -126,8 +126,7 @@ public class PlayerController : MonoBehaviour
 
 	private void PlayerMovement()
 	{
-		//moveDirection = playerInputs.MoveInput.x;
-		rb.velocity = new Vector2(playerInputs.MoveInput.x * speed, playerInputs.MoveInput.y * speed);
+		rb.velocity = new Vector2(playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
@@ -286,6 +285,8 @@ public class PlayerController : MonoBehaviour
 	//in game actions
 	private void OnMainAttack()
 	{
+		Debug.Log("attack");
+
 		if (IsPlayerInteracting()) return;
 
 		if (queuedAbility == null)
@@ -325,9 +326,9 @@ public class PlayerController : MonoBehaviour
 	private void OnCameraZoom()
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		//float value = playerInputs.Player.CameraZoom.ReadValue<float>();
-		//if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
-			//playerCamera.orthographicSize -= value / 480;
+		float value = playerInputs.CameraZoomInput;
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
+			playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()
 	{
@@ -417,6 +418,10 @@ public class PlayerController : MonoBehaviour
 	{
 		EventManager.ShowPlayerInventory();
 	}
+	private void OnJournal()
+	{
+		EventManager.ShowPlayerJournal();
+	}
 	private void OnClassSelection()
 	{
 		EventManager.ShowPlayerClassSelection();
@@ -428,9 +433,5 @@ public class PlayerController : MonoBehaviour
 	private void OnLearntAbilities()
 	{
 		EventManager.ShowPlayerLearntAbilities();
-	}
-	private void OnJournal()
-	{
-		EventManager.ShowPlayerJournal();
 	}
 }
