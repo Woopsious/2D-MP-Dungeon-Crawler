@@ -25,6 +25,10 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject autoSaveContainer;
 	public GameObject saveSlotContainer;
 
+	[Header("Keybinds Panel")]
+	public GameObject keybindsSettingsPanel;
+	public GameObject KeyboardKeybindsPanel;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -90,6 +94,18 @@ public class MainMenuManager : MonoBehaviour
 		GameManager.Instance.UnPauseGame();
 	}
 
+	public void ShowKeybindsMenu()
+	{
+		mainMenuPanel.SetActive(false);
+		keybindsSettingsPanel.SetActive(true);
+		KeyboardKeybindsPanel.SetActive(true);
+	}
+	public void HideKeybindsMenu()
+	{
+		mainMenuPanel.SetActive(true);
+		keybindsSettingsPanel.SetActive(false);
+		KeyboardKeybindsPanel.SetActive(false);
+	}
 	//SAVE LOAD GAME PANEL ACTIONS
 	public void ReloadSaveSlots()
 	{

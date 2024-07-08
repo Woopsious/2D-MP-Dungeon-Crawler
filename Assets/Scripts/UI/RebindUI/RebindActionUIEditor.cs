@@ -25,6 +25,8 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             m_RebindStartEventProperty = serializedObject.FindProperty("m_RebindStartEvent");
             m_RebindStopEventProperty = serializedObject.FindProperty("m_RebindStopEvent");
             m_DisplayStringOptionsProperty = serializedObject.FindProperty("m_DisplayStringOptions");
+            m_ActionOverRideProperty = serializedObject.FindProperty("m_OverRideActionLabel");
+            m_ActionOverRideStringProperty = serializedObject.FindProperty("m_ActionLabelString");
 
             RefreshBindingOptions();
         }
@@ -64,8 +66,17 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 EditorGUILayout.PropertyField(m_RebindTextProperty);
             }
 
-            // Events section.
-            EditorGUILayout.Space();
+			// Customize UI section.
+			EditorGUILayout.Space();
+			EditorGUILayout.LabelField(m_CustomizeUILabel, Styles.boldLabel);
+			using (new EditorGUI.IndentLevelScope())
+			{
+				EditorGUILayout.PropertyField(m_ActionOverRideProperty);
+				EditorGUILayout.PropertyField(m_ActionOverRideStringProperty);
+			}
+
+			// Events section.
+			EditorGUILayout.Space();
             EditorGUILayout.LabelField(m_EventsLabel, Styles.boldLabel);
             using (new EditorGUI.IndentLevelScope())
             {
@@ -159,10 +170,13 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         private SerializedProperty m_RebindStopEventProperty;
         private SerializedProperty m_UpdateBindingUIEventProperty;
         private SerializedProperty m_DisplayStringOptionsProperty;
+        private SerializedProperty m_ActionOverRideProperty;
+        private SerializedProperty m_ActionOverRideStringProperty;
 
         private GUIContent m_BindingLabel = new GUIContent("Binding");
         private GUIContent m_DisplayOptionsLabel = new GUIContent("Display Options");
         private GUIContent m_UILabel = new GUIContent("UI");
+        private GUIContent m_CustomizeUILabel = new GUIContent("Customize UI");
         private GUIContent m_EventsLabel = new GUIContent("Events");
         private GUIContent[] m_BindingOptions;
         private string[] m_BindingOptionValues;

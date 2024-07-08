@@ -251,7 +251,6 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 PerformInteractiveRebind(action, bindingIndex);
             }
         }
-
         private void PerformInteractiveRebind(InputAction action, int bindingIndex, bool allCompositeParts = false)
         {
             m_RebindOperation?.Cancel(); // Will null out m_RebindOperation.
@@ -262,11 +261,15 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 m_RebindOperation = null;
             }
 
+            //disable/enable action to prevent errors
+            action.Disable();
+
             // Configure the rebind.
             m_RebindOperation = action.PerformInteractiveRebinding(bindingIndex)
                 .OnCancel(
                     operation =>
                     {
+                        action.Enable();
                         m_RebindStopEvent?.Invoke(this, operation);
                         m_RebindOverlay?.SetActive(false);
                         UpdateBindingDisplay();
@@ -275,8 +278,19 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
                 .OnComplete(
                     operation =>
                     {
-                        m_RebindOverlay?.SetActive(false);
+						action.Enable();
+						m_RebindOverlay?.SetActive(false);
                         m_RebindStopEvent?.Invoke(this, operation);
+
+                        //check for duplicate bindings, if one found retry rebind
+                        if (CheckForDuplicateBindings(action, bindingIndex, allCompositeParts))
+                        {
+                            action.RemoveBindingOverride(bindingIndex);
+                            CleanUp();
+                            PerformInteractiveRebind(action, bindingIndex, allCompositeParts);
+                            return;
+                        }
+
                         UpdateBindingDisplay();
                         CleanUp();
 
@@ -315,6 +329,35 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
 
             m_RebindOperation.Start();
         }
+        private bool CheckForDuplicateBindings(InputAction action, int bindingIndex, bool allCompositeParts = false)
+        {
+            InputBinding newBinding = action.bindings[bindingIndex];
+
+            foreach (InputBinding binding in action.actionMap.bindings)
+            {
+                if (binding.action == newBinding.action) continue;
+
+                if (binding.effectivePath == newBinding.effectivePath)
+                {
+                    Debug.Log("Duplicate binding found" + newBinding.effectivePath);
+                    return true;
+                }
+            }
+
+            if (allCompositeParts)
+            {
+                for (int i = 1;  i < bindingIndex; i++)
+                {
+                    if (action.bindings[i].effectivePath == newBinding.effectivePath)
+                    {
+						Debug.Log("Duplicate binding found" + newBinding.effectivePath);
+						return true;
+					}
+                }
+            }
+
+            return false;
+        }
 
         protected void OnEnable()
         {
@@ -324,7 +367,6 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
             if (s_RebindActionUIs.Count == 1)
                 InputSystem.onActionChange += OnActionChange;
         }
-
         protected void OnDisable()
         {
             m_RebindOperation?.Dispose();
@@ -392,7 +434,15 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         [SerializeField]
         private Text m_RebindText;
 
-        [Tooltip("Event that is triggered when the way the binding is display should be updated. This allows displaying "
+		[Tooltip("What text should be displayed for action label.")]
+		[SerializeField]
+		private bool m_OverRideActionLabel;
+
+		[Tooltip("What text should be displayed for action label.")]
+		[SerializeField]
+		private string m_ActionLabelString;
+
+		[Tooltip("Event that is triggered when the way the binding is display should be updated. This allows displaying "
             + "bindings in custom ways, e.g. using images instead of text.")]
         [SerializeField]
         private UpdateBindingUIEvent m_UpdateBindingUIEvent;
@@ -426,8 +476,12 @@ namespace UnityEngine.InputSystem.Samples.RebindUI
         {
             if (m_ActionLabel != null)
             {
-                var action = m_Action?.action;
-                m_ActionLabel.text = action != null ? action.name : string.Empty;
+				var action = m_Action?.action;
+
+				if (m_OverRideActionLabel)
+                    m_ActionLabel.text = m_ActionLabelString;
+                else
+					m_ActionLabel.text = action != null ? action.name : string.Empty;
             }
         }
 
