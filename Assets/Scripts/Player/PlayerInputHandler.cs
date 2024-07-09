@@ -8,7 +8,7 @@ public class PlayerInputHandler : MonoBehaviour
 	public static PlayerInputHandler Instance;
 
 	[Header("Input Action Asset")]
-	[SerializeField] private InputActionAsset playerControls;
+	public InputActionAsset playerControls;
 
 	[Header("Action Map Name Ref")]
 	[SerializeField] private string actionMapName = "Player";

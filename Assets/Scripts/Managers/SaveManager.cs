@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 using UnityEngine.Windows;
 using Scene = UnityEngine.SceneManagement.Scene;
@@ -35,10 +36,12 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
+		GameManager.OnSceneChangeFinish += LoadPlayerData;
 		GameManager.OnSceneChangeFinish += RestoreGameData;
 	}
 	private void OnDisable()
 	{
+		GameManager.OnSceneChangeFinish -= LoadPlayerData;
 		GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
@@ -100,6 +103,50 @@ public class SaveManager : MonoBehaviour
 	/// auto save is normal save but only has 1 slot and cant be called by player (may add keybind later)
 	/// </summary>
 
+	//SAVING PLAYER DATA
+	public void SavePlayerData()
+	{
+		DeletePlayerData();
+
+		string directory = Application.persistentDataPath + "/PlayerData";
+		string filePath = Application.persistentDataPath + "/PlayerData/Keybinds.json";
+
+		if (DoesDirectoryExist(directory))
+		{
+			if (DoesFileExist(directory, "/Keybinds.json"))
+				System.IO.File.Delete(directory + "/Keybinds.json");
+		}
+		else
+			System.IO.Directory.CreateDirectory(directory);
+
+		var rebinds = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson();
+		System.IO.File.WriteAllText(filePath, rebinds);
+	}
+	public void LoadPlayerData()
+	{
+		string directory = Application.persistentDataPath + "/PlayerData";
+		string filePath = Application.persistentDataPath + "/PlayerData/Keybinds.json";
+
+		if (!DoesDirectoryExist(directory)) return;
+		if (!DoesFileExist(directory, "/Keybinds.json")) return;
+
+		string rebinds = System.IO.File.ReadAllText(filePath);
+		if (!string.IsNullOrEmpty(rebinds))
+			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(rebinds);
+	}
+	public void DeletePlayerData()
+	{
+		string directory = Application.persistentDataPath + "/PlayerData";
+
+		if (!DoesDirectoryExist(directory)) return;
+		if (!DoesFileExist(directory, "/Keybinds.json")) return;
+
+		System.IO.File.Delete(directory + "/Keybinds.json");
+		System.IO.Directory.Delete(directory);
+
+	}
+
+	//SAVING GAME DATA
 	//auto features
 	public void AutoSaveData()
 	{
@@ -123,23 +170,28 @@ public class SaveManager : MonoBehaviour
 		else
 			System.IO.Directory.CreateDirectory(directory);
 
-		SaveDataToJson(directory);
+		SaveSavedDungeonData();
+		SavePlayerInfoData();
+		SavePlayerClassData();
+		SavePlayerStorageChestData();
+		SavePlayerInventoryData();
+
+		SaveDataToJson(directory, "/GameData.json");
 	}
 	public void LoadGameData(string directory)
 	{
-
 		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
-		LoadDataToJson(directory);
+		LoadDataToJson(directory, "/GameData.json");
 	}
 	public void DeleteGameData(string directory)
 	{
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
-		DeleteJsonFile(directory);
+		DeleteJsonFile(directory, "/GameData.json");
 	}
 	public void RestoreGameData()
 	{
@@ -147,15 +199,9 @@ public class SaveManager : MonoBehaviour
 	}
 
 	//saving/loading/deleting json file
-	private void SaveDataToJson(string directory)
+	private void SaveDataToJson(string directory, string fileName)
 	{
-		SaveSavedDungeonData();
-		SavePlayerInfoData();
-		SavePlayerClassData();
-		SavePlayerStorageChestData();
-		SavePlayerInventoryData();
-
-		string filePath = directory + "/GameData.json";
+		string filePath = directory + fileName;
 		string inventoryData = JsonUtility.ToJson(GameData);
         System.IO.File.WriteAllText(filePath, inventoryData);
 
@@ -165,16 +211,16 @@ public class SaveManager : MonoBehaviour
 
 		MainMenuManager.Instance.ReloadSaveSlots();
 	}
-	private void LoadDataToJson(string directory)
+	private void LoadDataToJson(string directory, string fileName)
 	{
-		string filePath = directory + "/GameData.json";
+		string filePath = directory + fileName;
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		GameData = JsonUtility.FromJson<GameData>(inventoryData);
 	}
-	private void DeleteJsonFile(string directory)
+	private void DeleteJsonFile(string directory, string fileName)
 	{
-		System.IO.File.Delete(directory + "/GameData.json");
 		System.IO.File.Delete(directory + "/SlotData.json");
+		System.IO.File.Delete(directory + fileName);
 		System.IO.Directory.Delete(directory);
 
 		MainMenuManager.Instance.ReloadSaveSlots();
@@ -355,12 +401,13 @@ public class SaveManager : MonoBehaviour
 			return false;
 	}
 }
+
 [System.Serializable]
 public class PlayerData
 {
-	//keybinds settings
-	//audio settings
+
 }
+
 [System.Serializable]
 public class SlotData
 {

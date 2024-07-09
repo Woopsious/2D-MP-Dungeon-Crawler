@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+//using UnityEngine.InputSystem.Samples.RebindUI;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -99,12 +101,16 @@ public class MainMenuManager : MonoBehaviour
 		mainMenuPanel.SetActive(false);
 		keybindsSettingsPanel.SetActive(true);
 		KeyboardKeybindsPanel.SetActive(true);
+
+		SaveManager.Instance.LoadPlayerData();
 	}
 	public void HideKeybindsMenu()
 	{
 		mainMenuPanel.SetActive(true);
 		keybindsSettingsPanel.SetActive(false);
 		KeyboardKeybindsPanel.SetActive(false);
+
+		SaveManager.Instance.SavePlayerData();
 	}
 	//SAVE LOAD GAME PANEL ACTIONS
 	public void ReloadSaveSlots()
