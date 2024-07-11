@@ -111,6 +111,7 @@
     <Compile Include="Assets\Scripts\UI\QuestDataSlotUi.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\AudioHandler.cs" />
     <Compile Include="Assets\Scripts\Managers\ToolTipManager.cs" />
     <Compile Include="Assets\Scripts\NPC&apos;s\NpcHandler.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />

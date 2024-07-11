@@ -123,10 +123,12 @@ public class MainMenuManager : MonoBehaviour
 	public void ShowSaveSlotsMenu()
 	{
 		ReloadSaveSlots();
+		mainMenuPanel.SetActive(false);
 		saveLoadGamePanel.SetActive(true);
 	}
 	public void HideSaveSlotsMenu()
 	{
+		mainMenuPanel.SetActive(true);
 		saveLoadGamePanel.SetActive(false);
 	}
 	public void ShowConfirmActionPanel(SaveSlotDataUi saveData, int actionType)

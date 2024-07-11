@@ -285,8 +285,6 @@ public class PlayerController : MonoBehaviour
 	//in game actions
 	private void OnMainAttack()
 	{
-		Debug.Log("attack");
-
 		if (IsPlayerInteracting()) return;
 
 		if (queuedAbility == null)
