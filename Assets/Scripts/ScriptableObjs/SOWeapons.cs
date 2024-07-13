@@ -45,4 +45,7 @@ public class SOWeapons : SOItems
 
 	[Header("Magic Weapon Toggles")]
 	public int baseBonusMana;
+
+	[Header("Weapon Audio")]
+	public AudioClip attackSfx;
 }

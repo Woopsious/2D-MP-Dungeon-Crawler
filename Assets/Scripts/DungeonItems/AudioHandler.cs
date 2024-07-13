@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class AudioHandler : MonoBehaviour
 {
-	List<AudioSource> musicAudioList = new List<AudioSource>();
-	List<AudioSource> menuSfxAudioList = new List<AudioSource>();
+	public List<AudioSource> musicAudioList = new List<AudioSource>();
+	public List<AudioSource> menuSfxAudioList = new List<AudioSource>();
 
-	List<AudioSource> ambienceAudioList = new List<AudioSource>();
-	List<AudioSource> sfxAudioList = new List<AudioSource>();
+	public List<AudioSource> ambienceAudioList = new List<AudioSource>();
+	public List<AudioSource> sfxAudioList = new List<AudioSource>();
 
 	private void Start()
 	{

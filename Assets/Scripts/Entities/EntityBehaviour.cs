@@ -6,7 +6,7 @@ using UnityEngine.AI;
 
 public class EntityBehaviour : MonoBehaviour
 {
-	[HideInInspector] public EntityStats entityStats;
+	private AudioHandler audioHandler;
 
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
@@ -31,10 +31,14 @@ public class EntityBehaviour : MonoBehaviour
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
+	[Header("Audio")]
+	private AudioSource idleSfx;
+	private AudioSource walkSfx;
+
 	private void Awake()
 	{
 		rb = GetComponent<Rigidbody2D>();
-		entityStats = GetComponent<EntityStats>();
+		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
 	}
 	private void Start()
@@ -62,12 +66,17 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
+		PlayWalkAudioWhenMoving();
 	}
 	private void Initilize()
 	{
 		ResetBehaviour();
 
 		HasReachedDestination = true;
+
+		idleSfx = audioHandler.sfxAudioList[2];
+		walkSfx = audioHandler.sfxAudioList[3];
+		walkSfx.loop = true;
 
 		viewRangeCollider.radius = entityBehaviour.aggroRange;
 		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
@@ -107,6 +116,17 @@ public class EntityBehaviour : MonoBehaviour
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);
+	}
+	private void PlayWalkAudioWhenMoving()
+	{
+		if (navMeshAgent.velocity == new Vector3(0, 0, 0))
+		{
+			walkSfx.Stop();
+		}
+		else if (!walkSfx.isPlaying && navMeshAgent.velocity != new Vector3(0, 0, 0))
+		{
+			walkSfx.Play();
+		}
 	}
 
 	//idle + attack behaviour

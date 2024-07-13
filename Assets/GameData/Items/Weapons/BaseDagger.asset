@@ -20,6 +20,7 @@ MonoBehaviour:
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
+  equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   isBareHands: 0
   isShield: 0
   baseDamage: 25
@@ -34,3 +35,4 @@ MonoBehaviour:
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   baseBonusMana: 0
+  attackSfx: {fileID: 8300000, guid: c50d1d7bf8ca57645bb44cc797e37f17, type: 3}

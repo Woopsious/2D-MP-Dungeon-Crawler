@@ -20,4 +20,7 @@ public class SOItems : ScriptableObject
 	[Header("Is Inventory Stackable")]
 	public bool isStackable;
 	public int MaxStackCount;
+
+	[Header("Audio")]
+	public AudioClip equipItemSfx;
 }

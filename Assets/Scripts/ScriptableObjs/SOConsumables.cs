@@ -13,4 +13,7 @@ public class SOConsumables : SOItems
 
 	[Header("Percentage Value")]
 	public float consumablePercentage;
+
+	[Header("Percentage Value")]
+	public AudioClip consumeSfx;
 }

@@ -51,7 +51,7 @@ MonoBehaviour:
   debugSpawnerLevel: 0
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
-  maxNumOfEnemiesToSpawn: 1
+  maxNumOfEnemiesToSpawn: 5
 --- !u!58 &978756309994241589
 CircleCollider2D:
   m_ObjectHideFlags: 0

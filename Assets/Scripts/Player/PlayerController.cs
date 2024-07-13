@@ -251,14 +251,19 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		EventManager.DetectNewInteractedObject(other.gameObject, true);
-
 		if (other.GetComponent<PortalHandler>() != null)
+		{
+			EventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedPortal = other.GetComponent<PortalHandler>();
+		}
 		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			EventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedNpc = other.GetComponent<NpcHandler>();
+		}
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
+			EventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedChest = other.GetComponent<ChestHandler>();
 			if (currentInteractedChest.chestStateOpened)
 				EventManager.DetectNewInteractedObject(other.gameObject, false);

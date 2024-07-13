@@ -20,6 +20,7 @@ MonoBehaviour:
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
+  equipItemSfx: {fileID: 8300000, guid: 385bd0c90ce8e6f4ba775a746628d81f, type: 3}
   baseBonusHealth: 2
   baseBonusMana: 0
   classRestriction: 1

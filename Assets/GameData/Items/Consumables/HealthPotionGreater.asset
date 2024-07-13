@@ -20,5 +20,7 @@ MonoBehaviour:
   isEquipable: 1
   isStackable: 1
   MaxStackCount: 5
+  equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   consumableType: 0
   consumablePercentage: 0.35
+  consumeSfx: {fileID: 8300000, guid: 48411483cb6244948a11579ee363e613, type: 3}

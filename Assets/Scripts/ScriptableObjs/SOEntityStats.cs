@@ -42,4 +42,10 @@ public class SOEntityStats : ScriptableObject
 	public List<SOArmors> possibleHelmetsList = new List<SOArmors>();
 	public List<SOArmors> possibleChestpiecesList = new List<SOArmors>();
 	public List<SOArmors> possibleLegsList = new List<SOArmors>();
+
+	[Header("Entity Audio")]
+	public AudioClip deathSfx;
+	public AudioClip hurtSfx;
+	public AudioClip idleSfx;
+	public AudioClip WalkSfx;
 }
