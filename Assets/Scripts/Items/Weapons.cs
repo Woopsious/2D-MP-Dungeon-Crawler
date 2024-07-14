@@ -16,6 +16,7 @@ public class Weapons : Items
 	private GameObject parentObj;
 	private SpriteRenderer attackWeaponSprite;
 	private SpriteRenderer idleWeaponSprite;
+	private AudioHandler audioHandler;
 	private Animator animator;
 	private BoxCollider2D boxCollider;
 
@@ -150,6 +151,7 @@ public class Weapons : Items
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
 		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
 		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
 		boxCollider.enabled = false;
@@ -159,7 +161,6 @@ public class Weapons : Items
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
-
 	}
 
 	protected override void OnTriggerEnter2D(Collider2D other)
@@ -213,6 +214,8 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = false;
 			attackWeaponSprite.enabled = true;
 		}
+
+		audioHandler.PlayAudio(weaponBaseRef.attackSfx);
 		canAttackAgain = false;
 	}
 	private void OnWeaponCooldown()

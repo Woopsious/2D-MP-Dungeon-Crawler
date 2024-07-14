@@ -6,18 +6,21 @@ using UnityEngine.AI;
 
 public class EntityBehaviour : MonoBehaviour
 {
+	[Header("Refs")]
+	private EntityStats entityStats;
+	private Rigidbody2D rb;
 	private AudioHandler audioHandler;
-
+	private Animator animator;
 	public LayerMask includeMe;
 	public NavMeshAgent navMeshAgent;
-	private Rigidbody2D rb;
-	private Animator animator;
 
+	[Header("Behaviour")]
 	public SOEntityBehaviour entityBehaviour;
 	private EnemyBaseState currentState;
 	private EnemyIdleState idleState = new EnemyIdleState();
 	private EnemyAttackState attackState = new EnemyAttackState();
 
+	[Header("bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
 	public Vector2 movePosition;
 	public bool HasReachedDestination;
@@ -28,15 +31,18 @@ public class EntityBehaviour : MonoBehaviour
 	public PlayerController player;
 	public CircleCollider2D viewRangeCollider;
 
+	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
-	[Header("Audio")]
-	private AudioSource idleSfx;
-	private AudioSource walkSfx;
+	[Header("Idle Sound Settings")]
+	private readonly float idleSoundCooldown = 5f;
+	private float idleSoundTimer;
+	private readonly int chanceOfIdleSound = 25;
 
 	private void Awake()
 	{
+		entityStats = GetComponent<EntityStats>();
 		rb = GetComponent<Rigidbody2D>();
 		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
@@ -66,17 +72,13 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-		PlayWalkAudioWhenMoving();
+		PlayIdleSound();
 	}
 	private void Initilize()
 	{
 		ResetBehaviour();
 
 		HasReachedDestination = true;
-
-		idleSfx = audioHandler.sfxAudioList[2];
-		walkSfx = audioHandler.sfxAudioList[3];
-		walkSfx.loop = true;
 
 		viewRangeCollider.radius = entityBehaviour.aggroRange;
 		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
@@ -117,15 +119,15 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			animator.SetBool("isIdle", false);
 	}
-	private void PlayWalkAudioWhenMoving()
+	private void PlayIdleSound()
 	{
-		if (navMeshAgent.velocity == new Vector3(0, 0, 0))
+		idleSoundTimer -= Time.deltaTime;
+
+		if (idleSoundTimer <= 0)
 		{
-			walkSfx.Stop();
-		}
-		else if (!walkSfx.isPlaying && navMeshAgent.velocity != new Vector3(0, 0, 0))
-		{
-			walkSfx.Play();
+			idleSoundTimer = idleSoundCooldown;
+			if (chanceOfIdleSound < Utilities.GetRandomNumber(100))
+				audioHandler.PlayAudio(entityStats.entityBaseStats.idleSfx);
 		}
 	}
 

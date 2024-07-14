@@ -30,6 +30,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemSprite;
+	private AudioHandler audioHandler;
 	public int itemPrice;
 	public int itemLevel;
 	public ItemType itemType;
@@ -64,6 +65,8 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 	public void Initilize()
 	{
+		audioHandler = GetComponent<AudioHandler>();
+
 		if (GetComponent<Items>() != null)
 			SetUpItems();
 		else if (GetComponent<Abilities>() != null)
@@ -164,6 +167,18 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		transform.SetParent(parentAfterDrag);
 		uiItemImage.raycastTarget = true;
+	}
+
+	public void PlayItemEquipSound()
+	{
+		if (weaponBaseRef != null)
+			audioHandler.PlayAudio(weaponBaseRef.equipItemSfx);
+		if (armorBaseRef != null)
+			audioHandler.PlayAudio(armorBaseRef.equipItemSfx);
+		if (accessoryBaseRef != null)
+			audioHandler.PlayAudio(accessoryBaseRef.equipItemSfx);
+		if (consumableBaseRef != null)
+			audioHandler.PlayAudio(consumableBaseRef.equipItemSfx);
 	}
 
 	//update data

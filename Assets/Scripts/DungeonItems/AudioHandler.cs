@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class AudioHandler : MonoBehaviour
 {
-	public List<AudioSource> musicAudioList = new List<AudioSource>();
-	public List<AudioSource> menuSfxAudioList = new List<AudioSource>();
+	public AudioType audioType;
+	public enum AudioType
+	{
+		music, menuSfx, ambience, sfx
+	}	
 
-	public List<AudioSource> ambienceAudioList = new List<AudioSource>();
-	public List<AudioSource> sfxAudioList = new List<AudioSource>();
+	public AudioSource audioSource;
 
 	private void Start()
 	{
@@ -27,21 +29,31 @@ public class AudioHandler : MonoBehaviour
 
 	private void UpdateAudioSettings(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
 	{
-		if (musicAudioList.Count != 0)
-			UpdateAudio(musicAudioList, musicVolume);
+		if (audioType == AudioType.music)
+			audioSource.volume = musicVolume;
 
-		if (menuSfxAudioList.Count != 0)
-			UpdateAudio(menuSfxAudioList, musicVolume);
+		if (audioType == AudioType.menuSfx)
+			audioSource.volume = menuSfxVolume;
 
-		if (ambienceAudioList.Count != 0)
-			UpdateAudio(ambienceAudioList, musicVolume);
+		if (audioType == AudioType.ambience)
+			audioSource.volume = ambienceVolume;
 
-		if (sfxAudioList.Count != 0)
-			UpdateAudio(sfxAudioList, musicVolume);
+		if (audioType == AudioType.sfx)
+			audioSource.volume = sfxVolume;
 	}
-	private void UpdateAudio(List<AudioSource> audioSources, float newVolume)
+
+	public void PlayAudio(AudioClip clip)
 	{
-		foreach (AudioSource audioSource in audioSources)
-			audioSource.volume = newVolume;
+		if (IsAudioPlaying())
+			audioSource.Stop();
+
+		audioSource.clip = clip;
+		audioSource.Play();
+	}
+	public bool IsAudioPlaying()
+	{
+		if (audioSource.isPlaying)
+			return true;
+		else return false;
 	}
 }

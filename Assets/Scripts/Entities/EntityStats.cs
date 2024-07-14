@@ -11,8 +11,8 @@ public class EntityStats : MonoBehaviour
 	public SOEntityStats entityBaseStats;
 	public EntityClassHandler classHandler;
 	public EntityEquipmentHandler equipmentHandler;
-	private AudioHandler audioHandler;
 	private SpriteRenderer spriteRenderer;
+	private AudioHandler audioHandler;
 	public int entityLevel;
 	public float levelModifier;
 
@@ -53,16 +53,12 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
-	[Header("Audio")]
-	private AudioSource deathSfx;
-	private AudioSource hurtSfx;
-
 	private void Awake()
 	{
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
-		audioHandler = GetComponent<AudioHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		audioHandler = GetComponent<AudioHandler>();
 	}
 	private void Start()
 	{
@@ -98,13 +94,6 @@ public class EntityStats : MonoBehaviour
 	private void Initilize()
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
-
-		audioHandler.sfxAudioList[0].clip = entityBaseStats.deathSfx;
-		deathSfx = audioHandler.sfxAudioList[0];
-		audioHandler.sfxAudioList[1].clip = entityBaseStats.hurtSfx;
-		hurtSfx = audioHandler.sfxAudioList[1];
-		audioHandler.sfxAudioList[2].clip = entityBaseStats.idleSfx;
-		audioHandler.sfxAudioList[3].clip = entityBaseStats.WalkSfx;
 
 		int numOfTries = 0;
 		if (GetComponent<PlayerController>() == null)
@@ -201,7 +190,7 @@ public class EntityStats : MonoBehaviour
 		//Debug.Log("FinalDmg: " + damage);
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
-		hurtSfx.Play();
+		audioHandler.PlayAudio(entityBaseStats.hurtSfx);
 
 		///
 		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
@@ -212,7 +201,7 @@ public class EntityStats : MonoBehaviour
 
 		if (currentHealth <= 0)
 		{
-			deathSfx.Play();
+			audioHandler.PlayAudio(entityBaseStats.deathSfx);
 			EventManager.DeathEvent(gameObject);
 		}
 

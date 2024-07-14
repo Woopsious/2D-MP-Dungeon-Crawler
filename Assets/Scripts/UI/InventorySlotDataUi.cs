@@ -103,6 +103,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	{
 		if (!IsPlayerEquipmentSlot()) return;
 
+		if (item != null)
+			item.PlayItemEquipSound();
+
 		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			OnHotbarItemEquip?.Invoke(item, this);
 		else
@@ -123,19 +126,6 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			return true;
 		else
 			return false;
-	}
-	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
-	{
-		if (oldInventorySlot == this)
-			return true;
-		else
-			return false;
-	}
-	public bool IsNewSlotTypeSameAsOldSlotType(InventoryItemUi item)
-	{
-		if (slotType == item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType)
-			return true;
-		else return false;
 	}
 	public bool IsItemInSlotStackable()
 	{
@@ -243,6 +233,19 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			Debug.Log("slot checks failed");
 			return false;
 		}
+	}
+	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
+	{
+		if (oldInventorySlot == this)
+			return true;
+		else
+			return false;
+	}
+	public bool IsNewSlotTypeSameAsOldSlotType(InventoryItemUi item)
+	{
+		if (slotType == item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType)
+			return true;
+		else return false;
 	}
 	public bool IsCorrectLevel(InventoryItemUi item)
 	{
