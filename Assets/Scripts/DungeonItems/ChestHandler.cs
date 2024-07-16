@@ -7,6 +7,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	public Sprite chestClosedSprite;
 	public Sprite chestOpenedSprite;
 	private SpriteRenderer spriteRenderer;
+	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
 	public bool chestActive;
 	public bool chestStateOpened;
@@ -19,9 +20,14 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	[Header("Container Ref")]
 	public GameObject itemContainer;
 
+	[Header("Chest Sound Settings")]
+	public AudioClip chestOpenSfx;
+	public AudioClip chestCloseSfx;
+
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		audioHandler = GetComponent<AudioHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 	}
 	private void Start()
@@ -44,12 +50,12 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		chestActive = false;
 		gameObject.SetActive(false);
 	}
-	public void ChangeChestStateToOpen(bool spawnLoot)
+	public void ChangeChestStateToOpen(bool isPlayerInteraction)
 	{
 		EventManager.DetectNewInteractedObject(gameObject, false);
 		chestStateOpened = true;
 		spriteRenderer.sprite = chestOpenedSprite;
-		if (spawnLoot)
+		if (isPlayerInteraction)
 			lootSpawnHandler.SpawnLoot();
 	}
 
@@ -58,14 +64,19 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		if (!isPlayerStorageChest)
 		{
 			if (chestStateOpened == true) return;
+			audioHandler.PlayAudio(chestOpenSfx);
 			ChangeChestStateToOpen(true);
 		}
 		else
+		{
+			audioHandler.PlayAudio(chestOpenSfx);
 			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
+		}
 	}
 	public void UnInteract(PlayerController player)
 	{
 		if (!isPlayerStorageChest) return;
+		audioHandler.PlayAudio(chestCloseSfx);
 		PlayerInventoryUi.Instance.HidePlayerStorageChest(this);
 	}
 }

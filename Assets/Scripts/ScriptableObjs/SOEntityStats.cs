@@ -4,6 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "EntityStatsScriptableObject", menuName = "Entities/Stats")]
 public class SOEntityStats : ScriptableObject
 {
+	[Header("Entity Type")]
 	public string entityName;
 	public Sprite sprite;
 
@@ -15,21 +16,29 @@ public class SOEntityStats : ScriptableObject
 
 	public int expOnDeath;
 
-	[Header("behaviour")]
+	[Header("Behaviour")]
 	public SOEntityBehaviour entityBehaviour;
 
-	[Header("health")]
+	[Header("Health")]
+	[Tooltip("standard value is 100")]
 	public int maxHealth;
 
 	[Header("Resistances")]
+	[Tooltip("standard value is 5")]
 	public int physicalDamageResistance;
+	[Tooltip("standard value is 5")]
 	public int poisonDamageResistance;
+	[Tooltip("standard value is 5")]
 	public int fireDamageResistance;
+	[Tooltip("standard value is 5")]
 	public int iceDamageResistance;
 
 	[Header("Mana")]
+	[Tooltip("standard value is 100")]
 	public int maxMana;
+	[Tooltip("standard value is 0.05")]
 	public float manaRegenPercentage;
+	[Tooltip("standard value is 3")]
 	public float manaRegenCooldown;
 
 	[Header("Possible Classes")]
@@ -47,5 +56,4 @@ public class SOEntityStats : ScriptableObject
 	public AudioClip deathSfx;
 	public AudioClip hurtSfx;
 	public AudioClip idleSfx;
-	public AudioClip WalkSfx;
 }

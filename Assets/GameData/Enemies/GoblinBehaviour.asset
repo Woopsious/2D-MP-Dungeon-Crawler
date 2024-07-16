@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32f597d358a120d4ab5ba32aa818bb3f, type: 3}
-  m_Name: BaseGoblinBehaviour
+  m_Name: GoblinBehaviour
   m_EditorClassIdentifier: 
   idleWaitTime: 1
   idleWanderRadius: 20
-  aggroRange: 10
-  maxChaseRange: 12
+  aggroRange: 12
+  maxChaseRange: 15
   navMeshMoveSpeed: 5
-  navMeshTurnSpeed: 80
-  navMeshAcceleration: 5
+  navMeshTurnSpeed: 90
+  navMeshAcceleration: 6
   navMeshStoppingDistance: 1.25
