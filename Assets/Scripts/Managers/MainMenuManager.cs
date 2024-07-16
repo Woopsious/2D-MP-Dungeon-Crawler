@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 //using UnityEngine.InputSystem.Samples.RebindUI;
 
 public class MainMenuManager : MonoBehaviour
@@ -30,6 +31,9 @@ public class MainMenuManager : MonoBehaviour
 	[Header("Keybinds Panel")]
 	public GameObject keybindsSettingsPanel;
 	public GameObject KeyboardKeybindsPanel;
+
+	[Header("Audio Panel")]
+	public GameObject audioSettingsPanel;
 
 	private void Awake()
 	{
@@ -110,6 +114,23 @@ public class MainMenuManager : MonoBehaviour
 		keybindsSettingsPanel.SetActive(false);
 		KeyboardKeybindsPanel.SetActive(false);
 
+		SaveManager.Instance.SavePlayerData();
+	}
+
+	public void ShowAudioMenu()
+	{
+		mainMenuPanel.SetActive(false);
+		audioSettingsPanel.SetActive(true);
+
+		AudioManager.Instance.SetVolumeSliderValues();
+		SaveManager.Instance.LoadPlayerData();
+	}
+	public void HideAudioMenu()
+	{
+		mainMenuPanel.SetActive(true);
+		audioSettingsPanel.SetActive(false);
+
+		AudioManager.Instance.UpdateAudioVolume();
 		SaveManager.Instance.SavePlayerData();
 	}
 	//SAVE LOAD GAME PANEL ACTIONS

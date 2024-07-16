@@ -109,41 +109,54 @@ public class SaveManager : MonoBehaviour
 		DeletePlayerData();
 
 		string directory = Application.persistentDataPath + "/PlayerData";
-		string filePath = Application.persistentDataPath + "/PlayerData/Keybinds.json";
+		string filePath = Application.persistentDataPath + "/PlayerData/data.json";
 
 		if (DoesDirectoryExist(directory))
 		{
-			if (DoesFileExist(directory, "/Keybinds.json"))
-				System.IO.File.Delete(directory + "/Keybinds.json");
+			if (DoesFileExist(directory, "/data.json"))
+				System.IO.File.Delete(directory + "/data.json");
 		}
 		else
 			System.IO.Directory.CreateDirectory(directory);
 
-		var rebinds = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson();
-		System.IO.File.WriteAllText(filePath, rebinds);
+		PlayerData playerData = new PlayerData
+		{
+			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
+			musicVolume = AudioManager.Instance.musicVolume,
+			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
+			ambienceVolume = AudioManager.Instance.ambienceVolume,
+			sfxVolume = AudioManager.Instance.sfxVolume,
+		};
+
+		string data = JsonUtility.ToJson(playerData);
+		System.IO.File.WriteAllText(filePath, data);
 	}
 	public void LoadPlayerData()
 	{
 		string directory = Application.persistentDataPath + "/PlayerData";
-		string filePath = Application.persistentDataPath + "/PlayerData/Keybinds.json";
+		string filePath = Application.persistentDataPath + "/PlayerData/data.json";
 
 		if (!DoesDirectoryExist(directory)) return;
-		if (!DoesFileExist(directory, "/Keybinds.json")) return;
+		if (!DoesFileExist(directory, "/data.json")) return;
 
-		string rebinds = System.IO.File.ReadAllText(filePath);
-		if (!string.IsNullOrEmpty(rebinds))
-			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(rebinds);
+		string data = System.IO.File.ReadAllText(filePath);
+		PlayerData playerData = JsonUtility.FromJson<PlayerData>(data);
+
+		if (!string.IsNullOrEmpty(playerData.keybindsData))
+			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(playerData.keybindsData);
+
+		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
+			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
 	}
 	public void DeletePlayerData()
 	{
 		string directory = Application.persistentDataPath + "/PlayerData";
 
 		if (!DoesDirectoryExist(directory)) return;
-		if (!DoesFileExist(directory, "/Keybinds.json")) return;
+		if (!DoesFileExist(directory, "/data.json")) return;
 
-		System.IO.File.Delete(directory + "/Keybinds.json");
+		System.IO.File.Delete(directory + "/data.json");
 		System.IO.Directory.Delete(directory);
-
 	}
 
 	//SAVING GAME DATA
@@ -405,7 +418,12 @@ public class SaveManager : MonoBehaviour
 [System.Serializable]
 public class PlayerData
 {
+	public string keybindsData;
 
+	public float musicVolume;
+	public float menuSfxVolume;
+	public float ambienceVolume;
+	public float sfxVolume;
 }
 
 [System.Serializable]
