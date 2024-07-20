@@ -29,8 +29,6 @@ public class AudioHandler : MonoBehaviour
 
 	private void UpdateAudioSettings(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
 	{
-		Debug.Log("Update Audio in AudioHandler");
-
 		if (audioType == AudioType.music)
 			audioSource.volume = musicVolume;
 

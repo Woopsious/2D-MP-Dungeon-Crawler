@@ -90,7 +90,9 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void ShowMainMenu()
 	{
-		saveLoadGamePanel.SetActive(false);
+		HideSaveSlotsMenu();
+		HideKeybindsMenu();
+		HideAudioMenu();
 		mainMenuPanel.SetActive(true);
 		GameManager.Instance.PauseGame();
 	}
