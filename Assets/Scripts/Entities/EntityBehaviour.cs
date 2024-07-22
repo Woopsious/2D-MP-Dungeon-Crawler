@@ -3,28 +3,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 public class EntityBehaviour : MonoBehaviour
 {
-	[Header("Refs")]
-	private EntityStats entityStats;
-	private Rigidbody2D rb;
-	private AudioHandler audioHandler;
-	private Animator animator;
-	public LayerMask includeMe;
-	public NavMeshAgent navMeshAgent;
-
-	[Header("Behaviour")]
+	[Header("Behaviour Info")]
 	public SOEntityBehaviour entityBehaviour;
+	[HideInInspector] public EntityStats entityStats;
 	private EnemyBaseState currentState;
 	private EnemyIdleState idleState = new EnemyIdleState();
 	private EnemyAttackState attackState = new EnemyAttackState();
 
-	[Header("bounds Settings")]
+	private Rigidbody2D rb;
+	private Animator animator;
+	public LayerMask includeMe;
+	private NavMeshAgent navMeshAgent;
+	[HideInInspector] public bool markedForCleanUp;
+
+	[Header("Bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
-	public Vector2 movePosition;
-	public bool HasReachedDestination;
-	public float idleTimer;
+	[HideInInspector] public Vector2 movePosition;
+	[HideInInspector] public bool HasReachedDestination;
+	[HideInInspector] public float idleTimer;
 
 	[HideInInspector] public Bounds chaseBounds;
 	public Vector2 playersLastKnownPosition;
@@ -35,17 +35,12 @@ public class EntityBehaviour : MonoBehaviour
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
-	[Header("Idle Sound Settings")]
-	private readonly float idleSoundCooldown = 5f;
-	private float idleSoundTimer;
-	private readonly int chanceOfIdleSound = 25;
-
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
 		rb = GetComponent<Rigidbody2D>();
-		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
+		navMeshAgent = GetComponent<NavMeshAgent>();
 	}
 	private void Start()
 	{
@@ -70,14 +65,21 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		currentState.UpdatePhysics(this);
 
+		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
+		transform.position.y - entityBehaviour.maxChaseRange, transform.position.z);
+
+		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
+		transform.position.y + entityBehaviour.maxChaseRange, transform.position.z);
+
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-		PlayIdleSound();
 	}
 	private void Initilize()
 	{
+		UpdateBounds(transform.position);
 		ResetBehaviour();
 
+		markedForCleanUp = false;
 		HasReachedDestination = true;
 
 		viewRangeCollider.radius = entityBehaviour.aggroRange;
@@ -90,19 +92,23 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public void ResetBehaviour()
 	{
+		markedForCleanUp = false;
+		HasReachedDestination = true;
 		ChangeStateIdle();
+	}
+	public void UpdateBounds(Vector3 position)
+	{
+		idleBounds.min = new Vector3(position.x - entityBehaviour.idleWanderRadius,
+			position.y - entityBehaviour.idleWanderRadius, position.z);
 
-		idleBounds.min = new Vector3(transform.position.x - entityBehaviour.idleWanderRadius,
-			transform.position.y - entityBehaviour.idleWanderRadius, transform.position.z);
+		idleBounds.max = new Vector3(position.x + entityBehaviour.idleWanderRadius,
+			position.y + entityBehaviour.idleWanderRadius, position.z);
 
-		idleBounds.max = new Vector3(transform.position.x + entityBehaviour.idleWanderRadius,
-			transform.position.y + entityBehaviour.idleWanderRadius, transform.position.z);
+		chaseBounds.min = new Vector3(position.x - entityBehaviour.maxChaseRange,
+			position.y - entityBehaviour.maxChaseRange, position.z);
 
-		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
-			transform.position.y - entityBehaviour.maxChaseRange, transform.position.z);
-
-		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
-			transform.position.y + entityBehaviour.maxChaseRange, transform.position.z);
+		chaseBounds.max = new Vector3(position.x + entityBehaviour.maxChaseRange,
+			position.y + entityBehaviour.maxChaseRange, position.z);
 	}
 
 	private void UpdateSpriteDirection()
@@ -118,17 +124,6 @@ public class EntityBehaviour : MonoBehaviour
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);
-	}
-	private void PlayIdleSound()
-	{
-		idleSoundTimer -= Time.deltaTime;
-
-		if (idleSoundTimer <= 0)
-		{
-			idleSoundTimer = idleSoundCooldown;
-			if (chanceOfIdleSound < Utilities.GetRandomNumber(100))
-				audioHandler.PlayAudio(entityStats.entityBaseStats.idleSfx);
-		}
 	}
 
 	//idle + attack behaviour
@@ -194,13 +189,14 @@ public class EntityBehaviour : MonoBehaviour
 	//utility
 	public void OnDrawGizmos()
 	{
-		Gizmos.color = Color.blue;
-		Gizmos.DrawWireCube(idleBounds.center, idleBounds.size);
+		Gizmos.color = Color.yellow;
+		//Gizmos.DrawWireSphere(idleBounds.center, idleBounds.extents.x);
 
-		if (player != null)
-			Gizmos.DrawLine(transform.position, player.transform.position);
+		Gizmos.color = Color.blue;
+		Gizmos.DrawWireSphere(chaseBounds.center, chaseBounds.extents.x);
 
 		Gizmos.color = Color.red;
-		Gizmos.DrawWireCube(chaseBounds.center, chaseBounds.size);
+		if (player != null)
+			Gizmos.DrawLine(transform.position, player.transform.position);
 	}
 }

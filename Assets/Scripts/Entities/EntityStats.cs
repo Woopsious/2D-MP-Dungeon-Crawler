@@ -9,8 +9,9 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
-	public EntityClassHandler classHandler;
-	public EntityEquipmentHandler equipmentHandler;
+	private EntityBehaviour entityBehaviour;
+	private EntityClassHandler classHandler;
+	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 	public int entityLevel;
@@ -53,8 +54,14 @@ public class EntityStats : MonoBehaviour
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
+	[Header("Idle Sound Settings")]
+	private readonly float idleSoundCooldown = 5f;
+	private float idleSoundTimer;
+	private readonly int chanceOfIdleSound = 25;
+
 	private void Awake()
 	{
+		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -90,6 +97,7 @@ public class EntityStats : MonoBehaviour
 	private void Update()
 	{
 		PassiveManaRegen();
+		PlayIdleSound();
 	}
 	private void Initilize()
 	{
@@ -107,11 +115,27 @@ public class EntityStats : MonoBehaviour
 		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
 			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
 	}
-	public void ResetEntity()
+	public void ResetEntityStats()
 	{
 		spriteRenderer.color = Color.white;
 		CalculateBaseStats();
-		GetComponent<EntityBehaviour>().ResetBehaviour();
+	}
+	public void ResetEntityBehaviour(SpawnHandler spawner)
+	{
+		entityBehaviour.UpdateBounds(spawner.transform.position);
+		entityBehaviour.ResetBehaviour();
+	}
+
+	private void PlayIdleSound()
+	{
+		idleSoundTimer -= Time.deltaTime;
+
+		if (idleSoundTimer <= 0)
+		{
+			idleSoundTimer = idleSoundCooldown;
+			if (chanceOfIdleSound < Utilities.GetRandomNumber(100))
+				audioHandler.PlayAudio(entityBaseStats.idleSfx);
+		}
 	}
 
 	/// <summary>

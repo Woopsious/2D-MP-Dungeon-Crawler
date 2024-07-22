@@ -5,13 +5,16 @@ public class SOEntityBehaviour : ScriptableObject
 {
 	[Header("Idle Behaviour")]
 	public int idleWaitTime;
-	[Tooltip("standard value is 15")]
+	[Tooltip("standard value is 12")]
+	[Range(5f, 20f)]
 	public int idleWanderRadius;
 
 	[Header("Attack Behaviour")]
-	[Tooltip("max distance from player, standard value is 8")]
+	[Tooltip("max distance from player till enemy aggros, standard value is 8")]
+	[Range(8f, 15f)]
 	public float aggroRange;
 	[Tooltip("max distance till player looses aggro while in view, cant be lower then aggroRange x1.1")]
+	[Range(10f, 25f)]
 	public float maxChaseRange;
 
 	[Header("Movement Behaviour")]

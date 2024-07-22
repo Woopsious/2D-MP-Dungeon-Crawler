@@ -51,6 +51,9 @@ public class EnemyIdleState : EnemyBaseState
 	{
 		if (entity.HasReachedDestination == true)
 		{
+			if (entity.markedForCleanUp)
+				DungeonHandler.Instance.AddNewEntitiesToPool(entity.entityStats);
+
 			entity.idleTimer -= Time.deltaTime;
 
 			if (entity.idleTimer < 0)

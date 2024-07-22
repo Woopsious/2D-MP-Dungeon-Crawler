@@ -1,15 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 public class SpawnHandler : MonoBehaviour
 {
-	//public List<GameObject> possibleEntitiesPrefabsToSpawn = new List<GameObject>();
-	public GameObject enemyTemplatePrefab;
-	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
-
+	[Header("Spawner Info")]
 	public int debugSpawnerLevel;
 	public bool debugSpawnEnemiesAtSetLevel;
 
@@ -17,11 +16,33 @@ public class SpawnHandler : MonoBehaviour
 	public int maxNumOfEnemiesToSpawn;
 	private List<EntityStats> listOfSpawnedEnemies = new List<EntityStats>();
 
-	//if player distance to spawner above 50 and enemies spawner tracks isnt engaging player despawn them
-	//if player distance below 50 and above 25 spawn enemies
-	private CircleCollider2D playerCollider; //radius set to 50 distance
-	private readonly int minSpawningDistance = 25;
+	[Header("Spawner Range Settings")]
+	public int maxSpawningDistance;
+	public int minSpawningDistance;
+	[HideInInspector] public Bounds spawnBounds;
+
+	[Header("Spawner Entity Types")]
+	public GameObject enemyTemplatePrefab;
+	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
+
+	private CircleCollider2D playerCollider;
 	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	private float closestPlayerDistance;
+	private bool spawningDisabled;
+
+	private void Awake()
+	{
+		playerCollider = GetComponent<CircleCollider2D>();
+		playerCollider.radius = maxSpawningDistance;
+		closestPlayerDistance = maxSpawningDistance;
+		spawningDisabled = false;
+
+		spawnBounds.min = new Vector3(transform.position.x - (minSpawningDistance / 3f),
+			transform.position.y - (minSpawningDistance / 3f), transform.position.z);
+
+		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
+			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
+	}
 
 	private void OnEnable()
 	{
@@ -31,7 +52,6 @@ public class SpawnHandler : MonoBehaviour
 
 		TrySpawnEntity();
 	}
-
 	private void OnDisable()
 	{
 		EventManager.OnDeathEvent -= OnEntityDeath;
@@ -41,6 +61,9 @@ public class SpawnHandler : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		if (listOfPlayersInRange.Count <= 0)
+			spawningDisabled = false;
+
 		if (other.GetComponent<PlayerController>() != null)
 			listOfPlayersInRange.Add(other.GetComponent<PlayerController>());
 
@@ -53,9 +76,16 @@ public class SpawnHandler : MonoBehaviour
 		if (listOfPlayersInRange.Contains(other.GetComponent<PlayerController>()))
 			listOfPlayersInRange.Remove(other.GetComponent<PlayerController>());
 
+		closestPlayerDistance = maxSpawningDistance;
 		if (listOfPlayersInRange.Count != 0) return;
 
+		spawningDisabled = false;
 		ClearUpEntities();
+	}
+
+	private void FixedUpdate()
+	{
+		TrackClosestPlayerToSpawner();
 	}
 
 	private void OnPlayerLevelUpUpdateSpawnerLevel(EntityStats playerStats)
@@ -78,11 +108,13 @@ public class SpawnHandler : MonoBehaviour
 		for (int i = listOfSpawnedEnemies.Count - 1; i >= 0; i--)
 		{
 			if (listOfSpawnedEnemies[i] == null) return;
-			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().player != null) continue; //leave entities in range of a player
+			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().player != null)
+			{
+				listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
+				continue; //leave entities in range of a player
+			}
 
-			listOfSpawnedEnemies[i].gameObject.SetActive(false);
-			listOfSpawnedEnemies[i].transform.position = Vector3.zero;
-			DungeonHandler.Instance.inActiveEntityPool.Add(listOfSpawnedEnemies[i]);
+			DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEnemies[i]);
 			listOfSpawnedEnemies.Remove(listOfSpawnedEnemies[i]);
 		}
 	}
@@ -91,7 +123,7 @@ public class SpawnHandler : MonoBehaviour
 	{
 		if (listOfSpawnedEnemies.Count >= maxNumOfEnemiesToSpawn) return;
 		if (listOfPlayersInRange.Count == 0) return;
-		if (IsPlayerInsideMinSpawningDistance()) return;
+		if (spawningDisabled) return;
 
 		int num = Utilities.GetRandomNumber(possibleEntityTypesToSpawn.Count - 1);
 		bool entityTypeMatches = false;
@@ -111,9 +143,10 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void RespawnInActiveEntity(EntityStats entity)
 	{
-		entity.gameObject.transform.position = transform.position;
+		entity.gameObject.transform.position = Utilities.GetRandomPointInBounds(spawnBounds);
 		entity.gameObject.SetActive(true);
-		entity.ResetEntity();
+		entity.ResetEntityStats();
+		entity.ResetEntityBehaviour(this);
 		listOfSpawnedEnemies.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -126,7 +159,7 @@ public class SpawnHandler : MonoBehaviour
 	private void SpawnNewEntity()
 	{
 		int num = Utilities.GetRandomNumber(possibleEntityTypesToSpawn.Count - 1);
-		GameObject go = Instantiate(enemyTemplatePrefab, transform.position, transform.rotation);
+		GameObject go = Instantiate(enemyTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
 		entity.entityBaseStats = possibleEntityTypesToSpawn[num];
 		entity.GetComponent<EntityBehaviour>().entityBehaviour = possibleEntityTypesToSpawn[num].entityBehaviour;
@@ -140,13 +173,33 @@ public class SpawnHandler : MonoBehaviour
 		TrySpawnEntity();
 	}
 
-	private bool IsPlayerInsideMinSpawningDistance()
+	private void TrackClosestPlayerToSpawner()
 	{
+		if (listOfPlayersInRange.Count <= 0) return;
+		float newClosestPlayerDistance = maxSpawningDistance;
+
 		foreach (PlayerController player in listOfPlayersInRange)
 		{
-			if (Vector2.Distance(player.transform.position, transform.position) <= minSpawningDistance)
-				return true;
+			float currentPlayerDistance = Vector2.Distance(player.transform.position, transform.position);
+
+			if (newClosestPlayerDistance > currentPlayerDistance)
+				newClosestPlayerDistance = currentPlayerDistance;
 		}
-		return false;
+		closestPlayerDistance = newClosestPlayerDistance;
+
+		if (closestPlayerDistance <= minSpawningDistance)
+			spawningDisabled = true;
+	}
+
+	public void OnDrawGizmos()
+	{
+		Gizmos.color = Color.cyan;
+		Gizmos.DrawWireSphere(transform.position, maxSpawningDistance);
+
+		Gizmos.color = Color.red;
+		//Gizmos.DrawWireSphere(transform.position, minSpawningDistance);
+
+		Gizmos.color = Color.magenta;
+		//Gizmos.DrawWireCube(spawnBounds.center, spawnBounds.size);
 	}
 }

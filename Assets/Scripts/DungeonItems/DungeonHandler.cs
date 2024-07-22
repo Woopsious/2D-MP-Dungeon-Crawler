@@ -59,6 +59,13 @@ public class DungeonHandler : MonoBehaviour
 		}
 	}
 
+	public void AddNewEntitiesToPool(EntityStats entity)
+	{
+		entity.gameObject.SetActive(false);
+		entity.transform.position = Vector3.zero;
+		inActiveEntityPool.Add(entity);
+	}
+
 	private void RestoreDungeonChestData()
 	{
 		if (playerStorageChest == null) return;
