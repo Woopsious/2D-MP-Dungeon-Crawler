@@ -17,18 +17,22 @@ public class EntityBehaviour : MonoBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 	public LayerMask includeMe;
-	private NavMeshAgent navMeshAgent;
+	[HideInInspector] public NavMeshAgent navMeshAgent;
 	[HideInInspector] public bool markedForCleanUp;
 
 	[Header("Bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
-	[HideInInspector] public Vector2 movePosition;
-	[HideInInspector] public bool HasReachedDestination;
-	[HideInInspector] public float idleTimer;
+	public Vector2 movePosition;
+	public bool HasReachedDestination;
+	public float idleTimer;
 
 	[HideInInspector] public Bounds chaseBounds;
 	public Vector2 playersLastKnownPosition;
+
+	[Header("Player Targeting")]
 	public PlayerController player;
+	public bool currentPlayerTargetInView;
+	public float playerDetectionRange;
 	public CircleCollider2D viewRangeCollider;
 
 	[Header("Prefabs")]
@@ -73,6 +77,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
+		CheckIfPlayerVisible();
 	}
 	private void Initilize()
 	{
@@ -82,7 +87,7 @@ public class EntityBehaviour : MonoBehaviour
 		markedForCleanUp = false;
 		HasReachedDestination = true;
 
-		viewRangeCollider.radius = entityBehaviour.aggroRange;
+		viewRangeCollider.radius = playerDetectionRange;
 		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
 
 		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
@@ -127,31 +132,25 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//idle + attack behaviour
-	public Vector2 SampleNewMovePosition(Vector2 position)
+	public void CheckIfPlayerVisible()
 	{
-		NavMesh.SamplePosition(position, out NavMeshHit navMeshHit, 0.1f, navMeshAgent.areaMask);
-		return navMeshHit.position;
-	}
-	public bool CheckAndSetNewPath(Vector2 movePosition)
-	{
-		if (double.IsInfinity(movePosition.x)) return false;
+		if (player == null)
+		{
+			currentPlayerTargetInView = false;
+			return;
+		}
 
-		NavMeshPath path = new NavMeshPath();
-		if (!navMeshAgent.CalculatePath(movePosition, path)) return false;
-
-		navMeshAgent.SetPath(path);
-		HasReachedDestination = false;
-		return true;
-	}
-	public bool CheckIfPlayerVisible()
-	{
-		if (player == null) return false;
+		if (Vector2.Distance(transform.position, player.transform.position) > entityBehaviour.aggroRange)
+		{
+			currentPlayerTargetInView = false;
+			return;
+		}
 
 		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
 		if (hit.point != null && hit.collider.gameObject == player.gameObject)
-			return true;
+			currentPlayerTargetInView = true;
 		else
-			return false;
+			currentPlayerTargetInView = false;
 	}
 	public bool CheckDistanceToDestination()
 	{
@@ -173,6 +172,13 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return false;
 	}
+
+	public void SetNewDestination(Vector2 destination)
+	{
+		HasReachedDestination = false;
+		navMeshAgent.SetDestination(destination);
+	}
+
 
 	//STATE CHANGES
 	public void ChangeStateIdle()

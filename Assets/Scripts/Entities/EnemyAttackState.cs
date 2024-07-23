@@ -22,7 +22,6 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
-		UpdatePlayerPosition(entity);
 		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
 
 		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)
@@ -35,17 +34,16 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		if (!entity.CheckIfPlayerVisible())
+		UpdatePlayerPosition(entity);
+
+		if (!entity.currentPlayerTargetInView)
 			entity.ChangeStateIdle();
-		else if (entity.CheckIfPlayerVisible())
+		else
 		{
 			distanceToPlayer = Vector3.Distance(entity.transform.position, entity.player.transform.position);
 
 			if (entity.CheckDistanceToPlayerIsBigger(entity.entityBehaviour.maxChaseRange)) //player outside of max chase range
-			{
-				entity.player = null;
 				entity.ChangeStateIdle();
-			}
 
 			if (equippedWeapon == null) return;
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
@@ -54,7 +52,7 @@ public class EnemyAttackState : EnemyBaseState
 			{
 				//if melee weapon charge at player
 				if (entity.CheckDistanceToDestination())
-					ChasePlayer(entity);
+					entity.SetNewDestination(entity.playersLastKnownPosition);
 			}
 		}
 	}
@@ -62,7 +60,7 @@ public class EnemyAttackState : EnemyBaseState
 	//attack behaviour
 	private void UpdatePlayerPosition(EntityBehaviour entity)
 	{
-		if (entity.player != null && entity.CheckIfPlayerVisible())
+		if (entity.player != null && entity.currentPlayerTargetInView)
 			entity.playersLastKnownPosition = entity.player.transform.position;
 	}
 	private void KeepDistanceFromPlayer(EntityBehaviour entity)
@@ -74,24 +72,19 @@ public class EnemyAttackState : EnemyBaseState
 		if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.25f) &&
 			entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.5f) && idleInWeaponRange == false)
 		{
-			entity.CheckAndSetNewPath(entity.transform.position);
+			entity.HasReachedDestination = true;
 			idleInWeaponRange = true;
 		}
 		else if (entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange))
 		{
-			ChasePlayer(entity);
+			entity.SetNewDestination(entity.playersLastKnownPosition);
 			idleInWeaponRange = false;
 		}
 		else if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.minAttackRange * 2))
 		{
 			Vector3 fleeDir = new Vector2(entity.transform.position.x, entity.transform.position.y) - entity.playersLastKnownPosition;
-			Vector2 fleePos = entity.SampleNewMovePosition(entity.transform.position + fleeDir);
-			entity.CheckAndSetNewPath(fleePos);
+			idleInWeaponRange = false;
+			entity.SetNewDestination(fleeDir);
 		}
-	}
-	private void ChasePlayer(EntityBehaviour entity)
-	{
-		Vector2 movePosition = entity.SampleNewMovePosition(entity.playersLastKnownPosition);
-		entity.CheckAndSetNewPath(movePosition);
 	}
 }

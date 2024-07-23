@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyIdleState : EnemyBaseState
 {
@@ -20,26 +22,28 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		if (!entity.CheckIfPlayerVisible())
+		IdleBehaviourLogic(entity);
+	}
+
+	//idle behaviour
+	private void IdleBehaviourLogic(EntityBehaviour entity)
+	{
+		if (!entity.currentPlayerTargetInView)
 		{
 			InvestigatePlayersLastKnownPos(entity);
 
 			if (entity.CheckDistanceToDestination())
 				IdleAtPositionTimer(entity);
-
-			if (entity.CheckDistanceToPlayerIsBigger(entity.entityBehaviour.maxChaseRange)) //player outside of max chase range
-				entity.player = null;
 		}
-		else if (entity.CheckIfPlayerVisible())
+		else
 			entity.ChangeStateAttack();
 	}
-
-	//idle behaviour
 	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
 	{
 		if (entity.playersLastKnownPosition != new Vector2(0, 0))
 		{
-			entity.SampleNewMovePosition(entity.playersLastKnownPosition);
+			entity.SetNewDestination(entity.playersLastKnownPosition);
+
 			if (entity.CheckDistanceToDestination())
 			{
 				entity.playersLastKnownPosition = new Vector2(0, 0);
@@ -47,13 +51,11 @@ public class EnemyIdleState : EnemyBaseState
 			}
 		}
 	}
-	public void IdleAtPositionTimer(EntityBehaviour entity)
+
+	private void IdleAtPositionTimer(EntityBehaviour entity)
 	{
 		if (entity.HasReachedDestination == true)
 		{
-			if (entity.markedForCleanUp)
-				DungeonHandler.Instance.AddNewEntitiesToPool(entity.entityStats);
-
 			entity.idleTimer -= Time.deltaTime;
 
 			if (entity.idleTimer < 0)
@@ -63,23 +65,16 @@ public class EnemyIdleState : EnemyBaseState
 			}
 		}
 	}
-	public void FindNewIdlePosition(EntityBehaviour entity)
+	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
-		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
-		entity.movePosition = entity.SampleNewMovePosition(randomMovePosition);
+		entity.HasReachedDestination = false;
 
-		if (entity.CheckAndSetNewPath(entity.movePosition)) //occasionally throws invalid target position (infinity, infinity, 0.0000)
-			return;
+		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
+		NavMeshPath path = new NavMeshPath();
+
+		if (entity.navMeshAgent.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
+			entity.navMeshAgent.SetPath(path);
 		else
 			FindNewIdlePosition(entity);
-	}
-
-	private void CheckNewIdlePosition()
-	{
-
-	}
-	private void SetIdlePostion()
-	{
-
 	}
 }

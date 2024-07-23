@@ -48,7 +48,7 @@ MonoBehaviour:
   debugSpawnerLevel: 0
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
-  maxNumOfEnemiesToSpawn: 5
+  maxNumOfEnemiesToSpawn: 1
   maxSpawningDistance: 30
   minSpawningDistance: 20
   spawnBounds:
