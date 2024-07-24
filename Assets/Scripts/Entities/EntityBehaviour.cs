@@ -16,24 +16,26 @@ public class EntityBehaviour : MonoBehaviour
 
 	private Rigidbody2D rb;
 	private Animator animator;
-	public LayerMask includeMe;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	[HideInInspector] public bool markedForCleanUp;
 
 	[Header("Bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
-	public Vector2 movePosition;
-	public bool HasReachedDestination;
-	public float idleTimer;
-
 	[HideInInspector] public Bounds chaseBounds;
-	public Vector2 playersLastKnownPosition;
+
+	[Header("Movement Settings")]
+	public float idleTimer;
+	public bool HasReachedDestination;
 
 	[Header("Player Targeting")]
+	public LayerMask includeMe;
 	public PlayerController player;
 	public bool currentPlayerTargetInView;
-	public float playerDetectionRange;
+	public Vector2 playersLastKnownPosition;
+
+	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
+	public float playerDetectionRange;
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -98,7 +100,9 @@ public class EntityBehaviour : MonoBehaviour
 	public void ResetBehaviour()
 	{
 		markedForCleanUp = false;
+		idleTimer = entityBehaviour.idleWaitTime;
 		HasReachedDestination = true;
+		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		ChangeStateIdle();
 	}
 	public void UpdateBounds(Vector3 position)

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
+using UnityEditor;
 using UnityEngine;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 
@@ -12,8 +13,7 @@ public class EnemyAttackState : EnemyBaseState
 
 	public override void Enter(EntityBehaviour entity)
 	{
-		equippedWeapon = entity.GetComponentInChildren<EntityEquipmentHandler>().equippedWeapon;
-		equippedWeapon.canAttackAgain = true;
+		equippedWeapon = entity.entityStats.equipmentHandler.equippedWeapon;
 		distanceToPlayer = entity.entityBehaviour.aggroRange;
 	}
 	public override void Exit(EntityBehaviour entity)
@@ -70,7 +70,7 @@ public class EnemyAttackState : EnemyBaseState
 		//flee when player inside min attack range * 2	eg: 2 * 2 = 4
 
 		if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.25f) &&
-			entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.5f) && idleInWeaponRange == false)
+			entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.maxAttackRange / 1.75f) && idleInWeaponRange == false)
 		{
 			entity.HasReachedDestination = true;
 			idleInWeaponRange = true;
@@ -82,9 +82,11 @@ public class EnemyAttackState : EnemyBaseState
 		}
 		else if (!entity.CheckDistanceToPlayerIsBigger(equippedWeapon.weaponBaseRef.minAttackRange * 2))
 		{
-			Vector3 fleeDir = new Vector2(entity.transform.position.x, entity.transform.position.y) - entity.playersLastKnownPosition;
-			idleInWeaponRange = false;
+			Vector3 dirToPlayer =  entity.playersLastKnownPosition - new Vector2(entity.transform.position.x, entity.transform.position.y);
+			Vector3 fleeDir = entity.transform.position - dirToPlayer;
+
 			entity.SetNewDestination(fleeDir);
+			idleInWeaponRange = false;
 		}
 	}
 }

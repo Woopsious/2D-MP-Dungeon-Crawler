@@ -11,7 +11,7 @@ public class SOEntityBehaviour : ScriptableObject
 
 	[Header("Attack Behaviour")]
 	[Tooltip("max distance from player till enemy aggros, standard value is 8")]
-	[Range(8f, 30f)]
+	[Range(8f, 20f)]
 	public float aggroRange;
 	[Tooltip("max distance till player looses aggro while in view, cant be lower then aggroRange x1.1")]
 	[Range(10f, 25f)]
