@@ -189,12 +189,6 @@ public class EntityBehaviour : MonoBehaviour
 		HasReachedDestination = false;
 		navMeshAgent.SetDestination(destination);
 	}
-	public int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
-	{
-		float distance = Vector2.Distance(transform.position, player.transform.position);
-		float aggroRating = 200 / distance;
-		return (int)aggroRating;
-	}
 
 	//aggro list
 	private void UpdateAggroRatingTimer()
@@ -209,12 +203,10 @@ public class EntityBehaviour : MonoBehaviour
 			UpdateAggroList();
 		}
 	}
-	private void AddPlayerToAggroList(PlayerController player, int damageRecieved)
+	public void AddPlayerToAggroList(PlayerController player, int damageRecieved)
 	{
 		foreach (PlayerAggroRating aggroRating in playerAggroList)
-		{
 			if (aggroRating.player == player) break;
-		}
 
 		float aggroModifier;
 		if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.knightClass)
@@ -238,6 +230,12 @@ public class EntityBehaviour : MonoBehaviour
 
 		playerAggroList.Add(aggroStats);
 		UpdateAggroList();
+	}
+	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
+	{
+		float distance = Vector2.Distance(transform.position, player.transform.position);
+		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
+		return (int)aggroRating;
 	}
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
 	{

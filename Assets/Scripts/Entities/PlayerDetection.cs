@@ -16,7 +16,7 @@ public class PlayerDetection : MonoBehaviour
 		if (other.gameObject.GetComponent<PlayerController>())
 			entityBehaviourRef.playerTarget = other.gameObject.GetComponent<PlayerController>();
 
-		entityBehaviourRef.AddToAggroRating(other.gameObject.GetComponent<PlayerController>(), 0);
+		entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
