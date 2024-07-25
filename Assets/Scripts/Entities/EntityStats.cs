@@ -49,7 +49,7 @@ public class EntityStats : MonoBehaviour
 	public List<AbilityStatusEffect> currentStatusEffects;
 
 	public event Action<float, bool> OnRecieveHealingEvent;
-	public event Action<float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
+	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
@@ -162,7 +162,7 @@ public class EntityStats : MonoBehaviour
 		EventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnHit(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
+	public void OnHit(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
 	{
         if (isDestroyedInOneHit)
         {
@@ -170,9 +170,9 @@ public class EntityStats : MonoBehaviour
 			return;
         }
 
-		OnRecieveDamageEvent?.Invoke(damage, damageType, isPercentageValue);
+		OnRecieveDamageEvent?.Invoke(player, damage, damageType, isPercentageValue);
 	}
-	private void RecieveDamage(float damage, IDamagable.DamageType damageType, bool isPercentageValue)
+	private void RecieveDamage(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue)
 	{
 		//Debug.Log(gameObject.name + " recieved: " + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
@@ -215,6 +215,8 @@ public class EntityStats : MonoBehaviour
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(entityBaseStats.hurtSfx);
+		if (!IsPlayerEntity())
+			entityBehaviour.AddToAggroRating(player, (int)damage);
 
 		///
 		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
@@ -230,6 +232,8 @@ public class EntityStats : MonoBehaviour
 		}
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+
+		Debug.Log(gameObject.name);
 		if (!IsPlayerEntity()) return;
 		EventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();

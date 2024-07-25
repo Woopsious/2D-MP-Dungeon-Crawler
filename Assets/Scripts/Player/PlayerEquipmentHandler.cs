@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
+	[HideInInspector] public PlayerController player;
+
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
@@ -70,6 +72,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
 		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel);
+		equippedWeaponRef.AddPlayerRef(player);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;

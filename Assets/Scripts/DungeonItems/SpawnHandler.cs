@@ -108,7 +108,7 @@ public class SpawnHandler : MonoBehaviour
 		for (int i = listOfSpawnedEnemies.Count - 1; i >= 0; i--)
 		{
 			if (listOfSpawnedEnemies[i] == null) return;
-			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().player != null)
+			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().playerTarget != null)
 			{
 				listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
 				continue; //leave entities in range of a player

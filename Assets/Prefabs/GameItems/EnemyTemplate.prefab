@@ -781,25 +781,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityBehaviour: {fileID: 0}
   entityStats: {fileID: 0}
-  includeMe:
-    serializedVersion: 2
-    m_Bits: 320
   navMeshAgent: {fileID: 0}
   markedForCleanUp: 0
   idleBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  movePosition: {x: 0, y: 0}
-  HasReachedDestination: 0
-  idleTimer: 0
   chaseBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  playersLastKnownPosition: {x: 0, y: 0}
-  player: {fileID: 0}
+  idleTimer: 0
+  HasReachedDestination: 0
+  includeMe:
+    serializedVersion: 2
+    m_Bits: 320
+  playerAggroList: []
+  playerTarget: {fileID: 0}
   currentPlayerTargetInView: 0
-  playerDetectionRange: 30
+  playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
+  playerDetectionRange: 30
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
 --- !u!114 &5524032958697930596

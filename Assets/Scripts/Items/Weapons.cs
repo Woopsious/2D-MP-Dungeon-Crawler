@@ -6,6 +6,7 @@ using UnityEngine;
 public class Weapons : Items
 {
 	[Header("Weapon Info")]
+	public PlayerController player;
 	public bool isShield;
 	public int damage;
 	public int bonusMana;
@@ -162,6 +163,10 @@ public class Weapons : Items
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
 	}
+	public void AddPlayerRef(PlayerController player)
+	{
+		this.player = player;
+	}
 
 	protected override void OnTriggerEnter2D(Collider2D other)
 	{
@@ -171,7 +176,9 @@ public class Weapons : Items
 		if (!isEquippedByPlayer && !isEquippedByOther) return;
 		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(boxCollider, damage, 
+		Debug.Log("player ref:" + player);
+
+		other.GetComponent<Damageable>().OnHitFromDamageSource(player, boxCollider, damage, 
 			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
 	}
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
@@ -188,7 +195,7 @@ public class Weapons : Items
 		GameObject go = Instantiate(projectilePrefab, transform, true);
 		go.transform.SetParent(null);
 		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(this);
+		go.GetComponent<Projectiles>().Initilize(player, this);
 
 		Vector3 rotation = positionOfThingToAttack - transform.position; ;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;

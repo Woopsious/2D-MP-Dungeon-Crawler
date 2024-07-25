@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class AbilityAOE : MonoBehaviour
 {
+	private PlayerController player;
 	public SOClassAbilities abilityBaseRef;
 
 	public float abilityDurationTime;
@@ -19,7 +20,7 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void Start()
 	{
-		Initilize(abilityBaseRef, FindObjectOfType<PlayerController>().GetComponent<EntityStats>());
+		//Initilize(abilityBaseRef, FindObjectOfType<PlayerController>().GetComponent<EntityStats>());
 	}
 
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
@@ -52,6 +53,10 @@ public class AbilityAOE : MonoBehaviour
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
+	public void AddPlayerRef(PlayerController player)
+	{
+		this.player = player;
+	}
 
 	private void Update()
 	{
@@ -73,7 +78,7 @@ public class AbilityAOE : MonoBehaviour
 		}
 		else
 		{
-			other.GetComponent<Damageable>().OnHitFromDamageSource(other, aoeDamage, (IDamagable.DamageType)damageType, 0,
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
 		}
 	}

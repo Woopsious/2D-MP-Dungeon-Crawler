@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 
 public class Projectiles : MonoBehaviour
 {
+	private PlayerController player;
 	public SOClassAbilities abilityBaseRef;
 	public SOWeapons weaponBaseRef;
 
@@ -49,8 +50,9 @@ public class Projectiles : MonoBehaviour
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	public void Initilize(Weapons weaponRef)
+	public void Initilize(PlayerController player, Weapons weaponRef)
 	{
+		this.player = player;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
 		gameObject.name = weaponRef.itemName + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -79,7 +81,7 @@ public class Projectiles : MonoBehaviour
 			return;
 
 		if (abilityBaseRef != null)
-			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile);
 		else
 		{
@@ -87,7 +89,7 @@ public class Projectiles : MonoBehaviour
 			if (distanceTraveled < weaponBaseRef.minAttackRange)
 				projectileDamage /= 2;
 
-			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				false, isPlayerProjectile);
 		}
 		Destroy(gameObject);

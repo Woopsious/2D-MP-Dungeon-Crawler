@@ -9,7 +9,7 @@ public class Damageable : MonoBehaviour
 	public bool isDestroyedInOneHit;
 	private bool CanOtherEntitiesDamageThis;
 
-	public event Action<float, IDamagable.DamageType, bool, bool> OnHit;
+	public event Action<PlayerController, float, IDamagable.DamageType, bool, bool> OnHit;
 
 	private void Start()
 	{
@@ -19,14 +19,16 @@ public class Damageable : MonoBehaviour
 			CanOtherEntitiesDamageThis = false;
 	}
 
-	public void OnHitFromDamageSource(Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
+	public void OnHitFromDamageSource(PlayerController player, Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
 		bool isPercentageValue, bool wasHitByPlayer)
 	{
 		if (DebugInvincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
 
+		Debug.Log("player ref:" + player);
+
 		ApplyHitForce(other, knockBack);
-		OnHit?.Invoke(damage, damageType, isPercentageValue, isDestroyedInOneHit);
+		OnHit?.Invoke(player, damage, damageType, isPercentageValue, isDestroyedInOneHit);
 	}
 	public void ApplyHitForce(Collider2D other, float knockback)
 	{

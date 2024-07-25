@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerDetection : MonoBehaviour
@@ -13,14 +14,16 @@ public class PlayerDetection : MonoBehaviour
 		if (other.gameObject.GetComponent<PlayerController>() == null) return;
 
 		if (other.gameObject.GetComponent<PlayerController>())
-			entityBehaviourRef.player = other.gameObject.GetComponent<PlayerController>();
+			entityBehaviourRef.playerTarget = other.gameObject.GetComponent<PlayerController>();
+
+		entityBehaviourRef.AddToAggroRating(other.gameObject.GetComponent<PlayerController>(), 0);
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.gameObject.GetComponent<PlayerController>() == null) return;
 
 		if (other.gameObject.GetComponent<PlayerController>())
-			entityBehaviourRef.player = null;
+			entityBehaviourRef.playerTarget = null;
 
 		if (entityBehaviourRef.markedForCleanUp)
 			DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);

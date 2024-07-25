@@ -11,7 +11,7 @@ public class SOEntityStats : ScriptableObject
 	public HumanoidTypes humanoidType;
 	public enum HumanoidTypes
 	{
-		isPlayer, isGoblin
+		isPlayer, isGoblin, isSkeleton
 	}
 
 	public int expOnDeath;

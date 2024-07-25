@@ -29,7 +29,8 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Player Targeting")]
 	public LayerMask includeMe;
-	public PlayerController player;
+	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
+	public PlayerController playerTarget;
 	public bool currentPlayerTargetInView;
 	public Vector2 playersLastKnownPosition;
 
@@ -40,6 +41,14 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
+
+	[Header("Idle Sound Settings")]
+	private readonly float playerAggroRatingCooldown = 0.5f;
+	private float playerAggroRatingTimer;
+
+	[Header("Idle Sound Settings")]
+	private readonly float playerDetectionCooldown = 0.1f;
+	private float playerDetectionTimer;
 
 	private void Awake()
 	{
@@ -79,7 +88,8 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-		CheckIfPlayerVisible();
+		UpdateAggroRatingTimer();
+		CheckIfPlayerVisibleTimer();
 	}
 	private void Initilize()
 	{
@@ -100,9 +110,10 @@ public class EntityBehaviour : MonoBehaviour
 	public void ResetBehaviour()
 	{
 		markedForCleanUp = false;
-		idleTimer = entityBehaviour.idleWaitTime;
+		//idleTimer = entityBehaviour.idleWaitTime;
 		HasReachedDestination = true;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
+		playerAggroList.Clear();
 		ChangeStateIdle();
 	}
 	public void UpdateBounds(Vector3 position)
@@ -136,25 +147,32 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//idle + attack behaviour
-	public void CheckIfPlayerVisible()
+	public void CheckIfPlayerVisibleTimer()
 	{
-		if (player == null)
+		if (playerTarget == null)
 		{
 			currentPlayerTargetInView = false;
 			return;
 		}
 
-		if (Vector2.Distance(transform.position, player.transform.position) > entityBehaviour.aggroRange)
-		{
-			currentPlayerTargetInView = false;
-			return;
-		}
+		playerDetectionTimer -= Time.deltaTime;
 
-		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
-		if (hit.point != null && hit.collider.gameObject == player.gameObject)
-			currentPlayerTargetInView = true;
-		else
-			currentPlayerTargetInView = false;
+		if (playerDetectionTimer <= 0)
+		{
+			playerDetectionTimer = playerDetectionCooldown;
+
+			if (Vector2.Distance(transform.position, playerTarget.transform.position) > entityBehaviour.aggroRange)
+			{
+				currentPlayerTargetInView = false;
+				return;
+			}
+
+			RaycastHit2D hit = Physics2D.Linecast(transform.position, playerTarget.transform.position, includeMe);
+			if (hit.point != null && hit.collider.gameObject == playerTarget.gameObject)
+				currentPlayerTargetInView = true;
+			else
+				currentPlayerTargetInView = false;
+		}
 	}
 	public bool CheckDistanceToDestination()
 	{
@@ -166,23 +184,88 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return true;
 	}
-	public bool CheckDistanceToPlayerIsBigger(float distanceToCheck)
-	{
-		if (player == null) return false;
-		float distance = Vector2.Distance(transform.position, player.transform.position);
-
-		if (distance > distanceToCheck)
-			return true;
-		else
-			return false;
-	}
-
 	public void SetNewDestination(Vector2 destination)
 	{
 		HasReachedDestination = false;
 		navMeshAgent.SetDestination(destination);
 	}
+	public int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
+	{
+		float distance = Vector2.Distance(transform.position, player.transform.position);
+		float aggroRating = 200 / distance;
+		return (int)aggroRating;
+	}
 
+	//aggro list
+	private void UpdateAggroRatingTimer()
+	{
+		if (playerAggroList.Count <= 0) return;
+
+		playerAggroRatingTimer -= Time.deltaTime;
+
+		if (playerAggroRatingTimer <= 0)
+		{
+			playerAggroRatingTimer = playerAggroRatingCooldown;
+			UpdateAggroList();
+		}
+	}
+	private void AddPlayerToAggroList(PlayerController player, int damageRecieved)
+	{
+		foreach (PlayerAggroRating aggroRating in playerAggroList)
+		{
+			if (aggroRating.player == player) break;
+		}
+
+		float aggroModifier;
+		if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.knightClass)
+			aggroModifier = 1.1f;
+		else if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.warriorClass)
+			aggroModifier = 1.05f;
+		else if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.rogueClass)
+			aggroModifier = 1f;
+		else if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.rangerClass)
+			aggroModifier = 0.95f;
+		else
+			aggroModifier = 0.9f;
+
+		PlayerAggroRating aggroStats = new PlayerAggroRating
+		{
+			player = player,
+			aggroModifier = aggroModifier,
+			aggroRatingDistance = GetAggroDistanceFromPlayer(player, aggroModifier),
+			aggroRatingDamage = (int)(damageRecieved * aggroModifier),
+		};
+
+		playerAggroList.Add(aggroStats);
+		UpdateAggroList();
+	}
+	public void AddToAggroRating(PlayerController player, int damageRecieved)
+	{
+		bool playerAlreadyInAggroList = false;
+
+		foreach (PlayerAggroRating aggroStats in playerAggroList)
+		{
+			if (aggroStats.player == player)
+			{
+				aggroStats.aggroRatingDamage += damageRecieved;
+				playerAlreadyInAggroList = true;
+			}
+		}
+
+		if (playerAlreadyInAggroList) return;
+		AddPlayerToAggroList(player, damageRecieved);
+	}
+	private void UpdateAggroList()
+	{
+		foreach (PlayerAggroRating aggroStats in playerAggroList)
+		{
+			aggroStats.aggroRatingDistance = GetAggroDistanceFromPlayer(aggroStats.player, aggroStats.aggroModifier);
+			aggroStats.aggroRatingTotal = aggroStats.aggroRatingDistance + aggroStats.aggroRatingDamage;
+		}
+
+		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
+		playerTarget = playerAggroList[0].player;
+	}
 
 	//STATE CHANGES
 	public void ChangeStateIdle()
@@ -206,7 +289,17 @@ public class EntityBehaviour : MonoBehaviour
 		Gizmos.DrawWireSphere(chaseBounds.center, chaseBounds.extents.x);
 
 		Gizmos.color = Color.red;
-		if (player != null)
-			Gizmos.DrawLine(transform.position, player.transform.position);
+		if (playerTarget != null)
+			Gizmos.DrawLine(transform.position, playerTarget.transform.position);
 	}
+}
+
+[System.Serializable]
+public class PlayerAggroRating
+{
+	public PlayerController player;
+	public float aggroModifier;
+	public int aggroRatingDistance;
+	public int aggroRatingDamage;
+	public int aggroRatingTotal;
 }

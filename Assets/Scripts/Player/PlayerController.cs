@@ -20,7 +20,7 @@ public class PlayerController : MonoBehaviour
 	public Camera playerCamera;
 	public LayerMask includeMe;
 	private EntityStats playerStats;
-	private EntityClassHandler playerClassHandler;
+	[HideInInspector] public EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
@@ -55,6 +55,7 @@ public class PlayerController : MonoBehaviour
 		playerStats = GetComponent<EntityStats>();
 		playerClassHandler = GetComponent<EntityClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		playerEquipmentHandler.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
@@ -235,6 +236,7 @@ public class PlayerController : MonoBehaviour
 		go.transform.SetParent(null);
 		go.transform.position = (Vector2)mousePosition;
 		go.GetComponent<AbilityAOE>().Initilize(ability, playerStats);
+		go.GetComponent<AbilityAOE>().AddPlayerRef(this);
 	}
 
 	//bool checks

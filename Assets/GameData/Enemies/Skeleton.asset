@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Skeleton
   sprite: {fileID: -1975513336, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  humanoidType: 0
+  humanoidType: 2
   expOnDeath: 40
   entityBehaviour: {fileID: 11400000, guid: 5d5ac5a9218c3b24da17e8764c8aba52, type: 2}
   maxHealth: 100

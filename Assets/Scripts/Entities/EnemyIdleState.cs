@@ -22,11 +22,11 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		IdleBehaviourLogic(entity);
+		IdleBehaviour(entity);
 	}
 
 	//idle behaviour
-	private void IdleBehaviourLogic(EntityBehaviour entity)
+	private void IdleBehaviour(EntityBehaviour entity)
 	{
 		if (!entity.currentPlayerTargetInView)
 		{
