@@ -17,8 +17,28 @@ MonoBehaviour:
     they have more utility then knights but still lack reliable self healing without
     health potions.
   classImageUi: {fileID: 0}
+  BaseClassAbilityUnlocks: 0
   statBonusLists: []
   abilityLists: []
+  classStatBonusList: []
+  spellSlotsPerLevel:
+  - LevelRequirement: 5
+    SpellSlotsPerLevel: 1
+  - LevelRequirement: 10
+    SpellSlotsPerLevel: 1
+  - LevelRequirement: 15
+    SpellSlotsPerLevel: 1
+  classAbilitiesList:
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
   canUseSpells: 0
   classRestriction: 1
   startingItems:

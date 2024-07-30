@@ -10,31 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: LastStand
+  m_Name: HealingWord
   m_EditorClassIdentifier: 
-  Name: Last Stand
-  Description: Take your last stance, doubling your resistances for a brief moment
+  Name: Heal
+  Description: Heal yourself or others
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 60
+  abilityCooldown: 10
   isOffensiveAbility: 0
   requiresTarget: 1
-  canOnlyTargetSelf: 1
-  statusEffectType: 2
-  statusEffectPercentageModifier: 1
+  canOnlyTargetSelf: 0
+  statusEffectType: 0
   isAOE: 0
   aoeSize: 0
-  isDOT: 1
-  abilityDuration: 5
+  isDOT: 0
+  abilityDuration: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
-  isDamagePercentageBased: 0
+  isDamagePercentageBased: 1
   damageValue: 0
-  damageValuePercentage: 0
-  damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
+  damageValuePercentage: 0.1
+  damageType: 4
+  isSpell: 1
+  manaCost: 15
+  minPercentCost: 15
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

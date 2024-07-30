@@ -27,8 +27,9 @@ public class SOClassAbilities : SOClassUnlocks
 	public StatusEffectType statusEffectType;
 	public enum StatusEffectType
 	{
-		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
+		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isDamageRecievedEffect
 	}
+	public float statusEffectPercentageModifier;
 
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]

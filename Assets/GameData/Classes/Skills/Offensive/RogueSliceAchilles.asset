@@ -10,28 +10,30 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: HealingWords
+  m_Name: RogueSliceAchilles
   m_EditorClassIdentifier: 
-  Name: Healing Words
-  Description: Heal yourself or others
+  Name: Leg Shot
+  Description: Fire an arrow at an enemies leg
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 10
-  isOffensiveAbility: 0
-  requiresTarget: 1
+  abilityCooldown: 20
+  isOffensiveAbility: 1
+  requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 0
+  aoeSize: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
-  isDamagePercentageBased: 1
-  damageValue: 0
-  damageValuePercentage: 0.25
-  damageType: 4
-  isSpell: 1
-  manaCost: 15
-  minPercentCost: 10
+  isDamagePercentageBased: 0
+  damageValue: 35
+  damageValuePercentage: 0
+  damageType: 0
+  isSpell: 0
+  manaCost: 0
+  minPercentCost: 0
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

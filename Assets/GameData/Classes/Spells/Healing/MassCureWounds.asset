@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: MassHealingWords
+  m_Name: MassCureWounds
   m_EditorClassIdentifier: 
-  Name: Mass Healing Words
+  Name: Mass Cure Wounds
   Description: Heals Anyone in its radius
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 15
+  abilityCooldown: 20
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 1
-  aoeSize: 0
+  aoeSize: 30
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
@@ -30,10 +30,10 @@ MonoBehaviour:
   projectileSpeed: 0
   isDamagePercentageBased: 1
   damageValue: 0
-  damageValuePercentage: 0.2
+  damageValuePercentage: 0.15
   damageType: 4
   isSpell: 1
   manaCost: 25
-  minPercentCost: 20
+  minPercentCost: 25
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

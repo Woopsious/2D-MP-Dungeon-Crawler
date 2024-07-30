@@ -16,15 +16,17 @@ MonoBehaviour:
   Description: Heal yourself or others
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 15
+  abilityCooldown: 20
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 0
   isAOE: 0
+  aoeSize: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 1
   damageValue: 0
@@ -32,6 +34,6 @@ MonoBehaviour:
   damageType: 4
   isSpell: 1
   manaCost: 25
-  minPercentCost: 20
+  minPercentCost: 25
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

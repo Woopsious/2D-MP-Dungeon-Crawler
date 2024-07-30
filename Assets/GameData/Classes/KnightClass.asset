@@ -17,12 +17,32 @@ MonoBehaviour:
     decent enough in dishing out there own damage. They do however have limited utility
     and self healing unless you have plenty of health potions.
   classImageUi: {fileID: 0}
+  BaseClassAbilityUnlocks: 0
   statBonusLists:
   - {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
   - {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
   - {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
   - {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
   abilityLists: []
+  classStatBonusList: []
+  spellSlotsPerLevel:
+  - LevelRequirement: 5
+    SpellSlotsPerLevel: 1
+  - LevelRequirement: 10
+    SpellSlotsPerLevel: 1
+  - LevelRequirement: 15
+    SpellSlotsPerLevel: 1
+  classAbilitiesList:
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
+  - unlock: {fileID: 0}
+    LevelRequirement: 0
   canUseSpells: 0
   classRestriction: 2
   startingItems:

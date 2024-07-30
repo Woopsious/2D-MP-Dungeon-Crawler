@@ -25,4 +25,7 @@ public class SOClassStatBonuses : SOClassUnlocks
 	public float mainWeaponDamageBoostValue;
 	public float duelWeaponDamageBoostValue;
 	public float rangedWeaponDamageBoostValue;
+
+	[Header("Healing boosts")]
+	public float healingBoostValue;
 }
