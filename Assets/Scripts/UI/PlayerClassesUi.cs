@@ -43,6 +43,8 @@ public class PlayerClassesUi : MonoBehaviour
 	public List<GameObject> mageClassNodes;
 	public Button playAsMageButton;
 
+	public GameObject MageStatBonusContent;
+
 	[Header("Shared Class ui elements")]
 	public GameObject closeClassTreeButtonObj;
 	public GameObject resetPlayerClassButtonObj;
@@ -54,6 +56,11 @@ public class PlayerClassesUi : MonoBehaviour
 
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
 	public static event Action<SOClassAbilities> OnNewAbilityUnlock;
+
+	public static event Action<SOClassStatBonuses> OnRefundStatBonusUnlock;
+	public static event Action<SOClassAbilities> OnRefundAbilityUnlock;
+
+	public GameObject classNodeSlotsPrefab;
 
 	/// <summary> (NEW IDEA)
 	/// player selects class on new game start. if reloading game, indexes of Unlocked ClassTreeSlotUi nodes are saved and loaded to disk,
@@ -102,12 +109,53 @@ public class PlayerClassesUi : MonoBehaviour
 
 	private void Initilize()
 	{
-		SetSkillTreeIndexes(knightClassPanel);
-		SetSkillTreeIndexes(warriorClassPanel);
-		SetSkillTreeIndexes(rogueClassPanel);
-		SetSkillTreeIndexes(rangerClassPanel);
-		SetSkillTreeIndexes(MageClassPanel);
+		//SetSkillTreeIndexes(knightClassPanel);
+		//SetSkillTreeIndexes(warriorClassPanel);
+		//SetSkillTreeIndexes(rogueClassPanel);
+		//SetSkillTreeIndexes(rangerClassPanel);
+		//SetSkillTreeIndexes(MageClassPanel);
+
+		SetUpMageClassTree();
 	}
+
+	/// <summary>
+	/// instantiate ClassTreeNodeSlotUi template as children of specific ui elements based on if its a stat bonus/ability and
+	/// the level requirment to unlock it, then assign that stat buns/ability to ClassTreeNodeSlotUi ref, and Initilize node.
+	/// </summary>
+	private void SetUpMageClassTree()
+	{
+		foreach (ClassStatUnlocks classStatUnlock in mageClass.classStatBonusList)
+		{
+			if (classStatUnlock.LevelRequirement == 1)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 0);
+			if (classStatUnlock.LevelRequirement == 3)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 1);
+			if (classStatUnlock.LevelRequirement == 6)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 2);
+			if (classStatUnlock.LevelRequirement == 9)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 3);
+			if (classStatUnlock.LevelRequirement == 12)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 4);
+			if (classStatUnlock.LevelRequirement == 15)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 5);
+			if (classStatUnlock.LevelRequirement == 18)
+				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 6);
+		}
+	}
+	private Transform GrabParentTransformFromUi(Transform verticalParent, int horizontalParentIndex)
+	{
+		return verticalParent.GetChild(0).transform.GetChild(horizontalParentIndex).transform.GetChild(0).transform;
+	}
+	private void CreateNewUnlockNode(ClassStatUnlocks statUnlock, ClassAbilityUnlocks abilityUnlock, 
+		Transform verticalParent, int horizontalParentIndex)
+	{
+		GameObject go = Instantiate(classNodeSlotsPrefab, GrabParentTransformFromUi(verticalParent, horizontalParentIndex));
+		ClassTreeNodeSlotUi nodeSlotUi = go.GetComponent<ClassTreeNodeSlotUi>();
+		nodeSlotUi.statUnlock = statUnlock;
+		nodeSlotUi.abilityUnlock = abilityUnlock;
+		nodeSlotUi.Initilize();
+	}
+
 	private void SetSkillTreeIndexes(GameObject parentObj)
 	{
 		for (int i = 0; i < parentObj.transform.childCount - 1; i++)
@@ -131,7 +179,23 @@ public class PlayerClassesUi : MonoBehaviour
 		OnClassNodeUnlocks?.Invoke(playerStats);
 	}
 
+	//skill tree node refunds
+	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	{
+		OnRefundStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	{
+		OnRefundAbilityUnlock?.Invoke(ability);
+	}
+
 	//reload player class
+	/// <summary>
+	/// for updating reloading of player class once rest of the code is finished.
+	/// have parent transform eg: MageStatBonusContent, save indexes of vertical child objs (what level/grade stat bonuses/abilities are)
+	/// then horizontal indexs for ClassTreeNodeSlotUi , based on those indexes force unlock these nodes
+	/// similar to how i set up Class Tree nodes.
+	/// </summary>
 	public void ReloadPlayerClass()
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
@@ -154,7 +218,7 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
 		foreach (int index in indexs)
-			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNodeButton();
+			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNode();
 	}
 
 	//UI CHANGES
@@ -255,6 +319,7 @@ public class PlayerClassesUi : MonoBehaviour
 			if (currentPlayerClass == mageClass)
 			{
 				MageClassPanel.SetActive(true);
+				UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
 				UpdatePlayerToolTips(mageClassNodes);
 			}
 

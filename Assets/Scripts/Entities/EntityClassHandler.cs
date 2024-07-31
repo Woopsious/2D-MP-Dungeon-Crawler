@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 
 public class EntityClassHandler : MonoBehaviour
@@ -11,12 +12,14 @@ public class EntityClassHandler : MonoBehaviour
 	[Header("Current Class")]
 	public SOClasses currentEntityClass;
 
-	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
-	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
+	public List<SOClassStatBonuses> newUnlockedStatBoostList = new List<SOClassStatBonuses>();
+	public List<SOClassAbilities> newUnlockedAbilitiesList = new List<SOClassAbilities>();
 
 	public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
 	public event Action<SOClassAbilities> OnAbilityUnlock;
+	public event Action<SOClassStatBonuses> OnStatRefund;
+	public event Action<SOClassAbilities> OnAbilityRefund;
 
 
 	private void Awake()
@@ -28,15 +31,25 @@ public class EntityClassHandler : MonoBehaviour
 		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
 		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
 
-		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
+		foreach (ClassStatUnlocks statBonuses in currentEntityClass.classStatBonusList)
 		{
-			if (entityStats.entityLevel < statBonuses.nonPlayerLevelRequirement) continue;
-			UnlockStatBoost(statBonuses);
+			if (entityStats.entityLevel < statBonuses.LevelRequirement) continue;
+			UnlockStatBoost(statBonuses.unlock);
 		}
-		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesOffensiveList)
 		{
-			if (entityStats.entityLevel < ability.nonPlayerLevelRequirement) continue;
-			UnlockAbility(ability);
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
+		}
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesEffectsList)
+		{
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
+		}
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesHealingList)
+		{
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
 		}
 	}
 
@@ -50,20 +63,30 @@ public class EntityClassHandler : MonoBehaviour
 	{
 		OnClassChange?.Invoke(this);
 
-		unlockedAbilitiesList.Clear();
-		unlockedStatBoostList.Clear();
+		newUnlockedStatBoostList.Clear();
+		newUnlockedAbilitiesList.Clear();
 
 		currentEntityClass = newClass;
 	}
 
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
-		unlockedStatBoostList.Add(statBoost);
+		newUnlockedStatBoostList.Add(statBoost);
 		OnStatUnlock?.Invoke(statBoost);
 	}
 	protected virtual void UnlockAbility(SOClassAbilities ability)
 	{
-		unlockedAbilitiesList.Add(ability);
+		newUnlockedAbilitiesList.Add(ability);
 		OnAbilityUnlock?.Invoke(ability);
+	}
+	protected virtual void RefundStatBoost(SOClassStatBonuses statBoost)
+	{
+		newUnlockedStatBoostList.Remove(statBoost);
+		OnStatRefund?.Invoke(statBoost);
+	}
+	protected virtual void RefundAbility(SOClassAbilities ability)
+	{
+		newUnlockedAbilitiesList.Remove(ability);
+		OnAbilityRefund?.Invoke(ability);
 	}
 }

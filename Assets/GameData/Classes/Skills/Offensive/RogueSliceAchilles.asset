@@ -12,15 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
   m_Name: RogueSliceAchilles
   m_EditorClassIdentifier: 
-  Name: Leg Shot
-  Description: Fire an arrow at an enemies leg
+  Name: Slice Achilles
+  Description: Slice at an enemies achilles with your weapon
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 20
+  abilityCooldown: 25
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 0
   aoeSize: 0
   isDOT: 0

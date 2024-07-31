@@ -5,22 +5,33 @@ using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
 {
+	public int abilitySlots;
+
 	private void OnEnable()
 	{
 		PlayerClassesUi.OnClassChange += OnClassChanges;
 		PlayerClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
+		PlayerClassesUi.OnRefundStatBonusUnlock += RefundStatBoost;
+		PlayerClassesUi.OnRefundAbilityUnlock += RefundAbility;
+
+		EventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
 	}
 	private void OnDisable()
 	{
 		PlayerClassesUi.OnClassChange -= OnClassChanges;
 		PlayerClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
+		PlayerClassesUi.OnRefundStatBonusUnlock -= RefundStatBoost;
+		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
+
+		EventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
 	protected override void OnClassChanges(SOClasses newPlayerClass)
 	{
 		base.OnClassChanges(newPlayerClass);
+		UpdateMaxAbilitySlots();
 		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
 	}
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
@@ -33,7 +44,33 @@ public class PlayerClassHandler : EntityClassHandler
 		base.UnlockAbility(ability);
 		UpdateClassTreeUi();
 	}
+	protected override void RefundStatBoost(SOClassStatBonuses statBoost)
+	{
+		base.RefundStatBoost(statBoost);
+		UpdateClassTreeUi();
+	}
+	protected override void RefundAbility(SOClassAbilities ability)
+	{
+		base.RefundAbility(ability);
+		UpdateClassTreeUi();
+	}
 
+	private void UpdateAbilitySlotsOnLevelUp(EntityStats playerStats)
+	{
+		UpdateMaxAbilitySlots();
+	}
+	private void UpdateMaxAbilitySlots()
+	{
+		if (currentEntityClass == null) return;
+
+		abilitySlots = currentEntityClass.baseClassAbilitySlots;
+
+		foreach (SpellSlots spellSlot in currentEntityClass.spellSlotsPerLevel)
+		{
+			if (entityStats.entityLevel >= spellSlot.LevelRequirement)
+				abilitySlots += spellSlot.SpellSlotsPerLevel;
+		}
+	}
 	private void UpdateClassTreeUi()
 	{
 		if (PlayerClassesUi.Instance == null)

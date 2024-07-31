@@ -32,17 +32,19 @@ MonoBehaviour:
     SpellSlotsPerLevel: 1
   - LevelRequirement: 15
     SpellSlotsPerLevel: 1
-  classAbilitiesList:
-  - unlock: {fileID: 0}
-    LevelRequirement: 0
-  - unlock: {fileID: 0}
-    LevelRequirement: 0
-  - unlock: {fileID: 0}
-    LevelRequirement: 0
-  - unlock: {fileID: 0}
-    LevelRequirement: 0
-  - unlock: {fileID: 0}
-    LevelRequirement: 0
+  classAbilitiesOffensiveList:
+  - unlock: {fileID: 11400000, guid: 56319319c036b0c418884038f3b87eae, type: 2}
+    LevelRequirement: 10
+  classAbilitiesHealingList:
+  - unlock: {fileID: 11400000, guid: 8db605ad22b1cea42a7fb795c950d5b3, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 89499a7bc8d6fea47b61f3113377dd52, type: 2}
+    LevelRequirement: 15
+  classAbilitiesEffectsList:
+  - unlock: {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
+    LevelRequirement: 5
+  - unlock: {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}
+    LevelRequirement: 18
   canUseSpells: 0
   classRestriction: 2
   startingItems:

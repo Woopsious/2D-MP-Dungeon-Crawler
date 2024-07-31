@@ -18,10 +18,34 @@ MonoBehaviour:
     geared towards utility/team support and healing. they do however lack any decent
     protection '
   classImageUi: {fileID: 0}
-  BaseClassAbilityUnlocks: 0
+  baseClassAbilitySlots: 0
   statBonusLists: []
   abilityLists: []
-  classStatBonusList: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: b21041236c71ecc439e62003199395ba, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: bc30f4cd035ab284e81258b3b22ae6ed, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: b21041236c71ecc439e62003199395ba, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: e034729ad8f9a9e4a8fe3f43f1c019d2, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: b21041236c71ecc439e62003199395ba, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: bc30f4cd035ab284e81258b3b22ae6ed, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: 8b4826107b2215144ae3dacc97ec0081, type: 2}
+    LevelRequirement: 18
   spellSlotsPerLevel:
   - LevelRequirement: 4
     SpellSlotsPerLevel: 2
@@ -33,39 +57,39 @@ MonoBehaviour:
     SpellSlotsPerLevel: 2
   classAbilitiesOffensiveList:
   - unlock: {fileID: 11400000, guid: 796edff530cad9147af817a9ee1167f2, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 1
   - unlock: {fileID: 11400000, guid: d249758fa70c7bf4188b847915a95d07, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 8
   - unlock: {fileID: 11400000, guid: 4a22e233325106d45af277ab36171541, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 16
   - unlock: {fileID: 11400000, guid: 370ea87c271e1d94e90f0ce61bc937da, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 1
   - unlock: {fileID: 11400000, guid: 7e4cc2695fa207d4f95b74480c8265e5, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 8
   - unlock: {fileID: 11400000, guid: 8ea5c2e86b364e948b2d5d2ba2028014, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 16
   - unlock: {fileID: 11400000, guid: b7d7195f6f75dc04da2bf0d851bc5e19, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 1
   - unlock: {fileID: 11400000, guid: 1cc7e53592c66eb488bf4c772a6fbc14, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 8
   classAbilitiesHealingList:
   - unlock: {fileID: 11400000, guid: 775f6871f81d7744cad0349ef1ab1c4e, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 1
   - unlock: {fileID: 11400000, guid: da40c1b382bf3b546b1c202f659c5139, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 4
   - unlock: {fileID: 11400000, guid: 6e7b2299f6298724aa1c8e9bee604d4a, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 8
   - unlock: {fileID: 11400000, guid: 6711103ec1a11b14e9f9c0ac057a3bbf, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 12
   - unlock: {fileID: 11400000, guid: 879b5f40a96a8a443919e3d5567aba28, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 16
   classAbilitiesEffectsList:
   - unlock: {fileID: 11400000, guid: 150754a00a877764da03daf7db07f15d, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 4
   - unlock: {fileID: 11400000, guid: fdd13aa94d5aa7b428b41c0c44196497, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 4
   - unlock: {fileID: 11400000, guid: bc422f02f32634c4d899dc7db03b9146, type: 2}
-    LevelRequirement: 0
+    LevelRequirement: 16
   canUseSpells: 1
   classRestriction: 0
   startingItems:

@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
 	public int debugPlayerLevel;
 	public Camera playerCamera;
 	public LayerMask includeMe;
-	private EntityStats playerStats;
+	[HideInInspector] public EntityStats playerStats;
 	[HideInInspector] public EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	private PlayerInputHandler playerInputs;

@@ -32,7 +32,7 @@ public class SOClasses : ScriptableObject
 	[TextArea(3, 10)]
 	public string classDescription;
 	public Image classImageUi;
-	public int BaseClassAbilityUnlocks;
+	public int baseClassAbilitySlots;
 
 	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();

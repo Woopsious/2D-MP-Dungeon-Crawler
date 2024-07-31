@@ -10,7 +10,7 @@ public class EntityStats : MonoBehaviour
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
 	private EntityBehaviour entityBehaviour;
-	private EntityClassHandler classHandler;
+	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
@@ -83,6 +83,7 @@ public class EntityStats : MonoBehaviour
 
 		classHandler.OnClassChange += OnClassChanges;
 		classHandler.OnStatUnlock += OnStatUnlock;
+		classHandler.OnStatRefund += OnStatRefund;
 
 		equipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
 	}
@@ -94,6 +95,7 @@ public class EntityStats : MonoBehaviour
 
 		classHandler.OnClassChange -= OnClassChanges;
 		classHandler.OnStatUnlock -= OnStatUnlock;
+		classHandler.OnStatRefund -= OnStatRefund;
 
 		equipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
 	}
@@ -394,7 +396,7 @@ public class EntityStats : MonoBehaviour
 		if (currentHealth == maxHealth.finalValue)
 			oldCurrentHealthEqualToOldMaxHealth = true;
 
-		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
+		foreach (SOClassStatBonuses statBoost in classHandler.newUnlockedStatBoostList)
 		{
 			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
 			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
@@ -466,6 +468,35 @@ public class EntityStats : MonoBehaviour
 		dualWeaponDamageModifier.AddPercentageValue(statBoost.duelWeaponDamageBoostValue);
 		rangedWeaponDamageModifier.AddPercentageValue(statBoost.rangedWeaponDamageBoostValue);
 		HealingPercentageModifier.AddPercentageValue(statBoost.healingBoostValue);
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfoUi();
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		UpdatePlayerStatInfoUi();
+	}
+	public void OnStatRefund(SOClassStatBonuses statBoost)
+	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
+		maxMana.RemovePercentageValue(statBoost.manaBoostValue);
+		physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
+		poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
+		fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
+		iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+
+		physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
+		poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
+		fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
+		iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
+		mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
+		dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
+		rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
+		HealingPercentageModifier.RemovePercentageValue(statBoost.healingBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
