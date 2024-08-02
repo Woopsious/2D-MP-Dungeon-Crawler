@@ -17,10 +17,30 @@ MonoBehaviour:
     situations. Keep in mind though they are weak to most attacks but do have some
     options for self healing besides health potions.
   classImageUi: {fileID: 0}
-  BaseClassAbilityUnlocks: 0
+  baseClassAbilitySlots: 0
   statBonusLists: []
   abilityLists: []
-  classStatBonusList: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: bded66c7822b7df458c1525dbb7ecd1e, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: cb56b08e86d564749beb673ac31ea81f, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: 14e3cd426e6389e4fb0ccf4bf1b1cc80, type: 2}
+    LevelRequirement: 18
   spellSlotsPerLevel:
   - LevelRequirement: 4
     SpellSlotsPerLevel: 1

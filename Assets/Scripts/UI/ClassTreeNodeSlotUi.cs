@@ -20,21 +20,14 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	public bool isAlreadyUnlocked;
 	public int nodeIndex;
 
-	[Tooltip("Prev skill nodes needed to unlock this one (only needs 1 owned to pass check, can have multiple")]
-	public List<ClassTreeNodeSlotUi> preRequisites = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("Nodes that are exclusive to this one (must have all exclusions to be excluded)")]
-	public List<ClassTreeNodeSlotUi> exclusions = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("Nodes that are exclusive to this one, mainly used for duplicate skills in class tree")]
-	public List<ClassTreeNodeSlotUi> hardExclusions = new List<ClassTreeNodeSlotUi>();
-
 	private void OnEnable()
 	{
-		PlayerClassesUi.OnClassNodeUnlocks += NewCheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
 		PlayerClassesUi.OnClassReset += ResetNode;
 	}
 	private void OnDisable()
 	{
-		PlayerClassesUi.OnClassNodeUnlocks -= NewCheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
 		PlayerClassesUi.OnClassReset -= ResetNode;
 	}
 	public void Initilize()
@@ -65,8 +58,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	//tool tip
 	private void SetStatBonusToolTip()
 	{
-		Debug.Log(gameObject.transform);
-
 		string info = $"{statUnlock.unlock.Description} \n";
 
 		if (statUnlock.unlock.healthBoostValue != 0)
@@ -186,6 +177,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		return info;
 	}
 
+	//node updates
 	public void UnlockThisNode()
 	{
 		isAlreadyUnlocked = true;
@@ -204,8 +196,13 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		else if (abilityUnlock.unlock != null)
 			PlayerClassesUi.Instance.RefundAbility(this, abilityUnlock.unlock);
 	}
+	private void ResetNode(SOClasses currentClass)
+	{
+		isAlreadyUnlocked = false;
+	}
 
-	public void NewCheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
+	//node checks 
+	public void CheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
 	{
 		if (isAlreadyUnlocked)
 		{
@@ -253,7 +250,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		else return false;
 	}
 
-	//node updates
+	//node states
 	private void LockNode()
 	{
 		image.color = new Color(1, 0.4f, 0.4f, 1);
@@ -270,12 +267,5 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	{
 		image.color = new Color(0.4f, 1, 0.4f, 1);
 		nodeRefundButtonObj.SetActive(true);
-	}
-	private void ResetNode(SOClasses currentClass)
-	{
-		isAlreadyUnlocked = false;
-		LockNode();
-		if (nodeLevelRequirment == 1)
-			UnlockNode();
 	}
 }

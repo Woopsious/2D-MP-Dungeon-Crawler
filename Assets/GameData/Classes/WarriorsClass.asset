@@ -17,10 +17,32 @@ MonoBehaviour:
     they have more utility then knights but still lack reliable self healing without
     health potions.
   classImageUi: {fileID: 0}
-  BaseClassAbilityUnlocks: 0
+  baseClassAbilitySlots: 0
   statBonusLists: []
   abilityLists: []
-  classStatBonusList: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: f36a5e1611688464992795250f7b7467, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: f36a5e1611688464992795250f7b7467, type: 2}
+    LevelRequirement: 18
   spellSlotsPerLevel:
   - LevelRequirement: 5
     SpellSlotsPerLevel: 1

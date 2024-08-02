@@ -12,8 +12,8 @@ public class EntityClassHandler : MonoBehaviour
 	[Header("Current Class")]
 	public SOClasses currentEntityClass;
 
-	public List<SOClassStatBonuses> newUnlockedStatBoostList = new List<SOClassStatBonuses>();
-	public List<SOClassAbilities> newUnlockedAbilitiesList = new List<SOClassAbilities>();
+	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
+	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 
 	public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
@@ -59,34 +59,39 @@ public class EntityClassHandler : MonoBehaviour
 	///	
 	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
 	///	<summery>
-	protected virtual void OnClassChanges(SOClasses newClass)
+	protected virtual void OnClassUpdates(SOClasses newClass)
 	{
 		OnClassChange?.Invoke(this);
 
-		newUnlockedStatBoostList.Clear();
-		newUnlockedAbilitiesList.Clear();
+		for (int i = unlockedStatBoostList.Count - 1; i >= 0; i--)
+			RefundStatBoost(unlockedStatBoostList[i]);
+		for (int i = unlockedAbilitiesList.Count - 1; i >= 0; i--)
+			RefundAbility(unlockedAbilitiesList[i]);
+
+		unlockedStatBoostList.Clear();
+		unlockedAbilitiesList.Clear();
 
 		currentEntityClass = newClass;
 	}
 
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
-		newUnlockedStatBoostList.Add(statBoost);
+		unlockedStatBoostList.Add(statBoost);
 		OnStatUnlock?.Invoke(statBoost);
 	}
 	protected virtual void UnlockAbility(SOClassAbilities ability)
 	{
-		newUnlockedAbilitiesList.Add(ability);
+		unlockedAbilitiesList.Add(ability);
 		OnAbilityUnlock?.Invoke(ability);
 	}
 	protected virtual void RefundStatBoost(SOClassStatBonuses statBoost)
 	{
-		newUnlockedStatBoostList.Remove(statBoost);
+		unlockedStatBoostList.Remove(statBoost);
 		OnStatRefund?.Invoke(statBoost);
 	}
 	protected virtual void RefundAbility(SOClassAbilities ability)
 	{
-		newUnlockedAbilitiesList.Remove(ability);
+		unlockedAbilitiesList.Remove(ability);
 		OnAbilityRefund?.Invoke(ability);
 	}
 }

@@ -52,7 +52,7 @@ public class EntityStats : MonoBehaviour
 	public GameObject statusEffectsParentObj;
 	public List<AbilityStatusEffect> currentStatusEffects;
 
-	public event Action<float, bool> OnRecieveHealingEvent;
+	public event Action<float, bool, float> OnRecieveHealingEvent;
 	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
 	public event Action<int, int> OnHealthChangeEvent;
@@ -81,7 +81,6 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 
-		classHandler.OnClassChange += OnClassChanges;
 		classHandler.OnStatUnlock += OnStatUnlock;
 		classHandler.OnStatRefund += OnStatRefund;
 
@@ -93,7 +92,6 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
 
-		classHandler.OnClassChange -= OnClassChanges;
 		classHandler.OnStatUnlock -= OnStatUnlock;
 		classHandler.OnStatRefund -= OnStatRefund;
 
@@ -149,16 +147,17 @@ public class EntityStats : MonoBehaviour
 	/// when it comes to resistances ignoring the difference shouldnt matter as everything scales at the same rate
 	/// </summary>
 	//health functions
-	public void OnHeal(float healthValue, bool isPercentageValue)
+	public void OnHeal(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
-		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
+		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue, healingModifierPercentage);
 	}
-	private void RecieveHealing(float healthValue, bool isPercentageValue)
+	private void RecieveHealing(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 
-		currentHealth = (int)(currentHealth + healthValue);
+		healthValue *= healingModifierPercentage;
+		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
 
 		if (currentHealth > maxHealth.finalValue)
 			currentHealth = maxHealth.finalValue;
@@ -384,38 +383,6 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		UpdatePlayerStatInfoUi();
-
-		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
-		UpdatePlayerStatInfoUi();
-	}
-	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
-	{
-		bool oldCurrentHealthEqualToOldMaxHealth = false;
-		if (currentHealth == maxHealth.finalValue)
-			oldCurrentHealthEqualToOldMaxHealth = true;
-
-		foreach (SOClassStatBonuses statBoost in classHandler.newUnlockedStatBoostList)
-		{
-			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
-			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
-			physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
-			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
-			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
-			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
-
-			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
-			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
-			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
-			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
-			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
-			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
-			rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
-			HealingPercentageModifier.RemovePercentageValue(statBoost.healingBoostValue);
-		}
-
-		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;

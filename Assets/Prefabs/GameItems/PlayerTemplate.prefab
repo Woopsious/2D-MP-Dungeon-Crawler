@@ -356,6 +356,8 @@ MonoBehaviour:
   includeMe:
     serializedVersion: 2
     m_Bits: 512
+  playerStats: {fileID: 0}
+  playerClassHandler: {fileID: 0}
   playerEquipmentHandler: {fileID: 0}
   selectedTarget: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
@@ -446,6 +448,15 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
+  DamageRecievedModifier:
+    isPercentageStat: 0
+    baseValue: 0
+    finalValue: 0
+    basePercentageValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
   physicalDamagePercentageModifier:
     isPercentageStat: 1
     baseValue: 0
@@ -509,6 +520,15 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
+  HealingPercentageModifier:
+    isPercentageStat: 1
+    baseValue: 0
+    finalValue: 0
+    basePercentageValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 7651319034662892506}
   currentStatusEffects: []
@@ -540,8 +560,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
   currentEntityClass: {fileID: 0}
-  unlockedAbilitiesList: []
-  unlockedStatBoostList: []
+  newUnlockedStatBoostList: []
+  newUnlockedAbilitiesList: []
+  abilitySlots: 0
 --- !u!114 &120328194627084056
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -584,6 +605,7 @@ MonoBehaviour:
   poisonDamagePercentage: 0
   fireDamagePercentage: 0
   iceDamagePercentage: 0
+  player: {fileID: 0}
 --- !u!114 &5724620505289801652
 MonoBehaviour:
   m_ObjectHideFlags: 0

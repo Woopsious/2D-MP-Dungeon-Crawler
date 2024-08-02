@@ -16,34 +16,37 @@ public class PlayerClassesUi : MonoBehaviour
 	[Header("knight Class")]
 	public SOClasses knightClass;
 	public GameObject knightClassPanel;
-	public List<GameObject> knightClassNodes;
+	public GameObject knightStatBonusContent;
+	public GameObject knightAbilityContent;
 	public Button playAsKnightButton;
 
 	[Header("Warrior Class")]
 	public SOClasses warriorClass;
 	public GameObject warriorClassPanel;
-	public List<GameObject> warriorClassNodes;
+	public GameObject warriorStatBonusContent;
+	public GameObject warriorAbilityContent;
 	public Button playAsWarriorButton;
 
 	[Header("Rogue Class")]
 	public SOClasses rogueClass;
 	public GameObject rogueClassPanel;
-	public List<GameObject> rogueClassNodes;
+	public GameObject rogueStatBonusContent;
+	public GameObject rogueAbilityContent;
 	public Button playAsRogueButton;
 
 	[Header("Ranger Class")]
 	public SOClasses rangerClass;
 	public GameObject rangerClassPanel;
-	public List<GameObject> rangerClassNodes;
+	public GameObject rangerStatBonusContent;
+	public GameObject rangerAbilityContent;
 	public Button playAsRangerButton;
 
 	[Header("Mage Class")]
 	public SOClasses mageClass;
 	public GameObject MageClassPanel;
-	public List<GameObject> mageClassNodes;
+	public GameObject mageStatBonusContent;
+	public GameObject mageAbilityContent;
 	public Button playAsMageButton;
-
-	public GameObject MageStatBonusContent;
 
 	[Header("Shared Class ui elements")]
 	public GameObject closeClassTreeButtonObj;
@@ -61,6 +64,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public static event Action<SOClassAbilities> OnRefundAbilityUnlock;
 
 	public GameObject classNodeSlotsPrefab;
+	private List<ClassTreeNodeSlotUi> nodeSlotUiList = new List<ClassTreeNodeSlotUi>();
 
 	/// <summary> (NEW IDEA)
 	/// player selects class on new game start. if reloading game, indexes of Unlocked ClassTreeSlotUi nodes are saved and loaded to disk,
@@ -105,16 +109,16 @@ public class PlayerClassesUi : MonoBehaviour
 		EventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
 		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
 		EventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
+
+		nodeSlotUiList.Clear();
 	}
 
 	private void Initilize()
 	{
-		//SetSkillTreeIndexes(knightClassPanel);
-		//SetSkillTreeIndexes(warriorClassPanel);
-		//SetSkillTreeIndexes(rogueClassPanel);
-		//SetSkillTreeIndexes(rangerClassPanel);
-		//SetSkillTreeIndexes(MageClassPanel);
-
+		SetUpKnightClassTree();
+		SetUpWarriorClassTree();
+		SetUpRogueClassTree();
+		SetUpRangerClassTree();
 		SetUpMageClassTree();
 	}
 
@@ -122,29 +126,289 @@ public class PlayerClassesUi : MonoBehaviour
 	/// instantiate ClassTreeNodeSlotUi template as children of specific ui elements based on if its a stat bonus/ability and
 	/// the level requirment to unlock it, then assign that stat buns/ability to ClassTreeNodeSlotUi ref, and Initilize node.
 	/// </summary>
+	
+	private void SetUpKnightClassTree()
+	{
+		foreach (ClassStatUnlocks classStatUnlock in knightClass.classStatBonusList)
+		{
+			if (classStatUnlock.LevelRequirement == 1)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 0);
+			if (classStatUnlock.LevelRequirement == 3)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 1);
+			if (classStatUnlock.LevelRequirement == 6)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 2);
+			if (classStatUnlock.LevelRequirement == 9)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 3);
+			if (classStatUnlock.LevelRequirement == 12)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 4);
+			if (classStatUnlock.LevelRequirement == 15)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 5);
+			if (classStatUnlock.LevelRequirement == 18)
+				CreateNewUnlockNode(classStatUnlock, null, knightStatBonusContent.transform, 6);
+		}
+		foreach (ClassAbilityUnlocks classAbility in knightClass.classAbilitiesOffensiveList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 3);
+		}
+		foreach (ClassAbilityUnlocks classAbility in knightClass.classAbilitiesEffectsList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 3);
+		}
+		foreach (ClassAbilityUnlocks classAbility in knightClass.classAbilitiesHealingList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, knightAbilityContent.transform, 3);
+		}
+	}
+	private void SetUpWarriorClassTree()
+	{
+		foreach (ClassStatUnlocks classStatUnlock in warriorClass.classStatBonusList)
+		{
+			if (classStatUnlock.LevelRequirement == 1)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 0);
+			if (classStatUnlock.LevelRequirement == 3)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 1);
+			if (classStatUnlock.LevelRequirement == 6)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 2);
+			if (classStatUnlock.LevelRequirement == 9)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 3);
+			if (classStatUnlock.LevelRequirement == 12)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 4);
+			if (classStatUnlock.LevelRequirement == 15)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 5);
+			if (classStatUnlock.LevelRequirement == 18)
+				CreateNewUnlockNode(classStatUnlock, null, warriorStatBonusContent.transform, 6);
+		}
+		foreach (ClassAbilityUnlocks classAbility in warriorClass.classAbilitiesOffensiveList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 3);
+		}
+		foreach (ClassAbilityUnlocks classAbility in warriorClass.classAbilitiesEffectsList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 3);
+		}
+		foreach (ClassAbilityUnlocks classAbility in warriorClass.classAbilitiesHealingList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 5)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 10)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 15)
+				CreateNewUnlockNode(null, classAbility, warriorAbilityContent.transform, 3);
+		}
+	}
+	private void SetUpRogueClassTree()
+	{
+		foreach (ClassStatUnlocks classStatUnlock in rogueClass.classStatBonusList)
+		{
+			if (classStatUnlock.LevelRequirement == 1)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 0);
+			if (classStatUnlock.LevelRequirement == 3)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 1);
+			if (classStatUnlock.LevelRequirement == 6)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 2);
+			if (classStatUnlock.LevelRequirement == 9)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 3);
+			if (classStatUnlock.LevelRequirement == 12)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 4);
+			if (classStatUnlock.LevelRequirement == 15)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 5);
+			if (classStatUnlock.LevelRequirement == 18)
+				CreateNewUnlockNode(classStatUnlock, null, rogueStatBonusContent.transform, 6);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rogueClass.classAbilitiesOffensiveList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rogueClass.classAbilitiesEffectsList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rogueClass.classAbilitiesHealingList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rogueAbilityContent.transform, 4);
+		}
+	}
+	private void SetUpRangerClassTree()
+	{
+		foreach (ClassStatUnlocks classStatUnlock in rangerClass.classStatBonusList)
+		{
+			if (classStatUnlock.LevelRequirement == 1)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 0);
+			if (classStatUnlock.LevelRequirement == 3)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 1);
+			if (classStatUnlock.LevelRequirement == 6)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 2);
+			if (classStatUnlock.LevelRequirement == 9)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 3);
+			if (classStatUnlock.LevelRequirement == 12)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 4);
+			if (classStatUnlock.LevelRequirement == 15)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 5);
+			if (classStatUnlock.LevelRequirement == 18)
+				CreateNewUnlockNode(classStatUnlock, null, rangerStatBonusContent.transform, 6);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rangerClass.classAbilitiesOffensiveList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rangerClass.classAbilitiesEffectsList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in rangerClass.classAbilitiesHealingList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, rangerAbilityContent.transform, 4);
+		}
+	}
 	private void SetUpMageClassTree()
 	{
 		foreach (ClassStatUnlocks classStatUnlock in mageClass.classStatBonusList)
 		{
 			if (classStatUnlock.LevelRequirement == 1)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 0);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 0);
 			if (classStatUnlock.LevelRequirement == 3)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 1);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 1);
 			if (classStatUnlock.LevelRequirement == 6)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 2);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 2);
 			if (classStatUnlock.LevelRequirement == 9)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 3);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 3);
 			if (classStatUnlock.LevelRequirement == 12)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 4);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 4);
 			if (classStatUnlock.LevelRequirement == 15)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 5);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 5);
 			if (classStatUnlock.LevelRequirement == 18)
-				CreateNewUnlockNode(classStatUnlock, null, MageStatBonusContent.transform, 6);
+				CreateNewUnlockNode(classStatUnlock, null, mageStatBonusContent.transform, 6);
 		}
-	}
-	private Transform GrabParentTransformFromUi(Transform verticalParent, int horizontalParentIndex)
-	{
-		return verticalParent.GetChild(0).transform.GetChild(horizontalParentIndex).transform.GetChild(0).transform;
+		foreach (ClassAbilityUnlocks classAbility in mageClass.classAbilitiesOffensiveList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in mageClass.classAbilitiesEffectsList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 4);
+		}
+		foreach (ClassAbilityUnlocks classAbility in mageClass.classAbilitiesHealingList)
+		{
+			if (classAbility.LevelRequirement == 1)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 0);
+			if (classAbility.LevelRequirement == 4)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 1);
+			if (classAbility.LevelRequirement == 8)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 2);
+			if (classAbility.LevelRequirement == 12)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 3);
+			if (classAbility.LevelRequirement == 16)
+				CreateNewUnlockNode(null, classAbility, mageAbilityContent.transform, 4);
+		}
 	}
 	private void CreateNewUnlockNode(ClassStatUnlocks statUnlock, ClassAbilityUnlocks abilityUnlock, 
 		Transform verticalParent, int horizontalParentIndex)
@@ -154,39 +418,11 @@ public class PlayerClassesUi : MonoBehaviour
 		nodeSlotUi.statUnlock = statUnlock;
 		nodeSlotUi.abilityUnlock = abilityUnlock;
 		nodeSlotUi.Initilize();
+		nodeSlotUiList.Add(nodeSlotUi);
 	}
-
-	private void SetSkillTreeIndexes(GameObject parentObj)
+	private Transform GrabParentTransformFromUi(Transform verticalParent, int horizontalParentIndex)
 	{
-		for (int i = 0; i < parentObj.transform.childCount - 1; i++)
-			parentObj.transform.GetChild(i).gameObject.GetComponent<ClassTreeNodeSlotUi>().Initilize();
-	}
-
-	//skill tree node unlocks
-	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
-	{
-		currentUnlockedClassNodes.Add(classTreeSlot);
-		OnNewStatBonusUnlock?.Invoke(statBonus);
-	}
-	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
-	{
-		currentUnlockedClassNodes.Add(classTreeSlot);
-		OnNewAbilityUnlock?.Invoke(ability);
-	}
-
-	public void UpdateNodesInClassTree(EntityStats playerStats)
-	{
-		OnClassNodeUnlocks?.Invoke(playerStats);
-	}
-
-	//skill tree node refunds
-	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
-	{
-		OnRefundStatBonusUnlock?.Invoke(statBonus);
-	}
-	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
-	{
-		OnRefundAbilityUnlock?.Invoke(ability);
+		return verticalParent.GetChild(0).transform.GetChild(horizontalParentIndex).transform.GetChild(0).transform;
 	}
 
 	//reload player class
@@ -257,6 +493,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public void ResetCurrentClassButton()
 	{
 		OnClassReset?.Invoke(currentPlayerClass);
+		UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
 		currentUnlockedClassNodes.Clear();
 	}
 
@@ -297,31 +534,18 @@ public class PlayerClassesUi : MonoBehaviour
 		else
 		{
 			if (currentPlayerClass == knightClass)
-			{
 				knightClassPanel.SetActive(true);
-				UpdatePlayerToolTips(knightClassNodes);
-			}
 			if (currentPlayerClass == warriorClass)
-			{
 				warriorClassPanel.SetActive(true);
-				UpdatePlayerToolTips(warriorClassNodes);
-			}
 			if (currentPlayerClass == rogueClass)
-			{
 				rogueClassPanel.SetActive(true);
-				UpdatePlayerToolTips(rogueClassNodes);
-			}
 			if (currentPlayerClass == rangerClass)
-			{
 				rangerClassPanel.SetActive(true);
-				UpdatePlayerToolTips(rangerClassNodes);
-			}
 			if (currentPlayerClass == mageClass)
-			{
 				MageClassPanel.SetActive(true);
-				UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
-				UpdatePlayerToolTips(mageClassNodes);
-			}
+
+			UpdateToolTipsForClassNodes();
+			UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
 
 			closeClassTreeButtonObj.SetActive(true);
 			resetPlayerClassButtonObj.SetActive(true);
@@ -338,12 +562,38 @@ public class PlayerClassesUi : MonoBehaviour
 		MageClassPanel.SetActive(false);
 	}
 
-	private void UpdatePlayerToolTips(List<GameObject> objList)
+	//skill tree node event calls
+	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
 	{
-		foreach (GameObject obj in objList)
+		currentUnlockedClassNodes.Add(classTreeSlot);
+		OnNewStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	{
+		currentUnlockedClassNodes.Add(classTreeSlot);
+		OnNewAbilityUnlock?.Invoke(ability);
+	}
+	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	{
+		OnRefundStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	{
+		OnRefundAbilityUnlock?.Invoke(ability);
+	}
+
+	public void UpdateNodesInClassTree(EntityStats playerStats)
+	{
+		OnClassNodeUnlocks?.Invoke(playerStats);
+	}
+
+	//tool tips
+	private void UpdateToolTipsForClassNodes()
+	{
+		foreach (ClassTreeNodeSlotUi node in nodeSlotUiList)
 		{
-			if (obj.GetComponent<ToolTipUi>() == null) continue;
-			ToolTipUi tip = obj.GetComponent<ToolTipUi>();
+			if (node.GetComponent<ToolTipUi>() == null) continue;
+			ToolTipUi tip = node.GetComponent<ToolTipUi>();
 			tip.UpdatePlayerToolTip();
 		}
 	}

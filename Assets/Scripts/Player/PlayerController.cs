@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using Unity.Services.Lobbies.Models;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
@@ -204,7 +205,7 @@ public class PlayerController : MonoBehaviour
 	private void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isHealing)
-			playerStats.OnHeal(ability.damageValuePercentage, true);
+			playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
 		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isMana)
 			playerStats.IncreaseMana(ability.damageValuePercentage, true);
 		else

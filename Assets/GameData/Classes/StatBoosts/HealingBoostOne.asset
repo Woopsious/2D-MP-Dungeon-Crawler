@@ -30,4 +30,4 @@ MonoBehaviour:
   mainWeaponDamageBoostValue: 0
   duelWeaponDamageBoostValue: 0
   rangedWeaponDamageBoostValue: 0
-  healingBoostValue: 0.05
+  healingBoostValue: 0.1
