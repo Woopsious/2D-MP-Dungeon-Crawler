@@ -10,18 +10,19 @@ public class PlayerInfoUi : MonoBehaviour
 	public static PlayerController playerInstance;
 	public TMP_Text playerInfo;
 
+	public GameObject interactWithText;
+	public GameObject interactWithTextPrefab;
 	public GameObject currentPlayerInteractedObj;
-	public TMP_Text InteractWithText;
 
 	private void Awake()
 	{
-		InteractWithText.gameObject.SetActive(false);
 		Instance = this;
+		Instance.interactWithText.SetActive(false);
 	}
 	private void Update()
 	{
-		if (currentPlayerInteractedObj != null && InteractWithText.gameObject.activeInHierarchy)
-			InteractWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
+		if (currentPlayerInteractedObj != null && interactWithText.activeInHierarchy)
+			interactWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
 				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 
@@ -38,10 +39,10 @@ public class PlayerInfoUi : MonoBehaviour
 
 	private void ShowHideInteractWithText(GameObject obj, bool showText)
 	{
-		if (showText)
-			InteractWithText.gameObject.SetActive(true);
+        if (showText)
+			Instance.interactWithText.SetActive(true);
 		else
-			InteractWithText.gameObject.SetActive(false);
+			Instance.interactWithText.SetActive(false);
 		currentPlayerInteractedObj = obj;
 	}
 	public void UpdatePlayerStatInfo(EntityStats stats)

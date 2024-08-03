@@ -63,8 +63,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInventory;
-		PlayerClassesUi.OnClassReset += OnClassReset;
 		PlayerClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
+		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 
 		EventManager.OnShowPlayerInventoryEvent += ShowInventory;
@@ -85,8 +85,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerInventory;
-		PlayerClassesUi.OnClassReset -= OnClassReset;
 		PlayerClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
+		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 
 		EventManager.OnShowPlayerInventoryEvent -= ShowInventory;
@@ -377,19 +377,8 @@ public class PlayerInventoryUi : MonoBehaviour
 			return;
 	}
 
-	//CLASSES + ABILITIES
-	//reset/clear any learnt abilities from learnt abilities ui
-	private void OnClassReset(SOClasses currentClass)
-	{
-		foreach (GameObject abilitySlot in LearntAbilitySlots)
-		{
-			if (abilitySlot.transform.childCount == 0)
-				continue;
-
-			Destroy(abilitySlot.transform.GetChild(0).gameObject);
-		}
-	}
-	//Adding new abilities to Ui
+	//ABILITIES
+	//Add new abilities to Ui
 	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
@@ -419,6 +408,24 @@ public class PlayerInventoryUi : MonoBehaviour
 		ability.abilityBaseRef = newAbility;
 		ability.Initilize();
 	}
+
+	//reset/clear learnt abilities from ui
+	private void OnAbilityRefund(SOClassAbilities ability)
+	{
+		foreach (GameObject abilitySlot in LearntAbilitySlots)
+		{
+			InventorySlotDataUi slotData = abilitySlot.GetComponent<InventorySlotDataUi>();
+			if (slotData.itemInSlot == null)
+				continue;
+
+			if (slotData.itemInSlot.abilityBaseRef == ability)
+			{
+				Destroy(slotData.itemInSlot.gameObject);
+				slotData.RemoveItemFromSlot();
+			}
+		}
+	}
+
 
 	//UI CHANGES
 	public void ShowInventory()

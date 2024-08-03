@@ -52,9 +52,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public GameObject closeClassTreeButtonObj;
 	public GameObject resetPlayerClassButtonObj;
 
-	public static event Action<SOClasses> OnClassChange;
-	public static event Action<SOClasses> OnClassReset;
-
+	public static event Action<SOClasses> OnClassChanges;
 	public static event Action<EntityStats> OnClassNodeUnlocks;
 
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
@@ -411,18 +409,18 @@ public class PlayerClassesUi : MonoBehaviour
 		}
 	}
 	private void CreateNewUnlockNode(ClassStatUnlocks statUnlock, ClassAbilityUnlocks abilityUnlock, 
-		Transform verticalParent, int horizontalParentIndex)
+		Transform parent, int verticalParentIndex)
 	{
-		GameObject go = Instantiate(classNodeSlotsPrefab, GrabParentTransformFromUi(verticalParent, horizontalParentIndex));
+		GameObject go = Instantiate(classNodeSlotsPrefab, GrabParentTransformFromUi(parent, verticalParentIndex));
 		ClassTreeNodeSlotUi nodeSlotUi = go.GetComponent<ClassTreeNodeSlotUi>();
 		nodeSlotUi.statUnlock = statUnlock;
 		nodeSlotUi.abilityUnlock = abilityUnlock;
-		nodeSlotUi.Initilize();
+		nodeSlotUi.Initilize(verticalParentIndex);
 		nodeSlotUiList.Add(nodeSlotUi);
 	}
-	private Transform GrabParentTransformFromUi(Transform verticalParent, int horizontalParentIndex)
+	private Transform GrabParentTransformFromUi(Transform parent, int verticalParentIndex)
 	{
-		return verticalParent.GetChild(0).transform.GetChild(horizontalParentIndex).transform.GetChild(0).transform;
+		return parent.GetChild(0).transform.GetChild(verticalParentIndex).transform.GetChild(0).transform;
 	}
 
 	//reload player class
@@ -435,66 +433,84 @@ public class PlayerClassesUi : MonoBehaviour
 	public void ReloadPlayerClass()
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
-		SetNewClass(SaveManager.Instance.GameData.currentPlayerClass);
+		SetPlayerClass(SaveManager.Instance.GameData.currentPlayerClass, false);
 
 		if (currentPlayerClass == knightClass)
-			ReloadPlayerClassTreeNodes(knightClassPanel);
+			ReloadPlayerClassTreeNodes(knightStatBonusContent.transform, knightAbilityContent.transform);
 		if (currentPlayerClass == warriorClass)
-			ReloadPlayerClassTreeNodes(warriorClassPanel);
+			ReloadPlayerClassTreeNodes(warriorStatBonusContent.transform, warriorAbilityContent.transform);
 		if (currentPlayerClass == rogueClass)
-			ReloadPlayerClassTreeNodes(rogueClassPanel);
+			ReloadPlayerClassTreeNodes(rogueStatBonusContent.transform, rogueAbilityContent.transform);
 		if (currentPlayerClass == rangerClass)
-			ReloadPlayerClassTreeNodes(rangerClassPanel);
+			ReloadPlayerClassTreeNodes(rangerStatBonusContent.transform, rangerAbilityContent.transform);
 		if (currentPlayerClass == mageClass)
-			ReloadPlayerClassTreeNodes(MageClassPanel);
+			ReloadPlayerClassTreeNodes(mageStatBonusContent.transform, mageAbilityContent.transform);
 
 		HidePlayerClassSelection();
 	}
-	private void ReloadPlayerClassTreeNodes(GameObject currentClassPanelUi)
+	private void ReloadPlayerClassTreeNodes(Transform statBonuesTransform, Transform abilitiesTransform)
 	{
-		List<int> indexs = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
-		foreach (int index in indexs)
-			currentClassPanelUi.transform.GetChild(index).GetComponent<ClassTreeNodeSlotUi>().UnlockThisNode();
+		List<ClassTreeNodeData> nodeIndexes = SaveManager.Instance.GameData.unlockedClassNodeIndexesList;
+		foreach (ClassTreeNodeData nodeData in nodeIndexes)
+		{
+			if (nodeData.isStatBoost)
+				RestorePlayerNodes(statBonuesTransform, nodeData.nodeVerticalParentIndex, nodeData.nodeHorizontalIndex);
+			else
+				RestorePlayerNodes(abilitiesTransform, nodeData.nodeVerticalParentIndex, nodeData.nodeHorizontalIndex);
+		}
+	}
+	private void RestorePlayerNodes(Transform parent, int verticalParentIndex, int nodeHorizontalIndex)
+	{
+		ClassTreeNodeSlotUi nodeSlotUi = parent.GetChild(0).transform.GetChild(verticalParentIndex).transform.GetChild(0).
+			transform.GetChild(nodeHorizontalIndex).GetComponent<ClassTreeNodeSlotUi>();
+
+		nodeSlotUi.UnlockThisNode();
 	}
 
 	//UI CHANGES
 	//classes
 	public void PlayAsKnightButton()
 	{
-		SetNewClass(knightClass);
+		SetPlayerClass(knightClass, true);
 	}
 	public void PlayAsWarriorButton()
 	{
-		SetNewClass(warriorClass);
+		SetPlayerClass(warriorClass, true);
 	}
 	public void PlayAsRogueButton()
 	{
-		SetNewClass(rogueClass);
+		SetPlayerClass(rogueClass, true);
 	}
 	public void PlayAsRangerButton()
 	{
-		SetNewClass(rangerClass);
+		SetPlayerClass(rangerClass, true);
 	}
 	public void PlayAsMageButton()
 	{
-		SetNewClass(mageClass);
+		SetPlayerClass(mageClass, true);
 	}
-	public void SetNewClass(SOClasses newClass)
+
+	//change of classes calls reset class 
+	private void SetPlayerClass(SOClasses newClass, bool displayClassSkillTree)
 	{
-		if (currentPlayerClass != null)
-			ResetCurrentClassButton();
 		if (GameManager.isNewGame && currentPlayerClass == null)
 			SaveManager.Instance.GameData.hasRecievedStartingItems = false;
 
-		OnClassChange?.Invoke(newClass);
 		currentPlayerClass = newClass;
-		EventManager.ShowPlayerSkillTree();
+		UpdatePlayerClass();
+
+		if (displayClassSkillTree)
+			EventManager.ShowPlayerSkillTree();
 	}
-	public void ResetCurrentClassButton()
+	public void UpdatePlayerClass()
 	{
-		OnClassReset?.Invoke(currentPlayerClass);
-		UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
+		foreach (var abilityNode in currentUnlockedClassNodes)
+			abilityNode.RefundThisNode();
+
+		//UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
 		currentUnlockedClassNodes.Clear();
+
+		OnClassChanges?.Invoke(currentPlayerClass);
 	}
 
 	//class selection

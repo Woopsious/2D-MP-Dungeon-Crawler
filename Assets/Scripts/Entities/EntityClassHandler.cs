@@ -15,7 +15,7 @@ public class EntityClassHandler : MonoBehaviour
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 
-	public event Action<EntityClassHandler> OnClassChange;
+	//public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
 	public event Action<SOClassAbilities> OnAbilityUnlock;
 	public event Action<SOClassStatBonuses> OnStatRefund;
@@ -59,10 +59,8 @@ public class EntityClassHandler : MonoBehaviour
 	///	
 	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
 	///	<summery>
-	protected virtual void OnClassUpdates(SOClasses newClass)
+	protected virtual void UpdateClass(SOClasses newClass)
 	{
-		OnClassChange?.Invoke(this);
-
 		for (int i = unlockedStatBoostList.Count - 1; i >= 0; i--)
 			RefundStatBoost(unlockedStatBoostList[i]);
 		for (int i = unlockedAbilitiesList.Count - 1; i >= 0; i--)

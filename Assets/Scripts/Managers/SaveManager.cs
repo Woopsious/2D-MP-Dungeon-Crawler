@@ -303,8 +303,22 @@ public class SaveManager : MonoBehaviour
 		GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
 		GameData.unlockedClassNodeIndexesList.Clear();
 
+		bool isNodeStatBoost;
 		foreach (ClassTreeNodeSlotUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
-			GameData.unlockedClassNodeIndexesList.Add(node.nodeIndex);
+		{
+			if (node.statUnlock != null)
+				isNodeStatBoost = true;
+			else
+				isNodeStatBoost = false;
+
+			ClassTreeNodeData nodeData = new ClassTreeNodeData()
+			{
+				isStatBoost = isNodeStatBoost,
+				nodeVerticalParentIndex = node.nodeVerticalParentIndex,
+				nodeHorizontalIndex = node.nodeHorizontalIndex,
+			};
+			GameData.unlockedClassNodeIndexesList.Add(nodeData);
+		}
 	}
 	private void SavePlayerStorageChestData()
 	{
@@ -447,7 +461,7 @@ public class GameData
 
 	public DungeonData currentDungeon;
 	public SOClasses currentPlayerClass;
-	public List<int> unlockedClassNodeIndexesList = new List<int>();
+	public List<ClassTreeNodeData> unlockedClassNodeIndexesList = new List<ClassTreeNodeData>();
 
 	public List<InventoryItemData> playerStorageChestItems = new List<InventoryItemData>();
 	public List<InventoryItemData> playerInventoryItems = new List<InventoryItemData>();
@@ -485,6 +499,13 @@ public class InventoryItemData
 	public bool isStackable;
 	public int maxStackCount;
 	public int currentStackCount;
+}
+[System.Serializable]
+public class ClassTreeNodeData
+{
+	public bool isStatBoost;
+	public int nodeVerticalParentIndex;
+	public int nodeHorizontalIndex;
 }
 [System.Serializable]
 public class QuestItemData

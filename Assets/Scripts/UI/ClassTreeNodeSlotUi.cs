@@ -16,22 +16,27 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	public GameObject nodeUnlockButtonObj;
 	public GameObject nodeRefundButtonObj;
 
-	public int nodeLevelRequirment;
 	public bool isAlreadyUnlocked;
+
+	public int nodeVerticalParentIndex;
+	public int nodeHorizontalIndex;
 	public int nodeIndex;
 
 	private void OnEnable()
 	{
 		PlayerClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
-		PlayerClassesUi.OnClassReset += ResetNode;
+		PlayerClassesUi.OnClassChanges += ResetNode;
 	}
 	private void OnDisable()
 	{
 		PlayerClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
-		PlayerClassesUi.OnClassReset -= ResetNode;
+		PlayerClassesUi.OnClassChanges -= ResetNode;
 	}
-	public void Initilize()
+	public void Initilize(int newVerticalIndex)
 	{
+		nodeVerticalParentIndex = newVerticalIndex;
+		nodeHorizontalIndex = transform.GetSiblingIndex();
+
 		if (statUnlock != null)
 			nodeInfoText.text = statUnlock.unlock.Name;
 		else if (abilityUnlock != null)
@@ -40,7 +45,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			Debug.LogError("Skill tree slot has no reference, this shouldnt happen");
 
 		image = GetComponent<Image>();
-		nodeIndex = transform.GetSiblingIndex();
 		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNode);
 		nodeRefundButtonObj.GetComponent<Button>().onClick.AddListener(RefundThisNode);
 		ResetNode(null);

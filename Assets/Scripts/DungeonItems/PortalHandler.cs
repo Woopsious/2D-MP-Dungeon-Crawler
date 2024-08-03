@@ -53,7 +53,7 @@ public class PortalHandler : MonoBehaviour, IInteractable
 		if (portalSoundTimer <= 0)
 		{
 			portalSoundTimer = portalSoundCooldown;
-			if (chanceOfPortalSound < Utilities.GetRandomNumber(100))
+			if (chanceOfPortalSound > Utilities.GetRandomNumber(100))
 				audioHandler.PlayAudio(portalSfx);
 		}
 	}

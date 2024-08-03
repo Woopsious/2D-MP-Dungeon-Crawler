@@ -84,27 +84,27 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void OnEnable()
 	{
 		EventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
-		PlayerClassesUi.OnClassChange += UpdatePlayerClassInfo;
-		PlayerClassesUi.OnClassReset += ResetEquippedAbilities;
-		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
 		EventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
 		EventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
 		EventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
 		EventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
 
+		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
+		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
+		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
 		EventManager.OnDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
 		EventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
-		PlayerClassesUi.OnClassChange -= UpdatePlayerClassInfo;
-		PlayerClassesUi.OnClassReset -= ResetEquippedAbilities;
-		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
 		EventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
 		EventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
 		EventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
 		EventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
 
+		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
+		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
+		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
 		EventManager.OnDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
@@ -118,19 +118,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
-	}
-
-	//reset/clear any equipped abilities from ui
-	private void ResetEquippedAbilities(SOClasses currentClass)
-	{
-		foreach (GameObject equippedAbility in AbilitySlots)
-		{
-			if (equippedAbility.transform.childCount == 0)
-				continue;
-
-			Destroy(equippedAbility.transform.GetChild(0).gameObject);
-		}
-		equippedAbilities.Clear();
 	}
 
 	//Equip Consumables/Abilities
@@ -207,6 +194,24 @@ public class PlayerHotbarUi : MonoBehaviour
 			else if (slot.slotIndex == 4)
 				equippedAbilityFive = null;
 		}
+	}
+
+	//clear hotbar ui of abilities
+	private void OnAbilityRefund(SOClassAbilities ability)
+	{
+		foreach (GameObject abilitySlot in AbilitySlots)
+		{
+			InventorySlotDataUi slotData = abilitySlot.GetComponent<InventorySlotDataUi>();
+			if (slotData.itemInSlot == null)
+				continue;
+
+			if (slotData.itemInSlot.abilityBaseRef == ability)
+			{
+				Destroy(slotData.itemInSlot.gameObject);
+				slotData.RemoveItemFromSlot();
+			}
+		}
+		equippedAbilities.Clear();
 	}
 
 	//UI CHANGES

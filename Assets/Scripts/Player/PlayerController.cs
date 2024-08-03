@@ -276,14 +276,21 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		EventManager.DetectNewInteractedObject(other.gameObject, false);
-
 		if (other.GetComponent<PortalHandler>() != null)
+		{
+			EventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedPortal = null;
+		}
 		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			EventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedNpc = null;
+		}
 		else if (other.GetComponent<ChestHandler>() != null)
+		{
+			EventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedChest = null;
+		}
 	}
 
 	/// <summary>

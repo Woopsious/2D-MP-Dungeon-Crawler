@@ -9,8 +9,7 @@ public class PlayerClassHandler : EntityClassHandler
 
 	private void OnEnable()
 	{
-		PlayerClassesUi.OnClassChange += OnClassUpdates;
-		PlayerClassesUi.OnClassReset += OnClassUpdates;
+		PlayerClassesUi.OnClassChanges += UpdateClass;
 		PlayerClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
 		PlayerClassesUi.OnRefundStatBonusUnlock += RefundStatBoost;
@@ -20,8 +19,7 @@ public class PlayerClassHandler : EntityClassHandler
 	}
 	private void OnDisable()
 	{
-		PlayerClassesUi.OnClassChange -= OnClassUpdates;
-		PlayerClassesUi.OnClassReset -= OnClassUpdates;
+		PlayerClassesUi.OnClassChanges -= UpdateClass;
 		PlayerClassesUi.OnNewStatBonusUnlock -= UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 		PlayerClassesUi.OnRefundStatBonusUnlock -= RefundStatBoost;
@@ -30,9 +28,9 @@ public class PlayerClassHandler : EntityClassHandler
 		EventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
-	protected override void OnClassUpdates(SOClasses newPlayerClass)
+	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
-		base.OnClassUpdates(newPlayerClass);
+		base.UpdateClass(newPlayerClass);
 		UpdateMaxAbilitySlots();
 		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
 	}
