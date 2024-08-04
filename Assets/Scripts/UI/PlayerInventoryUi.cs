@@ -67,20 +67,20 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 
-		EventManager.OnShowPlayerInventoryEvent += ShowInventory;
-		EventManager.OnShowPlayerClassSelectionEvent += HideInventory;
-		EventManager.OnShowPlayerSkillTreeEvent += HideInventory;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HideInventory;
-		EventManager.OnShowPlayerJournalEvent += HideInventory;
+		PlayerEventManager.OnShowPlayerInventoryEvent += ShowInventory;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideInventory;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideInventory;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideInventory;
+		PlayerEventManager.OnShowPlayerJournalEvent += HideInventory;
 
-		EventManager.OnShowPlayerInventoryEvent += HideLearntAbilities;
-		EventManager.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
-		EventManager.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
-		EventManager.OnShowPlayerJournalEvent += HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
+		PlayerEventManager.OnShowPlayerJournalEvent += HideLearntAbilities;
 
-		EventManager.OnShowNpcShopInventory += ShowNpcShop;
-		EventManager.OnHideNpcShopInventory += HideNpcShop;
+		PlayerEventManager.OnShowNpcShopInventory += ShowNpcShop;
+		PlayerEventManager.OnHideNpcShopInventory += HideNpcShop;
 	}
 	private void OnDisable()
 	{
@@ -89,20 +89,20 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 
-		EventManager.OnShowPlayerInventoryEvent -= ShowInventory;
-		EventManager.OnShowPlayerClassSelectionEvent -= HideInventory;
-		EventManager.OnShowPlayerSkillTreeEvent -= HideInventory;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
-		EventManager.OnShowPlayerJournalEvent -= HideInventory;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= ShowInventory;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideInventory;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideInventory;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HideInventory;
 
-		EventManager.OnShowPlayerInventoryEvent -= HideLearntAbilities;
-		EventManager.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
-		EventManager.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
-		EventManager.OnShowPlayerJournalEvent -= HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HideLearntAbilities;
 
-		EventManager.OnShowNpcShopInventory -= ShowNpcShop;
-		EventManager.OnHideNpcShopInventory -= HideNpcShop;
+		PlayerEventManager.OnShowNpcShopInventory -= ShowNpcShop;
+		PlayerEventManager.OnHideNpcShopInventory -= HideNpcShop;
 	}
 	private void Initilize()
 	{
@@ -213,7 +213,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		playerGoldAmount += gold;
 		GetGoldAmount();
-		EventManager.GoldAmountChange(playerGoldAmount);
+		PlayerEventManager.GoldAmountChange(playerGoldAmount);
 	}
 	public void OnQuestComplete(QuestDataSlotUi quest)
 	{
@@ -585,7 +585,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		}
 
 		interactedChest = playerChest;
-		EventManager.ShowPlayerInventory();
+		PlayerEventManager.ShowPlayerInventory();
 		interactedInventorySlotsUi.SetActive(true);
 		storageChestPanelUi.SetActive(true);
 		UpdatePlayerInventoryItemsUi(interactedInventorySlots);
@@ -607,7 +607,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		for (int i = playerChest.itemContainer.transform.childCount - 1;  i >= 0; i--) //re-add all items + any new ones
 			playerChest.itemList.Add(playerChest.itemContainer.transform.GetChild(i).GetComponent<InventoryItemUi>());
 
-		EventManager.ShowPlayerInventory();
+		PlayerEventManager.ShowPlayerInventory();
 		interactedInventorySlotsUi.SetActive(false);
 		storageChestPanelUi.SetActive(false);
 		HideInventory();

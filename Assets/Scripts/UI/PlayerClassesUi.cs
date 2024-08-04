@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,6 +52,8 @@ public class PlayerClassesUi : MonoBehaviour
 	[Header("Shared Class ui elements")]
 	public GameObject closeClassTreeButtonObj;
 	public GameObject resetPlayerClassButtonObj;
+	public int maxAbilitySlots;
+	public int abilitySlotsUsed;
 
 	public static event Action<SOClasses> OnClassChanges;
 	public static event Action<EntityStats> OnClassNodeUnlocks;
@@ -80,33 +83,37 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		SaveManager.RestoreData += ReloadPlayerClass;
 
-		EventManager.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
-		EventManager.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
-		EventManager.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
-		EventManager.OnShowPlayerJournalEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerJournalEvent += HidePlayerClassSelection;
 
-		EventManager.OnShowPlayerInventoryEvent += HideClassSkillTree;
-		EventManager.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
-		EventManager.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
-		EventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
+
+		PlayerEventManager.OnPlayerLevelUpEvent += UpdateMaxAbilitySlots;
 	}
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerClass;
 
-		EventManager.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
-		EventManager.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
-		EventManager.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
-		EventManager.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
 
-		EventManager.OnShowPlayerInventoryEvent -= HideClassSkillTree;
-		EventManager.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
-		EventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
-		EventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
+
+		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateMaxAbilitySlots;
 
 		nodeSlotUiList.Clear();
 	}
@@ -467,6 +474,96 @@ public class PlayerClassesUi : MonoBehaviour
 		nodeSlotUi.UnlockThisNode();
 	}
 
+	//change of classes calls reset class 
+	private void SetPlayerClass(SOClasses newClass, bool displayClassSkillTree)
+	{
+		if (GameManager.isNewGame && currentPlayerClass == null)
+			SaveManager.Instance.GameData.hasRecievedStartingItems = false;
+
+		currentPlayerClass = newClass;
+		UpdatePlayerClass();
+
+		if (displayClassSkillTree)
+			PlayerEventManager.ShowPlayerSkillTree();
+	}
+	public void UpdatePlayerClass()
+	{
+		for (int i = currentUnlockedClassNodes.Count - 1; i >= 0; i--)
+			currentUnlockedClassNodes[i].RefundThisNode();
+
+		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+		currentUnlockedClassNodes.Clear();
+
+		OnClassChanges?.Invoke(currentPlayerClass);
+	}
+
+	//skill tree node event calls
+	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	{
+		classTreeSlot.isAlreadyUnlocked = true;
+
+		currentUnlockedClassNodes.Add(classTreeSlot);
+		OnNewStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	{
+		if (!DoesPlayerHaveFreeAbilitySlot())
+		{
+			Debug.Log("player has no spare ability Slots");
+			return;
+		}
+
+		abilitySlotsUsed++;
+		classTreeSlot.isAlreadyUnlocked = true;
+		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+
+		currentUnlockedClassNodes.Add(classTreeSlot);
+		OnNewAbilityUnlock?.Invoke(ability);
+	}
+	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	{
+		classTreeSlot.isAlreadyUnlocked = false;
+
+		currentUnlockedClassNodes.Remove(classTreeSlot);
+		OnRefundStatBonusUnlock?.Invoke(statBonus);
+	}
+	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	{
+		abilitySlotsUsed--;
+		classTreeSlot.isAlreadyUnlocked = false;
+		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+
+		currentUnlockedClassNodes.Remove(classTreeSlot);
+		OnRefundAbilityUnlock?.Invoke(ability);
+	}
+
+	public void UpdateNodesInClassTree(EntityStats playerStats)
+	{
+		OnClassNodeUnlocks?.Invoke(playerStats);
+	}
+
+	//ability slots tracking
+	private void UpdateMaxAbilitySlots(EntityStats playerStats)
+	{
+		if (currentPlayerClass == null) return;
+
+		Debug.Log("updating abiloty slots");
+
+		maxAbilitySlots = currentPlayerClass.baseClassAbilitySlots;
+
+		foreach (SpellSlots spellSlot in currentPlayerClass.spellSlotsPerLevel)
+		{
+			if (playerStats.entityLevel >= spellSlot.LevelRequirement)
+				maxAbilitySlots += spellSlot.SpellSlotsPerLevel;
+		}
+	}
+	public bool DoesPlayerHaveFreeAbilitySlot()
+	{
+		if (maxAbilitySlots == abilitySlotsUsed)
+			return false;
+		else return true;
+	}
+
 	//UI CHANGES
 	//classes
 	public void PlayAsKnightButton()
@@ -488,29 +585,6 @@ public class PlayerClassesUi : MonoBehaviour
 	public void PlayAsMageButton()
 	{
 		SetPlayerClass(mageClass, true);
-	}
-
-	//change of classes calls reset class 
-	private void SetPlayerClass(SOClasses newClass, bool displayClassSkillTree)
-	{
-		if (GameManager.isNewGame && currentPlayerClass == null)
-			SaveManager.Instance.GameData.hasRecievedStartingItems = false;
-
-		currentPlayerClass = newClass;
-		UpdatePlayerClass();
-
-		if (displayClassSkillTree)
-			EventManager.ShowPlayerSkillTree();
-	}
-	public void UpdatePlayerClass()
-	{
-		foreach (var abilityNode in currentUnlockedClassNodes)
-			abilityNode.RefundThisNode();
-
-		//UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
-		currentUnlockedClassNodes.Clear();
-
-		OnClassChanges?.Invoke(currentPlayerClass);
 	}
 
 	//class selection
@@ -576,31 +650,6 @@ public class PlayerClassesUi : MonoBehaviour
 		rogueClassPanel.SetActive(false);
 		rangerClassPanel.SetActive(false);
 		MageClassPanel.SetActive(false);
-	}
-
-	//skill tree node event calls
-	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
-	{
-		currentUnlockedClassNodes.Add(classTreeSlot);
-		OnNewStatBonusUnlock?.Invoke(statBonus);
-	}
-	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
-	{
-		currentUnlockedClassNodes.Add(classTreeSlot);
-		OnNewAbilityUnlock?.Invoke(ability);
-	}
-	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
-	{
-		OnRefundStatBonusUnlock?.Invoke(statBonus);
-	}
-	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
-	{
-		OnRefundAbilityUnlock?.Invoke(ability);
-	}
-
-	public void UpdateNodesInClassTree(EntityStats playerStats)
-	{
-		OnClassNodeUnlocks?.Invoke(playerStats);
 	}
 
 	//tool tips

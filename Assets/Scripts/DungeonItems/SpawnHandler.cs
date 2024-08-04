@@ -46,16 +46,16 @@ public class SpawnHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		EventManager.OnDeathEvent += OnEntityDeath;
-		EventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateSpawnerLevel;
+		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
+		PlayerEventManager.OnPlayerLevelUpEvent += OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntity;
 
 		TrySpawnEntity();
 	}
 	private void OnDisable()
 	{
-		EventManager.OnDeathEvent -= OnEntityDeath;
-		EventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateSpawnerLevel;
+		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
+		PlayerEventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntity;
 	}
 

@@ -36,38 +36,38 @@ public class ToolTipManager : MonoBehaviour
 		OnMouseHover += ShowTip;
 		OnMouseLoseFocus += HideTip;
 
-		EventManager.OnShowPlayerInventoryEvent += HideTip;
-		EventManager.OnShowPlayerClassSelectionEvent += HideTip;
-		EventManager.OnShowPlayerSkillTreeEvent += HideTip;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HideTip;
-		EventManager.OnShowPlayerJournalEvent += HideTip;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HideTip;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideTip;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideTip;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideTip;
+		PlayerEventManager.OnShowPlayerJournalEvent += HideTip;
 
 		OnMouseRightClick += HideShowContextMenu;
 
-		EventManager.OnShowPlayerInventoryEvent += HideContextMenu;
-		EventManager.OnShowPlayerClassSelectionEvent += HideContextMenu;
-		EventManager.OnShowPlayerSkillTreeEvent += HideContextMenu;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HideContextMenu;
-		EventManager.OnShowPlayerJournalEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerJournalEvent += HideContextMenu;
 	}
 	private void OnDisable()
 	{
 		OnMouseHover -= ShowTip;
 		OnMouseLoseFocus -= HideTip;
 
-		EventManager.OnShowPlayerInventoryEvent -= HideTip;
-		EventManager.OnShowPlayerClassSelectionEvent -= HideTip;
-		EventManager.OnShowPlayerSkillTreeEvent -= HideTip;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideTip;
-		EventManager.OnShowPlayerJournalEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HideTip;
 
 		OnMouseRightClick -= HideShowContextMenu;
 
-		EventManager.OnShowPlayerInventoryEvent -= HideContextMenu;
-		EventManager.OnShowPlayerClassSelectionEvent -= HideContextMenu;
-		EventManager.OnShowPlayerSkillTreeEvent -= HideContextMenu;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HideContextMenu;
-		EventManager.OnShowPlayerJournalEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerJournalEvent -= HideContextMenu;
 	}
 
 	//context menu

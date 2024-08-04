@@ -30,11 +30,11 @@ public class PortalHandler : MonoBehaviour, IInteractable
 
 	public void Interact(PlayerController playerController)
 	{
-		EventManager.ShowPortalUi(this);
+		PlayerEventManager.ShowPortalUi(this);
 	}
 	public void UnInteract(PlayerController playerController)
 	{
-		EventManager.HidePortalUi();
+		PlayerEventManager.HidePortalUi();
 	}
 
 	//add a portal spin and wobble effect at some point via code or animator

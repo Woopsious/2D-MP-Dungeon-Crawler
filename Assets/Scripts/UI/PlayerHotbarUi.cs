@@ -83,29 +83,29 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		EventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
-		EventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
-		EventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
-		EventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
-		EventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
+		PlayerEventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
+		PlayerEventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
+		PlayerEventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
+		PlayerEventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
+		PlayerEventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
 
 		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
-		EventManager.OnDeathEvent += OnTargetDeathUnSelect;
+		DungeonHandler.OnEntityDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
-		EventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
-		EventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
-		EventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
-		EventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
-		EventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
+		PlayerEventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
+		PlayerEventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
+		PlayerEventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
+		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
+		PlayerEventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
 
 		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
-		EventManager.OnDeathEvent -= OnTargetDeathUnSelect;
+		DungeonHandler.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
 	{
@@ -217,23 +217,23 @@ public class PlayerHotbarUi : MonoBehaviour
 	//UI CHANGES
 	public void OpenInventoryButton()
 	{
-		EventManager.ShowPlayerInventory();
+		PlayerEventManager.ShowPlayerInventory();
 	}
 	public void OpenLearntAbilitiesButton()
 	{
-		EventManager.ShowPlayerLearntAbilities();
+		PlayerEventManager.ShowPlayerLearntAbilities();
 	}
 	public void OpenClassSelectionButton()
 	{
-		EventManager.ShowPlayerClassSelection();
+		PlayerEventManager.ShowPlayerClassSelection();
 	}
 	public void OpenClassSkillTreeButton()
 	{
-		EventManager.ShowPlayerSkillTree();
+		PlayerEventManager.ShowPlayerSkillTree();
 	}
 	public void OpenPlayerJournalButton()
 	{
-		EventManager.ShowPlayerJournal();
+		PlayerEventManager.ShowPlayerJournal();
 	}
 
 	//Select Target event

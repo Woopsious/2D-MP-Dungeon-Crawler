@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class PlayerInfoUi : MonoBehaviour
 {
+	public GameObject PlayerPrefab;
 	public static PlayerInfoUi Instance;
 
 	public static PlayerController playerInstance;
@@ -16,6 +17,7 @@ public class PlayerInfoUi : MonoBehaviour
 
 	private void Awake()
 	{
+		Instantiate(PlayerPrefab);
 		Instance = this;
 		Instance.interactWithText.SetActive(false);
 	}
@@ -28,13 +30,13 @@ public class PlayerInfoUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		EventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
-		EventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
+		PlayerEventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+		PlayerEventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 	private void OnDisable()
 	{
-		EventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
-		EventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
+		PlayerEventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+		PlayerEventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 
 	private void ShowHideInteractWithText(GameObject obj, bool showText)

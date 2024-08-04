@@ -52,7 +52,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	}
 	public void ChangeChestStateToOpen(bool isPlayerInteraction)
 	{
-		EventManager.DetectNewInteractedObject(gameObject, false);
+		PlayerEventManager.DetectNewInteractedObject(gameObject, false);
 		chestStateOpened = true;
 		spriteRenderer.sprite = chestOpenedSprite;
 		if (isPlayerInteraction)

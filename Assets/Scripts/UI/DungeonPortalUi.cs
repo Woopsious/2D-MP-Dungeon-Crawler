@@ -33,8 +33,8 @@ public class DungeonPortalUi : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadSavedDungeons;
-		EventManager.OnShowPortalUi += ShowPortalUi;
-		EventManager.OnHidePortalUi += HidePortalUi;
+		PlayerEventManager.OnShowPortalUi += ShowPortalUi;
+		PlayerEventManager.OnHidePortalUi += HidePortalUi;
 
 		DungeonDataSlotUi.OnDungeonSave += OnSaveDungeon;
 		DungeonDataSlotUi.OnDungeonDelete += OnDeleteDungeon;
@@ -42,8 +42,8 @@ public class DungeonPortalUi : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadSavedDungeons;
-		EventManager.OnShowPortalUi -= ShowPortalUi;
-		EventManager.OnHidePortalUi -= HidePortalUi;
+		PlayerEventManager.OnShowPortalUi -= ShowPortalUi;
+		PlayerEventManager.OnHidePortalUi -= HidePortalUi;
 
 		DungeonDataSlotUi.OnDungeonSave -= OnSaveDungeon;
 		DungeonDataSlotUi.OnDungeonDelete -= OnDeleteDungeon;

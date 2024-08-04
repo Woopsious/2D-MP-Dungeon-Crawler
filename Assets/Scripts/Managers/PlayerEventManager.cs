@@ -4,16 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 
-public static class EventManager
+public static class PlayerEventManager
 {
 	/// <summary>
 	/// GAME EVENTS
 	/// </summary>
-	public static event Action<GameObject> OnDeathEvent;
-	public static void DeathEvent(GameObject gameObject)
-	{
-		OnDeathEvent?.Invoke(gameObject);
-	}
 	public static Action<EntityStats> OnPlayerLevelUpEvent;
 	public static void PlayerLevelUp(EntityStats playerStats)
 	{

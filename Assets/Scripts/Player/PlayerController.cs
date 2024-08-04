@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public EntityStats playerStats;
 	[HideInInspector] public EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
+	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -56,6 +57,7 @@ public class PlayerController : MonoBehaviour
 		playerStats = GetComponent<EntityStats>();
 		playerClassHandler = GetComponent<EntityClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
 		playerEquipmentHandler.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -77,7 +79,7 @@ public class PlayerController : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInfo;
-		EventManager.OnDeathEvent += OnSelectedTargetDeath;
+		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
@@ -90,7 +92,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
 
 		SaveManager.RestoreData -= ReloadPlayerInfo;
-		EventManager.OnDeathEvent -= OnSelectedTargetDeath;
+		DungeonHandler.OnEntityDeathEvent -= OnSelectedTargetDeath;
 	}
 
 	private void Update()
@@ -114,7 +116,7 @@ public class PlayerController : MonoBehaviour
 			playerStats.entityLevel = debugPlayerLevel;
 		else
 			playerStats.entityLevel = 1;
-		EventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
 	private void ReloadPlayerInfo()
@@ -123,7 +125,7 @@ public class PlayerController : MonoBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
-		EventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelUp(playerStats);
 	}
 
 	private void PlayerMovement()
@@ -256,39 +258,39 @@ public class PlayerController : MonoBehaviour
 	{
 		if (other.GetComponent<PortalHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedPortal = other.GetComponent<PortalHandler>();
 		}
 		else if (other.GetComponent<NpcHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedNpc = other.GetComponent<NpcHandler>();
 		}
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedChest = other.GetComponent<ChestHandler>();
 			if (currentInteractedChest.chestStateOpened)
-				EventManager.DetectNewInteractedObject(other.gameObject, false);
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			else
-				EventManager.DetectNewInteractedObject(other.gameObject, true);
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<PortalHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, false);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedPortal = null;
 		}
 		else if (other.GetComponent<NpcHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, false);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedNpc = null;
 		}
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
-			EventManager.DetectNewInteractedObject(other.gameObject, false);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedChest = null;
 		}
 	}
@@ -429,22 +431,22 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInventory()
 	{
-		EventManager.ShowPlayerInventory();
+		PlayerEventManager.ShowPlayerInventory();
 	}
 	private void OnJournal()
 	{
-		EventManager.ShowPlayerJournal();
+		PlayerEventManager.ShowPlayerJournal();
 	}
 	private void OnClassSelection()
 	{
-		EventManager.ShowPlayerClassSelection();
+		PlayerEventManager.ShowPlayerClassSelection();
 	}
 	private void OnSkillTree()
 	{
-		EventManager.ShowPlayerSkillTree();
+		PlayerEventManager.ShowPlayerSkillTree();
 	}
 	private void OnLearntAbilities()
 	{
-		EventManager.ShowPlayerLearntAbilities();
+		PlayerEventManager.ShowPlayerLearntAbilities();
 	}
 }

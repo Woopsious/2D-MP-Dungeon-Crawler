@@ -15,7 +15,6 @@ public class EntityClassHandler : MonoBehaviour
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 
-	//public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
 	public event Action<SOClassAbilities> OnAbilityUnlock;
 	public event Action<SOClassStatBonuses> OnStatRefund;
@@ -54,10 +53,7 @@ public class EntityClassHandler : MonoBehaviour
 	}
 
 	///	<summery>
-	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
-	///	then clear unlockedLists
 	///	
-	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
 	///	<summery>
 	protected virtual void UpdateClass(SOClasses newClass)
 	{

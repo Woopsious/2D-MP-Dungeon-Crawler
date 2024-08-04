@@ -36,29 +36,29 @@ public class PlayerJournalUi : MonoBehaviour
 	{
 		SaveManager.RestoreData += ReloadActiveQuests;
 
-		EventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
-		EventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
-		EventManager.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
-		EventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
-		EventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
+		PlayerEventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
 
-		EventManager.OnDeathEvent += OnEntityDeathUpdateKillQuests;
-		EventManager.OnShowNpcJournal += ShowNpcJournal;
-		EventManager.OnHideNpcJournal += HideNpcJournal;
+		DungeonHandler.OnEntityDeathEvent += OnEntityDeathUpdateKillQuests;
+		PlayerEventManager.OnShowNpcJournal += ShowNpcJournal;
+		PlayerEventManager.OnHideNpcJournal += HideNpcJournal;
 	}
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadActiveQuests;
 
-		EventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
-		EventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
-		EventManager.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
-		EventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
-		EventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
+		PlayerEventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 
-		EventManager.OnDeathEvent += OnEntityDeathUpdateKillQuests;
-		EventManager.OnShowNpcJournal -= ShowNpcJournal;
-		EventManager.OnHideNpcJournal -= HideNpcJournal;
+		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
+		PlayerEventManager.OnShowNpcJournal -= ShowNpcJournal;
+		PlayerEventManager.OnHideNpcJournal -= HideNpcJournal;
 	}
 
 	public void AcceptQuest(QuestDataSlotUi quest)

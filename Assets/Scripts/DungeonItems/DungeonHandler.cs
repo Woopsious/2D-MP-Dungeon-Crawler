@@ -19,6 +19,8 @@ public class DungeonHandler : MonoBehaviour
 
 	public List<EntityStats> inActiveEntityPool = new List<EntityStats>();
 
+	public static event Action<GameObject> OnEntityDeathEvent;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -26,15 +28,20 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		EventManager.OnDeathEvent += OnEntityDeath;
 		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
 		SaveManager.RestoreData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		EventManager.OnDeathEvent -= OnEntityDeath;
 		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
 		SaveManager.RestoreData -= RestoreDungeonChestData;
+	}
+
+	public static void EntityDeathEvent(GameObject gameObject)
+	{
+		OnEntityDeathEvent?.Invoke(gameObject);
+
+		Instance.OnEntityDeath(gameObject);
 	}
 
 	private void OnEntityDeath(GameObject obj)

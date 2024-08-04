@@ -24,14 +24,14 @@ public class PlayerExperienceHandler : MonoBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerExp;
-		EventManager.OnDeathEvent += AddExperience;
+		DungeonHandler.OnEntityDeathEvent += AddExperience;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerExp;
-		EventManager.OnDeathEvent -= AddExperience;
+		DungeonHandler.OnEntityDeathEvent -= AddExperience;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}
 
@@ -47,7 +47,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	public void ReloadPlayerExp()
 	{
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
-		EventManager.PlayerExpChange(maxExp, currentExp);
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
 	private void OnQuestComplete(QuestDataSlotUi quest)
@@ -79,7 +79,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		else
 			Debug.LogError("Error no components match for adding exp");
 
-		EventManager.PlayerExpChange(maxExp, currentExp);
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 
 		if (CheckIfPLayerCanLevelUp()) return;
 		OnPlayerLevelUp();
@@ -90,8 +90,8 @@ public class PlayerExperienceHandler : MonoBehaviour
 		int r = currentExp % maxExp;
 		currentExp = r;
 
-		EventManager.PlayerExpChange(maxExp, currentExp);
-		EventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
+		PlayerEventManager.PlayerLevelUp(playerStats);
 	}
 	private bool CheckIfPLayerCanLevelUp()
 	{

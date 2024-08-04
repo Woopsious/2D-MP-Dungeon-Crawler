@@ -184,8 +184,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	//node updates
 	public void UnlockThisNode()
 	{
-		isAlreadyUnlocked = true;
-
 		if (statUnlock != null)
 			PlayerClassesUi.Instance.UnlockStatBonus(this, statUnlock.unlock);
 		else if (abilityUnlock.unlock != null)
@@ -193,8 +191,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	}
 	public void RefundThisNode()
 	{
-		isAlreadyUnlocked = false;
-
 		if (statUnlock != null)
 			PlayerClassesUi.Instance.RefundStatBonus(this, statUnlock.unlock);
 		else if (abilityUnlock.unlock != null)
@@ -230,6 +226,11 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		if (abilityUnlock != null)
 		{
 			if (playerStats.entityLevel < abilityUnlock.LevelRequirement)
+			{
+				LockNode();
+				return;
+			}
+			if (!PlayerClassesUi.Instance.DoesPlayerHaveFreeAbilitySlot())
 			{
 				LockNode();
 				return;

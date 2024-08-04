@@ -64,13 +64,13 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
-			EventManager.ShowPlayerJournal();
-			EventManager.ShowNpcJournal(this);
+			PlayerEventManager.ShowPlayerJournal();
+			PlayerEventManager.ShowNpcJournal(this);
 		}
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 		{
-			EventManager.ShowPlayerInventory();
-			EventManager.ShowNpcShopInventory(this);
+			PlayerEventManager.ShowPlayerInventory();
+			PlayerEventManager.ShowNpcShopInventory(this);
 		}
 	}
 	public void UnInteract(PlayerController player)
@@ -78,9 +78,9 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		player.isInteractingWithNpc = false;
 
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
-			EventManager.HideNpcJournal(this);
+			PlayerEventManager.HideNpcJournal(this);
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
-			EventManager.HideNpcShopInventory(this);
+			PlayerEventManager.HideNpcShopInventory(this);
 	}
 	private void UpdateNpcTypeText()
 	{

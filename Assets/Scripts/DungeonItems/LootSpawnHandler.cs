@@ -12,16 +12,16 @@ public class LootSpawnHandler : MonoBehaviour
 	//invoked from event
 	private void OnEnable()
 	{
-		EventManager.OnDeathEvent += OnDeathEvent;
-		EventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
+		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
+		PlayerEventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
 	}
 	private void OnDisable()
 	{
-		EventManager.OnDeathEvent -= OnDeathEvent;
-		EventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
+		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
+		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
 	}
 
-	private void OnDeathEvent(GameObject obj)
+	private void OnEntityDeathEvent(GameObject obj)
 	{
 		if (obj != gameObject) return;
 

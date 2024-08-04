@@ -15,7 +15,7 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundStatBonusUnlock += RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock += RefundAbility;
 
-		EventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
+		PlayerEventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
 	}
 	private void OnDisable()
 	{
@@ -25,7 +25,7 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundStatBonusUnlock -= RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
 
-		EventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
+		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
 	protected override void UpdateClass(SOClasses newPlayerClass)
