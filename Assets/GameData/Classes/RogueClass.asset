@@ -17,7 +17,7 @@ MonoBehaviour:
     situations. Keep in mind though they are weak to most attacks but do have some
     options for self healing besides health potions.
   classImageUi: {fileID: 0}
-  baseClassAbilitySlots: 0
+  baseClassAbilitySlots: 1
   statBonusLists: []
   abilityLists: []
   classStatBonusList:

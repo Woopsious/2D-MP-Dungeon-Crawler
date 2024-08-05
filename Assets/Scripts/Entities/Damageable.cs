@@ -25,8 +25,6 @@ public class Damageable : MonoBehaviour
 		if (DebugInvincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
 
-		Debug.Log("player ref:" + player);
-
 		ApplyHitForce(other, knockBack);
 		OnHit?.Invoke(player, damage, damageType, isPercentageValue, isDestroyedInOneHit);
 	}

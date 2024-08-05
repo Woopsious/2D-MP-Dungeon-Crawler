@@ -37,6 +37,12 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
 	public float playerDetectionRange;
+	private readonly float playerDetectionCooldown = 0.1f;
+	private float playerDetectionTimer;
+
+	[Header("Healing Ability Cooldown")]
+	public bool canCastHealingAbility;
+	public float healingAbilityTimer;
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -45,10 +51,6 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Idle Sound Settings")]
 	private readonly float playerAggroRatingCooldown = 0.5f;
 	private float playerAggroRatingTimer;
-
-	[Header("Idle Sound Settings")]
-	private readonly float playerDetectionCooldown = 0.1f;
-	private float playerDetectionTimer;
 
 	private void Awake()
 	{
@@ -61,19 +63,18 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		Initilize();
 	}
+
+	private void OnEnable()
+	{
+		entityStats.OnHealthChangeEvent += CastHealingAbility;
+	}
+	private void OnDisable()
+	{
+		entityStats.OnHealthChangeEvent -= CastHealingAbility;
+	}
+
 	private void Update()
 	{
-		/// <summary>
-		/// LOGIC FOR ENTITY BEHAVIOUR
-		/// 1. idle and randomly move around the map within bounds of where they spawned
-		/// 2. when play enters agro range, chase player endless till they escape max chase range
-		/// 2A. if they escape max chase range move to last know position
-		/// 2B. if player moves out of visible range move to last know position
-		/// 3. once there, if player not found go back to step 1.
-		/// 4. once there, if player is found return to step 2.
-		/// </summary>
-		/// 
-
 		currentState.UpdateLogic(this);
 	}
 	private void FixedUpdate()
@@ -90,6 +91,7 @@ public class EntityBehaviour : MonoBehaviour
 		UpdateAnimationState();
 		UpdateAggroRatingTimer();
 		CheckIfPlayerVisibleTimer();
+		HealingAbilityTimer();
 	}
 	private void Initilize()
 	{
@@ -146,7 +148,7 @@ public class EntityBehaviour : MonoBehaviour
 			animator.SetBool("isIdle", false);
 	}
 
-	//idle + attack behaviour
+	//player visible Check
 	public void CheckIfPlayerVisibleTimer()
 	{
 		if (playerTarget == null)
@@ -174,6 +176,8 @@ public class EntityBehaviour : MonoBehaviour
 				currentPlayerTargetInView = false;
 		}
 	}
+
+	//shared idle/attack behaviour 
 	public bool CheckDistanceToDestination()
 	{
 		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && HasReachedDestination == false)
@@ -263,6 +267,78 @@ public class EntityBehaviour : MonoBehaviour
 
 		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
 		playerTarget = playerAggroList[0].player;
+	}
+
+	//ABILITIES
+	//casting of specific abilities
+	public void CastHealingAbility(int maxHealth, int currentHealth)
+	{
+		if (!canCastHealingAbility) return;
+		if (maxHealth == 0) return;
+
+		int healthPercentage = (int)((float)currentHealth / maxHealth * 100);
+		if (healthPercentage > 50) return;
+
+		SOClassAbilities healingAbility = GrabRandomSelfHealingAbility();
+		if (healingAbility == null) return;
+
+		canCastHealingAbility = false;
+		healingAbilityTimer = healingAbility.abilityCooldown;
+		CastEffect(healingAbility);
+	}
+	private SOClassAbilities GrabRandomSelfHealingAbility()
+	{
+		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+		{
+			if (ability.damageType == SOClassAbilities.DamageType.isHealing && ability.canOnlyTargetSelf)
+				return ability;
+		}
+		return null;
+	}
+
+	//casting of ability types
+	private void CastEffect(SOClassAbilities ability)
+	{
+		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isHealing)
+			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.HealingPercentageModifier.finalPercentageValue);
+		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isMana)
+			entityStats.IncreaseMana(ability.damageValuePercentage, true);
+		else
+		{
+			if (ability.canOnlyTargetSelf)
+				entityStats.ApplyStatusEffect(ability);
+		}
+	}
+	private void CastDirectionalAbility(SOClassAbilities ability)
+	{
+		GameObject go = Instantiate(projectilePrefab, transform, true);
+		go.transform.SetParent(null);
+		go.transform.position = (Vector2)transform.position;
+		go.GetComponent<Projectiles>().Initilize(ability, entityStats);
+
+		Vector3 rotation = playerTarget.transform.position - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+	}
+	private void CastAoeAbility(SOClassAbilities ability)
+	{
+		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
+		go.transform.SetParent(null);
+		go.transform.position = (Vector2)mousePosition;
+		go.GetComponent<AbilityAOE>().Initilize(ability, entityStats);
+		go.GetComponent<AbilityAOE>().AddPlayerRef(null);
+	}
+
+	//ability type cooldowns
+	private void HealingAbilityTimer()
+	{
+		if (canCastHealingAbility) return;
+
+		healingAbilityTimer -= Time.deltaTime;
+
+		if (healingAbilityTimer <= 0)
+			canCastHealingAbility = true;
 	}
 
 	//STATE CHANGES

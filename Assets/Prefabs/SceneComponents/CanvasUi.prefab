@@ -15252,6 +15252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8006694690824244afbe0d6b5ce905e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayerPrefab: {fileID: 1405763340389273497, guid: e799ccb934566574cb460f5dbb57b669, type: 3}
   playerInfo: {fileID: 5114550929473863488}
   interactWithText: {fileID: 2939117322519558345}
   interactWithTextPrefab: {fileID: 6815497722696831582, guid: 3105d789d9b23d448a6f372d23d238e1, type: 3}
@@ -15502,6 +15503,8 @@ MonoBehaviour:
   playAsMageButton: {fileID: 0}
   closeClassTreeButtonObj: {fileID: 607302320418873706}
   resetPlayerClassButtonObj: {fileID: 8117899954602190359}
+  maxAbilitySlots: 0
+  abilitySlotsUsed: 0
   classNodeSlotsPrefab: {fileID: 4239936581087963131, guid: 767a16654a34f074283f212e34a142b4, type: 3}
 --- !u!114 &609185498396968913
 MonoBehaviour:

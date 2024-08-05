@@ -223,13 +223,6 @@ public class EntityStats : MonoBehaviour
 		if (!IsPlayerEntity())
 			entityBehaviour.AddToAggroRating(player, (int)damage);
 
-		///
-		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
-		/// also could invoke a onEntityDeath that instead calls functions in scripts to disable them then and play death sounds/animations
-		/// this way if an entity does have a death sound but no death animation i dont need to run checks or hard code a reference
-		/// and a box for instance can just have a death sound and instead of a death animation has a death partical effect explosion
-		///
-
 		if (currentHealth <= 0)
 		{
 			audioHandler.PlayAudio(entityBaseStats.deathSfx);
@@ -238,7 +231,6 @@ public class EntityStats : MonoBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
-		Debug.Log(gameObject.name);
 		if (!IsPlayerEntity()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();

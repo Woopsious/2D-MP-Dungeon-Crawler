@@ -176,8 +176,6 @@ public class Weapons : Items
 		if (!isEquippedByPlayer && !isEquippedByOther) return;
 		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
 
-		Debug.Log("player ref:" + player);
-
 		other.GetComponent<Damageable>().OnHitFromDamageSource(player, boxCollider, damage, 
 			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
 	}

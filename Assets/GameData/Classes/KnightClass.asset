@@ -17,7 +17,7 @@ MonoBehaviour:
     decent enough in dishing out there own damage. They do however have limited utility
     and self healing unless you have plenty of health potions.
   classImageUi: {fileID: 0}
-  baseClassAbilitySlots: 0
+  baseClassAbilitySlots: 1
   statBonusLists:
   - {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
   - {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}

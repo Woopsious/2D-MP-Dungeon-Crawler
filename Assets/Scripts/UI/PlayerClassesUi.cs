@@ -547,8 +547,6 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		if (currentPlayerClass == null) return;
 
-		Debug.Log("updating abiloty slots");
-
 		maxAbilitySlots = currentPlayerClass.baseClassAbilitySlots;
 
 		foreach (SpellSlots spellSlot in currentPlayerClass.spellSlotsPerLevel)

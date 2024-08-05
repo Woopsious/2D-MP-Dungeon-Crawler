@@ -17,7 +17,7 @@ MonoBehaviour:
     have decent utility and some team and self healing options. They lack any good
     protection though especially close up.
   classImageUi: {fileID: 0}
-  baseClassAbilitySlots: 0
+  baseClassAbilitySlots: 1
   statBonusLists: []
   abilityLists: []
   classStatBonusList:

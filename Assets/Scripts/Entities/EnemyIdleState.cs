@@ -26,6 +26,7 @@ public class EnemyIdleState : EnemyBaseState
 	}
 
 	//idle behaviour
+	//movement
 	private void IdleBehaviour(EntityBehaviour entity)
 	{
 		if (!entity.currentPlayerTargetInView)
@@ -51,6 +52,8 @@ public class EnemyIdleState : EnemyBaseState
 			}
 		}
 	}
+
+	//abilityCasting
 
 	private void IdleAtPositionTimer(EntityBehaviour entity)
 	{
