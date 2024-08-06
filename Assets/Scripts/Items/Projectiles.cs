@@ -100,6 +100,7 @@ public class Projectiles : MonoBehaviour
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
 
+		if (weaponBaseRef == null) return;
 		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
 			Destroy(gameObject);
 	}

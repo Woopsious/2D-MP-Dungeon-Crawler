@@ -14,16 +14,11 @@ public class PlayerDetection : MonoBehaviour
 		if (other.gameObject.GetComponent<PlayerController>() == null) return;
 
 		if (other.gameObject.GetComponent<PlayerController>())
-			entityBehaviourRef.playerTarget = other.gameObject.GetComponent<PlayerController>();
-
-		entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
+			entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.gameObject.GetComponent<PlayerController>() == null) return;
-
-		if (other.gameObject.GetComponent<PlayerController>())
-			entityBehaviourRef.playerTarget = null;
 
 		if (entityBehaviourRef.markedForCleanUp)
 			DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);

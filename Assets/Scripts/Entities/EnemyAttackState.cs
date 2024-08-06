@@ -39,6 +39,8 @@ public class EnemyAttackState : EnemyBaseState
 	//attack behaviour logic
 	private void AttackBehaviourLogic(EntityBehaviour entity)
 	{
+		entity.CastOffensiveAbility();
+
 		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
 
 		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)

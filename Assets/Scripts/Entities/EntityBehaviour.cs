@@ -1,6 +1,7 @@
 using NavMeshPlus.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UIElements;
@@ -29,6 +30,7 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Player Targeting")]
 	public LayerMask includeMe;
+	private LayerMask playerLayerMask;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
 	public bool currentPlayerTargetInView;
@@ -44,6 +46,10 @@ public class EntityBehaviour : MonoBehaviour
 	public bool canCastHealingAbility;
 	public float healingAbilityTimer;
 
+	[Header("Offensive Ability Cooldown")]
+	public bool canCastOffensiveAbility;
+	public float offensiveAbilityTimer;
+
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
@@ -58,6 +64,7 @@ public class EntityBehaviour : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
+		playerLayerMask = 1 << 8;
 	}
 	private void Start()
 	{
@@ -76,6 +83,12 @@ public class EntityBehaviour : MonoBehaviour
 	private void Update()
 	{
 		currentState.UpdateLogic(this);
+
+		UpdateAggroRatingTimer();
+		CheckIfPlayerVisibleTimer();
+
+		HealingAbilityTimer();
+		OffensiveAbilityTimer();
 	}
 	private void FixedUpdate()
 	{
@@ -89,9 +102,6 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-		UpdateAggroRatingTimer();
-		CheckIfPlayerVisibleTimer();
-		HealingAbilityTimer();
 	}
 	private void Initilize()
 	{
@@ -210,7 +220,8 @@ public class EntityBehaviour : MonoBehaviour
 	public void AddPlayerToAggroList(PlayerController player, int damageRecieved)
 	{
 		foreach (PlayerAggroRating aggroRating in playerAggroList)
-			if (aggroRating.player == player) break;
+			if (aggroRating.player == player)
+				return;
 
 		float aggroModifier;
 		if (player.playerClassHandler.currentEntityClass = PlayerClassesUi.Instance.knightClass)
@@ -296,6 +307,64 @@ public class EntityBehaviour : MonoBehaviour
 		return null;
 	}
 
+	public void CastOffensiveAbility()
+	{
+		if (!canCastOffensiveAbility) return;
+		if (playerTarget == null) return;
+
+		Collider2D[] colliders = Physics2D.OverlapCircleAll(playerTarget.transform.position, 10f, playerLayerMask); //quarter of min aoe size
+
+		SOClassAbilities offensiveAoeAbility = GrabRandomOffensiveAoeAbility();
+		SOClassAbilities offensiveDirectionalAbility = GrabRandomOffensiveDirectionalAbility();
+
+		if (colliders.Length >= 2 && offensiveAoeAbility != null)
+		{
+			canCastOffensiveAbility = false;
+			offensiveAbilityTimer = offensiveAoeAbility.abilityCooldown / 2; // /2 to simulate having 5 equipped to hotbar
+			CastAoeAbility(offensiveAoeAbility);
+			return;
+		}
+		else if (offensiveDirectionalAbility != null)
+		{
+			canCastOffensiveAbility = false;
+			offensiveAbilityTimer = offensiveDirectionalAbility.abilityCooldown / 2; // /2 to simulate having 5 equipped to hotbar
+			CastDirectionalAbility(offensiveDirectionalAbility);
+			return;
+		}
+	}
+	private SOClassAbilities GrabRandomOffensiveDirectionalAbility()
+	{
+		List<SOClassAbilities> pickableAbilities = new List<SOClassAbilities>();
+
+		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+		{
+			if (ability.isProjectile &&
+				ability.damageType != SOClassAbilities.DamageType.isHealing && ability.damageType != SOClassAbilities.DamageType.isMana)
+				pickableAbilities.Add(ability);
+		}
+		if (pickableAbilities.Count == 0)
+			return null;
+
+		SOClassAbilities chosenAbility = pickableAbilities[Utilities.GetRandomNumber(pickableAbilities.Count - 1)];
+		return chosenAbility;
+	}
+	private SOClassAbilities GrabRandomOffensiveAoeAbility()
+	{
+		List<SOClassAbilities> pickableAbilities = new List<SOClassAbilities>();
+
+		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+		{
+			if (ability.isAOE &&
+				ability.damageType != SOClassAbilities.DamageType.isHealing && ability.damageType != SOClassAbilities.DamageType.isMana)
+				pickableAbilities.Add(ability);
+		}
+		if (pickableAbilities.Count == 0)
+			return null;
+
+		SOClassAbilities chosenAbility = pickableAbilities[Utilities.GetRandomNumber(pickableAbilities.Count - 1)];
+		return chosenAbility;
+	}
+
 	//casting of ability types
 	private void CastEffect(SOClassAbilities ability)
 	{
@@ -322,10 +391,9 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	private void CastAoeAbility(SOClassAbilities ability)
 	{
-		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
 		go.transform.SetParent(null);
-		go.transform.position = (Vector2)mousePosition;
+		go.transform.position = playerTarget.transform.position;
 		go.GetComponent<AbilityAOE>().Initilize(ability, entityStats);
 		go.GetComponent<AbilityAOE>().AddPlayerRef(null);
 	}
@@ -339,6 +407,15 @@ public class EntityBehaviour : MonoBehaviour
 
 		if (healingAbilityTimer <= 0)
 			canCastHealingAbility = true;
+	}
+	private void OffensiveAbilityTimer()
+	{
+		if (canCastOffensiveAbility) return;
+
+		offensiveAbilityTimer -= Time.deltaTime;
+
+		if (offensiveAbilityTimer <= 0)
+			canCastOffensiveAbility = true;
 	}
 
 	//STATE CHANGES
