@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInfoUi : MonoBehaviour
 {
@@ -17,7 +18,8 @@ public class PlayerInfoUi : MonoBehaviour
 
 	private void Awake()
 	{
-		Instantiate(PlayerPrefab);
+		if (SceneManager.GetActiveScene().name != "TestingScene")
+			Instantiate(PlayerPrefab);
 		Instance = this;
 		Instance.interactWithText.SetActive(false);
 	}

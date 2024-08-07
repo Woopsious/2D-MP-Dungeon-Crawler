@@ -21,7 +21,7 @@ MonoBehaviour:
   requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 2
-  statusEffectPercentageModifier: 0.2
+  statusEffectPercentageModifier: -0.2
   isAOE: 0
   aoeSize: 0
   isDOT: 1

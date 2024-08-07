@@ -23,7 +23,7 @@ MonoBehaviour:
   statusEffectType: 0
   statusEffectPercentageModifier: 0
   isAOE: 1
-  aoeSize: 25
+  aoeSize: 40
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0

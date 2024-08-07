@@ -9,7 +9,7 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
-	private EntityBehaviour entityBehaviour;
+	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
@@ -123,6 +123,7 @@ public class EntityStats : MonoBehaviour
 	{
 		spriteRenderer.color = Color.white;
 		CalculateBaseStats();
+		classHandler.RerollEquippedAbilities();
 	}
 	public void ResetEntityBehaviour(SpawnHandler spawner)
 	{

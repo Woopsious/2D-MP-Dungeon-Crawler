@@ -819,6 +819,10 @@ MonoBehaviour:
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
   playerDetectionRange: 30
+  canCastHealingAbility: 0
+  healingAbilityTimer: 0
+  canCastOffensiveAbility: 0
+  offensiveAbilityTimer: 0
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
 --- !u!114 &5524032958697930596
@@ -835,8 +839,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
   currentEntityClass: {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
-  newUnlockedStatBoostList: []
-  newUnlockedAbilitiesList: []
+  unlockedStatBoostList: []
+  unlockedAbilitiesList: []
 --- !u!114 &7819874737091508958
 MonoBehaviour:
   m_ObjectHideFlags: 0

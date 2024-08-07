@@ -206,14 +206,23 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastEffect(SOClassAbilities ability)
 	{
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isHealing)
-			playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isMana)
-			playerStats.IncreaseMana(ability.damageValuePercentage, true);
+		//add mana restoration here if i ever decided to add an ability to restore mana
+
+		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+		{
+			if (ability.canOnlyTargetSelf || selectedTarget == null)
+				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
+
+			//heal selected target/friendly when i get round to doing that in mp
+			//if (!ability.canOnlyTargetSelf && selectedTarget != null)
+				//playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
+		}
 		else
 		{
-			if (ability.canOnlyTargetSelf)
+			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //in mp add friendly is selected check changing who gets buff
 				playerStats.ApplyStatusEffect(ability);
+			else if (ability.isOffensiveAbility && selectedTarget != null)
+				selectedTarget.ApplyStatusEffect(ability);
 		}
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)

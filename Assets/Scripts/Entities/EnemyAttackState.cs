@@ -11,10 +11,19 @@ public class EnemyAttackState : EnemyBaseState
 	float distanceToPlayer;
 	bool idleInWeaponRange;
 
+	private LayerMask playerLayerMask;
+	private LayerMask entityLayerMask;
+
+	private int chanceToUseAbility = 50;
+	private float useAbilityCooldown = 2.5f;
+	private float useAbilityTimer;
+
 	public override void Enter(EntityBehaviour entity)
 	{
 		equippedWeapon = entity.entityStats.equipmentHandler.equippedWeapon;
 		distanceToPlayer = entity.entityBehaviour.aggroRange;
+		playerLayerMask = 1 << 8;
+		entityLayerMask = 1 << 9;
 	}
 	public override void Exit(EntityBehaviour entity)
 	{
@@ -51,6 +60,8 @@ public class EnemyAttackState : EnemyBaseState
 				equippedWeapon.MeleeAttack(entity.playerTarget.transform.position);
 		}
 	}
+
+	//abilites logic
 
 	//attack behaviour physics
 	private void AttackBehaviourPhysics(EntityBehaviour entity)

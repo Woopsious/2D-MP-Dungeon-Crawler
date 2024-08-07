@@ -17,7 +17,7 @@ MonoBehaviour:
   humanoidType: 2
   expOnDeath: 40
   entityBehaviour: {fileID: 11400000, guid: 5d5ac5a9218c3b24da17e8764c8aba52, type: 2}
-  maxHealth: 100
+  maxHealth: 50
   physicalDamageResistance: 3
   poisonDamageResistance: 8
   fireDamageResistance: 5
@@ -26,7 +26,10 @@ MonoBehaviour:
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
   possibleClassesList:
+  - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  - {fileID: 11400000, guid: 8c94f4824de128042acbaee3584c249c, type: 2}
   - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
+  - {fileID: 11400000, guid: 42ee38bbdb9a4f24eab27497a00bb1ec, type: 2}
   - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
   possibleWeaponsList:
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}

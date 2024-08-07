@@ -11,15 +11,11 @@ public class PlayerDetection : MonoBehaviour
 	//in Mp will need to be modified to handle multiple players
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<PlayerController>() == null) return;
-
-		if (other.gameObject.GetComponent<PlayerController>())
+		if (other.gameObject.GetComponent<PlayerController>() != null)
 			entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<PlayerController>() == null) return;
-
 		if (entityBehaviourRef.markedForCleanUp)
 			DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);
 	}

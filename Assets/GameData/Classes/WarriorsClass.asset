@@ -45,11 +45,11 @@ MonoBehaviour:
     LevelRequirement: 18
   spellSlotsPerLevel:
   - LevelRequirement: 5
-    SpellSlotsPerLevel: 1
+    AbilitySlotsPerLevel: 1
   - LevelRequirement: 10
-    SpellSlotsPerLevel: 1
+    AbilitySlotsPerLevel: 1
   - LevelRequirement: 15
-    SpellSlotsPerLevel: 1
+    AbilitySlotsPerLevel: 1
   classAbilitiesOffensiveList:
   - unlock: {fileID: 11400000, guid: 56319319c036b0c418884038f3b87eae, type: 2}
     LevelRequirement: 10

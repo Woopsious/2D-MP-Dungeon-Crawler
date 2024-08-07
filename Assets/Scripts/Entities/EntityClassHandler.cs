@@ -20,7 +20,6 @@ public class EntityClassHandler : MonoBehaviour
 	public event Action<SOClassStatBonuses> OnStatRefund;
 	public event Action<SOClassAbilities> OnAbilityRefund;
 
-
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
@@ -50,11 +49,63 @@ public class EntityClassHandler : MonoBehaviour
 			if (entityStats.entityLevel < ability.LevelRequirement) continue;
 			UnlockAbility(ability.unlock);
 		}
+
+		SetUpEntityEquippedAbilities();
+	}
+	public void RerollEquippedAbilities()
+	{
+		entityStats.entityBehaviour.offensiveAbility = null;
+		entityStats.entityBehaviour.healingAbility = null;
+		SetUpEntityEquippedAbilities();
+	}
+	private void SetUpEntityEquippedAbilities()
+	{
+		ChooseEntityAbilities();
+	}
+	private void ChooseEntityAbilities()
+	{
+		SOClassAbilities pickedAbility = PickOffensiveAbility();
+		if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
+			entityStats.entityBehaviour.offensiveAbility = pickedAbility;
+
+		pickedAbility = PickHealingAbility();
+        if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
+			entityStats.entityBehaviour.healingAbility = pickedAbility;
+	}
+	private SOClassAbilities PickOffensiveAbility()
+	{
+		List<SOClassAbilities> offensiveAbilities = new List<SOClassAbilities>();
+		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		{
+			if (ability.damageType != SOClassAbilities.DamageType.isHealing)
+				offensiveAbilities.Add(ability);
+		}
+
+		if (offensiveAbilities.Count == 0)
+			return null;
+		else return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
+	}
+	private SOClassAbilities PickHealingAbility()
+	{
+		List<SOClassAbilities> healingAbilities = new List<SOClassAbilities>();
+		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		{
+			if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+				healingAbilities.Add(ability);
+		}
+
+		if (healingAbilities.Count == 0)
+			return null;
+		else return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
 	}
 
-	///	<summery>
-	///	
-	///	<summery>
+	private bool IsAbilityAlreadyEquipped(SOClassAbilities abilityToCheck)
+	{
+		if (abilityToCheck == entityStats.entityBehaviour.offensiveAbility) return true;
+		if (abilityToCheck == entityStats.entityBehaviour.healingAbility) return true;
+		return false;
+	}
+
 	protected virtual void UpdateClass(SOClasses newClass)
 	{
 		for (int i = unlockedStatBoostList.Count - 1; i >= 0; i--)

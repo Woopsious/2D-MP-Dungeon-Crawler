@@ -21,8 +21,9 @@ MonoBehaviour:
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 1
-  aoeSize: 30
+  aoeSize: 40
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0

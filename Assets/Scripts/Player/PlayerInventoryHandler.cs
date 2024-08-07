@@ -83,7 +83,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 			item.itemSprite = playerClass.startingItems[i].itemImage;
 			item.itemPrice = playerClass.startingItems[i].itemPrice;
 
-			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
+			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, GetComponent<EntityStats>().entityLevel);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}

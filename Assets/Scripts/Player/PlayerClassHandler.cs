@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
 {
-	public int abilitySlots;
+	private int abilitySlots;
 
 	private void OnEnable()
 	{
@@ -59,16 +59,15 @@ public class PlayerClassHandler : EntityClassHandler
 	{
 		UpdateMaxAbilitySlots();
 	}
-	private void UpdateMaxAbilitySlots()
+	protected void UpdateMaxAbilitySlots()
 	{
 		if (currentEntityClass == null) return;
-
 		abilitySlots = currentEntityClass.baseClassAbilitySlots;
 
-		foreach (SpellSlots spellSlot in currentEntityClass.spellSlotsPerLevel)
+		foreach (AbilitySlots abilitySlot in currentEntityClass.spellSlotsPerLevel)
 		{
-			if (entityStats.entityLevel >= spellSlot.LevelRequirement)
-				abilitySlots += spellSlot.SpellSlotsPerLevel;
+			if (entityStats.entityLevel >= abilitySlot.LevelRequirement)
+				abilitySlots += abilitySlot.AbilitySlotsPerLevel;
 		}
 	}
 	private void UpdateClassTreeUi()

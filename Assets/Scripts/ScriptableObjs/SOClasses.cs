@@ -49,7 +49,7 @@ public class SOClasses : ScriptableObject
 	/// loop through all of these when spawning any type of entity to apply stat bonuses.
 	/// for player also loop through these when opening class tree ui to update it, + once player selects a stat bonus
 	/// </summary>
-	public List<SpellSlots> spellSlotsPerLevel = new List<SpellSlots>();
+	public List<AbilitySlots> spellSlotsPerLevel = new List<AbilitySlots>();
 	public List<ClassAbilityUnlocks> classAbilitiesOffensiveList = new List<ClassAbilityUnlocks>();
 	public List<ClassAbilityUnlocks> classAbilitiesHealingList = new List<ClassAbilityUnlocks>();
 	public List<ClassAbilityUnlocks> classAbilitiesEffectsList = new List<ClassAbilityUnlocks>();
@@ -69,10 +69,10 @@ public class SOClasses : ScriptableObject
 }
 
 [System.Serializable]
-public class SpellSlots
+public class AbilitySlots
 {
 	public int LevelRequirement;
-	public int SpellSlotsPerLevel;
+	public int AbilitySlotsPerLevel;
 }
 
 [System.Serializable]

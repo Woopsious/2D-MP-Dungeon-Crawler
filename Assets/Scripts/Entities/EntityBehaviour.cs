@@ -31,6 +31,7 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Player Targeting")]
 	public LayerMask includeMe;
 	private LayerMask playerLayerMask;
+	private LayerMask entityLayerMask;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
 	public bool currentPlayerTargetInView;
@@ -43,10 +44,12 @@ public class EntityBehaviour : MonoBehaviour
 	private float playerDetectionTimer;
 
 	[Header("Healing Ability Cooldown")]
+	public SOClassAbilities healingAbility;
 	public bool canCastHealingAbility;
 	public float healingAbilityTimer;
 
 	[Header("Offensive Ability Cooldown")]
+	public SOClassAbilities offensiveAbility;
 	public bool canCastOffensiveAbility;
 	public float offensiveAbilityTimer;
 
@@ -65,6 +68,7 @@ public class EntityBehaviour : MonoBehaviour
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
 		playerLayerMask = 1 << 8;
+		entityLayerMask = 1 << 9;
 	}
 	private void Start()
 	{
@@ -281,104 +285,56 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//ABILITIES
-	//casting of specific abilities
+	//casting of each ability
 	public void CastHealingAbility(int maxHealth, int currentHealth)
 	{
-		if (!canCastHealingAbility) return;
 		if (maxHealth == 0) return;
+		if (!canCastHealingAbility || healingAbility == null) return;
 
 		int healthPercentage = (int)((float)currentHealth / maxHealth * 100);
 		if (healthPercentage > 50) return;
-
-		SOClassAbilities healingAbility = GrabRandomSelfHealingAbility();
-		if (healingAbility == null) return;
 
 		canCastHealingAbility = false;
 		healingAbilityTimer = healingAbility.abilityCooldown;
 		CastEffect(healingAbility);
 	}
-	private SOClassAbilities GrabRandomSelfHealingAbility()
-	{
-		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
-		{
-			if (ability.damageType == SOClassAbilities.DamageType.isHealing && ability.canOnlyTargetSelf)
-				return ability;
-		}
-		return null;
-	}
-
 	public void CastOffensiveAbility()
 	{
-		if (!canCastOffensiveAbility) return;
+		if (!canCastOffensiveAbility || offensiveAbility == null) return;
 		if (playerTarget == null) return;
 
-		Collider2D[] colliders = Physics2D.OverlapCircleAll(playerTarget.transform.position, 10f, playerLayerMask); //quarter of min aoe size
-
-		SOClassAbilities offensiveAoeAbility = GrabRandomOffensiveAoeAbility();
-		SOClassAbilities offensiveDirectionalAbility = GrabRandomOffensiveDirectionalAbility();
-
-		if (colliders.Length >= 2 && offensiveAoeAbility != null)
+		if (offensiveAbility.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+			CastEffect(offensiveAbility);
+		else
 		{
-			canCastOffensiveAbility = false;
-			offensiveAbilityTimer = offensiveAoeAbility.abilityCooldown / 2; // /2 to simulate having 5 equipped to hotbar
-			CastAoeAbility(offensiveAoeAbility);
-			return;
+			if (offensiveAbility.isProjectile)
+				CastDirectionalAbility(offensiveAbility);
+			else if (offensiveAbility.isAOE)
+				CastAoeAbility(offensiveAbility);
 		}
-		else if (offensiveDirectionalAbility != null)
-		{
-			canCastOffensiveAbility = false;
-			offensiveAbilityTimer = offensiveDirectionalAbility.abilityCooldown / 2; // /2 to simulate having 5 equipped to hotbar
-			CastDirectionalAbility(offensiveDirectionalAbility);
-			return;
-		}
-	}
-	private SOClassAbilities GrabRandomOffensiveDirectionalAbility()
-	{
-		List<SOClassAbilities> pickableAbilities = new List<SOClassAbilities>();
 
-		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
-		{
-			if (ability.isProjectile &&
-				ability.damageType != SOClassAbilities.DamageType.isHealing && ability.damageType != SOClassAbilities.DamageType.isMana)
-				pickableAbilities.Add(ability);
-		}
-		if (pickableAbilities.Count == 0)
-			return null;
-
-		SOClassAbilities chosenAbility = pickableAbilities[Utilities.GetRandomNumber(pickableAbilities.Count - 1)];
-		return chosenAbility;
-	}
-	private SOClassAbilities GrabRandomOffensiveAoeAbility()
-	{
-		List<SOClassAbilities> pickableAbilities = new List<SOClassAbilities>();
-
-		foreach (SOClassAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
-		{
-			if (ability.isAOE &&
-				ability.damageType != SOClassAbilities.DamageType.isHealing && ability.damageType != SOClassAbilities.DamageType.isMana)
-				pickableAbilities.Add(ability);
-		}
-		if (pickableAbilities.Count == 0)
-			return null;
-
-		SOClassAbilities chosenAbility = pickableAbilities[Utilities.GetRandomNumber(pickableAbilities.Count - 1)];
-		return chosenAbility;
+		canCastOffensiveAbility = false;
+		offensiveAbilityTimer = offensiveAbility.abilityCooldown; // /2 to simulate having 5 equipped to hotbar
+		return;
 	}
 
 	//casting of ability types
-	private void CastEffect(SOClassAbilities ability)
+	public void CastEffect(SOClassAbilities ability)
 	{
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isHealing)
+		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+		{
+			//eventually add support to heal friendlies
 			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.HealingPercentageModifier.finalPercentageValue);
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isMana)
-			entityStats.IncreaseMana(ability.damageValuePercentage, true);
+		}
 		else
 		{
-			if (ability.canOnlyTargetSelf)
+			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //add check to cast on friendly
 				entityStats.ApplyStatusEffect(ability);
+			else if (ability.isOffensiveAbility && playerTarget != null)
+				playerTarget.playerStats.ApplyStatusEffect(ability);
 		}
 	}
-	private void CastDirectionalAbility(SOClassAbilities ability)
+	public void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		GameObject go = Instantiate(projectilePrefab, transform, true);
 		go.transform.SetParent(null);
@@ -389,7 +345,7 @@ public class EntityBehaviour : MonoBehaviour
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
-	private void CastAoeAbility(SOClassAbilities ability)
+	public void CastAoeAbility(SOClassAbilities ability)
 	{
 		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
 		go.transform.SetParent(null);

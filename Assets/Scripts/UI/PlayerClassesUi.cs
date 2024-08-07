@@ -549,10 +549,10 @@ public class PlayerClassesUi : MonoBehaviour
 
 		maxAbilitySlots = currentPlayerClass.baseClassAbilitySlots;
 
-		foreach (SpellSlots spellSlot in currentPlayerClass.spellSlotsPerLevel)
+		foreach (AbilitySlots abilitySlot in currentPlayerClass.spellSlotsPerLevel)
 		{
-			if (playerStats.entityLevel >= spellSlot.LevelRequirement)
-				maxAbilitySlots += spellSlot.SpellSlotsPerLevel;
+			if (playerStats.entityLevel >= abilitySlot.LevelRequirement)
+				maxAbilitySlots += abilitySlot.AbilitySlotsPerLevel;
 		}
 	}
 	public bool DoesPlayerHaveFreeAbilitySlot()
