@@ -34,8 +34,10 @@ public class EntityStats : MonoBehaviour
 	public Stat fireResistance;
 	public Stat iceResistance;
 
-	[Header("Damage Modifiers")]
-	public Stat DamageRecievedModifier;
+	[Header("Modifiers")]
+	public Stat damageDealtModifier;
+
+	public Stat healingPercentageModifier;
 	public Stat physicalDamagePercentageModifier;
 	public Stat poisonDamagePercentageModifier;
 	public Stat fireDamagePercentageModifier;
@@ -43,9 +45,6 @@ public class EntityStats : MonoBehaviour
 	public Stat mainWeaponDamageModifier;
 	public Stat dualWeaponDamageModifier;
 	public Stat rangedWeaponDamageModifier;
-
-	[Header("Healing Modifiers")]
-	public Stat HealingPercentageModifier;
 
 	[Header("Status Effects")]
 	public GameObject statusEffectsPrefab;
@@ -107,11 +106,10 @@ public class EntityStats : MonoBehaviour
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
-		int numOfTries = 0;
 		if (GetComponent<PlayerController>() == null)
 		{
 			classHandler.SetEntityClass();
-			equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
+			equipmentHandler.SpawnEntityEquipment();
 		}
 
 		CalculateBaseStats();
@@ -298,7 +296,7 @@ public class EntityStats : MonoBehaviour
 		statusEffect.Initilize(newStatusEffect, this);
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			DamageRecievedModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			damageDealtModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
 			physicalResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
@@ -319,7 +317,7 @@ public class EntityStats : MonoBehaviour
 	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect, SOClassAbilities abilityBaseRef)
 	{
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			DamageRecievedModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			damageDealtModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
 
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
@@ -361,7 +359,9 @@ public class EntityStats : MonoBehaviour
 		fireResistance.SetBaseValue((int)(entityBaseStats.fireDamageResistance * levelModifier));
 		iceResistance.SetBaseValue((int)(entityBaseStats.iceDamageResistance * levelModifier));
 
-		DamageRecievedModifier.SetBaseValue(1);
+		damageDealtModifier.SetBaseValue(entityBaseStats.damageDealtBaseModifier);
+
+		healingPercentageModifier.SetBaseValue(1);
 		physicalDamagePercentageModifier.SetBaseValue(1);
 		poisonDamagePercentageModifier.SetBaseValue(1);
 		fireDamagePercentageModifier.SetBaseValue(1);
@@ -369,7 +369,6 @@ public class EntityStats : MonoBehaviour
 		mainWeaponDamageModifier.SetBaseValue(1);
 		dualWeaponDamageModifier.SetBaseValue(1);
 		rangedWeaponDamageModifier.SetBaseValue(1);
-		HealingPercentageModifier.SetBaseValue(1);
 
 		currentHealth = maxHealth.finalValue - maxHealth.equipmentValue;
 		currentMana = maxMana.finalValue - maxMana.equipmentValue;
@@ -420,6 +419,7 @@ public class EntityStats : MonoBehaviour
 		fireResistance.AddPercentageValue(statBoost.fireResistanceBoostValue);
 		iceResistance.AddPercentageValue(statBoost.iceResistanceBoostValue);
 
+		healingPercentageModifier.AddPercentageValue(statBoost.healingBoostValue);
 		physicalDamagePercentageModifier.AddPercentageValue(statBoost.physicalDamageBoostValue);
 		poisonDamagePercentageModifier.AddPercentageValue(statBoost.poisionDamageBoostValue);
 		fireDamagePercentageModifier.AddPercentageValue(statBoost.fireDamageBoostValue);
@@ -427,7 +427,6 @@ public class EntityStats : MonoBehaviour
 		mainWeaponDamageModifier.AddPercentageValue(statBoost.mainWeaponDamageBoostValue);
 		dualWeaponDamageModifier.AddPercentageValue(statBoost.duelWeaponDamageBoostValue);
 		rangedWeaponDamageModifier.AddPercentageValue(statBoost.rangedWeaponDamageBoostValue);
-		HealingPercentageModifier.AddPercentageValue(statBoost.healingBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
@@ -449,6 +448,7 @@ public class EntityStats : MonoBehaviour
 		fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
 		iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
 
+		healingPercentageModifier.RemovePercentageValue(statBoost.healingBoostValue);
 		physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
 		poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
 		fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
@@ -456,7 +456,6 @@ public class EntityStats : MonoBehaviour
 		mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
 		dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
 		rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
-		HealingPercentageModifier.RemovePercentageValue(statBoost.healingBoostValue);
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
@@ -480,6 +479,7 @@ public class EntityStats : MonoBehaviour
 			fireResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			iceResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
 
+			healingPercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
@@ -496,6 +496,7 @@ public class EntityStats : MonoBehaviour
 		fireResistance.AddPercentageValue(dungeonModifiers.fireResistanceModifier);
 		iceResistance.AddPercentageValue(dungeonModifiers.iceResistanceModifier);
 
+		//healingPercentageModifier.AddPercentageValue();
 		physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.physicalDamageModifier);
 		poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.poisonDamageModifier);
 		fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.fireDamageModifier);

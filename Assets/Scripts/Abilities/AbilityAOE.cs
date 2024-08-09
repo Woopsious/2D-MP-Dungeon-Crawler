@@ -51,6 +51,7 @@ public class AbilityAOE : MonoBehaviour
 		if (damageType == DamageType.isIceDamageType)
 			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
+		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	public void AddPlayerRef(PlayerController player)

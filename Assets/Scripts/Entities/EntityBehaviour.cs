@@ -324,7 +324,7 @@ public class EntityBehaviour : MonoBehaviour
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
 			//eventually add support to heal friendlies
-			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.HealingPercentageModifier.finalPercentageValue);
+			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
 		}
 		else
 		{

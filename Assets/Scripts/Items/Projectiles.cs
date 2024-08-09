@@ -48,6 +48,8 @@ public class Projectiles : MonoBehaviour
 		if (damageType == DamageType.isIceDamageType)
 			projectileDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
+		projectileDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	public void Initilize(PlayerController player, Weapons weaponRef)
@@ -66,8 +68,6 @@ public class Projectiles : MonoBehaviour
 		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
 		projectileDamage = weaponRef.damage;
 		projectileOrigin = transform.position;
-
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	private void OnTriggerEnter2D(Collider2D other)
 	{

@@ -17,12 +17,13 @@ MonoBehaviour:
   humanoidType: 2
   expOnDeath: 40
   entityBehaviour: {fileID: 11400000, guid: 5d5ac5a9218c3b24da17e8764c8aba52, type: 2}
-  maxHealth: 50
+  maxHealth: 75
+  damageDealtBaseModifier: 0.75
   physicalDamageResistance: 3
   poisonDamageResistance: 8
   fireDamageResistance: 5
   iceDamageResistance: 5
-  maxMana: 100
+  maxMana: 75
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
   possibleClassesList:

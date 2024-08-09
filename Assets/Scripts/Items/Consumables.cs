@@ -37,7 +37,7 @@ public class Consumables : Items
 	public void ConsumeItem(EntityStats entityStats)
 	{
 		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration && !EntityHealthFull(entityStats))
-			entityStats.OnHeal(consumableBaseRef.consumablePercentage, true, entityStats.HealingPercentageModifier.finalPercentageValue);
+			entityStats.OnHeal(consumableBaseRef.consumablePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
 		else if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration && !EntityManaFull(entityStats))
 			entityStats.IncreaseMana(consumableBaseRef.consumablePercentage, true);
 		else return;

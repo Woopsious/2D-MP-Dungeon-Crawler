@@ -211,7 +211,7 @@ public class PlayerController : MonoBehaviour
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
 			if (ability.canOnlyTargetSelf || selectedTarget == null)
-				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
+				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
 
 			//heal selected target/friendly when i get round to doing that in mp
 			//if (!ability.canOnlyTargetSelf && selectedTarget != null)

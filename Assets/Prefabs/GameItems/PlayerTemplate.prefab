@@ -359,6 +359,7 @@ MonoBehaviour:
   playerStats: {fileID: 0}
   playerClassHandler: {fileID: 0}
   playerEquipmentHandler: {fileID: 0}
+  playerExperienceHandler: {fileID: 0}
   selectedTarget: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
@@ -379,6 +380,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityBaseStats: {fileID: 11400000, guid: 62769b5b0b4d3c04e85ef46bac28b8e3, type: 2}
+  entityBehaviour: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
   entityLevel: 1
@@ -448,8 +450,17 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
-  DamageRecievedModifier:
-    isPercentageStat: 0
+  damageDealtModifier:
+    isPercentageStat: 1
+    baseValue: 0
+    finalValue: 0
+    basePercentageValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  healingPercentageModifier:
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -520,15 +531,6 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
-  HealingPercentageModifier:
-    isPercentageStat: 1
-    baseValue: 0
-    finalValue: 0
-    basePercentageValue: 0
-    finalPercentageValue: 0
-    equipmentValue: 0
-    equipmentPercentageValue: 0
-    percentageBonuses: []
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 7651319034662892506}
   currentStatusEffects: []
@@ -560,9 +562,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityStats: {fileID: 0}
   currentEntityClass: {fileID: 0}
-  newUnlockedStatBoostList: []
-  newUnlockedAbilitiesList: []
-  abilitySlots: 0
+  unlockedStatBoostList: []
+  unlockedAbilitiesList: []
 --- !u!114 &120328194627084056
 MonoBehaviour:
   m_ObjectHideFlags: 0

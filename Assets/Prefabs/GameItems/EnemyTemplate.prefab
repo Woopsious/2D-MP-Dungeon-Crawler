@@ -633,6 +633,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityBaseStats: {fileID: 0}
+  entityBehaviour: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
   entityLevel: 1
@@ -702,8 +703,17 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
-  DamageRecievedModifier:
-    isPercentageStat: 0
+  damageDealtModifier:
+    isPercentageStat: 1
+    baseValue: 0
+    finalValue: 0
+    basePercentageValue: 0
+    finalPercentageValue: 0
+    equipmentValue: 0
+    equipmentPercentageValue: 0
+    percentageBonuses: []
+  healingPercentageModifier:
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -774,15 +784,6 @@ MonoBehaviour:
     equipmentValue: 0
     equipmentPercentageValue: 0
     percentageBonuses: []
-  HealingPercentageModifier:
-    isPercentageStat: 1
-    baseValue: 0
-    finalValue: 0
-    basePercentageValue: 0
-    finalPercentageValue: 0
-    equipmentValue: 0
-    equipmentPercentageValue: 0
-    percentageBonuses: []
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 4324401266549769224}
   currentStatusEffects: []
@@ -819,8 +820,10 @@ MonoBehaviour:
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
   playerDetectionRange: 30
+  healingAbility: {fileID: 0}
   canCastHealingAbility: 0
   healingAbilityTimer: 0
+  offensiveAbility: {fileID: 0}
   canCastOffensiveAbility: 0
   offensiveAbilityTimer: 0
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
