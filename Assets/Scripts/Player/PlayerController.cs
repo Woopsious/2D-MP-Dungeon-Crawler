@@ -227,10 +227,15 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(projectilePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(ability, playerStats);
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
+		projectile.transform.SetParent(null);
+		projectile.transform.position = (Vector2)transform.position;
+		projectile.Initilize(ability, playerStats);
 
 		Vector3 rotation;
 		if (!debugUseSelectedTargetForAttackDirection)
@@ -239,16 +244,22 @@ public class PlayerController : MonoBehaviour
 			rotation = selectedTarget.transform.position - transform.position;
 
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 	private void CastAoeAbility(SOClassAbilities ability)
 	{
+		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+		}
+
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)mousePosition;
-		go.GetComponent<AbilityAOE>().Initilize(ability, playerStats);
-		go.GetComponent<AbilityAOE>().AddPlayerRef(this);
+		abilityAOE.transform.SetParent(null);
+		abilityAOE.transform.position = (Vector2)mousePosition;
+		abilityAOE.Initilize(ability, playerStats);
+		abilityAOE.AddPlayerRef(this);
 	}
 
 	//bool checks

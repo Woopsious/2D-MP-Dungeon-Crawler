@@ -190,14 +190,20 @@ public class Weapons : Items
 	{
 		if (!canAttackAgain) return;
 
-		GameObject go = Instantiate(projectilePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(player, this);
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
+
+		projectile.transform.SetParent(null);
+		projectile.transform.position = (Vector2)transform.position;
+		projectile.Initilize(player, this);
 
 		Vector3 rotation = positionOfThingToAttack - transform.position; ;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());

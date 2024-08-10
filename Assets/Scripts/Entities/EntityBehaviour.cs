@@ -339,22 +339,34 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	public void CastDirectionalAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(projectilePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(ability, entityStats);
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
+
+		projectile.transform.SetParent(null);
+		projectile.transform.position = (Vector2)transform.position;
+		projectile.Initilize(ability, entityStats);
 
 		Vector3 rotation = playerTarget.transform.position - transform.position;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 	public void CastAoeAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = playerTarget.transform.position;
-		go.GetComponent<AbilityAOE>().Initilize(ability, entityStats);
-		go.GetComponent<AbilityAOE>().AddPlayerRef(null);
+		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+		}
+
+		abilityAOE.transform.SetParent(null);
+		abilityAOE.transform.position = playerTarget.transform.position;
+		abilityAOE.Initilize(ability, entityStats);
+		abilityAOE.AddPlayerRef(null);
 	}
 
 	//ability type cooldowns

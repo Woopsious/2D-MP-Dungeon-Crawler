@@ -27,6 +27,7 @@ public class Projectiles : MonoBehaviour
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
+		this.weaponBaseRef = null;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
@@ -49,12 +50,13 @@ public class Projectiles : MonoBehaviour
 			projectileDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
 		projectileDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
-
+		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	public void Initilize(PlayerController player, Weapons weaponRef)
 	{
 		this.player = player;
+		this.abilityBaseRef = null;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
 		gameObject.name = weaponRef.itemName + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -68,11 +70,12 @@ public class Projectiles : MonoBehaviour
 		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
 		projectileDamage = weaponRef.damage;
 		projectileOrigin = transform.position;
+		gameObject.SetActive(true);
 	}
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-			Destroy(gameObject);
+			DungeonHandler.ProjectileCleanUp(this);
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
@@ -92,7 +95,7 @@ public class Projectiles : MonoBehaviour
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				false, isPlayerProjectile);
 		}
-		Destroy(gameObject);
+		DungeonHandler.ProjectileCleanUp(this);
 	}
 
 	private void FixedUpdate()
@@ -102,6 +105,6 @@ public class Projectiles : MonoBehaviour
 
 		if (weaponBaseRef == null) return;
 		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
-			Destroy(gameObject);
+			DungeonHandler.ProjectileCleanUp(this);
 	}
 }

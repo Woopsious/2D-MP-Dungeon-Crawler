@@ -7,7 +7,6 @@ public class AbilityAOE : MonoBehaviour
 	private PlayerController player;
 	public SOClassAbilities abilityBaseRef;
 
-	public float abilityDurationTime;
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
 	private SpriteRenderer aoeSprite;
@@ -34,9 +33,9 @@ public class AbilityAOE : MonoBehaviour
 		circleCollider.radius = 0.1f;
 		circleCollider.offset = new Vector2(0, 0);
 
-		abilityDurationTime = abilityBaseRef.abilityDuration;
+		abilityDurationTimer = abilityBaseRef.abilityDuration;
 		if (abilityBaseRef.abilityDuration == 0)
-			abilityDurationTime = 0.1f;
+			abilityDurationTimer = 0.1f;
 
 		isPlayerAoe = casterInfo.IsPlayerEntity();
 		damageType = (DamageType)abilityBaseRef.damageType;
@@ -52,6 +51,7 @@ public class AbilityAOE : MonoBehaviour
 			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
 		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	public void AddPlayerRef(PlayerController player)
@@ -86,9 +86,9 @@ public class AbilityAOE : MonoBehaviour
 
 	private void AbilityDurationTimer()
 	{
-		abilityDurationTimer += Time.deltaTime;
+		abilityDurationTimer -= Time.deltaTime;
 
-		if (abilityDurationTimer >= abilityDurationTime)
-			Destroy(gameObject);
+		if (abilityDurationTimer <= 0)
+			DungeonHandler.AoeAbilitiesCleanUp(this);
 	}
 }

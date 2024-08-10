@@ -19,6 +19,9 @@ public class DungeonHandler : MonoBehaviour
 
 	public List<EntityStats> inActiveEntityPool = new List<EntityStats>();
 
+	public List<Projectiles> inActiveProjectilesPool = new List<Projectiles>();
+	public List<AbilityAOE> inActiveAoeAbilitesPool = new List<AbilityAOE>();
+
 	public static event Action<GameObject> OnEntityDeathEvent;
 
 	private void Awake()
@@ -37,18 +40,53 @@ public class DungeonHandler : MonoBehaviour
 		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
+	//entity deaths
 	public static void EntityDeathEvent(GameObject gameObject)
 	{
 		OnEntityDeathEvent?.Invoke(gameObject);
 
 		Instance.OnEntityDeath(gameObject);
 	}
-
 	private void OnEntityDeath(GameObject obj)
 	{
 		obj.SetActive(false);
 		EntityStats entityStats = obj.GetComponent<EntityStats>();
 		inActiveEntityPool.Add(entityStats);
+	}
+
+	//reusable projectiles
+	public static Projectiles GetProjectile()
+	{
+		if (Instance.inActiveProjectilesPool.Count != 0)
+		{
+			Projectiles projectile = Instance.inActiveProjectilesPool[0];
+			Instance.inActiveProjectilesPool.RemoveAt(0);
+			return projectile;
+		}
+		else return null;
+	}
+	public static void ProjectileCleanUp(Projectiles projectile)
+	{
+		projectile.gameObject.SetActive(false);
+		projectile.transform.position = Vector3.zero;
+		Instance.inActiveProjectilesPool.Add(projectile);
+	}
+	//reusable aoe abilities
+	public static AbilityAOE GetAoeAbility()
+	{
+		if (Instance.inActiveAoeAbilitesPool.Count != 0)
+		{
+			AbilityAOE abilityAOE = Instance.inActiveAoeAbilitesPool[0];
+			Instance.inActiveAoeAbilitesPool.RemoveAt(0);
+			return abilityAOE;
+		}
+		else return null;
+	}
+	public static void AoeAbilitiesCleanUp(AbilityAOE abilityAOE)
+	{
+		abilityAOE.gameObject.SetActive(false);
+		abilityAOE.transform.position = Vector3.zero;
+		Instance.inActiveAoeAbilitesPool.Add(abilityAOE);
 	}
 
 	private void ActivateRandomChests()
