@@ -12,6 +12,7 @@ public class EntityStats : MonoBehaviour
 	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
+	private Animator animator;
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 	public int entityLevel;
@@ -67,6 +68,7 @@ public class EntityStats : MonoBehaviour
 		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
+		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 	}
@@ -120,6 +122,8 @@ public class EntityStats : MonoBehaviour
 	public void ResetEntityStats()
 	{
 		spriteRenderer.color = Color.white;
+		spriteRenderer.transform.eulerAngles = Vector3.zero;
+		StopAllCoroutines();
 		CalculateBaseStats();
 		classHandler.RerollEquippedAbilities();
 	}
@@ -225,7 +229,8 @@ public class EntityStats : MonoBehaviour
 		if (currentHealth <= 0)
 		{
 			audioHandler.PlayAudio(entityBaseStats.deathSfx);
-			DungeonHandler.EntityDeathEvent(gameObject);
+			animator.SetTrigger("DeathTrigger");
+			StartCoroutine(WaitForDeathSound());
 		}
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
@@ -242,7 +247,13 @@ public class EntityStats : MonoBehaviour
 	IEnumerator ResetRedFlashOnRecieveDamage()
 	{
 		yield return new WaitForSeconds(0.1f);
+		if (IsEntityDead()) yield break;
 		spriteRenderer.color = Color.white;
+	}
+	IEnumerator WaitForDeathSound()
+	{
+		yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
+		DungeonHandler.EntityDeathEvent(gameObject);
 	}
 
 	//mana functions
@@ -533,6 +544,12 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//Checks
+	public bool IsEntityDead()
+	{
+		if (currentHealth <= 0)
+			return true;
+		else return false;
+	}
 	public bool IsPlayerEntity()
 	{
 		if (entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)

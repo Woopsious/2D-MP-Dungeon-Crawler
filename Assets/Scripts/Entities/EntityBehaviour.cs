@@ -86,6 +86,7 @@ public class EntityBehaviour : MonoBehaviour
 
 	private void Update()
 	{
+		if (entityStats.IsEntityDead()) return;
 		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
@@ -96,6 +97,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	private void FixedUpdate()
 	{
+		if (entityStats.IsEntityDead()) return;
 		currentState.UpdatePhysics(this);
 
 		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
@@ -107,6 +109,7 @@ public class EntityBehaviour : MonoBehaviour
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
+
 	private void Initilize()
 	{
 		UpdateBounds(transform.position);
