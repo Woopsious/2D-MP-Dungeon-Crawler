@@ -212,7 +212,10 @@ public class Weapons : Items
 	{
 		yield return new WaitForSeconds(0.1f);
 		OnWeaponCooldown();
-		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+		if (isEquippedByPlayer)
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+		else
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed + 0.15f);
 		canAttackAgain = true;
 	}
 

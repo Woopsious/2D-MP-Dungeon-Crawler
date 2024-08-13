@@ -37,7 +37,7 @@ public class LootSpawnHandler : MonoBehaviour
 		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);
 		for (int i = 0; i < numOfItemsToSpawn; i++)
 		{
-			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count);
+			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count - 1);
 			GameObject go = Instantiate(droppedItemPrefab, transform.position, Quaternion.identity);
 
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isWeapon)

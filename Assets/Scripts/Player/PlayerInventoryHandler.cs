@@ -11,9 +11,14 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
-	public bool hasRecievedStartingItems;
 	public bool debugSpawnStartingItems;
-	public List<SOItems> debugStartingItems = new List<SOItems>();
+
+	public bool hasRecievedStartingItems;
+	public bool hasRecievedKnightItems;
+	public bool hasRecievedWarriorItems;
+	public bool hasRecievedRogueItems;
+	public bool hasRecievedRangerItems;
+	public bool hasRecievedMageItems;
 
 	[Header("Player Gold")]
 	public int playerGoldAmount;
@@ -22,123 +27,137 @@ public class PlayerInventoryHandler : MonoBehaviour
 	public void Awake()
 	{
 		Instance = this;
-	}
-
-	private void OnEnable()
-	{
-		SaveManager.RestoreData += ReloadPlayerInventory;
-	}
-	private void OnDisable()
-	{
-		SaveManager.RestoreData -= ReloadPlayerInventory;
+		hasRecievedStartingItems = false;
+		hasRecievedKnightItems = false;
+		hasRecievedWarriorItems = false;
+		hasRecievedRogueItems = false;
+		hasRecievedRangerItems = false;
+		hasRecievedMageItems = false;
 	}
 
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
-		if (SaveManager.Instance != null) //skip when in testing scene
-		{
-			if (SaveManager.Instance.GameData.hasRecievedStartingItems) return;
-			SaveManager.Instance.GameData.hasRecievedStartingItems = true;
-		}
-
-		hasRecievedStartingItems = true;
-
-		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
-
-		for (int i = 0; i < playerClass.startingItems.Count; i++)
-		{
-			GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
-
-			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isWeapon)
-			{
-				Weapons weapon = go.AddComponent<Weapons>();
-				weapon.weaponBaseRef = (SOWeapons)playerClass.startingItems[i];
-				weapon.SetCurrentStackCount(1);
-			}
-
-			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isArmor)
-			{
-				Armors armor = go.AddComponent<Armors>();
-				armor.armorBaseRef = (SOArmors)playerClass.startingItems[i];
-				armor.SetCurrentStackCount(1);
-			}
-
-			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isAccessory)
-			{
-				Accessories accessories = go.AddComponent<Accessories>();
-				accessories.accessoryBaseRef = (SOAccessories)playerClass.startingItems[i];
-				accessories.SetCurrentStackCount(1);
-			}
-
-			if (playerClass.startingItems[i].itemType == SOItems.ItemType.isConsumable)
-			{
-				Consumables consumables = go.AddComponent<Consumables>();
-				consumables.consumableBaseRef = (SOConsumables)playerClass.startingItems[i];
-				consumables.SetCurrentStackCount(3);
-			}
-
-			Items item = go.GetComponent<Items>();
-			item.gameObject.name = playerClass.startingItems[i].name;
-			item.itemName = playerClass.startingItems[i].name;
-			item.itemSprite = playerClass.startingItems[i].itemImage;
-			item.itemPrice = playerClass.startingItems[i].itemPrice;
-
-			go.GetComponent<Items>().Initilize(Items.Rarity.isCommon, GetComponent<EntityStats>().entityLevel);
-			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
-			collider.isTrigger = true;
-		}
+		ReloadPlayerInventory();
 
 		if (debugSpawnStartingItems)
-			SpawnDebugStartingItems();
-	}
-	private void SpawnDebugStartingItems()
-	{
-		for (int i = 0; i < debugStartingItems.Count; i++)
 		{
-			GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
-
-			if (debugStartingItems[i].itemType == SOItems.ItemType.isWeapon)
-			{
-				Weapons weapon = go.AddComponent<Weapons>();
-				weapon.weaponBaseRef = (SOWeapons)debugStartingItems[i];
-				weapon.SetCurrentStackCount(1);
-			}
-
-			if (debugStartingItems[i].itemType == SOItems.ItemType.isArmor)
-			{
-				Armors armor = go.AddComponent<Armors>();
-				armor.armorBaseRef = (SOArmors)debugStartingItems[i];
-				armor.SetCurrentStackCount(1);
-			}
-
-			if (debugStartingItems[i].itemType == SOItems.ItemType.isAccessory)
-			{
-				Accessories accessories = go.AddComponent<Accessories>();
-				accessories.accessoryBaseRef = (SOAccessories)debugStartingItems[i];
-				accessories.SetCurrentStackCount(1);
-			}
-
-			if (debugStartingItems[i].itemType == SOItems.ItemType.isConsumable)
-			{
-				Consumables consumables = go.AddComponent<Consumables>();
-				consumables.consumableBaseRef = (SOConsumables)debugStartingItems[i];
-				consumables.SetCurrentStackCount(3);
-			}
-
-			Items item = go.GetComponent<Items>();
-			item.gameObject.name = debugStartingItems[i].name;
-			item.itemName = debugStartingItems[i].name;
-			item.itemSprite = debugStartingItems[i].itemImage;
-			item.itemPrice = debugStartingItems[i].itemPrice;
-
-			go.GetComponent<Items>().Initilize(Items.Rarity.isLegendary, 1);
-			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
-			collider.isTrigger = true;
+			DebugSpawnStartingItems(playerClass);
+			return;
 		}
+
+		if (SaveManager.Instance != null) //skip when in testing scene
+		{
+			if (playerClass == PlayerClassesUi.Instance.knightClass && !hasRecievedKnightItems)
+			{
+				SpawnClassStartingItems(playerClass);
+				hasRecievedKnightItems = true;
+			}
+			else if (playerClass == PlayerClassesUi.Instance.warriorClass && !hasRecievedWarriorItems)
+			{
+				SpawnClassStartingItems(playerClass);
+				hasRecievedWarriorItems = true;
+			}
+			else if (playerClass == PlayerClassesUi.Instance.rogueClass && !hasRecievedRogueItems)
+			{
+				SpawnClassStartingItems(playerClass);
+				hasRecievedRogueItems = true;
+			}
+			else if (playerClass == PlayerClassesUi.Instance.rangerClass && !hasRecievedRangerItems)
+			{
+				SpawnClassStartingItems(playerClass);
+				hasRecievedRangerItems = true;
+			}
+			else if (playerClass == PlayerClassesUi.Instance.mageClass && !hasRecievedMageItems)
+			{
+				SpawnClassStartingItems(playerClass);
+				hasRecievedMageItems = true;
+			}
+
+			if (!SaveManager.Instance.GameData.hasRecievedStartingItems)
+			{
+				GameManager.isNewGame = false;
+				SaveManager.Instance.GameData.hasRecievedStartingItems = true;
+				hasRecievedStartingItems = true;
+				SpawnSharedStartingItems(playerClass);
+			}
+		}
+	}
+	private void SpawnClassStartingItems(SOClasses playerClass)
+	{
+		SpawnStartingItem(playerClass.startingWeapon);
+
+		foreach (SOArmors SOarmor in playerClass.startingArmor)
+			SpawnStartingItem(SOarmor);
+
+		foreach (SOAccessories SOaccessory in playerClass.startingAccessories)
+			SpawnStartingItem(SOaccessory);
+	}
+	private void SpawnSharedStartingItems(SOClasses playerClass)
+	{
+		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
+
+		foreach (SOConsumables SOconsumable in playerClass.startingConsumables)
+			SpawnStartingItem(SOconsumable);
+	}
+	private void DebugSpawnStartingItems(SOClasses playerClass)
+	{
+		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
+		SpawnStartingItem(playerClass.startingWeapon);
+
+		foreach (SOArmors SOarmor in playerClass.startingArmor)
+			SpawnStartingItem(SOarmor);
+
+		foreach (SOAccessories SOaccessory in playerClass.startingAccessories)
+			SpawnStartingItem(SOaccessory);
+
+		foreach (SOConsumables SOconsumable in playerClass.startingConsumables)
+			SpawnStartingItem(SOconsumable);
+	}
+	private void SpawnStartingItem(SOItems SOitem)
+	{
+		GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
+
+		if (SOitem.itemType == SOItems.ItemType.isWeapon)
+		{
+			Weapons weapon = go.AddComponent<Weapons>();
+			weapon.weaponBaseRef = (SOWeapons)SOitem;
+			weapon.SetCurrentStackCount(1);
+		}
+
+		if (SOitem.itemType == SOItems.ItemType.isArmor)
+		{
+			Armors armor = go.AddComponent<Armors>();
+			armor.armorBaseRef = (SOArmors)SOitem;
+			armor.SetCurrentStackCount(1);
+		}
+
+		if (SOitem.itemType == SOItems.ItemType.isAccessory)
+		{
+			Accessories accessories = go.AddComponent<Accessories>();
+			accessories.accessoryBaseRef = (SOAccessories)SOitem;
+			accessories.SetCurrentStackCount(1);
+		}
+
+		if (SOitem.itemType == SOItems.ItemType.isConsumable)
+		{
+			Consumables consumables = go.AddComponent<Consumables>();
+			consumables.consumableBaseRef = (SOConsumables)SOitem;
+			consumables.SetCurrentStackCount(3);
+		}
+
+		Items item = go.GetComponent<Items>();
+		item.Initilize(Items.Rarity.isLegendary, 1);
+		BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
+		collider.isTrigger = true;
 	}
 	private void ReloadPlayerInventory()
 	{
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
+		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
+		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;
+		hasRecievedRogueItems = SaveManager.Instance.GameData.hasRecievedRogueItems;
+		hasRecievedRangerItems = SaveManager.Instance.GameData.hasRecievedRangerItems;
+		hasRecievedMageItems = SaveManager.Instance.GameData.hasRecievedMageItems;
 	}
 
 	//on item pickup

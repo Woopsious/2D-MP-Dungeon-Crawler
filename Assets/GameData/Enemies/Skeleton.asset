@@ -19,10 +19,10 @@ MonoBehaviour:
   entityBehaviour: {fileID: 11400000, guid: 5d5ac5a9218c3b24da17e8764c8aba52, type: 2}
   maxHealth: 75
   damageDealtBaseModifier: 0.75
-  physicalDamageResistance: 3
-  poisonDamageResistance: 8
-  fireDamageResistance: 5
-  iceDamageResistance: 5
+  physicalDamageResistance: 2
+  poisonDamageResistance: 5
+  fireDamageResistance: 3
+  iceDamageResistance: 3
   maxMana: 75
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2

@@ -19,7 +19,10 @@ public class PlayerInfoUi : MonoBehaviour
 	private void Awake()
 	{
 		if (SceneManager.GetActiveScene().name != "TestingScene")
-			Instantiate(PlayerPrefab);
+		{
+			GameObject go = Instantiate(PlayerPrefab);
+			playerInstance = go.GetComponent<PlayerController>();
+		}
 		Instance = this;
 		Instance.interactWithText.SetActive(false);
 	}

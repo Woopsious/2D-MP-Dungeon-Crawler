@@ -67,7 +67,8 @@ public class SOClasses : ScriptableObject
 	[Header("Starting Items")]
 	public SOWeapons startingWeapon;
 	public List<SOArmors> startingArmor;
-	public List<SOItems> startingItems = new List<SOItems>();
+	public List<SOAccessories> startingAccessories;
+	public List<SOConsumables> startingConsumables;
 }
 
 [System.Serializable]

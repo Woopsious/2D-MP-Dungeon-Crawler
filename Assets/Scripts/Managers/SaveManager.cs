@@ -282,9 +282,8 @@ public class SaveManager : MonoBehaviour
 	}
 	private void SavePlayerInfoData()
 	{
-		if (FindObjectOfType<PlayerController>() == null) return;
 		//need reworking for mp
-		EntityStats playerStats = FindObjectOfType<PlayerController>().GetComponent<EntityStats>();
+		EntityStats playerStats = PlayerInfoUi.playerInstance.playerStats;
 
 		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
 		SlotData.level = playerStats.entityLevel.ToString();
@@ -296,6 +295,11 @@ public class SaveManager : MonoBehaviour
 		GameData.playerCurrentMana = playerStats.currentMana;
 		GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
 		GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
+		GameData.hasRecievedKnightItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedKnightItems;
+		GameData.hasRecievedWarriorItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedWarriorItems;
+		GameData.hasRecievedRogueItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRogueItems;
+		GameData.hasRecievedRangerItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRangerItems;
+		GameData.hasRecievedMageItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedMageItems;
 	}
 	private void SavePlayerClassData()
 	{
@@ -458,6 +462,11 @@ public class GameData
 	public int playerGoldAmount;
 
 	public bool hasRecievedStartingItems;
+	public bool hasRecievedKnightItems;
+	public bool hasRecievedWarriorItems;
+	public bool hasRecievedRogueItems;
+	public bool hasRecievedRangerItems;
+	public bool hasRecievedMageItems;
 
 	public DungeonData currentDungeon;
 	public SOClasses currentPlayerClass;

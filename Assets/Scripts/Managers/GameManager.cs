@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
 	public static event Action OnSceneChangeStart;
 	public static event Action OnSceneChangeFinish;
 
-	public static bool isNewGame;
+	public static bool isNewGame;	//dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 	public static string currentGameDataDirectory;
 
 	public DungeonData currentDungeonData;
