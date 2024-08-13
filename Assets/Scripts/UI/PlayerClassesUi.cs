@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,6 +9,9 @@ using UnityEngine.UI;
 public class PlayerClassesUi : MonoBehaviour
 {
 	public static PlayerClassesUi Instance;
+
+	public GameObject ClassSelectionUiPanel;
+	public GameObject ClassTreesUiPanel;
 
 	[Header("Class Selection")]
 	public GameObject playerClassSelectionPanel;
@@ -50,8 +54,8 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsMageButton;
 
 	[Header("Shared Class ui elements")]
-	public GameObject closeClassTreeButtonObj;
-	public GameObject resetPlayerClassButtonObj;
+	public GameObject SharedClassUiElements;
+	public TMP_Text abilitySlotsCounterText;
 	public int maxAbilitySlots;
 	public int abilitySlotsUsed;
 
@@ -125,6 +129,8 @@ public class PlayerClassesUi : MonoBehaviour
 		SetUpRogueClassTree();
 		SetUpRangerClassTree();
 		SetUpMageClassTree();
+
+		ShowPlayerClassSelection();
 	}
 
 	/// <summary>
@@ -554,12 +560,17 @@ public class PlayerClassesUi : MonoBehaviour
 			if (playerStats.entityLevel >= abilitySlot.LevelRequirement)
 				maxAbilitySlots += abilitySlot.AbilitySlotsPerLevel;
 		}
+		UpdateAbilitySlotsCounterUi();
 	}
 	public bool DoesPlayerHaveFreeAbilitySlot()
 	{
 		if (maxAbilitySlots == abilitySlotsUsed)
 			return false;
 		else return true;
+	}
+	private void UpdateAbilitySlotsCounterUi()
+	{
+		abilitySlotsCounterText.text = $"{abilitySlotsUsed} / {maxAbilitySlots}";
 	}
 
 	//UI CHANGES
@@ -586,41 +597,35 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 
 	//class selection
-	public void ShowHidePlayerClassSelection()
-	{
-		if (playerClassSelectionPanel.activeInHierarchy)
-			HidePlayerClassSelection();
-		else
-			ShowPlayerClassSelection();
-	}
 	public void ShowPlayerClassSelection()
 	{
 		if (playerClassSelectionPanel.activeInHierarchy)
 			HidePlayerClassSelection();
 		else
+		{
+			ClassSelectionUiPanel.SetActive(true);
 			playerClassSelectionPanel.SetActive(true);
+		}
 	}
+
 	public void HidePlayerClassSelection()
 	{
+		ClassSelectionUiPanel.SetActive(false);
 		playerClassSelectionPanel.SetActive(false);
 	}
 
 	//class skill trees
-	public void ShowHideClassSkillTree()
-	{
-		if (closeClassTreeButtonObj.activeInHierarchy)
-			HideClassSkillTree();
-		else
-			ShowClassSkillTree();
-	}
 	public void ShowClassSkillTree()
 	{
 		if (currentPlayerClass == null) return;
 
-		if (closeClassTreeButtonObj.activeInHierarchy)
+		if (SharedClassUiElements.activeInHierarchy)
 			HideClassSkillTree();
 		else
 		{
+			ClassTreesUiPanel.SetActive(true);
+			SharedClassUiElements.SetActive(true);
+
 			if (currentPlayerClass == knightClass)
 				knightClassPanel.SetActive(true);
 			if (currentPlayerClass == warriorClass)
@@ -634,15 +639,12 @@ public class PlayerClassesUi : MonoBehaviour
 
 			UpdateToolTipsForClassNodes();
 			UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
-
-			closeClassTreeButtonObj.SetActive(true);
-			resetPlayerClassButtonObj.SetActive(true);
 		}
 	}
 	public void HideClassSkillTree()
 	{
-		closeClassTreeButtonObj.SetActive(false);
-		resetPlayerClassButtonObj.SetActive(false);
+		ClassTreesUiPanel.SetActive(false);
+		SharedClassUiElements.SetActive(false);
 		knightClassPanel.SetActive(false);
 		warriorClassPanel.SetActive(false);
 		rogueClassPanel.SetActive(false);

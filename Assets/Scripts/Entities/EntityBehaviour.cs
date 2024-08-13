@@ -30,8 +30,6 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Player Targeting")]
 	public LayerMask includeMe;
-	private LayerMask playerLayerMask;
-	private LayerMask entityLayerMask;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
 	public bool currentPlayerTargetInView;
@@ -67,8 +65,6 @@ public class EntityBehaviour : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
-		playerLayerMask = 1 << 8;
-		entityLayerMask = 1 << 9;
 	}
 	private void Start()
 	{

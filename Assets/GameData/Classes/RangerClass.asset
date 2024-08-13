@@ -71,15 +71,12 @@ MonoBehaviour:
     LevelRequirement: 8
   canUseSpells: 1
   classRestriction: 1
-  startingWeapon: {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  startingWeapon: {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
   startingArmor:
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
   - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
   - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
-  startingItems:
-  - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
-  - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
-  - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
-  - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
+  startingAccessories: []
+  startingConsumables:
   - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
   - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}
