@@ -24,7 +24,7 @@ public class Projectiles : MonoBehaviour
 	Vector2 projectileOrigin;
 	float distanceTraveled;
 
-	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
 		this.weaponBaseRef = null;
@@ -35,6 +35,7 @@ public class Projectiles : MonoBehaviour
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
+		this.player = player;
 		isPlayerProjectile = casterInfo.IsPlayerEntity();
 		projectileSpeed = abilityBaseRef.projectileSpeed;
 		damageType = (DamageType)abilityBaseRef.damageType;

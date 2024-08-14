@@ -124,9 +124,12 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 	private string SetStatusEffectToolTip(string info)
 	{
 		if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.damageValuePercentage)}% damage ";
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage ";
 		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.damageValuePercentage)}% damage res ";
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage res ";
+		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}" +
+				$"% damage recieved modifier ";
 
 		if (abilityUnlock.unlock.canOnlyTargetSelf)
 			info += "buff to yourself";

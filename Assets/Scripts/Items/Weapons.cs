@@ -111,11 +111,16 @@ public class Weapons : Items
 	public void UpdateWeaponDamage(EntityStats stats, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier * stats.damageDealtModifier.finalPercentageValue);
+
+		/*
 		if (stats.equipmentHandler != null && offHandWeapon != null)
 			damage += offHandWeapon.damage;
-
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
-			damage += offHandWeapon.damage;
+		{
+			if (offHandWeapon.weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+				damage += offHandWeapon.damage;
+		}
+		*/
 
 		damage = (int)(damage * GetWeaponDamageModifier(stats));
 	}

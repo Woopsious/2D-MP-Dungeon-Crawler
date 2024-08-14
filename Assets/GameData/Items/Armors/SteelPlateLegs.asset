@@ -25,7 +25,7 @@ MonoBehaviour:
   baseBonusMana: 0
   classRestriction: 2
   armorSlot: 2
-  bonusPhysicalResistance: 5
-  bonusPoisonResistance: 5
-  bonusFireResistance: 5
-  bonusIceResistance: 5
+  bonusPhysicalResistance: 3
+  bonusPoisonResistance: 3
+  bonusFireResistance: 3
+  bonusIceResistance: 3

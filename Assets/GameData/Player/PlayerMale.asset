@@ -19,18 +19,14 @@ MonoBehaviour:
   entityBehaviour: {fileID: 0}
   maxHealth: 100
   damageDealtBaseModifier: 1
-  physicalDamageResistance: 10
-  poisonDamageResistance: 10
-  fireDamageResistance: 10
-  iceDamageResistance: 10
+  physicalDamageResistance: 5
+  poisonDamageResistance: 5
+  fireDamageResistance: 5
+  iceDamageResistance: 5
   maxMana: 100
   manaRegenPercentage: 0.05
-  manaRegenCooldown: 3
+  manaRegenCooldown: 2
   possibleClassesList: []
-  possibleWeaponsList: []
-  possibleHelmetsList: []
-  possibleChestpiecesList: []
-  possibleLegsList: []
   deathSfx: {fileID: 0}
   hurtSfx: {fileID: 0}
   idleSfx: {fileID: 0}

@@ -37,13 +37,12 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
-		ReloadPlayerInventory();
-
 		if (debugSpawnStartingItems)
 		{
 			DebugSpawnStartingItems(playerClass);
 			return;
 		}
+		ReloadPlayerInventory();
 
 		if (SaveManager.Instance != null) //skip when in testing scene
 		{
@@ -146,12 +145,13 @@ public class PlayerInventoryHandler : MonoBehaviour
 		}
 
 		Items item = go.GetComponent<Items>();
-		item.Initilize(Items.Rarity.isLegendary, 1);
+		item.Initilize(Items.Rarity.isRare, GetComponent<EntityStats>().entityLevel);
 		BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 		collider.isTrigger = true;
 	}
 	private void ReloadPlayerInventory()
 	{
+		if (SaveManager.Instance == null) return;
 		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
 		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
 		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;

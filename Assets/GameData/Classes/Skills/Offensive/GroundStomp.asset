@@ -21,6 +21,7 @@ MonoBehaviour:
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 1
   aoeSize: 0
   isDOT: 0
@@ -29,7 +30,7 @@ MonoBehaviour:
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 20
+  damageValue: 25
   damageValuePercentage: 0
   damageType: 0
   isSpell: 0

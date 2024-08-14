@@ -23,7 +23,7 @@ MonoBehaviour:
   equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   isBareHands: 0
   isShield: 0
-  baseDamage: 25
+  baseDamage: 40
   baseAttackSpeed: 1
   baseKnockback: 5
   classRestriction: 0

@@ -180,8 +180,6 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
-		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
 		if (ability.abilityBaseRef.isAOE)
 			CastAoeAbility(ability.abilityBaseRef);
 
@@ -235,7 +233,7 @@ public class PlayerController : MonoBehaviour
 		}
 		projectile.transform.SetParent(null);
 		projectile.transform.position = (Vector2)transform.position;
-		projectile.Initilize(ability, playerStats);
+		projectile.Initilize(this, ability, playerStats);
 
 		Vector3 rotation;
 		if (!debugUseSelectedTargetForAttackDirection)
@@ -362,7 +360,7 @@ public class PlayerController : MonoBehaviour
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
 		float value = playerInputs.CameraZoomInput;
-		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 10 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()
@@ -410,35 +408,35 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityOne()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 	}
 	private void OnAbilityTwo()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 	}
 	private void OnAbilityThree()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 	}
 	private void OnAbilityFour()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 	}
 	private void OnAbilityFive()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
 		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;

@@ -17,8 +17,8 @@ MonoBehaviour:
   humanoidType: 1
   expOnDeath: 40
   entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
-  maxHealth: 75
-  damageDealtBaseModifier: 0.75
+  maxHealth: 50
+  damageDealtBaseModifier: 0.5
   physicalDamageResistance: 3
   poisonDamageResistance: 3
   fireDamageResistance: 3

@@ -26,9 +26,9 @@ public class SpawnHandler : MonoBehaviour
 	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
 
 	private CircleCollider2D playerCollider;
-	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
-	private float closestPlayerDistance;
-	private bool spawningDisabled;
+	public List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	public float closestPlayerDistance;
+	public bool spawningDisabled;
 
 	private void Awake()
 	{

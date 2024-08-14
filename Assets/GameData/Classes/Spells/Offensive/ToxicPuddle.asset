@@ -31,11 +31,11 @@ MonoBehaviour:
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 18
+  damageValue: 30
   damageValuePercentage: 0
   damageType: 1
   isSpell: 1
-  manaCost: 20
-  minPercentCost: 15
+  manaCost: 15
+  minPercentCost: 12
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

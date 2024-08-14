@@ -12,6 +12,7 @@ public class EntityStats : MonoBehaviour
 	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
+	private BoxCollider2D boxCollider2D;
 	private Animator animator;
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
@@ -68,6 +69,7 @@ public class EntityStats : MonoBehaviour
 		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
+		boxCollider2D = GetComponent<BoxCollider2D>();
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
@@ -121,9 +123,10 @@ public class EntityStats : MonoBehaviour
 	}
 	public void ResetEntityStats()
 	{
-		spriteRenderer.color = Color.white;
-		spriteRenderer.transform.eulerAngles = Vector3.zero;
 		StopAllCoroutines();
+		boxCollider2D.enabled = true;
+		animator.ResetTrigger("DeathTrigger");
+		spriteRenderer.color = Color.white;
 		CalculateBaseStats();
 		classHandler.RerollEquippedAbilities();
 	}
@@ -159,7 +162,7 @@ public class EntityStats : MonoBehaviour
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 
-		healthValue *= healingModifierPercentage;
+		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
 		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
 
 		if (currentHealth > maxHealth.finalValue)
@@ -226,10 +229,21 @@ public class EntityStats : MonoBehaviour
 		if (!IsPlayerEntity())
 			entityBehaviour.AddToAggroRating(player, (int)damage);
 
+		if (IsPlayerEntity())
+		{
+			Debug.Log("player damage recieved: " + damage);
+		}
+		else
+		{
+			Debug.Log("enemy damage recieved: " + damage);
+		}
+
 		if (currentHealth <= 0)
 		{
 			audioHandler.PlayAudio(entityBaseStats.deathSfx);
+			entityBehaviour.navMeshAgent.isStopped = true;
 			animator.SetTrigger("DeathTrigger");
+			boxCollider2D.enabled = false;
 			StartCoroutine(WaitForDeathSound());
 		}
 

@@ -125,8 +125,8 @@ public class EntityBehaviour : MonoBehaviour
 	public void ResetBehaviour()
 	{
 		markedForCleanUp = false;
-		//idleTimer = entityBehaviour.idleWaitTime;
 		HasReachedDestination = true;
+		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
 		ChangeStateIdle();
@@ -344,7 +344,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		projectile.transform.SetParent(null);
 		projectile.transform.position = (Vector2)transform.position;
-		projectile.Initilize(ability, entityStats);
+		projectile.Initilize(null, ability, entityStats);
 
 		Vector3 rotation = playerTarget.transform.position - transform.position;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
@@ -401,7 +401,7 @@ public class EntityBehaviour : MonoBehaviour
 	public void OnDrawGizmos()
 	{
 		Gizmos.color = Color.yellow;
-		//Gizmos.DrawWireSphere(idleBounds.center, idleBounds.extents.x);
+		Gizmos.DrawWireSphere(idleBounds.center, idleBounds.extents.x);
 
 		Gizmos.color = Color.blue;
 		Gizmos.DrawWireSphere(chaseBounds.center, chaseBounds.extents.x);
