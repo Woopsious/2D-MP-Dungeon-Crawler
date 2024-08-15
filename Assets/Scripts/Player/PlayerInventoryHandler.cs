@@ -20,8 +20,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	public bool hasRecievedRangerItems;
 	public bool hasRecievedMageItems;
 
-	[Header("Player Gold")]
-	public int playerGoldAmount;
+	[Header("Player Starting Gold")]
 	public int startingGold;
 
 	public void Awake()

@@ -119,12 +119,13 @@ public class QuestDataSlotUi : MonoBehaviour
 
 		if (questRewardType == RewardType.isExpReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(150, 300);
+			rewardToAdd = Utilities.GetRandomNumberBetween(100, 250);
 			questRewardUi.text = $"Reward: {rewardToAdd} Exp";
 		}
 		if (questRewardType == RewardType.isGoldReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween(300, 500);
+			rewardToAdd = Utilities.GetRandomNumberBetween((int)(50 * PlayerInfoUi.playerInstance.playerStats.levelModifier), 
+				(int)(75 * PlayerInfoUi.playerInstance.playerStats.levelModifier));
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
 	}

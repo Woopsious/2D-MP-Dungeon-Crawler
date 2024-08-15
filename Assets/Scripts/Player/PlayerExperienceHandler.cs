@@ -11,7 +11,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	private EntityStats playerStats;
 
 	public bool debugDisablePlayerLevelUp;
-	private int maxLevel = 25;
+	private int maxLevel = 20;
 	private int maxExp = 1000;
 	public int currentExp;
 

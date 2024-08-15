@@ -7,9 +7,11 @@ public class LootSpawnHandler : MonoBehaviour
 {
 	public GameObject droppedItemPrefab;
 	public SOLootPools lootPool;
-	public int lootSpawnerLevel;
+	public int maxGold;
+	public int minGold;
+	private int lootSpawnerLevel;
+	private float levelModifier;
 
-	//invoked from event
 	private void OnEnable()
 	{
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
@@ -20,18 +22,32 @@ public class LootSpawnHandler : MonoBehaviour
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
 	}
+	public void Initilize(int maxGold, int minGold, SOLootPools newLootPool)
+	{
+		this.maxGold = maxGold;
+		this.minGold = minGold;
+		lootPool = newLootPool;
+	}
 
 	private void OnEntityDeathEvent(GameObject obj)
 	{
 		if (obj != gameObject) return;
-
 		SpawnLoot();
+		AddGold();
 	}
 	private void UpdateLootSpawnerLevel(EntityStats playerStats)
 	{
 		lootSpawnerLevel = playerStats.entityLevel;
+		levelModifier = playerStats.levelModifier;
 	}
 
+	public void AddGold()
+	{
+		int goldToAdd = Utilities.GetRandomNumberBetween(minGold,
+			maxGold) * (int)levelModifier;
+
+		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
+	}
 	public void SpawnLoot()
 	{
 		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);

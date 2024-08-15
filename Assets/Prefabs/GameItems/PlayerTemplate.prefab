@@ -641,7 +641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7b6a0471c492e634f804ffd5b33b42bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debugDisablePlayerLevelUp: 1
+  debugDisablePlayerLevelUp: 0
   currentExp: 0
 --- !u!114 &7384192646310340082
 MonoBehaviour:
@@ -816,7 +816,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 8
+  orthographic size: 12
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

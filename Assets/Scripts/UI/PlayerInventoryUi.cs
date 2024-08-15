@@ -223,9 +223,9 @@ public class PlayerInventoryUi : MonoBehaviour
 	//buying/selling items
 	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
-		int newgold = 0;
-		newgold += item.itemPrice * item.currentStackCount;
-		UpdateGoldAmount(newgold);
+		int goldFromItemSelling = 0;
+		goldFromItemSelling += item.itemPrice * item.currentStackCount;
+		UpdateGoldAmount(goldFromItemSelling);
 
 		goldTransaction = item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
@@ -240,9 +240,9 @@ public class PlayerInventoryUi : MonoBehaviour
 		{
 			OnItemConfirmBuy(item, newSlot);
 
-			int gold = 0;
-			gold -= item.itemPrice * item.currentStackCount;
-			UpdateGoldAmount(gold);
+			int goldCostFromItemBuying = 0;
+			goldCostFromItemBuying -= item.itemPrice * item.currentStackCount;
+			UpdateGoldAmount(goldCostFromItemBuying);
 		}
 	}
 	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi newSlot)

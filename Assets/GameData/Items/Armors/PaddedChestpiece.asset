@@ -21,7 +21,7 @@ MonoBehaviour:
   isStackable: 0
   MaxStackCount: 1
   equipItemSfx: {fileID: 8300000, guid: 101deb1fb2e42d84688b53578654b5f4, type: 3}
-  baseBonusHealth: 0
+  baseBonusHealth: 2
   baseBonusMana: 0
   classRestriction: 0
   armorSlot: 1

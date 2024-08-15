@@ -176,6 +176,9 @@ MonoBehaviour:
   isPlayerStorageChest: 0
   ItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
   itemList: []
+  maxDroppedGoldAmount: 30
+  minDroppedGoldAmount: 15
+  lootPool: {fileID: 11400000, guid: d8b11968e0051b54681f21de308bbb78, type: 2}
   itemContainer: {fileID: 7178066955262295355}
   chestOpenSfx: {fileID: 8300000, guid: 2e8cd9eadf64c674fb5eb06b7b783e98, type: 3}
   chestCloseSfx: {fileID: 8300000, guid: 929ac3b0c9315084ca86d4524e395c0e, type: 3}
@@ -192,8 +195,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
-  lootPool: {fileID: 11400000, guid: d8b11968e0051b54681f21de308bbb78, type: 2}
-  lootSpawnerLevel: 0
+  lootPool: {fileID: 0}
+  maxGold: 0
+  minGold: 0
 --- !u!114 &8721437617354721535
 MonoBehaviour:
   m_ObjectHideFlags: 0

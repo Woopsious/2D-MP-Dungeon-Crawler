@@ -10,9 +10,8 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e63e2fa31c0f2f4caef19bbff981b47, type: 3}
-  m_Name: Basic
+  m_Name: BasicEnemies
   m_EditorClassIdentifier: 
-  droppedGoldAmount: 25
   lootPoolList:
   - {fileID: 11400000, guid: 752560be2cf32244e8e66813eb3bbd92, type: 2}
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
@@ -26,5 +25,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
   - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
   - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
-  minDroppedItemsAmount: 1
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}
   maxDroppedItemsAmount: 1
+  minDroppedItemsAmount: 1

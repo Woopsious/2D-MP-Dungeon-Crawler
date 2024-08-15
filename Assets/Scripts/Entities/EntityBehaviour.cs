@@ -18,7 +18,7 @@ public class EntityBehaviour : MonoBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
-	[HideInInspector] public bool markedForCleanUp;
+	public bool markedForCleanUp;
 
 	[Header("Bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
@@ -210,7 +210,11 @@ public class EntityBehaviour : MonoBehaviour
 	//aggro list
 	private void UpdateAggroRatingTimer()
 	{
-		if (playerAggroList.Count <= 0) return;
+		if (playerAggroList.Count <= 0)
+		{
+			playerTarget = null;
+			return;
+		}
 
 		playerAggroRatingTimer -= Time.deltaTime;
 
@@ -248,6 +252,14 @@ public class EntityBehaviour : MonoBehaviour
 
 		playerAggroList.Add(aggroStats);
 		UpdateAggroList();
+	}
+	public void RemovePlayerFromAggroList(PlayerController player)
+	{
+		for (int i = playerAggroList.Count - 1; i >= 0; i--)
+		{
+			if (playerAggroList[i].player == player)
+				playerAggroList.RemoveAt(i);
+		}
 	}
 	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
 	{

@@ -14,7 +14,11 @@ public class SOEntityStats : ScriptableObject
 		isPlayer, isGoblin, isSkeleton
 	}
 
+	[Header("Loot Info")]
 	public int expOnDeath;
+	public int maxDroppedGoldAmount;
+	public int minDroppedGoldAmount;
+	public SOLootPools lootPool;
 
 	[Header("Behaviour")]
 	public SOEntityBehaviour entityBehaviour;

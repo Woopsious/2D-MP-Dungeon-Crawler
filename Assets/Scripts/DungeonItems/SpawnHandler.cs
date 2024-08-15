@@ -26,9 +26,9 @@ public class SpawnHandler : MonoBehaviour
 	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
 
 	private CircleCollider2D playerCollider;
-	public List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
-	public float closestPlayerDistance;
-	public bool spawningDisabled;
+	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	private float closestPlayerDistance;
+	private bool spawningDisabled;
 
 	private void Awake()
 	{
@@ -80,7 +80,7 @@ public class SpawnHandler : MonoBehaviour
 		if (listOfPlayersInRange.Count != 0) return;
 
 		spawningDisabled = false;
-		ClearUpEntities();
+		CleanUpEntities();
 	}
 
 	private void FixedUpdate()
@@ -101,20 +101,19 @@ public class SpawnHandler : MonoBehaviour
 		}
 	}
 
-	private void ClearUpEntities()
+	private void CleanUpEntities()
 	{
 		if (listOfPlayersInRange.Count != 0) return;
 
 		for (int i = listOfSpawnedEnemies.Count - 1; i >= 0; i--)
 		{
 			if (listOfSpawnedEnemies[i] == null) return;
-			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().playerTarget != null)
-			{
-				listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
-				continue; //leave entities in range of a player
-			}
 
-			DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEnemies[i]);
+			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().playerTarget == null)
+				DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEnemies[i]);
+			else
+				listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
+
 			listOfSpawnedEnemies.Remove(listOfSpawnedEnemies[i]);
 		}
 	}
@@ -194,7 +193,7 @@ public class SpawnHandler : MonoBehaviour
 	public void OnDrawGizmos()
 	{
 		Gizmos.color = Color.cyan;
-		Gizmos.DrawWireSphere(transform.position, maxSpawningDistance);
+		//Gizmos.DrawWireSphere(transform.position, maxSpawningDistance);
 
 		Gizmos.color = Color.red;
 		//Gizmos.DrawWireSphere(transform.position, minSpawningDistance);

@@ -16,6 +16,9 @@ public class PlayerDetection : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
+		if (other.gameObject.GetComponent<PlayerController>() != null)
+			entityBehaviourRef.RemovePlayerFromAggroList(other.gameObject.GetComponent<PlayerController>());
+
 		if (entityBehaviourRef.markedForCleanUp)
 			DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);
 	}

@@ -16,6 +16,9 @@ MonoBehaviour:
   sprite: {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 1
   expOnDeath: 40
+  maxDroppedGoldAmount: 12
+  minDroppedGoldAmount: 5
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
   maxHealth: 50
   damageDealtBaseModifier: 0.5

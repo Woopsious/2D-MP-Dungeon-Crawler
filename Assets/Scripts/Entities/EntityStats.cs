@@ -12,6 +12,7 @@ public class EntityStats : MonoBehaviour
 	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
+	[HideInInspector] public LootSpawnHandler lootSpawnHandler;
 	private BoxCollider2D boxCollider2D;
 	private Animator animator;
 	private SpriteRenderer spriteRenderer;
@@ -69,6 +70,7 @@ public class EntityStats : MonoBehaviour
 		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
+		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
@@ -114,6 +116,7 @@ public class EntityStats : MonoBehaviour
 		{
 			classHandler.SetEntityClass();
 			equipmentHandler.SpawnEntityEquipment();
+			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, entityBaseStats.lootPool);
 		}
 
 		CalculateBaseStats();
@@ -239,19 +242,21 @@ public class EntityStats : MonoBehaviour
 		}
 
 		if (currentHealth <= 0)
-		{
-			audioHandler.PlayAudio(entityBaseStats.deathSfx);
-			entityBehaviour.navMeshAgent.isStopped = true;
-			animator.SetTrigger("DeathTrigger");
-			boxCollider2D.enabled = false;
-			StartCoroutine(WaitForDeathSound());
-		}
+			OnDeath();
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
 		if (!IsPlayerEntity()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
+	}
+	private void OnDeath()
+	{
+		audioHandler.PlayAudio(entityBaseStats.deathSfx);
+		entityBehaviour.navMeshAgent.isStopped = true;
+		animator.SetTrigger("DeathTrigger");
+		boxCollider2D.enabled = false;
+		StartCoroutine(WaitForDeathSound());
 	}
 	private void RedFlashOnRecieveDamage()
 	{

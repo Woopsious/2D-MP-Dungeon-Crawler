@@ -360,7 +360,7 @@ public class PlayerController : MonoBehaviour
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
 		float value = playerInputs.CameraZoomInput;
-		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 10 && value == -120)
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()

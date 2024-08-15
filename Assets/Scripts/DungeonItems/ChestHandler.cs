@@ -9,13 +9,18 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
-	public bool chestActive;
-	public bool chestStateOpened;
+	[HideInInspector] public bool chestActive;
+	[HideInInspector] public bool chestStateOpened;
 
 	[Header("Player Chest Info")]
 	public bool isPlayerStorageChest;
 	public GameObject ItemPrefab;
-	public List<InventoryItemUi> itemList = new List<InventoryItemUi>();
+	[HideInInspector] public List<InventoryItemUi> itemList = new List<InventoryItemUi>();
+
+	[Header("Chest Loot Pool Settings")]
+	public int maxDroppedGoldAmount;
+	public int minDroppedGoldAmount;
+	public SOLootPools lootPool;
 
 	[Header("Container Ref")]
 	public GameObject itemContainer;
@@ -39,6 +44,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 	{
 		spriteRenderer.sprite = chestClosedSprite;
 		chestStateOpened = false;
+		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool);
 	}
 
 	public void ActivateChest()
@@ -56,7 +62,10 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		chestStateOpened = true;
 		spriteRenderer.sprite = chestOpenedSprite;
 		if (isPlayerInteraction)
+		{
 			lootSpawnHandler.SpawnLoot();
+			lootSpawnHandler.AddGold();
+		}
 	}
 
 	public void Interact(PlayerController player)
