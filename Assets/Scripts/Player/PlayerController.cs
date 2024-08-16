@@ -410,36 +410,36 @@ public class PlayerController : MonoBehaviour
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
+		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
 	}
 	private void OnAbilityTwo()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
+		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
 	}
 	private void OnAbilityThree()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
+		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
 	}
 	private void OnAbilityFour()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
+		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
 	}
 	private void OnAbilityFive()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
 		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
+		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
 	}
 
 	//ui actions
