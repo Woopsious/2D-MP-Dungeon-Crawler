@@ -108,7 +108,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		GameObject go = Instantiate(questPrefab, npcContainer.transform);
 		QuestDataSlotUi quest = go.GetComponent<QuestDataSlotUi>();
 
-		int percentage = Utilities.GetRandomNumber(100);
+		int percentage = 10;//Utilities.GetRandomNumber(100);
 		if (percentage >= 86)
 			quest.InitilizeBossKillQuest();
 		else if (percentage >= 36 && percentage < 86)

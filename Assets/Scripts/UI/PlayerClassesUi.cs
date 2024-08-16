@@ -15,10 +15,12 @@ public class PlayerClassesUi : MonoBehaviour
 
 	[Header("Class Selection")]
 	public GameObject playerClassSelectionPanel;
+	public GameObject closeplayerClassSelectionButton;
 	public SOClasses currentPlayerClass;
 	public List<ClassTreeNodeSlotUi> currentUnlockedClassNodes = new List<ClassTreeNodeSlotUi>();
 
 	[Header("knight Class")]
+	public TMP_Text knightClassInfo;
 	public SOClasses knightClass;
 	public GameObject knightClassPanel;
 	public GameObject knightStatBonusContent;
@@ -26,6 +28,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsKnightButton;
 
 	[Header("Warrior Class")]
+	public TMP_Text warriorClassInfo;
 	public SOClasses warriorClass;
 	public GameObject warriorClassPanel;
 	public GameObject warriorStatBonusContent;
@@ -33,6 +36,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsWarriorButton;
 
 	[Header("Rogue Class")]
+	public TMP_Text rogueClassInfo;
 	public SOClasses rogueClass;
 	public GameObject rogueClassPanel;
 	public GameObject rogueStatBonusContent;
@@ -40,6 +44,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsRogueButton;
 
 	[Header("Ranger Class")]
+	public TMP_Text rangerClassInfo;
 	public SOClasses rangerClass;
 	public GameObject rangerClassPanel;
 	public GameObject rangerStatBonusContent;
@@ -47,6 +52,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public Button playAsRangerButton;
 
 	[Header("Mage Class")]
+	public TMP_Text mageClassInfo;
 	public SOClasses mageClass;
 	public GameObject MageClassPanel;
 	public GameObject mageStatBonusContent;
@@ -124,6 +130,12 @@ public class PlayerClassesUi : MonoBehaviour
 
 	private void Initilize()
 	{
+		SetUpKnightClassInfo();
+		SetUpWarriorClassInfo();
+		SetUpRogueClassInfo();
+		SetUpRangerClassInfo();
+		SetUpMageClassInfo();
+
 		SetUpKnightClassTree();
 		SetUpWarriorClassTree();
 		SetUpRogueClassTree();
@@ -132,12 +144,109 @@ public class PlayerClassesUi : MonoBehaviour
 
 		ShowPlayerClassSelection();
 	}
+	private void SetUpKnightClassInfo()
+	{
+		string knightInfoText = "Knight Class Info:\n" +
+			$"Heavy focus on damage resistance and health whilst keeping aggro.\n\n" +
+			$"Comes with ways of increasing damage resistance and health with some damage increases.\n\n" +
+			$"Abilities are mostly defensive with some healing and damage";
+
+		string casterInfo = "Non caster";
+		string knightStartingEquipment = "Starting Equipment:\n" + GetStartingEquipmentInfo(knightClass);
+		string knightAbilitySlotInfo = "Ability Slots Info:\n" + GetAbilitySlotsInfo(knightClass);
+
+		knightClassInfo.text = knightInfoText + "\n\n" + casterInfo + "\n\n" + knightStartingEquipment + "\n\n" + knightAbilitySlotInfo;
+	}
+	private void SetUpWarriorClassInfo()
+	{
+		string warriorInfoText = "Warrior Class Info:\n" +
+			$"A balance between damage and survivability.\n\n" +
+			$"Comes with ways to spec more into increasing damage or resisting it.\n\n" +
+			$"Abilities are defensive leaning with more options to deal damage";
+
+		string casterInfo = "Non caster";
+		string warriorStartingEquipment = "Starting Equipment:\n" + GetStartingEquipmentInfo(warriorClass);
+		string warriorAbilitySlotInfo = "Ability Slots Info:\n" + GetAbilitySlotsInfo(warriorClass);
+
+		warriorClassInfo.text = warriorInfoText + "\n\n" + casterInfo + "\n\n" + warriorStartingEquipment + "\n\n" + warriorAbilitySlotInfo;
+	}
+	private void SetUpRogueClassInfo()
+	{
+		string rogueInfoText = "Rogue Class Info:\n" +
+			$"Consistent damage dealer with some survivability.\n\n" +
+			$"Comes mostly with ways of increasing damage with duel wield weapons and some survivability.\n\n" +
+			$"Abilities are mostly focused on dealing consistent damage with some utility options";
+
+		string casterInfo = "Half caster";
+		string rogueStartingEquipment = "Starting Equipment:\n" + GetStartingEquipmentInfo(rogueClass);
+		string rogueAbilitySlotInfo = "Ability Slots Info:\n" + GetAbilitySlotsInfo(rogueClass);
+
+		rogueClassInfo.text = rogueInfoText + "\n\n" + casterInfo + "\n\n" + rogueStartingEquipment + "\n\n" + rogueAbilitySlotInfo;
+	}
+	private void SetUpRangerClassInfo()
+	{
+		string rangerInfoText = "Ranger Class Info:\n" +
+			$"Consistent damage dealer with weak survivability and ranged attacks.\n\n" +
+			$"Comes mostly with ways of increasing damage with ranged weapons and little survivability.\n\n" +
+			$"Abilities are mostly focused on dealing damage with some utility and support with healing";
+
+		string casterInfo = "Half caster";
+		string rangerStartingEquipment = "Starting Equipment:\n" + GetStartingEquipmentInfo(rangerClass);
+		string rangerAbilitySlotInfo = "Ability Slots Info:\n" + GetAbilitySlotsInfo(rangerClass);
+
+		rangerClassInfo.text = rangerInfoText + "\n\n" + casterInfo + "\n\n" + rangerStartingEquipment + "\n\n" + rangerAbilitySlotInfo;
+	}
+	private void SetUpMageClassInfo()
+	{
+		string mageInfoText = "Mage Class Info:\n" +
+			$"Burst damage dealer with weak survivability and a variety of aoe and ranged attacks.\n\n" +
+			$"Comes mostly with ways of increasing magic damage or bonus healing, with some mana bonuses and little survivability.\n\n" +
+			$"Wide variety of abilities from damage, healing and utility spells, both aoe and single target";
+
+		string casterInfo = "Full caster";
+		string mageStartingEquipment = "Starting Equipment:\n" + GetStartingEquipmentInfo(mageClass);
+		string mageAbilitySlotInfo = "Ability Slots Info:\n" + GetAbilitySlotsInfo(mageClass);
+
+		mageClassInfo.text = mageInfoText + "\n\n" + casterInfo + "\n\n" + mageStartingEquipment + "\n\n" + mageAbilitySlotInfo;
+	}
+	private string GetStartingEquipmentInfo(SOClasses soClass)
+	{
+		string info = $"Starts with 500 gold\n1x {soClass.startingWeapon.itemName}\n";
+
+		foreach (SOArmors armor in soClass.startingArmor)
+		{
+			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
+				info += $"1x {armor.itemName}, ";
+			else if (armor.armorSlot == SOArmors.ArmorSlot.chest)
+				info += $"1x {armor.itemName}, ";
+			else if (armor.armorSlot == SOArmors.ArmorSlot.legs)
+				info += $"1x {armor.itemName}\n";
+		}
+		foreach (SOConsumables consumables in soClass.startingConsumables)
+		{
+			if (consumables.consumableType == SOConsumables.ConsumableType.healthRestoration)
+				info += $"3x {consumables.itemName}, ";
+			else if (consumables.consumableType == SOConsumables.ConsumableType.manaRestoration)
+				info += $"3x {consumables.itemName}";
+		}
+
+		return info;
+	}
+	private string GetAbilitySlotsInfo(SOClasses soClass)
+	{
+		string info = $"Start with {soClass.baseClassAbilitySlots} ability slot\n";
+
+		foreach (AbilitySlots abilitySlot in soClass.spellSlotsPerLevel)
+			info += $"Gain {abilitySlot.AbilitySlotsPerLevel} ability slot at level {abilitySlot.LevelRequirement} \n";
+
+		return info;
+	}
 
 	/// <summary>
 	/// instantiate ClassTreeNodeSlotUi template as children of specific ui elements based on if its a stat bonus/ability and
 	/// the level requirment to unlock it, then assign that stat buns/ability to ClassTreeNodeSlotUi ref, and Initilize node.
 	/// </summary>
-	
+
 	private void SetUpKnightClassTree()
 	{
 		foreach (ClassStatUnlocks classStatUnlock in knightClass.classStatBonusList)
@@ -605,9 +714,18 @@ public class PlayerClassesUi : MonoBehaviour
 		{
 			ClassSelectionUiPanel.SetActive(true);
 			playerClassSelectionPanel.SetActive(true);
+
+			if (GameManager.Instance != null) //should only be null when testing in specific scenes
+			{
+				if (GameManager.isNewGame)
+					closeplayerClassSelectionButton.SetActive(false);
+				else
+					closeplayerClassSelectionButton.SetActive(true);
+			}
+			else
+				closeplayerClassSelectionButton.SetActive(true);
 		}
 	}
-
 	public void HidePlayerClassSelection()
 	{
 		ClassSelectionUiPanel.SetActive(false);
