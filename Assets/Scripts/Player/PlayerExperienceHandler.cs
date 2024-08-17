@@ -7,7 +7,6 @@ using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
-	private PlayerController playerController;
 	private EntityStats playerStats;
 
 	public bool debugDisablePlayerLevelUp;
@@ -17,22 +16,23 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		playerController = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
 	}
-
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerExp;
 		DungeonHandler.OnEntityDeathEvent += AddExperience;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
-
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerExp;
 		DungeonHandler.OnEntityDeathEvent -= AddExperience;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
+	}
+	private void Start()
+	{
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
 	/// <summary>

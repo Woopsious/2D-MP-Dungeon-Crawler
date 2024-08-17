@@ -88,7 +88,7 @@ public class QuestDataSlotUi : MonoBehaviour
 	public void InitilizeItemHandInQuest()
 	{
 		questType = QuestType.isItemHandInQuest;
-		itemTypeToHandIn = (ItemType)1;//(ItemType)Utilities.GetRandomNumber(3);
+		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(3);
 
 		if (itemTypeToHandIn == ItemType.isWeapon)
 		{

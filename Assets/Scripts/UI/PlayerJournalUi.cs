@@ -20,8 +20,7 @@ public class PlayerJournalUi : MonoBehaviour
 	[Header("Interacted Npc Ui")]
 	public GameObject npcJournalPanalUi;
 	public GameObject avalableQuestContainer;
-	public Button refreshQuestsButton;
-	public Button closeQuestsButton;
+	private NpcHandler interactedQuestNpc;
 
 	public static event Action<QuestDataSlotUi> OnNewQuestAccepted;
 	public static event Action<QuestDataSlotUi> OnQuestComplete;
@@ -43,8 +42,8 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
 
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeathUpdateKillQuests;
-		PlayerEventManager.OnShowNpcJournal += ShowNpcJournal;
-		PlayerEventManager.OnHideNpcJournal += HideNpcJournal;
+		PlayerEventManager.OnShowNpcJournal += ShowAvailableNpcQuests;
+		PlayerEventManager.OnHideNpcJournal += HideAvailableNpcQuests;
 	}
 	private void OnDisable()
 	{
@@ -57,8 +56,8 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
-		PlayerEventManager.OnShowNpcJournal -= ShowNpcJournal;
-		PlayerEventManager.OnHideNpcJournal -= HideNpcJournal;
+		PlayerEventManager.OnShowNpcJournal -= ShowAvailableNpcQuests;
+		PlayerEventManager.OnHideNpcJournal -= HideAvailableNpcQuests;
 	}
 
 	public void AcceptQuest(QuestDataSlotUi quest)
@@ -158,14 +157,14 @@ public class PlayerJournalUi : MonoBehaviour
 
 	//UI CHANGES
 	//player Journal
-	public void ShowPlayerJournal()
+	private void ShowPlayerJournal()
 	{
 		if (playerJournalPanalUi.activeInHierarchy)
 			HidePlayerJournal();
 		else
 			playerJournalPanalUi.SetActive(true);
 	}
-	public void HidePlayerJournal()
+	private void HidePlayerJournal()
 	{
 		playerJournalPanalUi.SetActive(false);
 	}
@@ -175,19 +174,31 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 
 	//npc Journal
-	public void ShowNpcJournal(NpcHandler npc)
+	private void ShowAvailableNpcQuests(NpcHandler npc)
 	{
 		foreach (QuestDataSlotUi quest in npc.avalableQuestList)
 			quest.transform.SetParent(avalableQuestContainer.transform);
 
+		interactedQuestNpc = npc;
+		UpdateActiveQuestTracker();
 		npcJournalPanalUi.SetActive(true);
 	}
-	public void HideNpcJournal(NpcHandler npc)
+	private void HideAvailableNpcQuests(NpcHandler npc)
 	{
 		foreach (QuestDataSlotUi quest in npc.avalableQuestList)
 			quest.transform.SetParent(npc.npcContainer.transform);
 
+		interactedQuestNpc = null;
 		npcJournalPanalUi.SetActive(false);
 		HidePlayerJournal();
+	}
+	public void RefreshAvailableNpcQuestsButton()
+	{
+		interactedQuestNpc.GenerateNewQuests();
+		ShowAvailableNpcQuests(interactedQuestNpc);
+	}
+	public void HideAvailableNpcQuestsButton()
+	{
+		HideAvailableNpcQuests(interactedQuestNpc);
 	}
 }
