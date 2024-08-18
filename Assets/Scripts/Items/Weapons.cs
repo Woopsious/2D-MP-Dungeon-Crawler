@@ -208,6 +208,7 @@ public class Weapons : Items
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 
+		RangedAttackDirection(Quaternion.Euler(0, 0, rotz - 180));
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -274,5 +275,9 @@ public class Weapons : Items
 			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 180);
 		else if (vectorAttack.x <= -0.7)
 			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0);
+	}
+	private void RangedAttackDirection(Quaternion positionOfThingToAttack)
+	{
+		parentObj.transform.rotation = positionOfThingToAttack;
 	}
 }
