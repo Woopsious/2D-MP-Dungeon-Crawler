@@ -14,7 +14,7 @@ public class Weapons : Items
 	public bool isEquippedByOther;
 
 	public bool canAttackAgain;
-	private GameObject parentObj;
+	public GameObject parentObj;
 	private SpriteRenderer attackWeaponSprite;
 	private SpriteRenderer idleWeaponSprite;
 	private AudioHandler audioHandler;
@@ -25,8 +25,6 @@ public class Weapons : Items
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
-
-		WeaponInitilization();
 	}
 
 	public override void Initilize(Rarity setRarity, int setLevel)
@@ -108,9 +106,10 @@ public class Weapons : Items
 
 		toolTip.tipToShow = $"{info}\n{damageInfo}\n{equipInfo}";
 	}
-	public void UpdateWeaponDamage(EntityStats stats, Weapons offHandWeapon)
+	public void UpdateWeaponDamage(SpriteRenderer idleWeaponSprite, EntityStats stats, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier * stats.damageDealtModifier.finalPercentageValue);
+		damage = (int)(damage * GetWeaponDamageModifier(stats));
 
 		/*
 		if (stats.equipmentHandler != null && offHandWeapon != null)
@@ -121,8 +120,6 @@ public class Weapons : Items
 				damage += offHandWeapon.damage;
 		}
 		*/
-
-		damage = (int)(damage * GetWeaponDamageModifier(stats));
 	}
 	public float GetWeaponDamageModifier(EntityStats stats)
 	{
@@ -148,15 +145,15 @@ public class Weapons : Items
 		return percentageMod;
 	}
 
-	private void WeaponInitilization()
+	public void WeaponInitilization(SpriteRenderer idleWeaponSprite)
 	{
-		if (GetComponent<InventoryItemUi>() != null) return;  //return as this is an item in inventory
-		if (transform.parent == null) return;               //weapon is not equipped
+		if (GetComponent<InventoryItemUi>() != null) return;	//return as this is an item in inventory
+		if (transform.parent == null) return;					//weapon is not equipped
 
 		parentObj = transform.parent.gameObject;
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		this.idleWeaponSprite = idleWeaponSprite;
+		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
 		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
@@ -164,6 +161,7 @@ public class Weapons : Items
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
 		animator.SetBool("isMeleeAttack", false);
+		animator.SetBool("isRangedAttack", false);
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
@@ -215,25 +213,35 @@ public class Weapons : Items
 	}
 	private IEnumerator WeaponCooldown()
 	{
-		yield return new WaitForSeconds(0.1f);
+		float secondsForCooldown;
+
+		if (weaponBaseRef.isRangedWeapon)
+			secondsForCooldown = 0.5f;
+		else
+			secondsForCooldown = 0.1f;
+
+		yield return new WaitForSeconds(secondsForCooldown);
+
 		OnWeaponCooldown();
 		if (isEquippedByPlayer)
-			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForCooldown);
 		else
-			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed + 0.15f);
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - (secondsForCooldown + 0.25f));
 		canAttackAgain = true;
 	}
 
 	private void OnWeaponAttack()
 	{
-		if (!weaponBaseRef.isRangedWeapon)
+		if (weaponBaseRef.isRangedWeapon)
+			animator.SetBool("isRangedAttack", true);
+		else
 		{
 			animator.SetBool("isMeleeAttack", true);
 			boxCollider.enabled = true;
-			idleWeaponSprite.enabled = false;
-			attackWeaponSprite.enabled = true;
 		}
 
+		idleWeaponSprite.enabled = false;
+		attackWeaponSprite.enabled = true;
 		audioHandler.PlayAudio(weaponBaseRef.attackSfx);
 		canAttackAgain = false;
 	}
@@ -241,6 +249,7 @@ public class Weapons : Items
 	{
 		parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0); //reset attack direction
 		animator.SetBool("isMeleeAttack", false);
+		animator.SetBool("isRangedAttack", false);
 		boxCollider.enabled = false;
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;

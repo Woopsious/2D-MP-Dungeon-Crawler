@@ -11,6 +11,7 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Behaviour Info")]
 	public SOEntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityStats entityStats;
+	private SpriteRenderer spriteRenderer;
 	private EnemyBaseState currentState;
 	private EnemyIdleState idleState = new EnemyIdleState();
 	private EnemyAttackState attackState = new EnemyAttackState();
@@ -62,6 +63,7 @@ public class EntityBehaviour : MonoBehaviour
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
@@ -148,10 +150,10 @@ public class EntityBehaviour : MonoBehaviour
 
 	private void UpdateSpriteDirection()
 	{
-		if (navMeshAgent.velocity.x < 0)
-			transform.eulerAngles = new Vector3(0, 0, 0);
-		else
+		if (navMeshAgent.velocity.x > 0)
 			transform.eulerAngles = new Vector3(0, 180, 0);
+		else
+			transform.eulerAngles = new Vector3(0, 0, 0);
 	}
 	private void UpdateAnimationState()
 	{

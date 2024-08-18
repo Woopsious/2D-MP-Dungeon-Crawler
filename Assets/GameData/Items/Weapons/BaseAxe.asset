@@ -25,7 +25,7 @@ MonoBehaviour:
   isShield: 0
   baseDamage: 35
   baseAttackSpeed: 1.75
-  baseKnockback: 12
+  baseKnockback: 18
   classRestriction: 2
   weaponType: 0
   baseDamageType: 0

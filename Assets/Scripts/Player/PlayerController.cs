@@ -29,7 +29,6 @@ public class PlayerController : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 	private Animator animator;
 
-	private Vector2 moveDirection = Vector2.zero;
 	private float speed = 12;
 
 	//target selection
@@ -137,9 +136,9 @@ public class PlayerController : MonoBehaviour
 	}
 	private void UpdateSpriteDirection()
 	{
-		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
+		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 0, 0);
-		else if (rb.velocity.x > -0.01 && rb.velocity.x != 0)
+		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
 	private void UpdateAnimationState()

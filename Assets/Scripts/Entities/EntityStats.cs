@@ -15,7 +15,8 @@ public class EntityStats : MonoBehaviour
 	[HideInInspector] public LootSpawnHandler lootSpawnHandler;
 	private BoxCollider2D boxCollider2D;
 	private Animator animator;
-	private SpriteRenderer spriteRenderer;
+	public SpriteRenderer spriteRenderer {get; private set; }
+	public SpriteRenderer idleWeaponSprite { get; private set; }
 	private AudioHandler audioHandler;
 	public int entityLevel;
 	public float levelModifier;
@@ -73,7 +74,8 @@ public class EntityStats : MonoBehaviour
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
 		animator = GetComponent<Animator>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		spriteRenderer = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
+		idleWeaponSprite = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 	}
 	private void Start()
@@ -408,7 +410,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
@@ -433,7 +435,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
@@ -462,7 +464,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatRefund(SOClassStatBonuses statBoost)
@@ -491,7 +493,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
@@ -539,7 +541,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	//function will full heal entity if not player and at full health when stat changes

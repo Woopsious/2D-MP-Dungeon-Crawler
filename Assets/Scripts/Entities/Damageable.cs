@@ -32,8 +32,7 @@ public class Damageable : MonoBehaviour
 	{
 		if (GetComponent<Rigidbody2D>() == null || other == null) return;
 
-		Vector2 difference = other.transform.position + gameObject.transform.position;
-		difference = difference.normalized * knockback * 100;
-		GetComponent<Rigidbody2D>().AddForce(difference, ForceMode2D.Impulse);
+		Vector2 direction = (transform.position - other.transform.position).normalized;
+		GetComponent<Rigidbody2D>().AddForce(100 * knockback * direction, ForceMode2D.Impulse);
 	}
 }
