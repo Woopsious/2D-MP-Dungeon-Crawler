@@ -234,14 +234,10 @@ public class PlayerController : MonoBehaviour
 		projectile.transform.position = (Vector2)transform.position;
 		projectile.Initilize(this, ability, playerStats);
 
-		Vector3 rotation;
 		if (!debugUseSelectedTargetForAttackDirection)
-			rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
 		else
-			rotation = selectedTarget.transform.position - transform.position;
-
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+			SetProjectileDirection(projectile, GetAttackRotation(selectedTarget.transform.position));
 	}
 	private void CastAoeAbility(SOClassAbilities ability)
 	{
@@ -257,6 +253,18 @@ public class PlayerController : MonoBehaviour
 		abilityAOE.transform.position = (Vector2)mousePosition;
 		abilityAOE.Initilize(ability, playerStats);
 		abilityAOE.AddPlayerRef(this);
+	}
+
+	//directional ability attacks
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
+	}
+	private void SetProjectileDirection(Projectiles projectile, float rotz)
+	{
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 
 	//bool checks

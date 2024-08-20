@@ -151,6 +151,7 @@ public class Weapons : Items
 		if (transform.parent == null) return;					//weapon is not equipped
 
 		parentObj = transform.parent.gameObject;
+		parentObj.transform.rotation = Quaternion.Euler(Vector3.zero);
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
 		this.idleWeaponSprite = idleWeaponSprite;
 		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
@@ -162,6 +163,11 @@ public class Weapons : Items
 		canAttackAgain = true;
 		animator.SetBool("isMeleeAttack", false);
 		animator.SetBool("isRangedAttack", false);
+
+		if (weaponBaseRef.isRangedWeapon)
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 180, 180);
+		else
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 0, 180);
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
@@ -185,7 +191,8 @@ public class Weapons : Items
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
 	{
 		if (!canAttackAgain) return;
-		MeleeDirectionToAttack(positionOfThingToAttack);
+
+		AttackInDirection(null, GetAttackRotation(positionOfThingToAttack));
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -204,11 +211,7 @@ public class Weapons : Items
 		projectile.transform.position = (Vector2)transform.position;
 		projectile.Initilize(player, this);
 
-		Vector3 rotation = positionOfThingToAttack - transform.position; ;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
-
-		RangedAttackDirection(Quaternion.Euler(0, 0, rotz - 180));
+		AttackInDirection(projectile, GetAttackRotation(positionOfThingToAttack));
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -255,29 +258,18 @@ public class Weapons : Items
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;
 	}
-	private void MeleeDirectionToAttack(Vector3 positionOfThingToAttack)
+
+	//direction attacks
+	private void AttackInDirection(Projectiles projectile, float rotz)
 	{
-		/// <summary>
-		/// change rotation of weaponSlot (parent of this obj) based on direction of mouse from player depending on what vector is greater
-		/// 0.71 is the lowest ive ever managed to get when attacking diagonally from player pos, so for now vector needs to be greater then 0.7
-		/// </summary>
-
-		positionOfThingToAttack.z = parentObj.transform.parent.position.z;
-
-		Vector3 towardsMouseFromPlayer = positionOfThingToAttack - parentObj.transform.parent.position;
-		Vector3 vectorAttack = towardsMouseFromPlayer.normalized;
-
-		if (vectorAttack.y >= 0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, -90);
-		else if (vectorAttack.y <= -0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 90);
-		else if (vectorAttack.x >= 0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 180);
-		else if (vectorAttack.x <= -0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0);
+		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
+		if (projectile != null)
+			projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
-	private void RangedAttackDirection(Quaternion positionOfThingToAttack)
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
 	{
-		parentObj.transform.rotation = positionOfThingToAttack;
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
 	}
 }

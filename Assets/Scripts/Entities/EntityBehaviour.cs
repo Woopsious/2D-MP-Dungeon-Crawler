@@ -360,9 +360,7 @@ public class EntityBehaviour : MonoBehaviour
 		projectile.transform.position = (Vector2)transform.position;
 		projectile.Initilize(null, ability, entityStats);
 
-		Vector3 rotation = playerTarget.transform.position - transform.position;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		SetProjectileDirection(projectile, GetAttackRotation(playerTarget.transform.position));
 	}
 	public void CastAoeAbility(SOClassAbilities ability)
 	{
@@ -377,6 +375,18 @@ public class EntityBehaviour : MonoBehaviour
 		abilityAOE.transform.position = playerTarget.transform.position;
 		abilityAOE.Initilize(ability, entityStats);
 		abilityAOE.AddPlayerRef(null);
+	}
+
+	//directional ability attacks
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
+	}
+	private void SetProjectileDirection(Projectiles projectile, float rotz)
+	{
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 
 	//ability type cooldowns
