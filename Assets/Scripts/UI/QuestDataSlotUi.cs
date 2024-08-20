@@ -144,24 +144,35 @@ public class QuestDataSlotUi : MonoBehaviour
 		if (questType == QuestType.isBossKillQuest)
 		{
 			questName = $"Kill {amount} {entityToKill.entityName}";
+			questImage.sprite = entityToKill.sprite;
 		}
 		else if (questType == QuestType.isKillQuest)
 		{
 			questName = $"Kill {amount} {entityToKill.entityName}";
+			questImage.sprite = entityToKill.sprite;
 		}
 		else if(questType == QuestType.isItemHandInQuest)
 		{
 			if (itemTypeToHandIn == ItemType.isWeapon)
+			{
 				questName = $"Hand In {amount} {weaponToHandIn.itemName}";
-
+				questImage.sprite = weaponToHandIn.itemImage;
+			}
 			else if (itemTypeToHandIn == ItemType.isArmor)
+			{
 				questName = $"Hand In {amount} {armorToHandIn.itemName}";
-
+				questImage.sprite = armorToHandIn.itemImage;
+			}
 			else if (itemTypeToHandIn == ItemType.isAccessory)
+			{
 				questName = $"Hand In {amount} {accessoryToHandIn.itemName}";
-
+				questImage.sprite = accessoryToHandIn.itemImage;
+			}
 			else if (itemTypeToHandIn == ItemType.isConsumable)
+			{
 				questName = $"Hand In {amount} {consumableToHandIn.itemName}";
+				questImage.sprite = consumableToHandIn.itemImage;
+			}
 			else
 				Debug.LogError("no match for hand in item quest");
 		}

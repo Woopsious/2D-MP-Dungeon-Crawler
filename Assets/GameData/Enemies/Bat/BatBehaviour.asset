@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 32f597d358a120d4ab5ba32aa818bb3f, type: 3}
-  m_Name: SkeletonBehaviour
+  m_Name: BatBehaviour
   m_EditorClassIdentifier: 
   idleWaitTime: 3
-  idleWanderRadius: 15
-  aggroRange: 10
-  maxChaseRange: 12
-  navMeshMoveSpeed: 4
-  navMeshTurnSpeed: 60
-  navMeshAcceleration: 4
+  idleWanderRadius: 18
+  aggroRange: 15
+  maxChaseRange: 18
+  navMeshMoveSpeed: 6.5
+  navMeshTurnSpeed: 120
+  navMeshAcceleration: 6
   navMeshStoppingDistance: 1.25

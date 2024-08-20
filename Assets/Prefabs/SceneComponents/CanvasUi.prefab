@@ -7450,7 +7450,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 7360800443136450203}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 7406670237921438352}
+        m_TargetAssemblyTypeName: PlayerJournalUi, Assembly-CSharp
+        m_MethodName: RefreshAvailableNpcQuestsButton
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1663428223201190174
 GameObject:
   m_ObjectHideFlags: 0
@@ -15913,8 +15925,6 @@ MonoBehaviour:
   activeQuests: []
   npcJournalPanalUi: {fileID: 691405802618299523}
   avalableQuestContainer: {fileID: 4827861846648095903}
-  refreshQuestsButton: {fileID: 6834708848076911022}
-  closeQuestsButton: {fileID: 7979472822938900318}
 --- !u!114 &2412965915637776067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -23277,11 +23287,11 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 7406670237921438352}
         m_TargetAssemblyTypeName: PlayerJournalUi, Assembly-CSharp
-        m_MethodName: HideNpcJournal
-        m_Mode: 2
+        m_MethodName: HideAvailableNpcQuestsButton
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: NpcHandler, Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

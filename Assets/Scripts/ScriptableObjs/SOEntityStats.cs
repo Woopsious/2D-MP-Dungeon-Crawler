@@ -11,8 +11,10 @@ public class SOEntityStats : ScriptableObject
 	public HumanoidTypes humanoidType;
 	public enum HumanoidTypes
 	{
-		isPlayer, isGoblin, isSkeleton
+		isPlayer, isGoblin, isSkeleton, isBat, isSlime, isZombie
 	}
+
+	public bool canUseEquipment;
 
 	[Header("Loot Info")]
 	public int expOnDeath;
@@ -32,13 +34,13 @@ public class SOEntityStats : ScriptableObject
 	public float damageDealtBaseModifier;
 
 	[Header("Resistances")]
-	[Tooltip("standard value is 5, 10 for player")]
+	[Tooltip("standard value is 5 | 8 for resistance | 2 for weakness")]
 	public int physicalDamageResistance;
-	[Tooltip("standard value is 5, 10 for player")]
+	[Tooltip("standard value is 5 | 8 for resistance | 2 for weakness")]
 	public int poisonDamageResistance;
-	[Tooltip("standard value is 5, 10 for player")]
+	[Tooltip("standard value is 5 | 8 for resistance | 2 for weakness")]
 	public int fireDamageResistance;
-	[Tooltip("standard value is 5, 10 for player")]
+	[Tooltip("standard value is 5 | 8 for resistance | 2 for weakness")]
 	public int iceDamageResistance;
 
 	[Header("Mana")]

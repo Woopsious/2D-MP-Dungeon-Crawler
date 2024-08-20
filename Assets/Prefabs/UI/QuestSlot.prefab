@@ -254,6 +254,10 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
   possibleEntityTargets:
   - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
+  - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
+  - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
+  - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
+  - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
   possibleWeapons:
   - {fileID: 11400000, guid: 752560be2cf32244e8e66813eb3bbd92, type: 2}
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
