@@ -5,12 +5,15 @@ using System.Linq;
 using Unity.Mathematics;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
@@ -167,7 +170,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		if (gameObject != obj) return;
+		if (selectedTarget == null) return;
+		if (selectedTarget.gameObject != obj) return;
 		selectedTarget = null;
 	}
 
@@ -177,6 +181,10 @@ public class PlayerController : MonoBehaviour
 	{
 		queuedAbility = ability;
 	}
+	public void CastQueuedAbility(Abilities ability)
+	{
+		OnUseQueuedAbilities?.Invoke(ability, this);
+	}
 	private void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
 		if (ability.abilityBaseRef.isAOE)
@@ -185,41 +193,118 @@ public class PlayerController : MonoBehaviour
 		else if (ability.abilityBaseRef.isProjectile)
 			CastDirectionalAbility(ability.abilityBaseRef);
 
-		else if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing ||
-			ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana ||
-			ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
-				CastEffect(ability.abilityBaseRef);
+		if (ability.abilityBaseRef.isOffensiveAbility)
+		{
+			EntityStats newEnemyEntity;
+			if (selectedTarget == null)
+			{
+				Debug.Log("selected target null");
+				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
+				if (newEnemyEntity == null)
+				{
+					Debug.Log("new selected target null");
+					CancelQueuedAbility(queuedAbility);
+					return;
+				}
+				else
+					CastEffect(ability.abilityBaseRef, newEnemyEntity);
+			}
+			else
+				CastEffect(ability.abilityBaseRef, selectedTarget);
+		}
+		//add support for casting on friendly targets when none are selected in MP
+		else
+			CastEffect(ability.abilityBaseRef, null);
 
+		if (ability.abilityBaseRef.isSpell)
+		{
+			int totalManaCost = (int)(ability.abilityBaseRef.manaCost * playerStats.levelModifier);
+			playerStats.DecreaseMana(totalManaCost, false);
+		}
+		ability.isOnCooldown = true;
 		queuedAbility = null;
+	}
+	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
+	{
+		EntityStats newEntity;
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
+		Debug.Log("hit position: " + hit.point);
+
+		if (hit.transform == null)
+		{
+			Debug.Log("no obj found at location");
+			return null;
+		}
+		if (hit.transform.gameObject.GetComponent<EntityStats>() == null)
+		{
+			Debug.Log("no entity found");
+			return null;
+		}
+
+		newEntity = hit.transform.gameObject.GetComponent<EntityStats>();
+
+		if (newEntity.IsPlayerEntity() && lookingForFriendly)
+		{
+			Debug.Log("entity found is player");
+			return newEntity;
+		}
+		else if (!newEntity.IsPlayerEntity() && !lookingForFriendly)
+		{
+			Debug.Log("entity found is enemy");
+			return newEntity;
+		}
+		else
+		{
+			Debug.Log("entity found is incorrect type");
+			return null;
+		}
+	}
+	public void CancelQueuedAbility(Abilities ability)
+	{
+		OnCancelQueuedAbilities?.Invoke(ability);
 	}
 	private void OnCancelQueuedAbility(Abilities ability)
 	{
 		queuedAbility = null;
 	}
+
 	//casting
-	public void CastQueuedAbility(Abilities ability)
+	private void CastEffect(SOClassAbilities ability, EntityStats enemyTarget)
 	{
-		OnUseQueuedAbilities?.Invoke(ability, this);
-	}
-	private void CastEffect(SOClassAbilities ability)
-	{
-		//add mana restoration here if i ever decided to add an ability to restore mana
-
-		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+		if (ability.damageType == SOClassAbilities.DamageType.isHealing)	//healing
 		{
-			if (ability.canOnlyTargetSelf || selectedTarget == null)
+			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
 				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
+			else
+				CancelQueuedAbility(queuedAbility);		 //add support/option to heal other players for MP
+		}
+		else if (ability.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)	//insta damage abilities
+		{
+			if (ability.isOffensiveAbility)
+				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.damageValue
+					* playerStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true);
+		}
 
-			//heal selected target/friendly when i get round to doing that in mp
-			//if (!ability.canOnlyTargetSelf && selectedTarget != null)
-				//playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.HealingPercentageModifier.finalPercentageValue);
+		else if (ability.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
+		{
+			if (ability.canOnlyTargetSelf)
+				playerStats.ApplyStatusEffect(ability);
+			else if (ability.isOffensiveAbility && enemyTarget != null)
+				enemyTarget.ApplyStatusEffect(ability);
+			else if (!ability.isOffensiveAbility)		 //add support/option to buff other players for MP
+				playerStats.ApplyStatusEffect(ability);
+			else
+			{
+				Debug.Log("failed to cast status effect");
+				CancelQueuedAbility(queuedAbility);
+				return;
+			}
 		}
 		else
 		{
-			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //in mp add friendly is selected check changing who gets buff
-				playerStats.ApplyStatusEffect(ability);
-			else if (ability.isOffensiveAbility && selectedTarget != null)
-				selectedTarget.ApplyStatusEffect(ability);
+			Debug.Log("failed to cast ability effect");
+			CancelQueuedAbility(queuedAbility);
+			return;
 		}
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)
@@ -359,7 +444,7 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 
 		if (queuedAbility != null)
-			OnCancelQueuedAbilities?.Invoke(queuedAbility);
+			CancelQueuedAbility(queuedAbility);
 
 		CheckForSelectableTarget();
 	}
@@ -417,36 +502,61 @@ public class PlayerController : MonoBehaviour
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
-		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityTwo()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
-		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityThree()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
-		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFour()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
-		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFive()
 	{
 		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
-		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 
 	//ui actions

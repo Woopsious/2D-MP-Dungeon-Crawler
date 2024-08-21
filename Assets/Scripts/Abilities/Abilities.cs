@@ -131,7 +131,7 @@ public class Abilities : MonoBehaviour
 	{
 		AbilityCooldownTimer();
 	}
-	public void AbilityCooldownTimer()
+	private void AbilityCooldownTimer()
 	{
 		if (!isOnCooldown) return;
 
@@ -144,44 +144,6 @@ public class Abilities : MonoBehaviour
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
 		}
-	}
-
-	public void PlayerUseAbility(EntityStats entityStats)
-	{
-		PlayerController playerController = entityStats.GetComponent<PlayerController>();
-		if (!CanUseAbility(entityStats))
-			return;
-
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect || abilityBaseRef.damageType == 
-			SOClassAbilities.DamageType.isHealing || abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana)
-		{
-			if (CanInstantCastEffect())
-				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, true);
-			else
-				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, false);
-		}
-		else
-		{
-			if (CanInstantCastAbility())
-				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, true);
-			else
-				PlayerHotbarUi.Instance.AddNewQueuedAbility(this, playerController, false);
-		}
-	}
-	public void EntityUseAbility(EntityStats entityStats)
-	{
-		entityStats.DecreaseMana(abilityBaseRef.manaCost, false);
-		isOnCooldown = true;
-	}
-
-	public void CastAbility(EntityStats casterStats)
-	{
-		if (abilityBaseRef.isSpell)
-		{
-			int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(casterStats.entityLevel));
-			casterStats.DecreaseMana(totalManaCost, false);
-		}
-		isOnCooldown = true;
 	}
 
 	//cooldown and mana cost check
@@ -203,40 +165,34 @@ public class Abilities : MonoBehaviour
 		return true;
 	}
 	//cast now
-	public bool CanInstantCastEffect()
+	public bool CanInstantCastAbility(EntityStats selectedEnemy)
 	{
-		if (abilityBaseRef.canOnlyTargetSelf) //for effects that can only be added to self
+		if (abilityBaseRef.canOnlyTargetSelf)
 			return true;
-		if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing||
-			abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana) //restoration effects
-		{
-			//add additional checks for friendlies when mp is added
-			return true;
-		}
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect) //status effects
-		{
-			if (!abilityBaseRef.isOffensiveAbility)
-				return true;
-			if (abilityBaseRef.isOffensiveAbility && PlayerHotbarUi.Instance.selectedTarget != null)
-				return true;
-			else
-				return false;
-		}
-		else
-		{
-			Debug.LogError("failed to handle ability effect, this shouldnt happen");
-			return false;
-		}
-	}
-	public bool CanInstantCastAbility()
-	{
 		if (abilityBaseRef.isAOE)
 			return false;
 		if (abilityBaseRef.isProjectile)
 			return true;
+
+		if (abilityBaseRef.requiresTarget)
+		{
+			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //add support for healing other players in MP
+				return true;
+			else if (!abilityBaseRef.isOffensiveAbility)
+				return true;
+			else if (abilityBaseRef.isOffensiveAbility && selectedEnemy != null)
+				return true;
+			else if (abilityBaseRef.isOffensiveAbility && selectedEnemy == null)
+				return false;
+			else
+			{
+				Debug.Log("failed to figure out if ability can be insta casted while requiring a target");
+				return false;
+			}
+		}
 		else
 		{
-			Debug.LogError("failed to handle ability, this shouldnt happen");
+			Debug.Log("failed to figure out if ability can be insta casted");
 			return false;
 		}
 	}

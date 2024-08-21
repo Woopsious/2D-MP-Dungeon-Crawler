@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
   m_Name: HealingWord
   m_EditorClassIdentifier: 
-  Name: Heal
+  Name: Healing Word
   Description: Heal yourself or others
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
@@ -21,6 +21,7 @@ MonoBehaviour:
   requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 0
   aoeSize: 0
   isDOT: 0

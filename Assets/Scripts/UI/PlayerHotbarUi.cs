@@ -287,7 +287,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI Ability Uses
-	public void AddNewQueuedAbility(Abilities ability, PlayerController player, bool canInstantCast)
+	public void AddNewQueuedAbility(Abilities ability, PlayerController player)
 	{
 		OnNewQueuedAbilities?.Invoke(ability, player.GetComponent<EntityStats>());
 		queuedAbility = ability;
@@ -298,13 +298,9 @@ public class PlayerHotbarUi : MonoBehaviour
 			queuedAbilityAoe.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
-
-		if (canInstantCast)
-			player.CastQueuedAbility(ability);
 	}
 	public void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
-		ability.CastAbility(player.GetComponent<EntityStats>());
 		queuedAbilityTextInfo.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
