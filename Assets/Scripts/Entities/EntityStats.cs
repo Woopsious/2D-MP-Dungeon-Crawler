@@ -113,6 +113,7 @@ public class EntityStats : MonoBehaviour
 	private void Initilize()
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
+		CalculateBaseStats();
 
 		if (GetComponent<PlayerController>() == null)
 		{
@@ -121,7 +122,6 @@ public class EntityStats : MonoBehaviour
 			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, entityBaseStats.lootPool);
 		}
 
-		CalculateBaseStats();
 		if (GameManager.Instance == null) return; //for now leave this line in
 		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
 			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
@@ -409,6 +409,8 @@ public class EntityStats : MonoBehaviour
 
 		UpdatePlayerStatInfoUi();
 
+		Debug.Log("health on stat calcs:" + currentHealth / maxHealth.finalValue);
+
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
@@ -433,6 +435,8 @@ public class EntityStats : MonoBehaviour
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
+
+		Debug.Log("health on equipment change:" + currentHealth / maxHealth.finalValue);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
@@ -462,6 +466,8 @@ public class EntityStats : MonoBehaviour
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
+
+		Debug.Log("health on stat unlock:" + currentHealth / maxHealth.finalValue);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);

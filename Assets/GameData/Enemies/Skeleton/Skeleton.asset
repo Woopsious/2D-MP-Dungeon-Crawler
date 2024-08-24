@@ -16,6 +16,7 @@ MonoBehaviour:
   sprite: {fileID: -1975513336, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 2
   canUseEquipment: 1
+  UniqueAttackWeapon: {fileID: 0}
   expOnDeath: 40
   maxDroppedGoldAmount: 12
   minDroppedGoldAmount: 5
@@ -27,9 +28,9 @@ MonoBehaviour:
   poisonDamageResistance: 8
   fireDamageResistance: 5
   iceDamageResistance: 5
-  maxMana: 75
+  maxMana: 50
   manaRegenPercentage: 0.05
-  manaRegenCooldown: 2
+  manaRegenCooldown: 3
   possibleClassesList:
   - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
   - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}

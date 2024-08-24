@@ -64,20 +64,24 @@ public class EntityEquipmentHandler : MonoBehaviour
 	//for entitys other then player to randomly equip items when they spawn in
 	public void SpawnEntityEquipment()
 	{
-		EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon, equippedWeapon, weaponSlotContainer);			//main weapon
-		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);		//offhand weapon
-
-		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)									//armor
+		if (entityStats.entityBaseStats.canUseEquipment)
 		{
-			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
-				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.chest)
-				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.legs)
-				EquipArmor(armor, equippedLegs, legsSlotContainer);
-		}
+			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon, equippedWeapon, weaponSlotContainer);		//main weapon
+			//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);	//offhand weapon
 
-		//Accessory functions here if/when i decide to add it
+			foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)                             //armor
+			{
+				if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
+					EquipArmor(armor, equippedHelmet, helmetSlotContainer);
+				if (armor.armorSlot == SOArmors.ArmorSlot.chest)
+					EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
+				if (armor.armorSlot == SOArmors.ArmorSlot.legs)
+					EquipArmor(armor, equippedLegs, legsSlotContainer);
+			}
+			//Accessory functions here if/when i decide to add it
+		}
+		else
+			EquipWeapon(entityStats.entityBaseStats.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
 	}
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{

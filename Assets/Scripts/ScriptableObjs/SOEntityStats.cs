@@ -14,7 +14,10 @@ public class SOEntityStats : ScriptableObject
 		isPlayer, isGoblin, isSkeleton, isBat, isSlime, isZombie
 	}
 
+	[Header("Equipment Status")]
 	public bool canUseEquipment;
+	[Tooltip("leave blank unless entity cant use equipment")]
+	public SOWeapons UniqueAttackWeapon;
 
 	[Header("Loot Info")]
 	public int expOnDeath;

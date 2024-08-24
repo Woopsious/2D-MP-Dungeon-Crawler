@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af42707304d2360488b53dd14de5c3d3, type: 3}
+  m_Name: UniqueEntityWeaponMelee
+  m_EditorClassIdentifier: 
+  itemName: UniqueEntityWeaponMelee
+  itemImage: {fileID: 1576718399, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  itemPrice: 0
+  itemId: 0
+  itemType: 1
+  isEquipable: 1
+  isStackable: 0
+  MaxStackCount: 1
+  equipItemSfx: {fileID: 0}
+  isBareHands: 1
+  isShield: 0
+  baseDamage: 25
+  baseAttackSpeed: 2
+  baseKnockback: 5
+  classRestriction: 0
+  weaponType: 0
+  baseDamageType: 0
+  isRangedWeapon: 0
+  maxAttackRange: 0
+  minAttackRange: 0
+  projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
+  projectileSpeed: 0
+  baseBonusMana: 0
+  attackSfx: {fileID: 8300000, guid: 87cd52aa211faa048b517264b1d5b5c2, type: 3}

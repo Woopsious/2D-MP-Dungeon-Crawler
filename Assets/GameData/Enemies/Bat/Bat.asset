@@ -16,6 +16,7 @@ MonoBehaviour:
   sprite: {fileID: -1099789057, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 3
   canUseEquipment: 0
+  UniqueAttackWeapon: {fileID: 11400000, guid: a9db01ee02432424db8fe2628146aa85, type: 2}
   expOnDeath: 20
   maxDroppedGoldAmount: 0
   minDroppedGoldAmount: 0
