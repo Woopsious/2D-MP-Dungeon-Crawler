@@ -14,11 +14,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   itemName: Health Potion
   itemImage: {fileID: -1430276971, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  itemPrice: 100
+  itemPrice: 150
   itemId: 0
   itemType: 0
   isEquipable: 1
   isStackable: 1
   MaxStackCount: 5
+  equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   consumableType: 0
   consumablePercentage: 0.15
+  consumeSfx: {fileID: 8300000, guid: 48411483cb6244948a11579ee363e613, type: 3}

@@ -4,29 +4,34 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
 using Unity.Services.Lobbies.Models;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.ShaderGraph;
+using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
 	public bool debugSetStartingItems;
+	public bool debugUseSelectedTargetForAttackDirection;
+	public bool debugSetPlayerLevelOnStart;
+	public int debugPlayerLevel;
 	public Camera playerCamera;
 	public LayerMask includeMe;
-	private EntityStats playerStats;
-	private EntityClassHandler playerClassHandler;
+	[HideInInspector] public EntityStats playerStats;
+	[HideInInspector] public EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
-	private PlayerInputActions playerInputs;
+	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
+	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
 	private Animator animator;
 
-	private Vector2 moveDirection = Vector2.zero;
 	private float speed = 12;
 
 	//target selection
@@ -36,24 +41,34 @@ public class PlayerController : MonoBehaviour
 	//abilities
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
 	public event Action<Abilities> OnCancelQueuedAbilities;
-	public bool debugUseMouseDirectionForProjectiles;
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
 	public Abilities queuedAbility;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithNpc;
-	private NpcHandler currentInteractedNpc;
 	[HideInInspector] public bool isInteractingWithPortal;
 	private PortalHandler currentInteractedPortal;
+	[HideInInspector] public bool isInteractingWithNpc;
+	private NpcHandler currentInteractedNpc;
+	[HideInInspector] public bool isInteractingWithChest;
+	private ChestHandler currentInteractedChest;
 
 	private void Awake()
 	{
-		Initilize();
+		playerStats = GetComponent<EntityStats>();
+		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
+		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
+		playerEquipmentHandler.player = this;
+		rb = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		animator = GetComponent<Animator>();
 	}
 	private void Start()
 	{
+		Initilize();
+
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities += OnNewQueuedAbility;
@@ -65,17 +80,11 @@ public class PlayerController : MonoBehaviour
 
 	private void OnEnable()
 	{
-		if (playerInputs == null)
-			playerInputs = new PlayerInputActions();
-		playerInputs.Enable();
-
 		SaveManager.RestoreData += ReloadPlayerInfo;
-		EventManager.OnDeathEvent += OnSelectedTargetDeath;
+		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
-		playerInputs.Disable();
-
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		PlayerHotbarUi.OnNewQueuedAbilities -= OnNewQueuedAbility;
@@ -83,8 +92,9 @@ public class PlayerController : MonoBehaviour
 		OnUseQueuedAbilities -= OnUseQueuedAbility;
 		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
+
 		SaveManager.RestoreData -= ReloadPlayerInfo;
-		EventManager.OnDeathEvent -= OnSelectedTargetDeath;
+		DungeonHandler.OnEntityDeathEvent -= OnSelectedTargetDeath;
 	}
 
 	private void Update()
@@ -99,16 +109,16 @@ public class PlayerController : MonoBehaviour
 
 	public void Initilize()
 	{
-		playerInputs = new PlayerInputActions();
-		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
-		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
-		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		animator = GetComponent<Animator>();
+		if (playerInputs == null)
+			playerInputs = PlayerInputHandler.Instance;
+
 		playerCamera.transform.parent = null;
 
-		playerStats.entityLevel = 20;
+		if (debugSetPlayerLevelOnStart)
+			playerStats.entityLevel = debugPlayerLevel;
+		else
+			playerStats.entityLevel = 1;
+		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
 	private void ReloadPlayerInfo()
@@ -117,21 +127,21 @@ public class PlayerController : MonoBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
+		PlayerEventManager.PlayerLevelUp(playerStats);
 	}
 
 	private void PlayerMovement()
 	{
-		moveDirection = playerInputs.Player.Movement.ReadValue<Vector2>();
-		rb.velocity = new Vector2(moveDirection.x * speed, moveDirection.y * speed);
+		rb.velocity = new Vector2(playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
 	private void UpdateSpriteDirection()
 	{
-		if (rb.velocity.x < 0.01 && rb.velocity.x != 0)
+		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 0, 0);
-		else if (rb.velocity.x > -0.01 && rb.velocity.x != 0)
+		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
 			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
 	private void UpdateAnimationState()
@@ -160,7 +170,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		if (gameObject != obj) return;
+		if (selectedTarget == null) return;
+		if (selectedTarget.gameObject != obj) return;
 		selectedTarget = null;
 	}
 
@@ -170,73 +181,181 @@ public class PlayerController : MonoBehaviour
 	{
 		queuedAbility = ability;
 	}
+	public void CastQueuedAbility(Abilities ability)
+	{
+		OnUseQueuedAbilities?.Invoke(ability, this);
+	}
 	private void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
-		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
 		if (ability.abilityBaseRef.isAOE)
 			CastAoeAbility(ability.abilityBaseRef);
 
 		else if (ability.abilityBaseRef.isProjectile)
 			CastDirectionalAbility(ability.abilityBaseRef);
 
-		else if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing ||
-			ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isMana ||
-			ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
-				CastEffect(ability.abilityBaseRef);
+		if (ability.abilityBaseRef.isOffensiveAbility)
+		{
+			EntityStats newEnemyEntity;
+			if (selectedTarget == null)
+			{
+				Debug.Log("selected target null");
+				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
+				if (newEnemyEntity == null)
+				{
+					Debug.Log("new selected target null");
+					CancelQueuedAbility(queuedAbility);
+					return;
+				}
+				else
+					CastEffect(ability.abilityBaseRef, newEnemyEntity);
+			}
+			else
+				CastEffect(ability.abilityBaseRef, selectedTarget);
+		}
+		//add support for casting on friendly targets when none are selected in MP
+		else
+			CastEffect(ability.abilityBaseRef, null);
 
+		if (ability.abilityBaseRef.isSpell)
+		{
+			int totalManaCost = (int)(ability.abilityBaseRef.manaCost * playerStats.levelModifier);
+			playerStats.DecreaseMana(totalManaCost, false);
+		}
+		ability.isOnCooldown = true;
 		queuedAbility = null;
+	}
+	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
+	{
+		EntityStats newEntity;
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
+		Debug.Log("hit position: " + hit.point);
+
+		if (hit.transform == null)
+		{
+			Debug.Log("no obj found at location");
+			return null;
+		}
+		if (hit.transform.gameObject.GetComponent<EntityStats>() == null)
+		{
+			Debug.Log("no entity found");
+			return null;
+		}
+
+		newEntity = hit.transform.gameObject.GetComponent<EntityStats>();
+
+		if (newEntity.IsPlayerEntity() && lookingForFriendly)
+		{
+			Debug.Log("entity found is player");
+			return newEntity;
+		}
+		else if (!newEntity.IsPlayerEntity() && !lookingForFriendly)
+		{
+			Debug.Log("entity found is enemy");
+			return newEntity;
+		}
+		else
+		{
+			Debug.Log("entity found is incorrect type");
+			return null;
+		}
+	}
+	public void CancelQueuedAbility(Abilities ability)
+	{
+		OnCancelQueuedAbilities?.Invoke(ability);
 	}
 	private void OnCancelQueuedAbility(Abilities ability)
 	{
 		queuedAbility = null;
 	}
+
 	//casting
-	public void CastQueuedAbility(Abilities ability)
+	private void CastEffect(SOClassAbilities ability, EntityStats enemyTarget)
 	{
-		OnUseQueuedAbilities?.Invoke(ability, this);
-	}
-	private void CastEffect(SOClassAbilities ability)
-	{
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isHealing)
-			playerStats.OnHeal(ability.damageValuePercentage, true);
-		if (ability.canOnlyTargetSelf && ability.damageType == SOClassAbilities.DamageType.isMana)
-			playerStats.IncreaseMana(ability.damageValuePercentage, true);
-		else
+		if (ability.damageType == SOClassAbilities.DamageType.isHealing)	//healing
+		{
+			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
+				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
+			else
+				CancelQueuedAbility(queuedAbility);		 //add support/option to heal other players for MP
+		}
+		else if (ability.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)	//insta damage abilities
+		{
+			if (ability.isOffensiveAbility)
+				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.damageValue
+					* playerStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true);
+		}
+
+		else if (ability.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
 		{
 			if (ability.canOnlyTargetSelf)
 				playerStats.ApplyStatusEffect(ability);
+			else if (ability.isOffensiveAbility && enemyTarget != null)
+				enemyTarget.ApplyStatusEffect(ability);
+			else if (!ability.isOffensiveAbility)		 //add support/option to buff other players for MP
+				playerStats.ApplyStatusEffect(ability);
+			else
+			{
+				Debug.Log("failed to cast status effect");
+				CancelQueuedAbility(queuedAbility);
+				return;
+			}
+		}
+		else
+		{
+			Debug.Log("failed to cast ability effect");
+			CancelQueuedAbility(queuedAbility);
+			return;
 		}
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)
 	{
-		GameObject go = Instantiate(projectilePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(ability, playerStats);
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
+		projectile.transform.SetParent(null);
+		projectile.transform.position = (Vector2)transform.position;
+		projectile.Initilize(this, ability, playerStats);
 
-		Vector3 rotation;
-		if (debugUseMouseDirectionForProjectiles)
-			rotation = Camera.main.ScreenToWorldPoint(Input.mousePosition) - transform.position;
+		if (!debugUseSelectedTargetForAttackDirection)
+			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
 		else
-			rotation = selectedTarget.transform.position - transform.position;
-
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+			SetProjectileDirection(projectile, GetAttackRotation(selectedTarget.transform.position));
 	}
 	private void CastAoeAbility(SOClassAbilities ability)
 	{
+		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+		}
+
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		GameObject go = Instantiate(AbilityAoePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)mousePosition;
-		go.GetComponent<AbilityAOE>().Initilize(ability, playerStats);
+		abilityAOE.transform.SetParent(null);
+		abilityAOE.transform.position = (Vector2)mousePosition;
+		abilityAOE.Initilize(ability, playerStats);
+		abilityAOE.AddPlayerRef(this);
+	}
+
+	//directional ability attacks
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
+	}
+	private void SetProjectileDirection(Projectiles projectile, float rotz)
+	{
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 
 	//bool checks
 	private bool IsPlayerInteracting()
 	{
-		if (isInteractingWithNpc || isInteractingWithPortal)
+		if (isInteractingWithNpc || isInteractingWithPortal || isInteractingWithChest)
 			return true;
 		else return false;
 	}
@@ -247,33 +366,42 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.GetComponent<NpcHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null)
 		{
-			currentInteractedNpc = other.GetComponent<NpcHandler>();
-			currentInteractedNpc.interactWithText.gameObject.SetActive(true);
-		}
-		else if (other.GetComponent<PortalHandler>() != null)
-		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 			currentInteractedPortal = other.GetComponent<PortalHandler>();
-			currentInteractedPortal.interactWithText.gameObject.SetActive(true);
+		}
+		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			currentInteractedNpc = other.GetComponent<NpcHandler>();
+		}
+		else if (other.GetComponent<ChestHandler>() != null)
+		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			currentInteractedChest = other.GetComponent<ChestHandler>();
+			if (currentInteractedChest.chestStateOpened)
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			else
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.GetComponent<NpcHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null)
 		{
-			currentInteractedNpc.interactWithText.gameObject.SetActive(false);
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			currentInteractedPortal = null;
+		}
+		else if (other.GetComponent<NpcHandler>() != null)
+		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedNpc = null;
 		}
-		else if (other.GetComponent<PortalHandler>() != null)
+		else if (other.GetComponent<ChestHandler>() != null)
 		{
-			if (currentInteractedPortal.interactWithText == null) //remove null error when using portal to travel
-				currentInteractedPortal = null;
-			else
-			{
-				currentInteractedPortal.interactWithText.gameObject.SetActive(false);
-				currentInteractedPortal = null;
-			}
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			currentInteractedChest = null;
 		}
 	}
 
@@ -294,14 +422,14 @@ public class PlayerController : MonoBehaviour
 
 			if (weapon.weaponBaseRef.isRangedWeapon)
 			{
-				if (debugUseMouseDirectionForProjectiles)
+				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
 				else
 					weapon.RangedAttack(selectedTarget.transform.position, projectilePrefab);
 			}
 			else
 			{
-				if (debugUseMouseDirectionForProjectiles)
+				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 				else
 					weapon.MeleeAttack(selectedTarget.transform.position);
@@ -316,21 +444,28 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 
 		if (queuedAbility != null)
-			OnCancelQueuedAbilities?.Invoke(queuedAbility);
+			CancelQueuedAbility(queuedAbility);
 
 		CheckForSelectableTarget();
 	}
 	private void OnCameraZoom()
 	{
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = playerInputs.Player.CameraZoom.ReadValue<float>();
-		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 8 && value == -120)
+		float value = playerInputs.CameraZoomInput;
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()
 	{
 		if (currentInteractedPortal != null)
 			currentInteractedPortal.Interact(this);
+		else if (currentInteractedChest != null)
+		{
+			if (PlayerInventoryUi.Instance.interactedInventorySlotsUi.activeInHierarchy)
+				currentInteractedChest.UnInteract(this);
+			else
+				currentInteractedChest.Interact(this);
+		}
 		else if (currentInteractedNpc != null)
 		{
 			if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)
@@ -365,38 +500,63 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityOne()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityOne.PlayerUseAbility(playerStats);
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityTwo()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityTwo.PlayerUseAbility(playerStats);
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityThree()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityThree.PlayerUseAbility(playerStats);
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFour()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFour.PlayerUseAbility(playerStats);
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFive()
 	{
-		if (IsPlayerInteracting()) return;
+		if (IsPlayerInteracting() || queuedAbility != null) return;
 		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
-		PlayerHotbarUi.Instance.equippedAbilityFive.PlayerUseAbility(playerStats);
-		queuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
+
+		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
+		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
+		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+
+		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+			CastQueuedAbility(queuedAbility);
 	}
 
 	//ui actions
@@ -406,22 +566,22 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInventory()
 	{
-		EventManager.ShowPlayerInventory();
-	}
-	private void OnClassSelection()
-	{
-		EventManager.ShowPlayerClassSelection();
-	}
-	private void OnSkillTree()
-	{
-		EventManager.ShowPlayerSkillTree();
-	}
-	private void OnLearntAbilities()
-	{
-		EventManager.ShowPlayerLearntAbilities();
+		PlayerEventManager.ShowPlayerInventory();
 	}
 	private void OnJournal()
 	{
-		EventManager.ShowPlayerJournal();
+		PlayerEventManager.ShowPlayerJournal();
+	}
+	private void OnClassSelection()
+	{
+		PlayerEventManager.ShowPlayerClassSelection();
+	}
+	private void OnSkillTree()
+	{
+		PlayerEventManager.ShowPlayerSkillTree();
+	}
+	private void OnLearntAbilities()
+	{
+		PlayerEventManager.ShowPlayerLearntAbilities();
 	}
 }

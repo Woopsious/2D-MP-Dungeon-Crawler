@@ -16,15 +16,17 @@ MonoBehaviour:
   Description: A quick bandage to use on your wounds
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 15
+  abilityCooldown: 20
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
   statusEffectType: 0
   isAOE: 0
+  aoeSize: 0
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
+  projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 1
   damageValue: 0

@@ -1,0 +1,229 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1554180240020849707
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8168873004123109276}
+  - component: {fileID: 7166593059048072371}
+  m_Layer: 0
+  m_Name: InputManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8168873004123109276
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554180240020849707}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7166593059048072371
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1554180240020849707}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58bb064c09aa85443a6735b612473bc2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  playerControls: {fileID: -944628639613478452, guid: dc477a7945053c146806bc49c5d56cfe, type: 3}
+  actionMapName: Player
+  cameraZoom: CameraZoom
+  movement: Movement
+  mainAttack: MainAttack
+  rightClick: RightClick
+  Interact: Interact
+  ConsOne: ConsumablesOne
+  ConsTwo: ConsumablesTwo
+  AbilityOne: AbilityOne
+  AbilityTwo: AbilityTwo
+  AbilityThree: AbilityThree
+  AbilityFour: AbilityFour
+  AbilityFive: AbilityFive
+  MainMenu: MainMenu
+  Inventory: Inventory
+  Journal: Journal
+  ClassSelection: ClassSelection
+  ClassSkillTree: SkillTree
+  LearntAbilities: LearntAbilities
+  _PlayerInput: {fileID: 0}
+  _CameraZoonAction:
+    m_Name: Camera Zoon
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: ffc9a6d5-5c33-4f35-b709-545d75737576
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _MovementAction:
+    m_Name: Movement
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 770d8deb-8e7f-4818-8d9a-a811987efd5e
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _MainAttackAction:
+    m_Name: Main Attack
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 1f165c9a-5869-4ae3-aa60-28adda1f42b6
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _RightClickAction:
+    m_Name: Right Click
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 6a345e5c-737e-400c-b1cb-a56dd0599fab
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _InteractAction:
+    m_Name: Interact
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: cd83e13b-1747-4b57-8c44-f1e9acef50cf
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _ConsOneAction:
+    m_Name: Cons One
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 51b06853-07d3-4bec-a4c4-80cb64c5a088
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _ConsTwoAction:
+    m_Name: Cons Two
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: bce5de38-fdda-474f-8553-8cdd0a86e9c1
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _AbilityOneAction:
+    m_Name: Ability One
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 8a39714c-f971-43f0-bc04-ee75ca8e8c4f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _AbilityTwoAction:
+    m_Name: Ability Two
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: d039ba22-1527-4fdc-a4f2-ea8080613a54
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _AbilityThreeAction:
+    m_Name: Ability Three
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: f13eaebb-9a99-4416-bbde-664447be3ecc
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _AbilityFourAction:
+    m_Name: Ability Four
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 30699f93-9f39-4eb0-9abf-9b1a0f50d284
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _AbilityFiveAction:
+    m_Name: Ability Five
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: b81dfc55-3c2b-490b-8a28-3bbbb952376f
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _MainMenuAction:
+    m_Name: Main Menu
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: da9e4e03-5dce-4b6c-8856-62b52bf2f507
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _InventoryAction:
+    m_Name: Inventory
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 7f9ee153-b791-4e21-9c3f-2da5a33f38b4
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _JournalAction:
+    m_Name: Journal
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: f46b6bd6-2180-4eb2-ae38-8dd0da8c36a7
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _ClassSelectionAction:
+    m_Name: Class Selection
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 630a7c32-6ac6-45d1-b7c4-513191f664fa
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _ClassSkillTreeAction:
+    m_Name: Class Skill Tree
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 238d5b4f-0caf-408c-9cb6-c9a05f86a9a6
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _LearntAbilitiesAction:
+    m_Name: Learnt Abilities
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 303cd708-ef41-4033-827b-c584c856433a
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0

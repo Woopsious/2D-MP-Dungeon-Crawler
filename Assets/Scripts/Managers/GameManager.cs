@@ -12,9 +12,10 @@ public class GameManager : MonoBehaviour
 	public static event Action OnSceneChangeStart;
 	public static event Action OnSceneChangeFinish;
 
-	public static bool isNewGame;
+	public static bool isNewGame;	//dictates if data is restored + resets recievedStartingItems bool + set false on getting items
+	public static string currentGameDataDirectory;
 
-	public static DungeonStatModifier dungeonStatModifiers;
+	public DungeonData currentDungeonData;
 
 	public readonly string mainMenuName = "MainMenu";
 	public readonly string hubAreaName = "HubArea";
@@ -30,8 +31,6 @@ public class GameManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
-
-		dungeonStatModifiers = new DungeonStatModifier();
 	}
 
 	private void OnEnable()
@@ -56,7 +55,6 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadHubArea(bool isNewGame)
 	{
-		dungeonStatModifiers = new DungeonStatModifier();
 		GameManager.isNewGame = isNewGame;
 		StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
 	}
@@ -68,7 +66,7 @@ public class GameManager : MonoBehaviour
 	public void LoadDungeonTwo()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(dungeonLayoutTwoName, false));
+		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{

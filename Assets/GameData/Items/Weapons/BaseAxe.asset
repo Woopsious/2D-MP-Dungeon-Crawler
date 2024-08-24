@@ -20,15 +20,19 @@ MonoBehaviour:
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
+  equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   isBareHands: 0
   isShield: 0
   baseDamage: 35
   baseAttackSpeed: 1.75
-  baseKnockback: 12
+  baseKnockback: 18
   classRestriction: 2
   weaponType: 0
   baseDamageType: 0
   isRangedWeapon: 0
-  baseMaxAttackRange: 2
-  baseMinAttackRange: 0
+  maxAttackRange: 2
+  minAttackRange: 0
+  projectileSprite: {fileID: 0}
+  projectileSpeed: 0
   baseBonusMana: 0
+  attackSfx: {fileID: 8300000, guid: 87cd52aa211faa048b517264b1d5b5c2, type: 3}

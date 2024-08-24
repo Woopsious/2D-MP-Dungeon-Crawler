@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.GraphicsBuffer;
 
 public class EnemyIdleState : EnemyBaseState
 {
@@ -20,20 +22,40 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		if (!entity.CheckIfPlayerVisible())
-		{
-			if (entity.CheckDistanceToDestination())
-				IdleAtPositionTimer(entity);
-
-			if (entity.CheckDistanceToPlayer()) //player outside of max chase range
-				entity.player = null;
-		}
-		else if (entity.CheckIfPlayerVisible())
-			entity.ChangeStateAttack();
+		IdleBehaviour(entity);
 	}
 
 	//idle behaviour
-	public void IdleAtPositionTimer(EntityBehaviour entity)
+	//movement
+	private void IdleBehaviour(EntityBehaviour entity)
+	{
+		if (!entity.currentPlayerTargetInView)
+		{
+			InvestigatePlayersLastKnownPos(entity);
+
+			if (entity.CheckDistanceToDestination())
+				IdleAtPositionTimer(entity);
+		}
+		else
+			entity.ChangeStateAttack();
+	}
+	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
+	{
+		if (entity.playersLastKnownPosition != new Vector2(0, 0))
+		{
+			entity.SetNewDestination(entity.playersLastKnownPosition);
+
+			if (entity.CheckDistanceToDestination())
+			{
+				entity.playersLastKnownPosition = new Vector2(0, 0);
+				IdleAtPositionTimer(entity);
+			}
+		}
+	}
+
+	//abilityCasting
+
+	private void IdleAtPositionTimer(EntityBehaviour entity)
 	{
 		if (entity.HasReachedDestination == true)
 		{
@@ -46,15 +68,15 @@ public class EnemyIdleState : EnemyBaseState
 			}
 		}
 	}
-	public void FindNewIdlePosition(EntityBehaviour entity)
+	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
+		entity.HasReachedDestination = false;
+
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
-		entity.movePosition = entity.SampleNewMovePosition(randomMovePosition);
+		NavMeshPath path = new NavMeshPath();
 
-		if (double.IsInfinity(entity.movePosition.x)) return;
-
-		if (entity.CheckAndSetNewPath(entity.movePosition)) //occasionally throws invalid target position (infinity, infinity, 0.0000)
-			return;
+		if (entity.navMeshAgent.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
+			entity.navMeshAgent.SetPath(path);
 		else
 			FindNewIdlePosition(entity);
 	}

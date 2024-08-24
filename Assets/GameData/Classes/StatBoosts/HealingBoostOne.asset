@@ -1,0 +1,33 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a40ee5f11addac478a33ce7a6323198, type: 3}
+  m_Name: HealingBoostOne
+  m_EditorClassIdentifier: 
+  Name: Healing Boost II
+  Description: Gives an Increase in Healing
+  abilitySprite: {fileID: 0}
+  nonPlayerLevelRequirement: 1
+  healthBoostValue: 0
+  manaBoostValue: 0
+  manaRegenBoostValue: 0
+  physicalResistanceBoostValue: 0
+  poisonResistanceBoostValue: 0
+  fireResistanceBoostValue: 0
+  iceResistanceBoostValue: 0
+  physicalDamageBoostValue: 0
+  poisionDamageBoostValue: 0
+  fireDamageBoostValue: 0
+  iceDamageBoostValue: 0
+  mainWeaponDamageBoostValue: 0
+  duelWeaponDamageBoostValue: 0
+  rangedWeaponDamageBoostValue: 0
+  healingBoostValue: 0.1

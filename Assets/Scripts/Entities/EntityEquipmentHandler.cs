@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class EntityEquipmentHandler : MonoBehaviour
@@ -53,70 +54,57 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 	public event Action<EntityEquipmentHandler> OnEquipmentChanges;
 
-	private void Start()
-	{
-		Initilize();
-	}
-
-	public virtual void Initilize()
+	private void Awake()
 	{
 		entityStats = GetComponentInParent<EntityStats>();
+		entityClassHandler = GetComponentInParent<EntityClassHandler>();
 		isPlayerEquipment = false;
-	}
-	public IEnumerator SpawnEntityEquipment(int numOfTries)
-	{
-		if (numOfTries >= 5 || isPlayerEquipment)
-			Debug.LogError("Unable to Spawn Entity Equipment");
-
-		else if (entityStats == null)
-		{
-			numOfTries += 1;
-			yield return new WaitForSeconds(0.1f);
-			StartCoroutine(SpawnEntityEquipment(numOfTries));
-		}
-		else
-			EquipRandomItems();
 	}
 
 	//for entitys other then player to randomly equip items when they spawn in
-	private void EquipRandomItems()
+	public void SpawnEntityEquipment()
 	{
-		EquipRandomWeapon(entityStats.entityBaseStats.possibleWeaponsList, equippedWeapon, weaponSlotContainer);			//main weapon
-		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);			//offhand weapon
+		EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon, equippedWeapon, weaponSlotContainer);			//main weapon
+		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);		//offhand weapon
 
-		EquipRandomArmor(entityStats.entityBaseStats.possibleHelmetsList, equippedHelmet, helmetSlotContainer);				//helmet
-		EquipRandomArmor(entityStats.entityBaseStats.possibleChestpiecesList, equippedChestpiece, chestpieceSlotContainer); //chestpiece
-		EquipRandomArmor(entityStats.entityBaseStats.possibleLegsList, equippedLegs, legsSlotContainer);                    //legs
+		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)									//armor
+		{
+			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
+				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
+			if (armor.armorSlot == SOArmors.ArmorSlot.chest)
+				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
+			if (armor.armorSlot == SOArmors.ArmorSlot.legs)
+				EquipArmor(armor, equippedLegs, legsSlotContainer);
+		}
 
 		//Accessory functions here if/when i decide to add it
 	}
-	private void EquipRandomWeapon(List<SOWeapons> listOfPossibleWeapons, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
-		int index;
-		index = Utilities.GetRandomNumber(listOfPossibleWeapons.Count);
+		OnWeaponUnequip(equippedWeaponRef);
 
 		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
-		equippedWeaponRef.weaponBaseRef = listOfPossibleWeapons[index];
-		equippedWeaponRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel);
+		equippedWeaponRef.weaponBaseRef = weaponToEquip;
+		equippedWeaponRef.Initilize(Utilities.SetRarity(), entityStats.entityLevel);
+		equippedWeaponRef.AddPlayerRef(null);
 		equippedWeaponRef.isEquippedByOther = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
 	}
-	private void EquipRandomArmor(List<SOArmors> listOfPossibleArmors, Armors equippedArmorRef, GameObject slotToSpawnIn)
+	private void EquipArmor(SOArmors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
-		int index;
-		index = Utilities.GetRandomNumber(listOfPossibleArmors.Count);
+		OnArmorUnequip(equippedArmorRef);
 
 		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedArmorRef = go.AddComponent<Armors>();
 
-		equippedArmorRef.armorBaseRef = listOfPossibleArmors[index];
-		equippedArmorRef.Initilize(Items.Rarity.isCommon, entityStats.entityLevel);
+		equippedArmorRef.armorBaseRef = armorToEquip;
+		equippedArmorRef.Initilize(Utilities.SetRarity(), entityStats.entityLevel);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
@@ -127,7 +115,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		if (weapon == null) return;
 
-		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+		if (weapon.isShield)	//shield is a unique use damage value to store bonus health and resists it adds
 		{
 			equipmentHealth -= weapon.damage;
 			equipmentPhysicalResistance -= weapon.damage;
@@ -138,6 +126,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana -= weapon.bonusMana;
 
+		entityStats.idleWeaponSprite.sprite = null;
+		Destroy(weapon);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
@@ -153,6 +143,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana += weapon.bonusMana;
 
+		weapon.WeaponInitilization(entityStats.idleWeaponSprite);
 		AssignItemRefOnEquip(weapon, slotItemIsIn);
 		OnEquipmentChanges?.Invoke(this);
 	}
@@ -169,6 +160,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
 
+		Destroy(armor);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
@@ -205,6 +197,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 
+		Destroy(accessory);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)

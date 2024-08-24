@@ -6,15 +6,6 @@
             "id": "3c767f73-c1af-447a-be21-d8c98075b3f7",
             "actions": [
                 {
-                    "name": "Movement",
-                    "type": "Value",
-                    "id": "400db62a-d32f-4b17-b984-c4f6855fbd45",
-                    "expectedControlType": "Vector2",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": true
-                },
-                {
                     "name": "CameraZoom",
                     "type": "PassThrough",
                     "id": "d6adc670-aec8-42ec-b1d4-6ee5fc87528c",
@@ -22,6 +13,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Movement",
+                    "type": "Value",
+                    "id": "400db62a-d32f-4b17-b984-c4f6855fbd45",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
                 },
                 {
                     "name": "MainAttack",
@@ -45,60 +45,6 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "23ef1617-a567-4225-9809-90a9d0a5e36f",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "MainMenu",
-                    "type": "Button",
-                    "id": "6d7e1c7f-f3b3-445a-a98b-b1257b56c154",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Inventory",
-                    "type": "Button",
-                    "id": "9716531a-ab64-4c79-814e-78f4a79745b7",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "ClassSelection",
-                    "type": "Button",
-                    "id": "db0e87a2-54c8-4272-a01c-1018f911390e",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "SkillTree",
-                    "type": "Button",
-                    "id": "17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "LearntAbilities",
-                    "type": "Button",
-                    "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
-                    "expectedControlType": "Button",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
-                    "name": "Journal",
-                    "type": "Button",
-                    "id": "cb9c16ae-bd49-4af4-bb8c-0f9dc20bc05f",
                     "expectedControlType": "Button",
                     "processors": "",
                     "interactions": "",
@@ -166,64 +112,63 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "MainMenu",
+                    "type": "Button",
+                    "id": "6d7e1c7f-f3b3-445a-a98b-b1257b56c154",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Inventory",
+                    "type": "Button",
+                    "id": "9716531a-ab64-4c79-814e-78f4a79745b7",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Journal",
+                    "type": "Button",
+                    "id": "cb9c16ae-bd49-4af4-bb8c-0f9dc20bc05f",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "ClassSelection",
+                    "type": "Button",
+                    "id": "db0e87a2-54c8-4272-a01c-1018f911390e",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SkillTree",
+                    "type": "Button",
+                    "id": "17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "LearntAbilities",
+                    "type": "Button",
+                    "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
-                {
-                    "name": "2D Vector",
-                    "id": "16c02043-d8d5-4e5e-aacf-2cf66354348e",
-                    "path": "2DVector",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Movement",
-                    "isComposite": true,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "up",
-                    "id": "21ca9383-f0f9-4d25-9dd0-e1bb5ccb2433",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Movement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "down",
-                    "id": "ed998b64-86a5-4a63-9eb0-f2bf889fc392",
-                    "path": "<Keyboard>/s",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Movement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "left",
-                    "id": "6f8caf39-3e28-4a42-8bc8-8a82c4c87fab",
-                    "path": "<Keyboard>/a",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Movement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
-                {
-                    "name": "right",
-                    "id": "49eac905-4acb-4981-8b71-935227fadf96",
-                    "path": "<Keyboard>/d",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Movement",
-                    "isComposite": false,
-                    "isPartOfComposite": true
-                },
                 {
                     "name": "",
                     "id": "e685eb7f-b418-43fd-9ce1-ed1af7cbb423",
@@ -259,12 +204,56 @@
                 },
                 {
                     "name": "",
-                    "id": "e62cd66a-895b-45aa-bdd0-b4100aff3007",
-                    "path": "<Keyboard>/tab",
+                    "id": "8a59e2ad-78c5-4930-b9cc-bc86d8271618",
+                    "path": "<Keyboard>/x",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Inventory",
+                    "action": "SkillTree",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "cf4651e5-db2e-4d3c-b1be-4fa9d53e986c",
+                    "path": "<Keyboard>/c",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "LearntAbilities",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "8aceb348-6a82-49fa-a9f1-8e699f590b08",
+                    "path": "<Mouse>/rightButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RightClick",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86d6e498-b35c-4906-800c-4f7623a8a01d",
+                    "path": "<Keyboard>/z",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClassSelection",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d0dfce21-05b9-439f-913d-c13fef6b5cff",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Interact",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -347,45 +336,12 @@
                 },
                 {
                     "name": "",
-                    "id": "8a59e2ad-78c5-4930-b9cc-bc86d8271618",
-                    "path": "<Keyboard>/x",
+                    "id": "e62cd66a-895b-45aa-bdd0-b4100aff3007",
+                    "path": "<Keyboard>/tab",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SkillTree",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "cf4651e5-db2e-4d3c-b1be-4fa9d53e986c",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "LearntAbilities",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "8aceb348-6a82-49fa-a9f1-8e699f590b08",
-                    "path": "<Mouse>/rightButton",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "RightClick",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "86d6e498-b35c-4906-800c-4f7623a8a01d",
-                    "path": "<Keyboard>/z",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ClassSelection",
+                    "action": "Inventory",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -401,15 +357,59 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "",
-                    "id": "d0dfce21-05b9-439f-913d-c13fef6b5cff",
-                    "path": "<Keyboard>/f",
+                    "name": "2D Vector",
+                    "id": "16c02043-d8d5-4e5e-aacf-2cf66354348e",
+                    "path": "2DVector",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Interact",
-                    "isComposite": false,
+                    "action": "Movement",
+                    "isComposite": true,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "up",
+                    "id": "21ca9383-f0f9-4d25-9dd0-e1bb5ccb2433",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "down",
+                    "id": "ed998b64-86a5-4a63-9eb0-f2bf889fc392",
+                    "path": "<Keyboard>/s",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "left",
+                    "id": "6f8caf39-3e28-4a42-8bc8-8a82c4c87fab",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
+                },
+                {
+                    "name": "right",
+                    "id": "49eac905-4acb-4981-8b71-935227fadf96",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Movement",
+                    "isComposite": false,
+                    "isPartOfComposite": true
                 }
             ]
         }

@@ -22,8 +22,9 @@ MonoBehaviour:
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 2
+  statusEffectPercentageModifier: 0.1
   isAOE: 1
-  aoeSize: 30
+  aoeSize: 40
   isDOT: 1
   abilityDuration: 10
   isProjectile: 0
@@ -31,7 +32,7 @@ MonoBehaviour:
   projectileSpeed: 20
   isDamagePercentageBased: 1
   damageValue: 0
-  damageValuePercentage: 0.1
+  damageValuePercentage: 0
   damageType: 0
   isSpell: 1
   manaCost: 20

@@ -27,13 +27,14 @@ public class SOClassAbilities : SOClassUnlocks
 	public StatusEffectType statusEffectType;
 	public enum StatusEffectType
 	{
-		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isMagicDamageEffect
+		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isDamageRecievedEffect
 	}
+	public float statusEffectPercentageModifier;
 
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
-	[Range(20, 50)]
+	[Range(30, 60)]
 	public float aoeSize;
 
 	[Header("DoT Settings")]

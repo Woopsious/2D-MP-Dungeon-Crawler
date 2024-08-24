@@ -20,11 +20,12 @@ MonoBehaviour:
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
-  baseBonusHealth: 5
+  equipItemSfx: {fileID: 8300000, guid: bbc615a123a5fb9418ab2946a13b8ea4, type: 3}
+  baseBonusHealth: 2
   baseBonusMana: 0
   classRestriction: 2
   armorSlot: 0
-  bonusPhysicalResistance: 5
-  bonusPoisonResistance: 5
-  bonusFireResistance: 5
-  bonusIceResistance: 5
+  bonusPhysicalResistance: 3
+  bonusPoisonResistance: 3
+  bonusFireResistance: 3
+  bonusIceResistance: 3

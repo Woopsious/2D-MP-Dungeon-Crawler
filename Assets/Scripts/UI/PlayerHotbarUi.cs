@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using TMPro;
+using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -15,6 +16,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	public static event Action<Abilities, EntityStats> OnNewQueuedAbilities;
 
+	public TMP_Text playerLevelInfoText;
+	public TMP_Text playerClassInfoText;
 	public TMP_Text goldAmountText;
 
 	[Header("Hotbar Consumables")]
@@ -80,55 +83,46 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		ClassesUi.OnClassReset += ResetEquippedAbilities;
-		InventorySlotUi.OnHotbarItemEquip += EquipHotbarItem;
-		EventManager.OnGoldAmountChange += OnGoldAmountChange;
-		EventManager.OnPlayerExpChangeEvent += OnExperienceChange;
-		EventManager.OnPlayerHealthChangeEvent += OnHealthChange;
-		EventManager.OnPlayerManaChangeEvent += OnManaChange;
+		PlayerEventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
+		PlayerEventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
+		PlayerEventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
+		PlayerEventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
+		PlayerEventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
 
-		EventManager.OnDeathEvent += OnTargetDeathUnSelect;
+		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
+		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
+		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
+		DungeonHandler.OnEntityDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
-		ClassesUi.OnClassReset -= ResetEquippedAbilities;
-		InventorySlotUi.OnHotbarItemEquip -= EquipHotbarItem;
-		EventManager.OnGoldAmountChange -= OnGoldAmountChange;
-		EventManager.OnPlayerExpChangeEvent -= OnExperienceChange;
-		EventManager.OnPlayerHealthChangeEvent -= OnHealthChange;
-		EventManager.OnPlayerManaChangeEvent -= OnManaChange;
+		PlayerEventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
+		PlayerEventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
+		PlayerEventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
+		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
+		PlayerEventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
 
-		EventManager.OnDeathEvent -= OnTargetDeathUnSelect;
+		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
+		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
+		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
+		DungeonHandler.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
 	{
 		foreach (GameObject slot in ConsumableSlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		foreach (GameObject slot in AbilitySlots)
-			slot.GetComponent<InventorySlotUi>().SetSlotIndex();
+			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 	}
 
-	//reset/clear any equipped abilities from ui
-	private void ResetEquippedAbilities(SOClasses currentClass)
-	{
-		foreach (GameObject equippedAbility in AbilitySlots)
-		{
-			if (equippedAbility.transform.childCount == 0)
-				continue;
-
-			Destroy(equippedAbility.transform.GetChild(0).gameObject);
-		}
-		equippedAbilities.Clear();
-	}
-
 	//Equip Consumables/Abilities
 	//not physically spawned in
-	private void EquipHotbarItem(InventoryItemUi item, InventorySlotUi slot)
+	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
@@ -138,14 +132,14 @@ public class PlayerHotbarUi : MonoBehaviour
 		else if (item.itemType == InventoryItemUi.ItemType.isAbility)
 			EquipAbility(item.abilityBaseRef, slot);
 	}
-	private void EquipConsumables(Consumables consumableToEquip, InventorySlotUi slotEquippedTo)
+	private void EquipConsumables(Consumables consumableToEquip, InventorySlotDataUi slotEquippedTo)
 	{
 		if (slotEquippedTo.slotIndex == 0)
 			equippedConsumableOne = consumableToEquip;
 		else if (slotEquippedTo.slotIndex == 1)
 			equippedConsumableTwo = consumableToEquip;
 	}
-	private void EquipAbility(SOClassAbilities newAbility, InventorySlotUi slotToEquipTo)
+	private void EquipAbility(SOClassAbilities newAbility, InventorySlotDataUi slotToEquipTo)
 	{
 		if (slotToEquipTo.itemInSlot != null)
 		{
@@ -161,7 +155,6 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		item.inventorySlotIndex = slotToEquipTo.slotIndex;
 		item.transform.SetParent(slotToEquipTo.transform);
-		item.SetTextColour();
 		slotToEquipTo.itemInSlot = item;
 		slotToEquipTo.UpdateSlotSize();
 		item.Initilize();
@@ -179,16 +172,16 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		equippedAbilities.Add(newAbility);
 	}
-	private void HandleEmptySlots(InventorySlotUi slot)
+	private void HandleEmptySlots(InventorySlotDataUi slot)
 	{
-		if (slot.slotType == InventorySlotUi.SlotType.consumables)
+		if (slot.slotType == InventorySlotDataUi.SlotType.consumables)
 		{
 			if (slot.slotIndex == 0)
 				equippedConsumableOne = null;
 			if (slot.slotIndex == 1)
 				equippedConsumableTwo = null;
 		}
-		if (slot.slotType == InventorySlotUi.SlotType.ability)
+		if (slot.slotType == InventorySlotDataUi.SlotType.ability)
 		{
 			if (slot.slotIndex == 0)
 				equippedAbilityOne = null;
@@ -203,26 +196,44 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
+	//clear hotbar ui of abilities
+	private void OnAbilityRefund(SOClassAbilities ability)
+	{
+		foreach (GameObject abilitySlot in AbilitySlots)
+		{
+			InventorySlotDataUi slotData = abilitySlot.GetComponent<InventorySlotDataUi>();
+			if (slotData.itemInSlot == null)
+				continue;
+
+			if (slotData.itemInSlot.abilityBaseRef == ability)
+			{
+				Destroy(slotData.itemInSlot.gameObject);
+				slotData.RemoveItemFromSlot();
+			}
+		}
+		equippedAbilities.Clear();
+	}
+
 	//UI CHANGES
 	public void OpenInventoryButton()
 	{
-		PlayerInventoryUi.Instance.ShowInventory();
+		PlayerEventManager.ShowPlayerInventory();
 	}
 	public void OpenLearntAbilitiesButton()
 	{
-		PlayerInventoryUi.Instance.ShowLearntAbilities();
+		PlayerEventManager.ShowPlayerLearntAbilities();
 	}
 	public void OpenClassSelectionButton()
 	{
-		ClassesUi.Instance.ShowPlayerClassSelection();
+		PlayerEventManager.ShowPlayerClassSelection();
 	}
 	public void OpenClassSkillTreeButton()
 	{
-		ClassesUi.Instance.ShowClassSkillTree();
+		PlayerEventManager.ShowPlayerSkillTree();
 	}
 	public void OpenPlayerJournalButton()
 	{
-		PlayerJournalUi.Instance.ShowPlayerJournal();
+		PlayerEventManager.ShowPlayerJournal();
 	}
 
 	//Select Target event
@@ -276,7 +287,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI Ability Uses
-	public void AddNewQueuedAbility(Abilities ability, PlayerController player, bool canInstantCast)
+	public void AddNewQueuedAbility(Abilities ability, PlayerController player)
 	{
 		OnNewQueuedAbilities?.Invoke(ability, player.GetComponent<EntityStats>());
 		queuedAbility = ability;
@@ -287,13 +298,9 @@ public class PlayerHotbarUi : MonoBehaviour
 			queuedAbilityAoe.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
-
-		if (canInstantCast)
-			player.CastQueuedAbility(ability);
 	}
 	public void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
-		ability.CastAbility(player.GetComponent<EntityStats>());
 		queuedAbilityTextInfo.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
@@ -319,23 +326,31 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI Player Updates
-	public void OnGoldAmountChange(int amount)
+	private void UpdatePlayerLevelInfo(EntityStats playerStats)
+	{
+		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
+	}
+	private void UpdatePlayerClassInfo(SOClasses newClass)
+	{
+		playerClassInfoText.text = newClass.className;
+	}
+	private void UpdatePlayerGoldAmount(int amount)
 	{
 		goldAmountText.text = $"Gold: {amount}";
 	}
-	public void OnExperienceChange(int MaxValue, int currentValue)
+	private void UpdatePlayerExpBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		expBarFiller.fillAmount = percentage;
 		expBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	public void OnHealthChange(int MaxValue, int currentValue)
+	private void UpdatePlayerHealthBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		healthBarFiller.fillAmount = percentage;
 		HealthBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	public void OnManaChange(int MaxValue, int currentValue)
+	private void UpdatePlayerManaBar(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
 		manaBarFiller.fillAmount = percentage;

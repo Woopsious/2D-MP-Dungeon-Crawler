@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,24 +8,23 @@ public class Utilities
 	//return random number
 	public static int GetRandomNumber(int num) //returns num between 0 and num -1
 	{
-		return Random.Range(0, num);
+		return Random.Range(0, num + 1);
 	}
 	public static int GetRandomNumberBetween(int numOne, int numTwo) //returns num between numOne and numTwo -1
 	{
-		return Random.Range(numOne, numTwo);
+		return Random.Range(numOne, numTwo + 1);
 	}
-	public static Vector3 GetRandomPointInBounds(Bounds bounds)
+	public static Vector2 GetRandomPointInBounds(Bounds bounds)
 	{
-		return new Vector3(
+		return new Vector2(
 			Random.Range(bounds.min.x, bounds.max.x),
-			Random.Range(bounds.min.y, bounds.max.y),
-			Random.Range(bounds.min.z, bounds.max.z));
+			Random.Range(bounds.min.y, bounds.max.y));
 	}
 
 	//return random rarity
 	public static Items.Rarity SetRarity()
 	{
-		float percentage = GetRandomNumber(101); //3% for legendary | 10% for epic | 35% for rare | 57% for common
+		float percentage = GetRandomNumber(100); //3% for legendary | 10% for epic | 35% for rare | 57% for common
 
 		if (percentage >= 98)
 			return Items.Rarity.isLegendary;
@@ -42,11 +40,13 @@ public class Utilities
 	public static int SetItemLevel(int level)
 	{
 		int entityLvl = level;
-		int itemLvl = GetRandomNumber(9);
+		int itemLvl = GetRandomNumber(8);
 		itemLvl += entityLvl;
 
 		if (itemLvl <= 4) //stop items from dropping below lvl 0
 			itemLvl = 5;
+		else if (itemLvl > 20) //stop items from dropping above max lvl (20 atm)
+			itemLvl = 24;
 		return itemLvl - 4;
 	}
 

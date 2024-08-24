@@ -16,11 +16,12 @@ MonoBehaviour:
   Description: Back stab your enemy dealing crititcal damage
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 20
+  abilityCooldown: 50
   isOffensiveAbility: 1
   requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 0
   aoeSize: 0
   isDOT: 0

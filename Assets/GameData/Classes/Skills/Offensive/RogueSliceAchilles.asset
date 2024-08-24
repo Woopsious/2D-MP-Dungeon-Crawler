@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Name: RogueSliceAchilles
+  m_EditorClassIdentifier: 
+  Name: Slice Achilles
+  Description: Slice at an enemies achilles with your weapon
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  nonPlayerLevelRequirement: 1
+  abilityCooldown: 25
+  isOffensiveAbility: 1
+  requiresTarget: 0
+  canOnlyTargetSelf: 0
+  statusEffectType: 0
+  statusEffectPercentageModifier: 0
+  isAOE: 0
+  aoeSize: 0
+  isDOT: 0
+  abilityDuration: 0
+  isProjectile: 0
+  projectileSprite: {fileID: 0}
+  projectileSpeed: 0
+  isDamagePercentageBased: 0
+  damageValue: 35
+  damageValuePercentage: 0
+  damageType: 0
+  isSpell: 0
+  manaCost: 0
+  minPercentCost: 0
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}

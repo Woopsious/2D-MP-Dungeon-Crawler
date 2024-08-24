@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 32f597d358a120d4ab5ba32aa818bb3f, type: 3}
+  m_Name: BatBehaviour
+  m_EditorClassIdentifier: 
+  idleWaitTime: 3
+  idleWanderRadius: 18
+  aggroRange: 15
+  maxChaseRange: 18
+  navMeshMoveSpeed: 6.5
+  navMeshTurnSpeed: 120
+  navMeshAcceleration: 6
+  navMeshStoppingDistance: 1.25

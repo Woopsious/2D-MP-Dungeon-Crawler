@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using UnityEditor.Playables;
 using UnityEngine;
 
 public class Weapons : Items
 {
 	[Header("Weapon Info")]
+	public PlayerController player;
 	public bool isShield;
 	public int damage;
 	public int bonusMana;
@@ -14,9 +14,10 @@ public class Weapons : Items
 	public bool isEquippedByOther;
 
 	public bool canAttackAgain;
-	private GameObject parentObj;
+	public GameObject parentObj;
 	private SpriteRenderer attackWeaponSprite;
 	private SpriteRenderer idleWeaponSprite;
+	private AudioHandler audioHandler;
 	private Animator animator;
 	private BoxCollider2D boxCollider;
 
@@ -24,8 +25,6 @@ public class Weapons : Items
 	{
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
-
-		WeaponInitilization();
 	}
 
 	public override void Initilize(Rarity setRarity, int setLevel)
@@ -52,14 +51,23 @@ public class Weapons : Items
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
-			rarity = "Legendary";
+			rarity = "<color=orange>Legendary</color>";
 		else if (this.rarity == Rarity.isEpic)
-			rarity = "Epic";
+			rarity = "<color=purple>Epic</color>";
 		else if (this.rarity == Rarity.isRare)
-			rarity = "Rare";
+			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+
+		string weightClass;
+		if (weaponBaseRef.classRestriction == SOWeapons.ClassRestriction.heavy)
+			weightClass = "Heavy Weight Restriction";
+		else if (weaponBaseRef.classRestriction == SOWeapons.ClassRestriction.medium)
+			weightClass = "Medium Weight Restriction";
+		else
+			weightClass = "Light Weight Restriction";
+
+		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price \n {weightClass}";
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			info += "\n Main hand ";
@@ -68,78 +76,105 @@ public class Weapons : Items
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
 			info += "\n Dual hand ";
 
-		if (weaponBaseRef.isRangedWeapon)
-			info += "ranged weapon";
-		else
-			info += "melee weapon";
-
-		string dps;
 		if (isShield)
-			dps = $"Blocks {damage}";
+			info += "";
+		else if (weaponBaseRef.isRangedWeapon)
+		{
+			info += "Ranged Weapon\nHalf Damage At Min Range\n" +
+				$"{weaponBaseRef.maxAttackRange} Max Range\n{weaponBaseRef.minAttackRange} Min Range";
+		}
+		else
+			info += $"Melee Weapon\n{weaponBaseRef.maxAttackRange} Reach";
+
+		string damageInfo;
+		if (isShield)
+			damageInfo = $"{damage} Extra Health\n{damage} To All Res";
 		else
 		{
-			int newDps = (int)(damage / weaponBaseRef.baseAttackSpeed);
-			dps = $"{newDps} Dps";
+			int dps = (int)(damage / weaponBaseRef.baseAttackSpeed);
+			damageInfo = $"\n{dps} Dps\n{damage} Damage\n" +
+				$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 		}
-		string damageInfo = $"{dps}\n{damage} Damage\n" +
-			$"{weaponBaseRef.baseAttackSpeed}s Attack speed\n{weaponBaseRef.baseKnockback} Knockback\n{bonusMana} Mana bonus";
 
-		toolTip.tipToShow = $"{info}\n{damageInfo}";
+		string equipInfo;
+		if (playerStats.entityLevel < itemLevel)
+			equipInfo = "<color=red>Cant Equip Weapon \n Level Too High</color>";
+		else if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
+			equipInfo = "<color=red>Cant Equip Weapon \n Weight too heavy</color>";
+		else
+			equipInfo = "<color=green>Can Equip Weapon</color>";
+
+		toolTip.tipToShow = $"{info}\n{damageInfo}\n{equipInfo}";
 	}
-	public void UpdateWeaponDamage(EntityStats playerStats, Weapons offHandWeapon)
+	public void UpdateWeaponDamage(SpriteRenderer idleWeaponSprite, EntityStats stats, Weapons offHandWeapon)
 	{
-		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
-		if (playerStats.equipmentHandler != null && offHandWeapon != null)
-			damage += offHandWeapon.damage;
+		damage = (int)(weaponBaseRef.baseDamage * levelModifier * stats.damageDealtModifier.finalPercentageValue);
+		damage = (int)(damage * GetWeaponDamageModifier(stats));
 
+		/*
+		if (stats.equipmentHandler != null && offHandWeapon != null)
+			damage += offHandWeapon.damage;
 		if (offHandWeapon != null) //apply offhand weapon dmg to main weapon (atm only useful for dagger)
-			damage += offHandWeapon.damage;
-
-		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
+		{
+			if (offHandWeapon.weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+				damage += offHandWeapon.damage;
+		}
+		*/
 	}
-	public float GetWeaponDamageModifier(EntityStats playerStats)
+	public float GetWeaponDamageModifier(EntityStats stats)
 	{
 		float percentageMod = 0;
 
 		if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPhysicalDamageType) //apply damage type mod
-			percentageMod = playerStats.physicalDamagePercentageModifier.finalPercentageValue;
+			percentageMod = stats.physicalDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isPoisonDamageType)
-			percentageMod = playerStats.poisonDamagePercentageModifier.finalPercentageValue;
+			percentageMod = stats.poisonDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isFireDamageType)
-			percentageMod = playerStats.fireDamagePercentageModifier.finalPercentageValue;
+			percentageMod = stats.fireDamagePercentageModifier.finalPercentageValue;
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
-			percentageMod = playerStats.iceDamagePercentageModifier.finalPercentageValue;
+			percentageMod = stats.iceDamagePercentageModifier.finalPercentageValue;
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
-			percentageMod += playerStats.mainWeaponDamageModifier.finalPercentageValue - 1;
+			percentageMod += stats.mainWeaponDamageModifier.finalPercentageValue - 1;
 		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
-			percentageMod += playerStats.dualWeaponDamageModifier.finalPercentageValue - 1;
+			percentageMod += stats.dualWeaponDamageModifier.finalPercentageValue - 1;
 
 		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one
-			percentageMod += playerStats.rangedWeaponDamageModifier.finalPercentageValue - 1;
+			percentageMod += stats.rangedWeaponDamageModifier.finalPercentageValue - 1;
 
 		return percentageMod;
 	}
 
-	private void WeaponInitilization()
+	public void WeaponInitilization(SpriteRenderer idleWeaponSprite)
 	{
-		if (GetComponent<InventoryItemUi>() != null) return;  //return as this is an item in inventory
-		if (transform.parent == null) return;               //weapon is not equipped
+		if (GetComponent<InventoryItemUi>() != null) return;	//return as this is an item in inventory
+		if (transform.parent == null) return;					//weapon is not equipped
 
 		parentObj = transform.parent.gameObject;
+		parentObj.transform.rotation = Quaternion.Euler(Vector3.zero);
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		idleWeaponSprite = transform.GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		this.idleWeaponSprite = idleWeaponSprite;
+		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
 		boxCollider.enabled = false;
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
 		animator.SetBool("isMeleeAttack", false);
+		animator.SetBool("isRangedAttack", false);
+
+		if (weaponBaseRef.isRangedWeapon)
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 180, 180);
+		else
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 0, 180);
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			idleWeaponSprite.enabled = true;
-
+	}
+	public void AddPlayerRef(PlayerController player)
+	{
+		this.player = player;
 	}
 
 	protected override void OnTriggerEnter2D(Collider2D other)
@@ -150,13 +185,14 @@ public class Weapons : Items
 		if (!isEquippedByPlayer && !isEquippedByOther) return;
 		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(boxCollider, damage, 
+		other.GetComponent<Damageable>().OnHitFromDamageSource(player, boxCollider, damage, 
 			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
 	}
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
 	{
 		if (!canAttackAgain) return;
-		MeleeDirectionToAttack(positionOfThingToAttack);
+
+		AttackInDirection(null, GetAttackRotation(positionOfThingToAttack));
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -164,64 +200,76 @@ public class Weapons : Items
 	{
 		if (!canAttackAgain) return;
 
-		GameObject go = Instantiate(projectilePrefab, transform, true);
-		go.transform.SetParent(null);
-		go.transform.position = (Vector2)transform.position;
-		go.GetComponent<Projectiles>().Initilize(this);
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
 
-		Vector3 rotation = positionOfThingToAttack - transform.position; ;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		go.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		projectile.transform.SetParent(null);
+		projectile.transform.position = (Vector2)transform.position;
+		projectile.Initilize(player, this);
 
+		AttackInDirection(projectile, GetAttackRotation(positionOfThingToAttack));
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
 	private IEnumerator WeaponCooldown()
 	{
-		yield return new WaitForSeconds(0.1f);
+		float secondsForCooldown;
+
+		if (weaponBaseRef.isRangedWeapon)
+			secondsForCooldown = 0.5f;
+		else
+			secondsForCooldown = 0.1f;
+
+		yield return new WaitForSeconds(secondsForCooldown);
+
 		OnWeaponCooldown();
-		yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - 0.1f);
+		if (isEquippedByPlayer)
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForCooldown);
+		else
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - (secondsForCooldown + 0.25f));
 		canAttackAgain = true;
 	}
 
 	private void OnWeaponAttack()
 	{
-		if (!weaponBaseRef.isRangedWeapon)
+		if (weaponBaseRef.isRangedWeapon)
+			animator.SetBool("isRangedAttack", true);
+		else
 		{
 			animator.SetBool("isMeleeAttack", true);
 			boxCollider.enabled = true;
-			idleWeaponSprite.enabled = false;
-			attackWeaponSprite.enabled = true;
 		}
+
+		idleWeaponSprite.enabled = false;
+		attackWeaponSprite.enabled = true;
+		audioHandler.PlayAudio(weaponBaseRef.attackSfx);
 		canAttackAgain = false;
 	}
 	private void OnWeaponCooldown()
 	{
 		parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0); //reset attack direction
 		animator.SetBool("isMeleeAttack", false);
+		animator.SetBool("isRangedAttack", false);
 		boxCollider.enabled = false;
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;
 	}
-	private void MeleeDirectionToAttack(Vector3 positionOfThingToAttack)
+
+	//direction attacks
+	private void AttackInDirection(Projectiles projectile, float rotz)
 	{
-		/// <summary>
-		/// change rotation of weaponSlot (parent of this obj) based on direction of mouse from player depending on what vector is greater
-		/// 0.71 is the lowest ive ever managed to get when attacking diagonally from player pos, so for now vector needs to be greater then 0.7
-		/// </summary>
-
-		positionOfThingToAttack.z = parentObj.transform.parent.position.z;
-
-		Vector3 towardsMouseFromPlayer = positionOfThingToAttack - parentObj.transform.parent.position;
-		Vector3 vectorAttack = towardsMouseFromPlayer.normalized;
-
-		if (vectorAttack.y >= 0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, -90);
-		else if (vectorAttack.y <= -0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 90);
-		else if (vectorAttack.x >= 0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 180);
-		else if (vectorAttack.x <= -0.7)
-			parentObj.transform.parent.eulerAngles = new Vector3(0, 0, 0);
+		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
+		if (projectile != null)
+			projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+	}
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
 	}
 }

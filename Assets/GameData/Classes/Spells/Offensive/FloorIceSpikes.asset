@@ -16,20 +16,21 @@ MonoBehaviour:
   Description: Summon spikes of ice from the ground
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 5
+  abilityCooldown: 12
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 1
-  aoeSize: 20
+  aoeSize: 40
   isDOT: 0
   abilityDuration: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 15
+  damageValue: 30
   damageValuePercentage: 0
   damageType: 3
   isSpell: 1

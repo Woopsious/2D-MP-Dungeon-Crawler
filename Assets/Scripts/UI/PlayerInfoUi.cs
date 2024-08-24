@@ -2,28 +2,63 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerInfoUi : MonoBehaviour
 {
+	public GameObject PlayerPrefab;
 	public static PlayerInfoUi Instance;
 
 	public static PlayerController playerInstance;
 	public TMP_Text playerInfo;
 
+	public GameObject interactWithText;
+	public GameObject interactWithTextPrefab;
+	public GameObject currentPlayerInteractedObj;
+
 	private void Awake()
 	{
 		Instance = this;
+		Instance.interactWithText.SetActive(false);
+
+		if (Debug.isDebugBuild)
+		{
+			playerInstance = FindObjectOfType<PlayerController>();
+			return;
+		}
+
+		if (SceneManager.GetActiveScene().name != "TestingScene")
+		{
+			GameObject go = Instantiate(PlayerPrefab);
+			playerInstance = go.GetComponent<PlayerController>();
+		}
+	}
+	private void Update()
+	{
+		if (currentPlayerInteractedObj != null && interactWithText.activeInHierarchy)
+			interactWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
+				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 
 	private void OnEnable()
 	{
-		EventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+		PlayerEventManager.OnPlayerStatChangeEvent += UpdatePlayerStatInfo;
+		PlayerEventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 	private void OnDisable()
 	{
-		EventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+		PlayerEventManager.OnPlayerStatChangeEvent -= UpdatePlayerStatInfo;
+		PlayerEventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 
+	private void ShowHideInteractWithText(GameObject obj, bool showText)
+	{
+        if (showText)
+			Instance.interactWithText.SetActive(true);
+		else
+			Instance.interactWithText.SetActive(false);
+		currentPlayerInteractedObj = obj;
+	}
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
 		playerInstance = stats.GetComponent<PlayerController>();
@@ -32,21 +67,25 @@ public class PlayerInfoUi : MonoBehaviour
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";
 
 		string weaponInfo;
-		if (stats.equipmentHandler != null && stats.equipmentHandler.equippedWeapon != null)
+		if (PlayerInventoryUi.Instance.weaponEquipmentSlot.GetComponent<InventorySlotDataUi>().itemInSlot != null &&
+			stats.equipmentHandler != null && stats.equipmentHandler.equippedWeapon != null)
 		{
 			int dps = (int)(stats.equipmentHandler.equippedWeapon.damage /
 				stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed);
 
 			weaponInfo = $"\r\n\r\nWeapon DPS: {dps} \r\nWeapon Damage: {stats.equipmentHandler.equippedWeapon.damage} \r\n " +
 				$"Weapon Knockback: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseKnockback}";
+
 			string rangeInfo;
-
 			if (stats.equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
-				rangeInfo = $"\r\nWeapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseMaxAttackRange}";
+			{
+				rangeInfo = $"\r\nMax Weapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange}";
+				rangeInfo += $"\r\nMin Weapon Range: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.minAttackRange}";
+			}
 			else
-				rangeInfo = $"\r\nWeapon Range: Melee";
+				rangeInfo = $"\r\nWeapon Reach: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange}";
 
-			weaponInfo += $"\r\nWeapon Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}{rangeInfo}";
+			weaponInfo += $"\r\nWeapon Attack Speed: {stats.equipmentHandler.equippedWeapon.weaponBaseRef.baseAttackSpeed}{rangeInfo}";
 		}
 		else
 			weaponInfo = "\r\n\r\nNo main weapon equipped";

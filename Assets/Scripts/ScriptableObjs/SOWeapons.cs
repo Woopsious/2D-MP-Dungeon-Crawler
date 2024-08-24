@@ -33,10 +33,10 @@ public class SOWeapons : SOItems
 	[Header("Ranged Weapon Toggles")]
 	[Tooltip("Changes Weapon Attack Behaviour")]
 	public bool isRangedWeapon;
-	[Tooltip("Max attack range")]
-	public float baseMaxAttackRange;
-	[Tooltip("Min attack range, 0 for melee weapons")]
-	public float baseMinAttackRange;
+	[Tooltip("Max attack range till projectile disapears")]
+	public float maxAttackRange;
+	[Tooltip("Min attack range, 0 for melee, 2 for ranged (based on longest reaching melee weapon)")]
+	public float minAttackRange;
 
 	[Header("Projectile Settings")]
 	public Sprite projectileSprite;
@@ -45,4 +45,7 @@ public class SOWeapons : SOItems
 
 	[Header("Magic Weapon Toggles")]
 	public int baseBonusMana;
+
+	[Header("Weapon Audio")]
+	public AudioClip attackSfx;
 }

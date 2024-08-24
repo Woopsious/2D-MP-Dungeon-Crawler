@@ -16,5 +16,67 @@ MonoBehaviour:
   classDescription: Rangers are a good at dealing from afar to multiple enemies,
     have decent utility and some team and self healing options. They lack any good
     protection though especially close up.
+  classImageUi: {fileID: 0}
+  baseClassAbilitySlots: 1
+  statBonusLists: []
+  abilityLists: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: ef1882c597026754cb67219b18ec7c9c, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: cb56b08e86d564749beb673ac31ea81f, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: 6cf19687ff0a8ea4fb67cc075bfac54c, type: 2}
+    LevelRequirement: 18
+  spellSlotsPerLevel:
+  - LevelRequirement: 4
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 8
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 12
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 16
+    AbilitySlotsPerLevel: 1
+  classAbilitiesOffensiveList:
+  - unlock: {fileID: 11400000, guid: 16fe00f8cb5a06d448a2c95b21305e26, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: f6deae3a422ff5247b4ca49851dadd1d, type: 2}
+    LevelRequirement: 4
+  - unlock: {fileID: 11400000, guid: 12110b140c4984f408b0140a4cbfc82c, type: 2}
+    LevelRequirement: 12
+  classAbilitiesHealingList:
+  - unlock: {fileID: 11400000, guid: 8db605ad22b1cea42a7fb795c950d5b3, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 775f6871f81d7744cad0349ef1ab1c4e, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: da40c1b382bf3b546b1c202f659c5139, type: 2}
+    LevelRequirement: 16
+  classAbilitiesEffectsList:
+  - unlock: {fileID: 11400000, guid: 64ec2ae0f2f985441be916c5a3032ff2, type: 2}
+    LevelRequirement: 4
+  - unlock: {fileID: 11400000, guid: 9f1628a5d049d17459a8e16772214082, type: 2}
+    LevelRequirement: 8
   canUseSpells: 1
   classRestriction: 1
+  startingWeapon: {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
+  startingArmor:
+  - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
+  - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
+  - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
+  startingAccessories: []
+  startingConsumables:
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

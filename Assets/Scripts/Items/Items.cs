@@ -14,6 +14,7 @@ public class Items : MonoBehaviour, IInteractable
 	public SOConsumables consumableBaseRef;
 
 	[Header("Item Info")]
+	private AudioHandler audioHandler;
 	protected ToolTipUi toolTip;
 	public string itemName;
 	public Sprite itemSprite;
@@ -42,6 +43,7 @@ public class Items : MonoBehaviour, IInteractable
 
 	public virtual void Initilize(Rarity setRarity, int setLevel)
 	{
+		audioHandler = GetComponent<AudioHandler>();
 		rarity = setRarity;
 		itemLevel = setLevel;
 		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity);
@@ -109,7 +111,7 @@ public class Items : MonoBehaviour, IInteractable
 	//item interactions
 	public void Interact(PlayerController playerController)
 	{
-		PlayerInventoryManager playerInventory = playerController.GetComponent<PlayerInventoryManager>();
+		PlayerInventoryHandler playerInventory = playerController.GetComponent<PlayerInventoryHandler>();
 		if (playerInventory.CheckIfInventoryFull())
 		{
 			Debug.LogWarning("Inventory is full");

@@ -9,9 +9,15 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats entityBaseStats;
-	public EntityClassHandler classHandler;
-	public EntityEquipmentHandler equipmentHandler;
-	private SpriteRenderer spriteRenderer;
+	[HideInInspector] public EntityBehaviour entityBehaviour;
+	[HideInInspector] public EntityClassHandler classHandler;
+	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
+	[HideInInspector] public LootSpawnHandler lootSpawnHandler;
+	private BoxCollider2D boxCollider2D;
+	private Animator animator;
+	public SpriteRenderer spriteRenderer {get; private set; }
+	public SpriteRenderer idleWeaponSprite { get; private set; }
+	private AudioHandler audioHandler;
 	public int entityLevel;
 	public float levelModifier;
 
@@ -32,7 +38,10 @@ public class EntityStats : MonoBehaviour
 	public Stat fireResistance;
 	public Stat iceResistance;
 
-	[Header("Damage Modifiers")]
+	[Header("Modifiers")]
+	public Stat damageDealtModifier;
+
+	public Stat healingPercentageModifier;
 	public Stat physicalDamagePercentageModifier;
 	public Stat poisonDamagePercentageModifier;
 	public Stat fireDamagePercentageModifier;
@@ -46,12 +55,29 @@ public class EntityStats : MonoBehaviour
 	public GameObject statusEffectsParentObj;
 	public List<AbilityStatusEffect> currentStatusEffects;
 
-	public event Action<float, bool> OnRecieveHealingEvent;
-	public event Action<float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
+	public event Action<float, bool, float> OnRecieveHealingEvent;
+	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
+	[Header("Idle Sound Settings")]
+	private readonly float idleSoundCooldown = 5f;
+	private float idleSoundTimer;
+	private readonly int chanceOfIdleSound = 25;
+
+	private void Awake()
+	{
+		entityBehaviour = GetComponent<EntityBehaviour>();
+		classHandler = GetComponent<EntityClassHandler>();
+		equipmentHandler = GetComponent<EntityEquipmentHandler>();
+		lootSpawnHandler = GetComponent<LootSpawnHandler>();
+		boxCollider2D = GetComponent<BoxCollider2D>();
+		animator = GetComponent<Animator>();
+		spriteRenderer = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
+		idleWeaponSprite = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
+		audioHandler = GetComponent<AudioHandler>();
+	}
 	private void Start()
 	{
 		Initilize();
@@ -62,16 +88,10 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 
-		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
-		entityClassHandler.OnClassChange += OnClassChanges;
-		entityClassHandler.OnStatUnlock += OnStatUnlock;
+		classHandler.OnStatUnlock += OnStatUnlock;
+		classHandler.OnStatRefund += OnStatRefund;
 
-		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
-		entityEquipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
-
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		playerExperienceHandler.OnPlayerLevelUpEvent += OnPlayerLevelUp;
+		equipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
 	}
 	private void OnDisable()
 	{
@@ -79,35 +99,58 @@ public class EntityStats : MonoBehaviour
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
 
-		EntityClassHandler entityClassHandler = GetComponent<EntityClassHandler>();
-		entityClassHandler.OnClassChange -= OnClassChanges;
-		entityClassHandler.OnStatUnlock -= OnStatUnlock;
+		classHandler.OnStatUnlock -= OnStatUnlock;
+		classHandler.OnStatRefund -= OnStatRefund;
 
-		EntityEquipmentHandler entityEquipmentHandler = GetComponent<EntityEquipmentHandler>();
-		entityEquipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
-
-		//for mp needs to be a list of ExpHandlers for each player
-		PlayerExperienceHandler playerExperienceHandler = FindObjectOfType<PlayerExperienceHandler>();
-		playerExperienceHandler.OnPlayerLevelUpEvent -= OnPlayerLevelUp;
+		equipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
 	}
 
 	private void Update()
 	{
 		PassiveManaRegen();
+		PlayIdleSound();
 	}
-	public void Initilize()
+	private void Initilize()
 	{
-		equipmentHandler = GetComponent<EntityEquipmentHandler>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		spriteRenderer.sprite = entityBaseStats.sprite;
 
-		CalculateBaseStats();
-		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.dungeonStatModifiers != null)
-			ApplyDungeonModifiers(GameManager.dungeonStatModifiers); //only apply dungeon mods outside of testing scene
+		if (GetComponent<PlayerController>() == null)
+		{
+			classHandler.SetEntityClass();
+			equipmentHandler.SpawnEntityEquipment();
+			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, entityBaseStats.lootPool);
+		}
 
-		int numOfTries = 0;
-		if (GetComponent<PlayerController>() != null) return;
-		equipmentHandler.StartCoroutine(equipmentHandler.SpawnEntityEquipment(numOfTries));
+		CalculateBaseStats();
+		if (GameManager.Instance == null) return; //for now leave this line in
+		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
+			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
+	}
+	public void ResetEntityStats()
+	{
+		StopAllCoroutines();
+		boxCollider2D.enabled = true;
+		animator.ResetTrigger("DeathTrigger");
+		spriteRenderer.color = Color.white;
+		CalculateBaseStats();
+		classHandler.RerollEquippedAbilities();
+	}
+	public void ResetEntityBehaviour(SpawnHandler spawner)
+	{
+		entityBehaviour.UpdateBounds(spawner.transform.position);
+		entityBehaviour.ResetBehaviour();
+	}
+
+	private void PlayIdleSound()
+	{
+		idleSoundTimer -= Time.deltaTime;
+
+		if (idleSoundTimer <= 0)
+		{
+			idleSoundTimer = idleSoundCooldown;
+			if (chanceOfIdleSound < Utilities.GetRandomNumber(100))
+				audioHandler.PlayAudio(entityBaseStats.idleSfx);
+		}
 	}
 
 	/// <summary>
@@ -115,41 +158,42 @@ public class EntityStats : MonoBehaviour
 	/// when it comes to resistances ignoring the difference shouldnt matter as everything scales at the same rate
 	/// </summary>
 	//health functions
-	public void OnHeal(float healthValue, bool isPercentageValue)
+	public void OnHeal(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
-		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue);
+		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue, healingModifierPercentage);
 	}
-	private void RecieveHealing(float healthValue, bool isPercentageValue)
+	private void RecieveHealing(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 
-		currentHealth = (int)(currentHealth + healthValue);
+		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
+		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
 
 		if (currentHealth > maxHealth.finalValue)
 			currentHealth = maxHealth.finalValue;
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		if (!IsPlayerEntity()) return;
-		EventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnHit(float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
+	public void OnHit(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
 	{
         if (isDestroyedInOneHit)
         {
-			EventManager.DeathEvent(gameObject);
+			DungeonHandler.EntityDeathEvent(gameObject);
 			return;
         }
 
-		OnRecieveDamageEvent?.Invoke(damage, damageType, isPercentageValue);
+		OnRecieveDamageEvent?.Invoke(player, damage, damageType, isPercentageValue);
 	}
-	private void RecieveDamage(float damage, IDamagable.DamageType damageType, bool isPercentageValue)
+	private void RecieveDamage(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue)
 	{
-		//Debug.Log(gameObject.name + " recieved :" + damage);
+		//Debug.Log(gameObject.name + " recieved: " + damage);
 		if (damageType == IDamagable.DamageType.isPoisonDamageType)
 		{
-			//Debug.Log("Poison Dmg res: " + poisonResistance);
+			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - poisonResistance.finalValue;
 			else
@@ -157,7 +201,7 @@ public class EntityStats : MonoBehaviour
 		}
 		if (damageType == IDamagable.DamageType.isFireDamageType)
 		{
-			//Debug.Log("Fire Dmg res: " + fireResistance);
+			//Debug.Log("Fire Dmg res: " + fireResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - fireResistance.finalValue;
 			else
@@ -165,7 +209,7 @@ public class EntityStats : MonoBehaviour
 		}
 		if (damageType == IDamagable.DamageType.isIceDamageType)
 		{
-			//Debug.Log("Ice Dmg res: " + iceResistance);
+			//Debug.Log("Ice Dmg res: " + iceResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - iceResistance.finalValue;
 			else
@@ -173,7 +217,7 @@ public class EntityStats : MonoBehaviour
 		}
 		else
 		{
-			//Debug.Log("Physical Dmg res: " + physicalResistance);
+			//Debug.Log("Physical Dmg res: " + physicalResistance.finalValue);
 			if (isPercentageValue)
 				damage = (maxHealth.finalValue * damage) - physicalResistance.finalValue;
 			else
@@ -183,27 +227,38 @@ public class EntityStats : MonoBehaviour
 		if (damage < 3) //always deal 3 damage
 			damage = 3;
 
+		//Debug.Log("FinalDmg: " + damage);
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
+		audioHandler.PlayAudio(entityBaseStats.hurtSfx);
+		if (!IsPlayerEntity())
+			entityBehaviour.AddToAggroRating(player, (int)damage);
 
-		///
-		/// invoke onRecieveDamage like onEntityDeath that calls hit animations/sounds/ui health bar update
-		/// also could invoke a onEntityDeath that instead calls functions in scripts to disable them then and play death sounds/animations
-		/// this way if an entity does have a death sound but no death animation i dont need to run checks or hard code a reference
-		/// and a box for instance can just have a death sound and instead of a death animation has a death partical effect explosion
-		///
-
-		if (currentHealth <= 0)
+		if (IsPlayerEntity())
 		{
-			EventManager.DeathEvent(gameObject);
-			Debug.Log("entity died");
-			Destroy(gameObject);
+			Debug.Log("player damage recieved: " + damage);
+		}
+		else
+		{
+			Debug.Log("enemy damage recieved: " + damage);
 		}
 
+		if (currentHealth <= 0)
+			OnDeath();
+
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
+
 		if (!IsPlayerEntity()) return;
-		EventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
+	}
+	private void OnDeath()
+	{
+		audioHandler.PlayAudio(entityBaseStats.deathSfx);
+		entityBehaviour.navMeshAgent.isStopped = true;
+		animator.SetTrigger("DeathTrigger");
+		boxCollider2D.enabled = false;
+		StartCoroutine(WaitForDeathSound());
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -213,7 +268,13 @@ public class EntityStats : MonoBehaviour
 	IEnumerator ResetRedFlashOnRecieveDamage()
 	{
 		yield return new WaitForSeconds(0.1f);
+		if (IsEntityDead()) yield break;
 		spriteRenderer.color = Color.white;
+	}
+	IEnumerator WaitForDeathSound()
+	{
+		yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
+		DungeonHandler.EntityDeathEvent(gameObject);
 	}
 
 	//mana functions
@@ -230,7 +291,7 @@ public class EntityStats : MonoBehaviour
 			manaRegenTimer = manaRegenCooldown;
 			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
 			if (!IsPlayerEntity()) return;
-			EventManager.PlayerManaChange(maxMana.finalValue, currentMana);
+			PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		}
 	}
 	public void IncreaseMana(float manaValue, bool isPercentageValue)
@@ -244,7 +305,7 @@ public class EntityStats : MonoBehaviour
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 		if (!IsPlayerEntity()) return;
-		EventManager.PlayerManaChange(maxMana.finalValue, currentMana);
+		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}
 	public void DecreaseMana(float manaValue, bool isPercentageValue)
@@ -255,7 +316,7 @@ public class EntityStats : MonoBehaviour
 		currentMana = (int)(currentMana - manaValue);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 		if (!IsPlayerEntity()) return;
-		EventManager.PlayerManaChange(maxMana.finalValue, currentMana);
+		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}
 
@@ -266,54 +327,43 @@ public class EntityStats : MonoBehaviour
 		AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
 		statusEffect.Initilize(newStatusEffect, this);
 
+		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
+			damageDealtModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			poisonResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			fireResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			iceResistance.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			physicalResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			poisonResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			fireResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			iceResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
 		}
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-		}
-
-		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
-		{
-			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
-			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.damageValuePercentage);
+			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
+			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
 		}
 
 		currentStatusEffects.Add(statusEffect);
 	}
 	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect, SOClassAbilities abilityBaseRef)
 	{
+		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
+			damageDealtModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			poisonResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			fireResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			iceResistance.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			physicalResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			poisonResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			fireResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			iceResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
 		}
 		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-		}
-
-		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isMagicDamageEffect)
-		{
-			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
-			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.damageValuePercentage);
+			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
 		}
 
 		currentStatusEffects.Remove(statusEffect);
@@ -325,29 +375,6 @@ public class EntityStats : MonoBehaviour
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier
 	/// </summary>
-	private void OnPlayerLevelUp(int newPlayerLevel)
-	{
-		if (currentHealth <= 0) return;
-
-		entityLevel = newPlayerLevel;
-		bool wasDamaged = true;
-
-		if (maxHealth.finalValue == currentHealth)
-			wasDamaged = false;
-
-		int oldMaxHP = maxHealth.baseValue;
-		int oldCurrentHP = currentHealth;
-		int oldcurrentMana = currentMana;
-		CalculateBaseStats();
-
-		if (GetComponent<PlayerController>() == null && !wasDamaged) //if not player or taken damage full heal entity
-			currentHealth = maxHealth.finalValue;
-		else
-			currentHealth = oldCurrentHP + (maxHealth.finalValue - oldMaxHP); //else return health + extra health from new level/modifiers
-
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-	}
 	public void CalculateBaseStats()
 	{
 		if (entityLevel == 1)  //get level modifier
@@ -364,6 +391,9 @@ public class EntityStats : MonoBehaviour
 		fireResistance.SetBaseValue((int)(entityBaseStats.fireDamageResistance * levelModifier));
 		iceResistance.SetBaseValue((int)(entityBaseStats.iceDamageResistance * levelModifier));
 
+		damageDealtModifier.SetBaseValue(entityBaseStats.damageDealtBaseModifier);
+
+		healingPercentageModifier.SetBaseValue(1);
 		physicalDamagePercentageModifier.SetBaseValue(1);
 		poisonDamagePercentageModifier.SetBaseValue(1);
 		fireDamagePercentageModifier.SetBaseValue(1);
@@ -380,38 +410,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
-		UpdatePlayerStatInfoUi();
-	}
-	public void OnClassChanges(EntityClassHandler classHandler) //also called when class is reset
-	{
-		bool oldCurrentHealthEqualToOldMaxHealth = false;
-		if (currentHealth == maxHealth.finalValue)
-			oldCurrentHealthEqualToOldMaxHealth = true;
-
-		foreach (SOClassStatBonuses statBoost in classHandler.unlockedStatBoostList)
-		{
-			maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
-			maxMana.RemovePercentageValue(statBoost.manaBoostValue);
-			physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
-			poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
-			fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
-			iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
-
-			physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
-			poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
-			fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
-			iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
-			mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
-			dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
-			rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
-		}
-
-		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
-		UpdatePlayerStatInfoUi();
-
-		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
@@ -436,7 +435,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
@@ -452,6 +451,7 @@ public class EntityStats : MonoBehaviour
 		fireResistance.AddPercentageValue(statBoost.fireResistanceBoostValue);
 		iceResistance.AddPercentageValue(statBoost.iceResistanceBoostValue);
 
+		healingPercentageModifier.AddPercentageValue(statBoost.healingBoostValue);
 		physicalDamagePercentageModifier.AddPercentageValue(statBoost.physicalDamageBoostValue);
 		poisonDamagePercentageModifier.AddPercentageValue(statBoost.poisionDamageBoostValue);
 		fireDamagePercentageModifier.AddPercentageValue(statBoost.fireDamageBoostValue);
@@ -464,7 +464,36 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		UpdatePlayerStatInfoUi();
+	}
+	public void OnStatRefund(SOClassStatBonuses statBoost)
+	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		maxHealth.RemovePercentageValue(statBoost.healthBoostValue);
+		maxMana.RemovePercentageValue(statBoost.manaBoostValue);
+		physicalResistance.RemovePercentageValue(statBoost.physicalResistanceBoostValue);
+		poisonResistance.RemovePercentageValue(statBoost.poisonResistanceBoostValue);
+		fireResistance.RemovePercentageValue(statBoost.fireResistanceBoostValue);
+		iceResistance.RemovePercentageValue(statBoost.iceResistanceBoostValue);
+
+		healingPercentageModifier.RemovePercentageValue(statBoost.healingBoostValue);
+		physicalDamagePercentageModifier.RemovePercentageValue(statBoost.physicalDamageBoostValue);
+		poisonDamagePercentageModifier.RemovePercentageValue(statBoost.poisionDamageBoostValue);
+		fireDamagePercentageModifier.RemovePercentageValue(statBoost.fireDamageBoostValue);
+		iceDamagePercentageModifier.RemovePercentageValue(statBoost.iceDamageBoostValue);
+		mainWeaponDamageModifier.RemovePercentageValue(statBoost.mainWeaponDamageBoostValue);
+		dualWeaponDamageModifier.RemovePercentageValue(statBoost.duelWeaponDamageBoostValue);
+		rangedWeaponDamageModifier.RemovePercentageValue(statBoost.rangedWeaponDamageBoostValue);
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfoUi();
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
@@ -482,6 +511,7 @@ public class EntityStats : MonoBehaviour
 			fireResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			iceResistance.AddPercentageValue(dungeonModifiers.difficultyModifier);
 
+			healingPercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
 			fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.difficultyModifier);
@@ -498,6 +528,7 @@ public class EntityStats : MonoBehaviour
 		fireResistance.AddPercentageValue(dungeonModifiers.fireResistanceModifier);
 		iceResistance.AddPercentageValue(dungeonModifiers.iceResistanceModifier);
 
+		//healingPercentageModifier.AddPercentageValue();
 		physicalDamagePercentageModifier.AddPercentageValue(dungeonModifiers.physicalDamageModifier);
 		poisonDamagePercentageModifier.AddPercentageValue(dungeonModifiers.poisonDamageModifier);
 		fireDamagePercentageModifier.AddPercentageValue(dungeonModifiers.fireDamageModifier);
@@ -510,7 +541,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	//function will full heal entity if not player and at full health when stat changes
@@ -528,12 +559,18 @@ public class EntityStats : MonoBehaviour
 	public void UpdatePlayerStatInfoUi()
 	{
 		if (!IsPlayerEntity()) return;
-		EventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
-		EventManager.PlayerManaChange(maxMana.finalValue, currentMana);
-		EventManager.PlayerStatChange(this);
+		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
+		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
+		PlayerEventManager.PlayerStatChange(this);
 	}
 
 	//Checks
+	public bool IsEntityDead()
+	{
+		if (currentHealth <= 0)
+			return true;
+		else return false;
+	}
 	public bool IsPlayerEntity()
 	{
 		if (entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)

@@ -50,14 +50,23 @@ public class Armors : Items
 
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
-			rarity = "Legendary";
+			rarity = "<color=orange>Legendary</color>";
 		else if (this.rarity == Rarity.isEpic)
-			rarity = "Epic";
+			rarity = "<color=purple>Epic</color>";
 		else if (this.rarity == Rarity.isRare)
-			rarity = "Rare";
+			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price";
+
+		string weightClass;
+		if (armorBaseRef.classRestriction == SOArmors.ClassRestriction.heavy)
+			weightClass = "Heavy Weight Restriction";
+		else if (armorBaseRef.classRestriction == SOArmors.ClassRestriction.medium)
+			weightClass = "Medium Weight Restriction";
+		else
+			weightClass = "Light Weight Restriction";
+
+		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price \n {weightClass}";
 
 		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
 			$"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n" +
@@ -66,6 +75,15 @@ public class Armors : Items
 			$"{(int)(bonusFireResistance * playerStats.fireResistance.GetPercentageModifiers())} Fire Res\n" +
 			$"{(int)(bonusIceResistance * playerStats.iceResistance.GetPercentageModifiers())} Ice Res";
 
-		toolTip.tipToShow = $"{info}\n{resInfo}";
+		string equipInfo;
+		if (playerStats.entityLevel < itemLevel)
+			equipInfo = "<color=red>Cant Equip Armor \n Level Too High</color>";
+		else if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
+			equipInfo = "<color=red>Cant Equip Armor \n Weight too heavy</color>";
+		else
+			equipInfo = "<color=green>Can Equip Armor</color>";
+
+		toolTip.tipToShow = $"{info}\n{resInfo}\n{equipInfo}";
+
 	}
 }

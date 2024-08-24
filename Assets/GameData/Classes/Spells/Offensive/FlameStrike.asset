@@ -16,11 +16,12 @@ MonoBehaviour:
   Description: Call a flame of fire down from the sky
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 5
+  abilityCooldown: 10
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 1
   aoeSize: 30
   isDOT: 0
@@ -29,11 +30,11 @@ MonoBehaviour:
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 20
+  damageValue: 40
   damageValuePercentage: 0
   damageType: 2
   isSpell: 1
   manaCost: 15
-  minPercentCost: 10
+  minPercentCost: 12
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

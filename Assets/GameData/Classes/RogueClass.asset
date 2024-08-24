@@ -16,5 +16,67 @@ MonoBehaviour:
   classDescription: Rogues are a good at dealing and can be very versatile in multiple
     situations. Keep in mind though they are weak to most attacks but do have some
     options for self healing besides health potions.
+  classImageUi: {fileID: 0}
+  baseClassAbilitySlots: 1
+  statBonusLists: []
+  abilityLists: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: bded66c7822b7df458c1525dbb7ecd1e, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: cb56b08e86d564749beb673ac31ea81f, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: 14e3cd426e6389e4fb0ccf4bf1b1cc80, type: 2}
+    LevelRequirement: 18
+  spellSlotsPerLevel:
+  - LevelRequirement: 4
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 8
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 12
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 16
+    AbilitySlotsPerLevel: 1
+  classAbilitiesOffensiveList:
+  - unlock: {fileID: 11400000, guid: fdd5bb0a3106b674f86c061e30de9b35, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 30bff4642a323d844a0174a6fcde4482, type: 2}
+    LevelRequirement: 8
+  - unlock: {fileID: 11400000, guid: 457899b3b8a9a4a4f8e23701277e43c8, type: 2}
+    LevelRequirement: 16
+  classAbilitiesHealingList:
+  - unlock: {fileID: 11400000, guid: 8db605ad22b1cea42a7fb795c950d5b3, type: 2}
+    LevelRequirement: 1
+  classAbilitiesEffectsList:
+  - unlock: {fileID: 11400000, guid: 64ec2ae0f2f985441be916c5a3032ff2, type: 2}
+    LevelRequirement: 4
+  - unlock: {fileID: 11400000, guid: 78721767be2faf84db24b5f97679c7a2, type: 2}
+    LevelRequirement: 4
+  - unlock: {fileID: 11400000, guid: fdd13aa94d5aa7b428b41c0c44196497, type: 2}
+    LevelRequirement: 8
+  - unlock: {fileID: 11400000, guid: 55ff08dd5ce2d17469fb5c0ff3ae885e, type: 2}
+    LevelRequirement: 12
   canUseSpells: 1
   classRestriction: 0
+  startingWeapon: {fileID: 11400000, guid: 329f5669713f10c44902f70b88ded74e, type: 2}
+  startingArmor:
+  - {fileID: 11400000, guid: fcca6b8390a71ab43ac651a10b41a9c0, type: 2}
+  - {fileID: 11400000, guid: 075318b5c3c073e4da45afe81d8c6bf8, type: 2}
+  - {fileID: 11400000, guid: 820b16f51400afa418909af5e95b60cd, type: 2}
+  startingAccessories: []
+  startingConsumables:
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

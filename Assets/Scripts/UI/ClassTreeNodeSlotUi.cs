@@ -1,177 +1,177 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using TMPro;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class ClassTreeNodeSlotUi : MonoBehaviour
 {
-	public SOClassStatBonuses statBonus;
-	public SOClassAbilities ability;
+	public ClassStatUnlocks statUnlock;
+	public ClassAbilityUnlocks abilityUnlock;
 
 	private ToolTipUi toolTip;
 	public TMP_Text nodeInfoText;
 	private Image image;
 	public GameObject nodeUnlockButtonObj;
+	public GameObject nodeRefundButtonObj;
 
-	public int nodeLevelRequirment;
 	public bool isAlreadyUnlocked;
-	public int nodeIndex;
 
-	[Tooltip("Prev skill nodes needed to unlock this one (only needs 1 owned to pass check, can have multiple")]
-	public List<ClassTreeNodeSlotUi> preRequisites = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("Nodes that are exclusive to this one (must have all exclusions to be excluded)")]
-	public List<ClassTreeNodeSlotUi> exclusions = new List<ClassTreeNodeSlotUi>();
-	[Tooltip("Nodes that are exclusive to this one, mainly used for duplicate skills in class tree")]
-	public List<ClassTreeNodeSlotUi> hardExclusions = new List<ClassTreeNodeSlotUi>();
+	public int nodeVerticalParentIndex;
+	public int nodeHorizontalIndex;
+	public int nodeIndex;
 
 	private void OnEnable()
 	{
-		ClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
-		ClassesUi.OnClassReset += ResetNode;
+		PlayerClassesUi.OnClassNodeUnlocks += CheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassChanges += ResetNode;
 	}
 	private void OnDisable()
 	{
-		ClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
-		ClassesUi.OnClassReset -= ResetNode;
+		PlayerClassesUi.OnClassNodeUnlocks -= CheckIfNodeShouldBeLockedOrUnlocked;
+		PlayerClassesUi.OnClassChanges -= ResetNode;
 	}
-	public void Initilize()
+	public void Initilize(int newVerticalIndex)
 	{
-		if (statBonus != null)
-			nodeInfoText.text = statBonus.Name;
-		else if (ability != null)
-			nodeInfoText.text = ability.Name;
+		nodeVerticalParentIndex = newVerticalIndex;
+		nodeHorizontalIndex = transform.GetSiblingIndex();
+
+		if (statUnlock != null)
+			nodeInfoText.text = statUnlock.unlock.Name;
+		else if (abilityUnlock != null)
+			nodeInfoText.text = abilityUnlock.unlock.Name;
 		else
 			Debug.LogError("Skill tree slot has no reference, this shouldnt happen");
 
 		image = GetComponent<Image>();
-		nodeIndex = transform.GetSiblingIndex();
-		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNodeButton);
+		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNode);
+		nodeRefundButtonObj.GetComponent<Button>().onClick.AddListener(RefundThisNode);
 		ResetNode(null);
 	}
+
 	public void SetToolTip(EntityStats playerStats)
 	{
 		toolTip = GetComponent<ToolTipUi>();
 
-		if (statBonus != null)
+		if (statUnlock != null)
 			SetStatBonusToolTip();
-		if (ability != null)
+		if (abilityUnlock != null)
 			SetAbilityTypeToolTip(playerStats);
 	}
 	//tool tip
 	private void SetStatBonusToolTip()
 	{
-		string info = $"{statBonus.Description} \n";
+		string info = $"{statUnlock.unlock.Description} \n";
 
-		if (statBonus.healthBoostValue != 0)
-			info += $"\nBoosts max health by {Utilities.ConvertFloatToUiPercentage(statBonus.healthBoostValue)}%";
-		if (statBonus.manaBoostValue != 0)
-			info += $"\nBoosts max mana by {Utilities.ConvertFloatToUiPercentage(statBonus.manaBoostValue)}%";
-		if (statBonus.manaRegenBoostValue != 0)
-			info += $"\nBoosts mana regen by {Utilities.ConvertFloatToUiPercentage(statBonus.manaRegenBoostValue)}%";
+		if (statUnlock.unlock.healthBoostValue != 0)
+			info += $"\nBoosts max health by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.healthBoostValue)}%";
+		if (statUnlock.unlock.manaBoostValue != 0)
+			info += $"\nBoosts max mana by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.manaBoostValue)}%";
+		if (statUnlock.unlock.manaRegenBoostValue != 0)
+			info += $"\nBoosts mana regen by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.manaRegenBoostValue)}%";
 
-		if (statBonus.physicalResistanceBoostValue != 0)
-			info += $"\nBoosts physical res by {Utilities.ConvertFloatToUiPercentage(statBonus.physicalResistanceBoostValue)}%";
-		if (statBonus.poisonResistanceBoostValue != 0)
-			info += $"\nBoosts poison res by {Utilities.ConvertFloatToUiPercentage(statBonus.poisonResistanceBoostValue)}%";
-		if (statBonus.fireResistanceBoostValue != 0)
-			info += $"\nBoosts fire res by {Utilities.ConvertFloatToUiPercentage(statBonus.fireResistanceBoostValue)}%";
-		if (statBonus.iceResistanceBoostValue != 0)
-			info += $"\nBoosts ice res by {Utilities.ConvertFloatToUiPercentage(statBonus.iceResistanceBoostValue)}%";
+		if (statUnlock.unlock.physicalResistanceBoostValue != 0)
+			info += $"\nBoosts physical res by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.physicalResistanceBoostValue)}%";
+		if (statUnlock.unlock.poisonResistanceBoostValue != 0)
+			info += $"\nBoosts poison res by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.poisonResistanceBoostValue)}%";
+		if (statUnlock.unlock.fireResistanceBoostValue != 0)
+			info += $"\nBoosts fire res by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.fireResistanceBoostValue)}%";
+		if (statUnlock.unlock.iceResistanceBoostValue != 0)
+			info += $"\nBoosts ice res by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.iceResistanceBoostValue)}%";
 
-		if (statBonus.physicalDamageBoostValue != 0)
-			info += $"\nBoosts physical damage by {Utilities.ConvertFloatToUiPercentage(statBonus.physicalDamageBoostValue)}%";
-		if (statBonus.poisionDamageBoostValue != 0)
-			info += $"\nBoosts poison damage by {Utilities.ConvertFloatToUiPercentage(statBonus.poisionDamageBoostValue)}%";
-		if (statBonus.fireDamageBoostValue != 0)
-			info += $"\nBoosts fire damage by {Utilities.ConvertFloatToUiPercentage(statBonus.fireDamageBoostValue)}%";
-		if (statBonus.iceDamageBoostValue != 0)
-			info += $"\nBoosts ice damage by {Utilities.ConvertFloatToUiPercentage(statBonus.iceDamageBoostValue)}%";
+		if (statUnlock.unlock.physicalDamageBoostValue != 0)
+			info += $"\nBoosts physical damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.physicalDamageBoostValue)}%";
+		if (statUnlock.unlock.poisionDamageBoostValue != 0)
+			info += $"\nBoosts poison damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.poisionDamageBoostValue)}%";
+		if (statUnlock.unlock.fireDamageBoostValue != 0)
+			info += $"\nBoosts fire damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.fireDamageBoostValue)}%";
+		if (statUnlock.unlock.iceDamageBoostValue != 0)
+			info += $"\nBoosts ice damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.iceDamageBoostValue)}%";
 
-		if (statBonus.mainWeaponDamageBoostValue != 0)
-			info += $"\nBoosts main weapon damage by {Utilities.ConvertFloatToUiPercentage(statBonus.mainWeaponDamageBoostValue)}%";
-		if (statBonus.duelWeaponDamageBoostValue != 0)
-			info += $"\nBoosts dual weapon damage by {Utilities.ConvertFloatToUiPercentage(statBonus.duelWeaponDamageBoostValue)}%";
-		if (statBonus.rangedWeaponDamageBoostValue != 0)
-			info += $"\nBoosts ranged weapon damage by {Utilities.ConvertFloatToUiPercentage(statBonus.rangedWeaponDamageBoostValue)}%";
+		if (statUnlock.unlock.mainWeaponDamageBoostValue != 0)
+			info += $"\nBoosts main weapon damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.mainWeaponDamageBoostValue)}%";
+		if (statUnlock.unlock.duelWeaponDamageBoostValue != 0)
+			info += $"\nBoosts dual weapon damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.duelWeaponDamageBoostValue)}%";
+		if (statUnlock.unlock.rangedWeaponDamageBoostValue != 0)
+			info += $"\nBoosts ranged weapon damage by {Utilities.ConvertFloatToUiPercentage(statUnlock.unlock.rangedWeaponDamageBoostValue)}%";
 
 		toolTip.tipToShow = $"{info}";
 	}
 	private void SetAbilityTypeToolTip(EntityStats playerStats)
 	{
-		string info = $"{ability.Description} \n";
+		string info = $"{abilityUnlock.unlock.Description} \n";
 
-		if (ability.canOnlyTargetSelf)
+		if (abilityUnlock.unlock.canOnlyTargetSelf)
 			info += "\n Can only cast on self";
-		else if (ability.requiresTarget && ability.isOffensiveAbility)
+		else if (abilityUnlock.unlock.requiresTarget && abilityUnlock.unlock.isOffensiveAbility)
 			info += "\nNeeds selected enemy target";
-		else if (ability.requiresTarget && !ability.isOffensiveAbility)
+		else if (abilityUnlock.unlock.requiresTarget && !abilityUnlock.unlock.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (ability.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		if (abilityUnlock.unlock.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 			info = SetStatusEffectToolTip(info);
-		else if (ability.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)
+		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)
 			info = SetAbilityToolTip(info, playerStats);
 		else
 			Debug.LogError("Setting up ability tool tip failed");
 
-		if (ability.isSpell) //optional
-			info += $"\nCosts {(int)(ability.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
+		if (abilityUnlock.unlock.isSpell) //optional
+			info += $"\nCosts {(int)(abilityUnlock.unlock.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
 
 		toolTip.tipToShow = $"{info}";
 	}
 	private string SetStatusEffectToolTip(string info)
 	{
-		if (ability.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(ability.damageValuePercentage)}% damage ";
-		else if (ability.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(ability.damageValuePercentage)}% damage res ";
+		if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage ";
+		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage res ";
+		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
+			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}" +
+				$"% damage recieved modifier ";
 
-		if (ability.canOnlyTargetSelf)
+		if (abilityUnlock.unlock.canOnlyTargetSelf)
 			info += "buff to yourself";
 		else
 		{
-			if (ability.isOffensiveAbility && ability.isAOE)
+			if (abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
 				info += "debuff to enemies inside AoE";
-			else if (!ability.isOffensiveAbility && ability.isAOE)
+			else if (!abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
 				info += "buff to friendlies/self inside AoE";
 
-			if (ability.isOffensiveAbility && !ability.isAOE)
+			if (abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
 				info += "debuff to selected enemy";
-			else if (!ability.isOffensiveAbility && !ability.isAOE)
+			else if (!abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
 				info += "buff to selected friendlies or self";
 		}
-		return info += $"\nEffect lasts for {ability.abilityDuration}s";
+		return info += $"\nEffect lasts for {abilityUnlock.unlock.abilityDuration}s";
 	}
 	private string SetAbilityToolTip(string info, EntityStats playerStats)
 	{
-		if (ability.damageType != SOClassAbilities.DamageType.isHealing && ability.isOffensiveAbility)
+		if (abilityUnlock.unlock.damageType != SOClassAbilities.DamageType.isHealing && abilityUnlock.unlock.isOffensiveAbility)
 		{
-			int damage = (int)(ability.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
+			int damage = (int)(abilityUnlock.unlock.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
 
-			if (ability.damageType == SOClassAbilities.DamageType.isPhysicalDamageType)
+			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isPhysicalDamageType)
 				damage = (int)(damage * playerStats.physicalDamagePercentageModifier.finalPercentageValue);
-			if (ability.damageType == SOClassAbilities.DamageType.isPoisonDamageType)
+			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isPoisonDamageType)
 				damage = (int)(damage * playerStats.poisonDamagePercentageModifier.finalPercentageValue);
-			if (ability.damageType == SOClassAbilities.DamageType.isFireDamageType)
+			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isFireDamageType)
 				damage = (int)(damage * playerStats.fireDamagePercentageModifier.finalPercentageValue);
-			if (ability.damageType == SOClassAbilities.DamageType.isIceDamageType)
+			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
 			info += $"\nDeals {damage} damage to enemies ";
 
-			if (ability.isAOE) //optional
+			if (abilityUnlock.unlock.isAOE) //optional
 				info += "inside AoE";
 		}
-		else if (ability.damageType == SOClassAbilities.DamageType.isHealing && !ability.isOffensiveAbility)
+		else if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isHealing && !abilityUnlock.unlock.isOffensiveAbility)
 		{
-			float healing = Utilities.ConvertFloatToUiPercentage(ability.damageValuePercentage);
+			float healing = Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.damageValuePercentage);
 
-			if (ability.isAOE)
+			if (abilityUnlock.unlock.isAOE)
 				info += $"\nHeals for {healing}% of health for friendlies inside AoE";
 			else
 				info += $"\nHeals for {healing}% of health for selected friendlies or self ";
@@ -179,22 +179,32 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		else
 			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (ability.isDOT)
-			info += $"\nlasts for {ability.abilityDuration}s"; //optional
+		if (abilityUnlock.unlock.isDOT)
+			info += $"\nlasts for {abilityUnlock.unlock.abilityDuration}s"; //optional
 		return info;
 	}
 
-	public void UnlockThisNodeButton()
+	//node updates
+	public void UnlockThisNode()
 	{
-		isAlreadyUnlocked = true;
-
-		if (statBonus != null)
-			ClassesUi.Instance.UnlockStatBonus(this, statBonus);
-		else if (ability != null)
-			ClassesUi.Instance.UnlockAbility(this, ability);
+		if (statUnlock != null)
+			PlayerClassesUi.Instance.UnlockStatBonus(this, statUnlock.unlock);
+		else if (abilityUnlock.unlock != null)
+			PlayerClassesUi.Instance.UnlockAbility(this, abilityUnlock.unlock);
+	}
+	public void RefundThisNode()
+	{
+		if (statUnlock != null)
+			PlayerClassesUi.Instance.RefundStatBonus(this, statUnlock.unlock);
+		else if (abilityUnlock.unlock != null)
+			PlayerClassesUi.Instance.RefundAbility(this, abilityUnlock.unlock);
+	}
+	private void ResetNode(SOClasses currentClass)
+	{
+		isAlreadyUnlocked = false;
 	}
 
-	//node update checks
+	//node checks 
 	public void CheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
 	{
 		if (isAlreadyUnlocked)
@@ -203,90 +213,67 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			ActivateNode();
 			return;
 		}
-		if (playerStats.entityLevel < nodeLevelRequirment)
+		if (statUnlock != null)
 		{
-			LockNode();
-			return;
+			if (playerStats.entityLevel < statUnlock.LevelRequirement)
+			{
+				LockNode();
+				return;
+			}
+			if (AreStatBonusesForThisLevelAlreadyUnlocked())
+			{
+				LockNode();
+				return;
+			}
 		}
-		if (CheckForHardExclusions())
+		if (abilityUnlock != null)
 		{
-			LockNode();
-			return;
-		}
-		if (CheckForNodeExclusions())
-		{
-			LockNode();
-			return;
-		}
-		if (!CheckIfAllPreRequisiteNodesUnlocked())
-		{
-			LockNode();
-			return;
+			if (playerStats.entityLevel < abilityUnlock.LevelRequirement)
+			{
+				LockNode();
+				return;
+			}
+			if (!PlayerClassesUi.Instance.DoesPlayerHaveFreeAbilitySlot())
+			{
+				LockNode();
+				return;
+			}
 		}
 		UnlockNode();
 	}
-	public bool CheckForHardExclusions()
-	{
-		if (hardExclusions.Count == 0)
-			return false;
 
-		foreach (ClassTreeNodeSlotUi node in hardExclusions)
-		{
-			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-				return true;
-		}
-		return false;
-	}
-	public bool CheckForNodeExclusions()
+	//checks
+	private bool AreStatBonusesForThisLevelAlreadyUnlocked()
 	{
-		if (exclusions.Count == 0)
-			return false;
+		Transform parentTransform = transform.parent;
 
-		int numOfMatches = 0;
-		foreach (ClassTreeNodeSlotUi node in exclusions)
-		{
-			if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-				numOfMatches++;
-		}
-		if (numOfMatches == exclusions.Count)
+		if (parentTransform.GetChild(0).GetComponent<ClassTreeNodeSlotUi>().isAlreadyUnlocked == true)
 			return true;
-        else
-            return false;
-    }
-	public bool CheckIfAllPreRequisiteNodesUnlocked()
-	{
-		if (preRequisites.Count != 0)
+		else if (parentTransform.childCount == 2)
 		{
-			foreach (ClassTreeNodeSlotUi node in preRequisites)
-			{
-				if (ClassesUi.Instance.currentUnlockedClassNodes.Contains(node))
-					return true;
-			}
-			return false;
+			if (parentTransform.GetChild(1).GetComponent<ClassTreeNodeSlotUi>().isAlreadyUnlocked == true)
+				return true;
+			else return false;
 		}
-		else return true;
+		else return false;
 	}
 
-	//node updates
+	//node states
 	private void LockNode()
 	{
 		image.color = new Color(1, 0.4f, 0.4f, 1);
 		nodeUnlockButtonObj.SetActive(false);
+		nodeRefundButtonObj.SetActive(false);
 	}
 	private void UnlockNode()
 	{
 		image.color = new Color(1, 1, 1, 1);
 		nodeUnlockButtonObj.SetActive(true);
+		nodeRefundButtonObj.SetActive(false);
 	}
 	private void ActivateNode()
 	{
 		image.color = new Color(0.4f, 1, 0.4f, 1);
-	}
-	private void ResetNode(SOClasses currentClass)
-	{
-		isAlreadyUnlocked = false;
-		LockNode();
-		if (nodeLevelRequirment == 1)
-			UnlockNode();
+		nodeRefundButtonObj.SetActive(true);
 	}
 }

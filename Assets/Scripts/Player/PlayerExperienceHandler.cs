@@ -1,37 +1,38 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
-	[HideInInspector] private PlayerController playerController;
+	private EntityStats playerStats;
 
-	private int maxLevel = 50;
+	public bool debugDisablePlayerLevelUp;
+	private int maxLevel = 20;
 	private int maxExp = 1000;
 	public int currentExp;
 
-	private EntityStats playerStats;
-
-	public event Action<int> OnPlayerLevelUpEvent;
-
-	private void Start()
+	private void Awake()
 	{
-		playerController = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
 	}
-
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerExp;
-		EventManager.OnDeathEvent += AddExperience;
+		DungeonHandler.OnEntityDeathEvent += AddExperience;
+		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
-
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerExp;
-		EventManager.OnDeathEvent -= AddExperience;
+		DungeonHandler.OnEntityDeathEvent -= AddExperience;
+		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
+	}
+	private void Start()
+	{
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
 	/// <summary>
@@ -46,20 +47,41 @@ public class PlayerExperienceHandler : MonoBehaviour
 	public void ReloadPlayerExp()
 	{
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
-		EventManager.PlayerExpChange(maxExp, currentExp);
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
-	public void AddExperience(GameObject Obj)
-	{
-		if (Obj.GetComponent<QuestSlotsUi>() != null)
-			currentExp += Obj.GetComponent<QuestSlotsUi>().rewardToAdd;
-		else
-		{
-			if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
-			currentExp += Obj.GetComponent<EntityStats>().entityBaseStats.expOnDeath;
-		}
-		EventManager.PlayerExpChange(maxExp, currentExp);
 
-		if (!CheckIfPLayerCanLevelUp()) return;
+	private void OnQuestComplete(QuestDataSlotUi quest)
+	{
+		if (quest.questRewardType == QuestDataSlotUi.RewardType.isExpReward)
+			AddExperience(quest.gameObject);
+	}
+	private void AddExperience(GameObject Obj)
+	{
+		if (Obj.GetComponent<QuestDataSlotUi>() != null)
+			currentExp += Obj.GetComponent<QuestDataSlotUi>().rewardToAdd;
+		else if (Obj.GetComponent<PlayerController>() == null && Obj.GetComponent<EntityStats>() != null)
+		{
+			//if (playerController != Obj.GetComponent<EntityBehaviour>().player) return;
+			EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
+			int expToAdd = otherEntityStats.entityBaseStats.expOnDeath;
+
+			//lower exp given based on level difference (will rarely happen unless player levels up 3+ time in same dungeon)
+			int levelDifference = playerStats.entityLevel - otherEntityStats.entityLevel;
+			if (levelDifference == 3)
+				expToAdd = (int)(currentExp * 1.75f);
+			if (levelDifference == 4)
+				expToAdd = (int)(currentExp * 1.5f);
+			if (levelDifference >= 5)
+				expToAdd = (int)(currentExp * 1.25f);
+
+			currentExp += expToAdd;
+		}
+		else
+			Debug.LogError("Error no components match for adding exp");
+
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
+
+		if (CheckIfPLayerCanLevelUp()) return;
 		OnPlayerLevelUp();
 	}
 
@@ -68,11 +90,12 @@ public class PlayerExperienceHandler : MonoBehaviour
 		int r = currentExp % maxExp;
 		currentExp = r;
 
-		EventManager.PlayerExpChange(maxExp, currentExp);
-		OnPlayerLevelUpEvent?.Invoke(playerStats.entityLevel + 1);
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
+		PlayerEventManager.PlayerLevelUp(playerStats);
 	}
 	private bool CheckIfPLayerCanLevelUp()
 	{
+		if (debugDisablePlayerLevelUp) return false;
 		if (playerStats.entityLevel >= maxLevel ) return false;
 
 		if (currentExp >= maxExp)

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PlayerDetection : MonoBehaviour
@@ -10,9 +11,15 @@ public class PlayerDetection : MonoBehaviour
 	//in Mp will need to be modified to handle multiple players
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.gameObject.GetComponent<PlayerController>() == null) return;
+		if (other.gameObject.GetComponent<PlayerController>() != null)
+			entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
+	}
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if (other.gameObject.GetComponent<PlayerController>() != null)
+			entityBehaviourRef.RemovePlayerFromAggroList(other.gameObject.GetComponent<PlayerController>());
 
-		if (other.gameObject.GetComponent<PlayerController>())
-			entityBehaviourRef.player = other.gameObject.GetComponent<PlayerController>();
+		if (entityBehaviourRef.markedForCleanUp)
+			DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);
 	}
 }

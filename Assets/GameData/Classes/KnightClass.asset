@@ -16,11 +16,65 @@ MonoBehaviour:
   classDescription: Knights excel at resisting and taking damage as well as being
     decent enough in dishing out there own damage. They do however have limited utility
     and self healing unless you have plenty of health potions.
+  classImageUi: {fileID: 0}
+  baseClassAbilitySlots: 1
   statBonusLists:
   - {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
   - {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
   - {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
   - {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
   abilityLists: []
+  classStatBonusList:
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 3
+  - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 6
+  - unlock: {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+    LevelRequirement: 9
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 12
+  - unlock: {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+    LevelRequirement: 15
+  - unlock: {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+    LevelRequirement: 18
+  - unlock: {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+    LevelRequirement: 18
+  spellSlotsPerLevel:
+  - LevelRequirement: 5
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 10
+    AbilitySlotsPerLevel: 1
+  - LevelRequirement: 15
+    AbilitySlotsPerLevel: 1
+  classAbilitiesOffensiveList:
+  - unlock: {fileID: 11400000, guid: 56319319c036b0c418884038f3b87eae, type: 2}
+    LevelRequirement: 10
+  classAbilitiesHealingList:
+  - unlock: {fileID: 11400000, guid: 8db605ad22b1cea42a7fb795c950d5b3, type: 2}
+    LevelRequirement: 1
+  - unlock: {fileID: 11400000, guid: 89499a7bc8d6fea47b61f3113377dd52, type: 2}
+    LevelRequirement: 15
+  classAbilitiesEffectsList:
+  - unlock: {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
+    LevelRequirement: 5
+  - unlock: {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}
+    LevelRequirement: 15
   canUseSpells: 0
   classRestriction: 2
+  startingWeapon: {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  startingArmor:
+  - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
+  - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
+  - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
+  startingAccessories: []
+  startingConsumables:
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
+  - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

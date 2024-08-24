@@ -18,10 +18,11 @@ MonoBehaviour:
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
-  isOffensiveAbility: 1
+  isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
   statusEffectType: 3
+  statusEffectPercentageModifier: 0.1
   isAOE: 0
   aoeSize: 0
   isDOT: 1
@@ -31,7 +32,7 @@ MonoBehaviour:
   projectileSpeed: 0
   isDamagePercentageBased: 0
   damageValue: 0
-  damageValuePercentage: 0.1
+  damageValuePercentage: 0
   damageType: 0
   isSpell: 0
   manaCost: 0

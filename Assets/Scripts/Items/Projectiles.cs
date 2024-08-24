@@ -1,10 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
 public class Projectiles : MonoBehaviour
 {
+	private PlayerController player;
 	public SOClassAbilities abilityBaseRef;
 	public SOWeapons weaponBaseRef;
 
@@ -19,9 +21,13 @@ public class Projectiles : MonoBehaviour
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
-	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	Vector2 projectileOrigin;
+	float distanceTraveled;
+
+	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
+		this.weaponBaseRef = null;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
@@ -29,6 +35,7 @@ public class Projectiles : MonoBehaviour
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
+		this.player = player;
 		isPlayerProjectile = casterInfo.IsPlayerEntity();
 		projectileSpeed = abilityBaseRef.projectileSpeed;
 		damageType = (DamageType)abilityBaseRef.damageType;
@@ -43,10 +50,14 @@ public class Projectiles : MonoBehaviour
 		if (damageType == DamageType.isIceDamageType)
 			projectileDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
+		projectileDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	public void Initilize(Weapons weaponRef)
+	public void Initilize(PlayerController player, Weapons weaponRef)
 	{
+		this.player = player;
+		this.abilityBaseRef = null;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
 		gameObject.name = weaponRef.itemName + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -59,13 +70,13 @@ public class Projectiles : MonoBehaviour
 		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
 		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
 		projectileDamage = weaponRef.damage;
-
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+		projectileOrigin = transform.position;
+		gameObject.SetActive(true);
 	}
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-			Destroy(gameObject);
+			DungeonHandler.ProjectileCleanUp(this);
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
@@ -74,17 +85,27 @@ public class Projectiles : MonoBehaviour
 			return;
 
 		if (abilityBaseRef != null)
-			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile);
 		else
-			other.GetComponent<Damageable>().OnHitFromDamageSource(other, projectileDamage, (IDamagable.DamageType)damageType, 0,
-				false, isPlayerProjectile);
+		{
+			//half ranged weapon damage
+			if (distanceTraveled < weaponBaseRef.minAttackRange)
+				projectileDamage /= 2;
 
-		Destroy(gameObject);
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
+				false, isPlayerProjectile);
+		}
+		DungeonHandler.ProjectileCleanUp(this);
 	}
 
 	private void FixedUpdate()
 	{
+		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
+
+		if (weaponBaseRef == null) return;
+		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
+			DungeonHandler.ProjectileCleanUp(this);
 	}
 }

@@ -3,76 +3,120 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 
 public class EntityClassHandler : MonoBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
-
-	[Header("Current Class")]
-	public List<SOClasses> possibleClassesList = new List<SOClasses>();
-
 	[Header("Current Class")]
 	public SOClasses currentEntityClass;
-	public GameObject itemPrefab;
 
-	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
+	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
 
-	public event Action<EntityClassHandler> OnClassChange;
 	public event Action<SOClassStatBonuses> OnStatUnlock;
 	public event Action<SOClassAbilities> OnAbilityUnlock;
-
+	public event Action<SOClassStatBonuses> OnStatRefund;
+	public event Action<SOClassAbilities> OnAbilityRefund;
 
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
-		Initilize();
 	}
-	protected virtual void Initilize()
+	public void SetEntityClass()
 	{
-		if (GetComponent<PlayerController>() == null)
-			SetRandomClass();
-	}
-	private void SetRandomClass()
-	{
-		int num = Utilities.GetRandomNumber(possibleClassesList.Count);
-		currentEntityClass = possibleClassesList[num];
+		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
+		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
 
-		foreach (SOClassStatBonuses statBonuses in currentEntityClass.statBonusLists)
+		foreach (ClassStatUnlocks statBonuses in currentEntityClass.classStatBonusList)
 		{
-			if (entityStats.entityLevel < statBonuses.nonPlayerLevelRequirement) continue;
-			UnlockStatBoost(statBonuses);
+			if (entityStats.entityLevel < statBonuses.LevelRequirement) continue;
+			UnlockStatBoost(statBonuses.unlock);
 		}
-		foreach (SOClassAbilities ability in currentEntityClass.abilityLists)
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesOffensiveList)
 		{
-			if (entityStats.entityLevel < ability.nonPlayerLevelRequirement) continue;
-			UnlockAbility(ability);
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
 		}
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesEffectsList)
+		{
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
+		}
+		foreach (ClassAbilityUnlocks ability in currentEntityClass.classAbilitiesHealingList)
+		{
+			if (entityStats.entityLevel < ability.LevelRequirement) continue;
+			UnlockAbility(ability.unlock);
+		}
+
+		SetUpEntityEquippedAbilities();
+	}
+	public void RerollEquippedAbilities()
+	{
+		entityStats.entityBehaviour.offensiveAbility = null;
+		entityStats.entityBehaviour.healingAbility = null;
+		SetUpEntityEquippedAbilities();
+	}
+	private void SetUpEntityEquippedAbilities()
+	{
+		ChooseEntityAbilities();
+	}
+	private void ChooseEntityAbilities()
+	{
+		SOClassAbilities pickedAbility = PickOffensiveAbility();
+		if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
+			entityStats.entityBehaviour.offensiveAbility = pickedAbility;
+
+		pickedAbility = PickHealingAbility();
+        if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
+			entityStats.entityBehaviour.healingAbility = pickedAbility;
+	}
+	private SOClassAbilities PickOffensiveAbility()
+	{
+		List<SOClassAbilities> offensiveAbilities = new List<SOClassAbilities>();
+		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		{
+			if (ability.damageType != SOClassAbilities.DamageType.isHealing)
+				offensiveAbilities.Add(ability);
+		}
+
+		if (offensiveAbilities.Count == 0)
+			return null;
+		else return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
+	}
+	private SOClassAbilities PickHealingAbility()
+	{
+		List<SOClassAbilities> healingAbilities = new List<SOClassAbilities>();
+		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		{
+			if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+				healingAbilities.Add(ability);
+		}
+
+		if (healingAbilities.Count == 0)
+			return null;
+		else return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
 	}
 
-	///	<summery>
-	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
-	///	then clear unlockedLists
-	///	
-	/// re add all stat boost player currently has the valid level for, leaving abilities to player to reunlock
-	///	<summery>
-	protected void OnClassChanges(SOClasses newPlayerClass)
+	private bool IsAbilityAlreadyEquipped(SOClassAbilities abilityToCheck)
 	{
-		OnClassChange?.Invoke(this);
+		if (abilityToCheck == entityStats.entityBehaviour.offensiveAbility) return true;
+		if (abilityToCheck == entityStats.entityBehaviour.healingAbility) return true;
+		return false;
+	}
 
-		unlockedAbilitiesList.Clear();
+	protected virtual void UpdateClass(SOClasses newClass)
+	{
+		for (int i = unlockedStatBoostList.Count - 1; i >= 0; i--)
+			RefundStatBoost(unlockedStatBoostList[i]);
+		for (int i = unlockedAbilitiesList.Count - 1; i >= 0; i--)
+			RefundAbility(unlockedAbilitiesList[i]);
+
 		unlockedStatBoostList.Clear();
+		unlockedAbilitiesList.Clear();
 
-		currentEntityClass = newPlayerClass;
-	}
-	///	<summery>
-	///	remove all stat boosts currently applied to player, also unequip any equipped abilities player has
-	///	then clear unlockedLists
-	///	<summery>
-	protected virtual void OnClassReset(SOClasses currentClass)
-	{
-		OnClassChanges(currentEntityClass);
+		currentEntityClass = newClass;
 	}
 
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
@@ -84,5 +128,15 @@ public class EntityClassHandler : MonoBehaviour
 	{
 		unlockedAbilitiesList.Add(ability);
 		OnAbilityUnlock?.Invoke(ability);
+	}
+	protected virtual void RefundStatBoost(SOClassStatBonuses statBoost)
+	{
+		unlockedStatBoostList.Remove(statBoost);
+		OnStatRefund?.Invoke(statBoost);
+	}
+	protected virtual void RefundAbility(SOClassAbilities ability)
+	{
+		unlockedAbilitiesList.Remove(ability);
+		OnAbilityRefund?.Invoke(ability);
 	}
 }

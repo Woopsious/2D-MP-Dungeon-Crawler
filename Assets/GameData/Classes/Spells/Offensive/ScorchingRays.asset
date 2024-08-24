@@ -16,11 +16,12 @@ MonoBehaviour:
   Description: Launch 3 rays of fire at enemies
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 5
+  abilityCooldown: 8
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 0
   aoeSize: 0
   isDOT: 0
@@ -29,11 +30,11 @@ MonoBehaviour:
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
-  damageValue: 20
+  damageValue: 50
   damageValuePercentage: 0
   damageType: 2
   isSpell: 1
-  manaCost: 15
+  manaCost: 12
   minPercentCost: 10
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

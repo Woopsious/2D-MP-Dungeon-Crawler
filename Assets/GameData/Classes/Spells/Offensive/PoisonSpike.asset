@@ -16,11 +16,12 @@ MonoBehaviour:
   Description: Liquid poison in the shape of a spike to launch at enemies
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
-  abilityCooldown: 5
+  abilityCooldown: 1.5
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectType: 0
+  statusEffectPercentageModifier: 0
   isAOE: 0
   aoeSize: 0
   isDOT: 0
@@ -29,11 +30,11 @@ MonoBehaviour:
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
-  damageValue: 18
+  damageValue: 25
   damageValuePercentage: 0
   damageType: 1
   isSpell: 1
-  manaCost: 10
-  minPercentCost: 8
+  manaCost: 5
+  minPercentCost: 3
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
