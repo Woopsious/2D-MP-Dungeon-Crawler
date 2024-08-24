@@ -252,7 +252,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		selectedTarget = entityStats;
 		selectedTargetUiImage.sprite = entityStats.entityBaseStats.sprite;
-		selectedTargetUiName.text = entityStats.entityBaseStats.entityName;
+		selectedTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.entityBaseStats.entityName;
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
 
@@ -321,7 +321,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
 	{
-		Vector3 scale = new Vector3(abilityRef.aoeSize, abilityRef.aoeSize, abilityRef.aoeSize);
+		Vector3 scale = new(abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f);
 		queuedAbilityAoe.transform.localScale = scale;
 	}
 

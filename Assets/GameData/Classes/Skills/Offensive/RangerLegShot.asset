@@ -18,7 +18,7 @@ MonoBehaviour:
   nonPlayerLevelRequirement: 1
   abilityCooldown: 30
   isOffensiveAbility: 1
-  requiresTarget: 0
+  requiresTarget: 1
   canOnlyTargetSelf: 0
   statusEffectType: 0
   statusEffectPercentageModifier: 0

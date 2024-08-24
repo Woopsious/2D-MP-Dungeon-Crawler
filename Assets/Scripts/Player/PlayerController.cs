@@ -188,56 +188,49 @@ public class PlayerController : MonoBehaviour
 	private void OnUseQueuedAbility(Abilities ability, PlayerController player)
 	{
 		if (ability.abilityBaseRef.isAOE)
-			CastAoeAbility(ability.abilityBaseRef);
-
+			CastAoeAbility(ability);
 		else if (ability.abilityBaseRef.isProjectile)
-			CastDirectionalAbility(ability.abilityBaseRef);
-
-		if (ability.abilityBaseRef.isOffensiveAbility)
+			CastDirectionalAbility(ability);
+		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
 		{
 			EntityStats newEnemyEntity;
 			if (selectedTarget == null)
 			{
-				Debug.Log("selected target null");
 				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
 				if (newEnemyEntity == null)
 				{
-					Debug.Log("new selected target null");
 					CancelQueuedAbility(queuedAbility);
 					return;
 				}
 				else
-					CastEffect(ability.abilityBaseRef, newEnemyEntity);
+					CastEffect(ability, newEnemyEntity);
 			}
 			else
-				CastEffect(ability.abilityBaseRef, selectedTarget);
+				CastEffect(ability, selectedTarget);
 		}
-		//add support for casting on friendly targets when none are selected in MP
+		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)	//for MP add support for friendlies
+			CastEffect(ability, playerStats);
 		else
-			CastEffect(ability.abilityBaseRef, null);
-
-		if (ability.abilityBaseRef.isSpell)
 		{
-			int totalManaCost = (int)(ability.abilityBaseRef.manaCost * playerStats.levelModifier);
-			playerStats.DecreaseMana(totalManaCost, false);
+			CancelQueuedAbility(queuedAbility);
+			Debug.LogError("failed to find ability type and cast, shouldnt happen");
+			return;
 		}
-		ability.isOnCooldown = true;
-		queuedAbility = null;
 	}
 	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
 	{
 		EntityStats newEntity;
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
-		Debug.Log("hit position: " + hit.point);
+		//Debug.Log("hit position: " + hit.point);
 
 		if (hit.transform == null)
 		{
-			Debug.Log("no obj found at location");
+			//Debug.Log("no obj found at location");
 			return null;
 		}
 		if (hit.transform.gameObject.GetComponent<EntityStats>() == null)
 		{
-			Debug.Log("no entity found");
+			//Debug.Log("no entity found");
 			return null;
 		}
 
@@ -245,17 +238,17 @@ public class PlayerController : MonoBehaviour
 
 		if (newEntity.IsPlayerEntity() && lookingForFriendly)
 		{
-			Debug.Log("entity found is player");
+			//Debug.Log("entity found is player");
 			return newEntity;
 		}
 		else if (!newEntity.IsPlayerEntity() && !lookingForFriendly)
 		{
-			Debug.Log("entity found is enemy");
+			//Debug.Log("entity found is enemy");
 			return newEntity;
 		}
 		else
 		{
-			Debug.Log("entity found is incorrect type");
+			//Debug.Log("entity found is incorrect type");
 			return null;
 		}
 	}
@@ -269,45 +262,50 @@ public class PlayerController : MonoBehaviour
 	}
 
 	//casting
-	private void CastEffect(SOClassAbilities ability, EntityStats enemyTarget)
+	private void CastEffect(Abilities ability, EntityStats enemyTarget)
 	{
-		if (ability.damageType == SOClassAbilities.DamageType.isHealing)	//healing
+		if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)	//healing
 		{
 			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
-				playerStats.OnHeal(ability.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
-			else
-				CancelQueuedAbility(queuedAbility);		 //add support/option to heal other players for MP
-		}
-		else if (ability.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)	//insta damage abilities
-		{
-			if (ability.isOffensiveAbility)
-				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.damageValue
-					* playerStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true);
-		}
-
-		else if (ability.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
-		{
-			if (ability.canOnlyTargetSelf)
-				playerStats.ApplyStatusEffect(ability);
-			else if (ability.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyStatusEffect(ability);
-			else if (!ability.isOffensiveAbility)		 //add support/option to buff other players for MP
-				playerStats.ApplyStatusEffect(ability);
+				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
 			else
 			{
-				Debug.Log("failed to cast status effect");
+				CancelQueuedAbility(queuedAbility);      //add support/option to heal other players for MP
+				return;
+			}
+		}
+		else if (ability.abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)	//insta damage abilities
+		{
+			if (ability.abilityBaseRef.isOffensiveAbility)
+				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
+					* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true);
+		}
+
+		else if (ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
+		{
+			if (ability.abilityBaseRef.canOnlyTargetSelf)
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef);
+			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
+				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef);
+			else if (!ability.abilityBaseRef.isOffensiveAbility)		 //add support/option to buff other players for MP
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef);
+			else
+			{
+				Debug.LogError("failed to cast status effect");
 				CancelQueuedAbility(queuedAbility);
 				return;
 			}
 		}
 		else
 		{
-			Debug.Log("failed to cast ability effect");
+			Debug.LogError("failed to cast ability effect");
 			CancelQueuedAbility(queuedAbility);
 			return;
 		}
+
+		OnSuccessfulCast(ability);
 	}
-	private void CastDirectionalAbility(SOClassAbilities ability)
+	private void CastDirectionalAbility(Abilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -317,14 +315,16 @@ public class PlayerController : MonoBehaviour
 		}
 		projectile.transform.SetParent(null);
 		projectile.transform.position = (Vector2)transform.position;
-		projectile.Initilize(this, ability, playerStats);
+		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
 
 		if (!debugUseSelectedTargetForAttackDirection)
 			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
 		else
 			SetProjectileDirection(projectile, GetAttackRotation(selectedTarget.transform.position));
+
+		OnSuccessfulCast(ability);
 	}
-	private void CastAoeAbility(SOClassAbilities ability)
+	private void CastAoeAbility(Abilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)
@@ -336,8 +336,20 @@ public class PlayerController : MonoBehaviour
 		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 		abilityAOE.transform.SetParent(null);
 		abilityAOE.transform.position = (Vector2)mousePosition;
-		abilityAOE.Initilize(ability, playerStats);
+		abilityAOE.Initilize(ability.abilityBaseRef, playerStats);
 		abilityAOE.AddPlayerRef(this);
+
+		OnSuccessfulCast(ability);
+	}
+	private void OnSuccessfulCast(Abilities ability)
+	{
+		if (ability.abilityBaseRef.isSpell)
+		{
+			int totalManaCost = (int)(ability.abilityBaseRef.manaCost * playerStats.levelModifier);
+			playerStats.DecreaseMana(totalManaCost, false);
+		}
+		ability.isOnCooldown = true;
+		queuedAbility = null;
 	}
 
 	//directional ability attacks

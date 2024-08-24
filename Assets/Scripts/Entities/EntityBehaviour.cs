@@ -316,6 +316,13 @@ public class EntityBehaviour : MonoBehaviour
 		if (!canCastOffensiveAbility || offensiveAbility == null) return;
 		if (playerTarget == null) return;
 
+		if (!HasEnoughManaToCast(offensiveAbility))
+		{
+			canCastOffensiveAbility = false;
+			offensiveAbilityTimer = 2.5f;	//if low mana wait 2.5s then try again
+			return;
+		}
+
 		if (offensiveAbility.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
 			CastEffect(offensiveAbility);
 		else
@@ -327,12 +334,24 @@ public class EntityBehaviour : MonoBehaviour
 		}
 
 		canCastOffensiveAbility = false;
-		offensiveAbilityTimer = offensiveAbility.abilityCooldown; // /2 to simulate having 5 equipped to hotbar
+		offensiveAbilityTimer = offensiveAbility.abilityCooldown;
 		return;
 	}
 
 	//casting of ability types
-	public void CastEffect(SOClassAbilities ability)
+	private bool HasEnoughManaToCast(SOClassAbilities ability)
+	{
+		if (ability.isSpell)
+		{
+			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
+			if (entityStats.currentMana <= totalManaCost)
+				return false;
+            else return true;
+        }
+		else
+			return true;
+	}
+	private void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
@@ -346,8 +365,9 @@ public class EntityBehaviour : MonoBehaviour
 			else if (ability.isOffensiveAbility && playerTarget != null)
 				playerTarget.playerStats.ApplyStatusEffect(ability);
 		}
+		OnSuccessfulCast(ability);
 	}
-	public void CastDirectionalAbility(SOClassAbilities ability)
+	private void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -361,8 +381,9 @@ public class EntityBehaviour : MonoBehaviour
 		projectile.Initilize(null, ability, entityStats);
 
 		SetProjectileDirection(projectile, GetAttackRotation(playerTarget.transform.position));
+		OnSuccessfulCast(ability);
 	}
-	public void CastAoeAbility(SOClassAbilities ability)
+	private void CastAoeAbility(SOClassAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)
@@ -375,6 +396,16 @@ public class EntityBehaviour : MonoBehaviour
 		abilityAOE.transform.position = playerTarget.transform.position;
 		abilityAOE.Initilize(ability, entityStats);
 		abilityAOE.AddPlayerRef(null);
+
+		OnSuccessfulCast(ability);
+	}
+	private void OnSuccessfulCast(SOClassAbilities ability)
+	{
+		if (ability.isSpell)
+		{
+			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
+			entityStats.DecreaseMana(totalManaCost, false);
+		}
 	}
 
 	//directional ability attacks
