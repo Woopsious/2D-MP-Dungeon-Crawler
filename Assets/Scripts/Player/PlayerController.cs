@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour
 	public int selectedEnemyTargetIndex;
 
 	//targetlist updates
+	private readonly float updateTargetListCooldown = 0.5f;
 	private float updateTargetListTimer;
 
 	//abilities
@@ -253,7 +254,7 @@ public class PlayerController : MonoBehaviour
 
 		EnemyTargetList.Sort((a, b) => a.distance.CompareTo(b.distance));
 		UpdateSelectedTargetIndexOnListChanges();
-		updateTargetListTimer = 1f;
+		updateTargetListTimer = 0.5f;
 	}
 	private void UpdateSelectedTargetIndexOnListChanges()
 	{

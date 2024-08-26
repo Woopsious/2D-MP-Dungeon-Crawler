@@ -57,7 +57,7 @@ public class EntityBehaviour : MonoBehaviour
 	public GameObject projectilePrefab;
 
 	[Header("Idle Sound Settings")]
-	private readonly float playerAggroRatingCooldown = 1f;
+	private readonly float playerAggroRatingCooldown = 0.5f;
 	private float playerAggroRatingTimer;
 
 	private void Awake()
