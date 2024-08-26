@@ -57,7 +57,7 @@ public class EntityBehaviour : MonoBehaviour
 	public GameObject projectilePrefab;
 
 	[Header("Idle Sound Settings")]
-	private readonly float playerAggroRatingCooldown = 0.5f;
+	private readonly float playerAggroRatingCooldown = 1f;
 	private float playerAggroRatingTimer;
 
 	private void Awake()
@@ -117,7 +117,7 @@ public class EntityBehaviour : MonoBehaviour
 		HasReachedDestination = true;
 
 		viewRangeCollider.radius = playerDetectionRange;
-		viewRangeCollider.gameObject.GetComponent<PlayerDetection>().entityBehaviourRef = this;
+		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviourRef = this;
 
 		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
 		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;
@@ -184,11 +184,17 @@ public class EntityBehaviour : MonoBehaviour
 				return;
 			}
 
-			RaycastHit2D hit = Physics2D.Linecast(transform.position, playerTarget.transform.position, includeMe);
-			if (hit.point != null && hit.collider.gameObject == playerTarget.gameObject)
-				currentPlayerTargetInView = true;
-			else
-				currentPlayerTargetInView = false;
+			RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, playerTarget.transform.position, includeMe);
+
+			foreach (RaycastHit2D hit in hits)
+			{
+				if (hit.point != null && hit.collider.gameObject == playerTarget.gameObject)
+				{
+					currentPlayerTargetInView = true;
+					return;
+				}
+			}
+			currentPlayerTargetInView = false;
 		}
 	}
 

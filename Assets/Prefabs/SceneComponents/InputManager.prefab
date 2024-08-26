@@ -46,11 +46,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerControls: {fileID: -944628639613478452, guid: dc477a7945053c146806bc49c5d56cfe, type: 3}
   actionMapName: Player
-  cameraZoom: CameraZoom
-  movement: Movement
-  mainAttack: MainAttack
-  rightClick: RightClick
+  CameraZoom: CameraZoom
+  Movement: Movement
+  MainAttack: MainAttack
+  RightClick: RightClick
   Interact: Interact
+  TabTargetingForwards: TabTargetingForwards
+  TabTargetingBackwards: TabTargetingBackwards
   ConsOne: ConsumablesOne
   ConsTwo: ConsumablesTwo
   AbilityOne: AbilityOne
@@ -62,14 +64,14 @@ MonoBehaviour:
   Inventory: Inventory
   Journal: Journal
   ClassSelection: ClassSelection
-  ClassSkillTree: SkillTree
+  ClassSkillTree: ClassSkillTree
   LearntAbilities: LearntAbilities
   _PlayerInput: {fileID: 0}
-  _CameraZoonAction:
-    m_Name: Camera Zoon
+  _CameraZoomAction:
+    m_Name: Camera Zoom
     m_Type: 0
     m_ExpectedControlType: 
-    m_Id: ffc9a6d5-5c33-4f35-b709-545d75737576
+    m_Id: 5f93fdbc-d996-4b5b-84cd-52ce77243df0
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -106,6 +108,24 @@ MonoBehaviour:
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: cd83e13b-1747-4b57-8c44-f1e9acef50cf
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _TabTargetingForwards:
+    m_Name: Tab Targeting Forwards
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: ce9666f9-6a46-49a1-931e-f152bface44d
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _TabTargetingBackwards:
+    m_Name: Tab Targeting Backwards
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 4a4af93b-1ae9-40eb-9a1a-bb2f7794c845
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []

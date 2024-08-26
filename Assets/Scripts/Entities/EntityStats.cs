@@ -273,7 +273,9 @@ public class EntityStats : MonoBehaviour
 	}
 	IEnumerator WaitForDeathSound()
 	{
-		yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
+		if (audioHandler.audioSource.clip != null)
+			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
+
 		DungeonHandler.EntityDeathEvent(gameObject);
 	}
 
@@ -409,8 +411,6 @@ public class EntityStats : MonoBehaviour
 
 		UpdatePlayerStatInfoUi();
 
-		Debug.Log("health on stat calcs:" + currentHealth / maxHealth.finalValue);
-
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
@@ -435,8 +435,6 @@ public class EntityStats : MonoBehaviour
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
-
-		Debug.Log("health on equipment change:" + currentHealth / maxHealth.finalValue);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
@@ -466,8 +464,6 @@ public class EntityStats : MonoBehaviour
 
 		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
 		UpdatePlayerStatInfoUi();
-
-		Debug.Log("health on stat unlock:" + currentHealth / maxHealth.finalValue);
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);

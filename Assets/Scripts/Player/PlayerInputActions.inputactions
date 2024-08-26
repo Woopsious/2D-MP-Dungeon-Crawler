@@ -51,6 +51,24 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "TabTargetingForwards",
+                    "type": "Button",
+                    "id": "aed5c3fd-530b-4dc6-9630-e9d8ab6c9249",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "TabTargetingBackwards",
+                    "type": "Button",
+                    "id": "f4c29c5d-352f-4965-af91-483099d79b1a",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "ConsumablesOne",
                     "type": "Button",
                     "id": "dfbbab13-27dd-4958-98d4-5cb5b92f4477",
@@ -150,7 +168,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "SkillTree",
+                    "name": "ClassSkillTree",
                     "type": "Button",
                     "id": "17bb0446-6e6d-4c08-b3a6-b0fb936d9bdf",
                     "expectedControlType": "Button",
@@ -209,7 +227,7 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "SkillTree",
+                    "action": "ClassSkillTree",
                     "isComposite": false,
                     "isPartOfComposite": false
                 },
@@ -337,7 +355,7 @@
                 {
                     "name": "",
                     "id": "e62cd66a-895b-45aa-bdd0-b4100aff3007",
-                    "path": "<Keyboard>/tab",
+                    "path": "<Keyboard>/i",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -410,6 +428,28 @@
                     "action": "Movement",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "361db72a-2ead-44d3-beaa-3172f29242c0",
+                    "path": "<Keyboard>/tab",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TabTargetingForwards",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "562aac72-12f0-4a6d-b2f2-f7997808ba4e",
+                    "path": "<Keyboard>/leftShift",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "TabTargetingBackwards",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }

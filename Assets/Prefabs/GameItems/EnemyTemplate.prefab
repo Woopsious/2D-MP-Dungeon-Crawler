@@ -438,7 +438,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed91e617b5c092429d74e2e7803ba80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  detectPlayer: 1
   entityBehaviourRef: {fileID: 8171261531979810465}
+  player: {fileID: 0}
 --- !u!58 &4560593915179300351
 CircleCollider2D:
   m_ObjectHideFlags: 0

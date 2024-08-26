@@ -258,6 +258,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			targetName = entityStats.classHandler.currentEntityClass.className + " " + entityStats.entityBaseStats.entityName;
 		else
 			targetName = entityStats.entityBaseStats.entityName;
+		selectedTargetUiName.text = targetName;
 
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnTargetManaChange;

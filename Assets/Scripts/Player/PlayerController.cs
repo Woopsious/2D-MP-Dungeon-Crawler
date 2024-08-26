@@ -1,19 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Mathematics;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
-using UnityEditor.Playables;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
-using UnityEngine.UI;
-using UnityEngine.UIElements;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class PlayerController : MonoBehaviour
 {
@@ -27,6 +16,7 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public EntityClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
+	[HideInInspector] public EntityDetection enemyDetection;
 	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -36,7 +26,12 @@ public class PlayerController : MonoBehaviour
 
 	//target selection
 	public event Action<EntityStats> OnNewTargetSelected;
-	public EntityStats selectedTarget;
+	public List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+	public EntityStats selectedEnemyTarget;
+	public int selectedEnemyTargetIndex;
+
+	//targetlist updates
+	private float updateTargetListTimer;
 
 	//abilities
 	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
@@ -61,6 +56,8 @@ public class PlayerController : MonoBehaviour
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
 		playerEquipmentHandler.player = this;
+		enemyDetection = GetComponentInChildren<EntityDetection>();
+		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
@@ -105,6 +102,7 @@ public class PlayerController : MonoBehaviour
 	{
 		if (IsPlayerInteracting()) return;
 		PlayerMovement();
+		UpdateTargetsInList();
 	}
 
 	public void Initilize()
@@ -152,7 +150,8 @@ public class PlayerController : MonoBehaviour
 			animator.SetBool("isIdle", false);
 	}
 
-	//player select targeting
+	//PLAYER TARGETING OPTIONS
+	//mouse select targeting
 	private void CheckForSelectableTarget()
 	{
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
@@ -164,18 +163,123 @@ public class PlayerController : MonoBehaviour
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
 		if (!entityStats.IsPlayerEntity())
 		{
-			OnNewTargetSelected?.Invoke(entityStats);
-			selectedTarget = entityStats;
+			for (int i = 0; i < EnemyTargetList.Count - 1; i++)
+			{
+				if (entityStats == EnemyTargetList[i].entity)
+				{
+					SetNewSelectedEnemyTarget(i);
+					return;
+				}
+			}
 		}
+
+		//find corrisponding target in target list, set index to index of target in list
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		if (selectedTarget == null) return;
-		if (selectedTarget.gameObject != obj) return;
-		selectedTarget = null;
+		if (selectedEnemyTarget == null) return;
+		if (selectedEnemyTarget.gameObject != obj) return;
+		selectedEnemyTarget = null;
 	}
 
-	//player ability casting
+	//tab targeting
+	private void CycleTargetsForwards(int startingIndex)
+	{
+		//for next target in target list, if can see that target (with raycast) select that enemy as new target, if not ++
+		if (EnemyTargetList.Count == 0) return;
+
+		for (int i = startingIndex;  i <= EnemyTargetList.Count - 1; i++)
+		{
+			if (!CheckIfTargetVisibleOnCycleTargets(EnemyTargetList[i].entity))
+				continue;
+
+			SetNewSelectedEnemyTarget(i);
+			break;
+		}
+	}
+	private void CycleTargetsBackwards(int startingIndex)
+	{
+		//for previous target in target list, if can see that target (with raycast) select that enemy as new target if not --
+		if (EnemyTargetList.Count == 0) return;
+
+		for (int i = startingIndex; i <= EnemyTargetList.Count - 1; i--)
+		{
+			if (!CheckIfTargetVisibleOnCycleTargets(EnemyTargetList[i].entity))
+				continue;
+
+			SetNewSelectedEnemyTarget(i);
+			break;
+		}
+	}
+	private void SetNewSelectedEnemyTarget(int index)
+	{
+		OnNewTargetSelected?.Invoke(EnemyTargetList[index].entity);
+		selectedEnemyTarget = EnemyTargetList[index].entity;
+		selectedEnemyTargetIndex = index;
+	}
+
+	public void AddNewEnemyTargetToList(EntityStats entity)
+	{
+		//add new enemy to list, then update targets
+		EnemyDistance enemy = new(entity.entityBaseStats.name, entity.classHandler.currentEntityClass.name, entity, 0);
+		EnemyTargetList.Add(enemy);
+		UpdateSelectedTargetIndexOnListChanges();
+	}
+	public void RemoveEnemyTargetFromList(EntityStats entity)
+	{
+		//remove enemy from list, then update targets
+
+		for (int i = EnemyTargetList.Count - 1; i >= 0; i--)
+		{
+			if (EnemyTargetList[i].entity == entity)
+				EnemyTargetList.RemoveAt(i);
+		}
+		UpdateSelectedTargetIndexOnListChanges();
+	}
+	private void UpdateTargetsInList()
+	{
+		//every x amount of seconds reorder list based on distance to player, updating current index with new
+		//foreach enemy in target list if enemy = enemy in target list, index = enemy index in list
+		if (EnemyTargetList.Count == 0) return;
+		updateTargetListTimer -= Time.deltaTime;
+		if (updateTargetListTimer > 0)
+			return;
+
+		foreach (EnemyDistance enemy in EnemyTargetList)
+		{
+			float distance = Vector2.Distance(transform.position, enemy.entity.transform.position);
+			enemy.distance = distance;
+		}
+
+		EnemyTargetList.Sort((a, b) => a.distance.CompareTo(b.distance));
+		UpdateSelectedTargetIndexOnListChanges();
+		updateTargetListTimer = 1f;
+	}
+	private void UpdateSelectedTargetIndexOnListChanges()
+	{
+		for (int i = 0; i < EnemyTargetList.Count - 1; i++)
+		{
+			if (selectedEnemyTarget == EnemyTargetList[i].entity)
+			{
+				selectedEnemyTargetIndex = i;
+				return;
+			}
+		}
+	}
+	private bool CheckIfTargetVisibleOnCycleTargets(EntityStats entity)
+	{
+		//raycat to enemy, if hit return true, else false
+		RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, entity.transform.position, includeMe);
+
+		foreach (RaycastHit2D hit in hits)
+		{
+			if (hit.point != null && hit.collider.gameObject == entity.gameObject)
+				return true;
+		}
+		return false;
+	}
+
+	//PLAYER ABILITY CASTING
 	//events
 	private void OnNewQueuedAbility(Abilities ability, EntityStats playerStats)
 	{
@@ -194,7 +298,7 @@ public class PlayerController : MonoBehaviour
 		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
 		{
 			EntityStats newEnemyEntity;
-			if (selectedTarget == null)
+			if (selectedEnemyTarget == null)
 			{
 				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
 				if (newEnemyEntity == null)
@@ -206,7 +310,7 @@ public class PlayerController : MonoBehaviour
 					CastEffect(ability, newEnemyEntity);
 			}
 			else
-				CastEffect(ability, selectedTarget);
+				CastEffect(ability, selectedEnemyTarget);
 		}
 		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)	//for MP add support for friendlies
 			CastEffect(ability, playerStats);
@@ -320,7 +424,7 @@ public class PlayerController : MonoBehaviour
 		if (!debugUseSelectedTargetForAttackDirection)
 			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
 		else
-			SetProjectileDirection(projectile, GetAttackRotation(selectedTarget.transform.position));
+			SetProjectileDirection(projectile, GetAttackRotation(selectedEnemyTarget.transform.position));
 
 		OnSuccessfulCast(ability);
 	}
@@ -437,14 +541,14 @@ public class PlayerController : MonoBehaviour
 				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
 				else
-					weapon.RangedAttack(selectedTarget.transform.position, projectilePrefab);
+					weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
 			}
 			else
 			{
 				if (!debugUseSelectedTargetForAttackDirection)
 					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 				else
-					weapon.MeleeAttack(selectedTarget.transform.position);
+					weapon.MeleeAttack(selectedEnemyTarget.transform.position);
 			}
 
 		}
@@ -496,6 +600,26 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 	}
+	private void OnTabTargetingForwards()
+	{
+		if (selectedEnemyTarget == null)
+			CycleTargetsForwards(0);
+
+		if (selectedEnemyTargetIndex == EnemyTargetList.Count - 1)
+			CycleTargetsBackwards(0);
+		else
+			CycleTargetsForwards(selectedEnemyTargetIndex + 1);
+	}
+	private void OnTabTargetingBackwards()
+	{
+		if (selectedEnemyTarget == null)
+			CycleTargetsForwards(EnemyTargetList.Count - 1);
+
+		if (selectedEnemyTargetIndex <= 0)
+			CycleTargetsForwards(EnemyTargetList.Count - 1);
+		else
+			CycleTargetsBackwards(selectedEnemyTargetIndex - 1);
+	}
 
 	//hotbar actions
 	private void OnConsumablesOne()
@@ -519,7 +643,7 @@ public class PlayerController : MonoBehaviour
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityTwo()
@@ -531,7 +655,7 @@ public class PlayerController : MonoBehaviour
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityThree()
@@ -543,7 +667,7 @@ public class PlayerController : MonoBehaviour
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFour()
@@ -555,7 +679,7 @@ public class PlayerController : MonoBehaviour
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			CastQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFive()
@@ -567,7 +691,7 @@ public class PlayerController : MonoBehaviour
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedTarget))
+		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			CastQueuedAbility(queuedAbility);
 	}
 
@@ -595,5 +719,22 @@ public class PlayerController : MonoBehaviour
 	private void OnLearntAbilities()
 	{
 		PlayerEventManager.ShowPlayerLearntAbilities();
+	}
+
+	[System.Serializable]
+	public class EnemyDistance
+	{
+		public string entityClass;
+		public string entityName;
+		public EntityStats entity;
+		public float distance;
+
+		public EnemyDistance(string name, string className, EntityStats entity, float distance)
+		{
+			entityClass = className;
+			entityName = name;
+			this.entity = entity;
+			this.distance = distance;
+		}
 	}
 }

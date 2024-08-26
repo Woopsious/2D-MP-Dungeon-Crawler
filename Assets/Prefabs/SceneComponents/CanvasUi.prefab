@@ -9020,7 +9020,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 500, y: -645}
+  m_AnchoredPosition: {x: 500, y: -925}
   m_SizeDelta: {x: 600, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6368039867444775230
@@ -16076,6 +16076,140 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &3529793184648600133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2419349618505321208}
+  - component: {fileID: 3752461404254178865}
+  - component: {fileID: 3623867889328846686}
+  m_Layer: 5
+  m_Name: TargetingKeybindsSpacer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &2419349618505321208
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3529793184648600133}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2721630128766975360}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 500, y: -645}
+  m_SizeDelta: {x: 600, y: 50}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &3752461404254178865
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3529793184648600133}
+  m_CullTransparentMesh: 1
+--- !u!114 &3623867889328846686
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3529793184648600133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_text: CYCLE TARGETING
+  m_isRightToLeft: 0
+  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontSharedMaterials: []
+  m_fontMaterial: {fileID: 0}
+  m_fontMaterials: []
+  m_fontColor32:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_enableVertexGradient: 0
+  m_colorMode: 3
+  m_fontColorGradient:
+    topLeft: {r: 1, g: 1, b: 1, a: 1}
+    topRight: {r: 1, g: 1, b: 1, a: 1}
+    bottomLeft: {r: 1, g: 1, b: 1, a: 1}
+    bottomRight: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColorGradientPreset: {fileID: 0}
+  m_spriteAsset: {fileID: 0}
+  m_tintAllSprites: 0
+  m_StyleSheet: {fileID: 0}
+  m_TextStyleHashCode: -1183493901
+  m_overrideHtmlColors: 0
+  m_faceColor:
+    serializedVersion: 2
+    rgba: 4294967295
+  m_fontSize: 30
+  m_fontSizeBase: 30
+  m_fontWeight: 400
+  m_enableAutoSizing: 0
+  m_fontSizeMin: 18
+  m_fontSizeMax: 72
+  m_fontStyle: 1
+  m_HorizontalAlignment: 2
+  m_VerticalAlignment: 512
+  m_textAlignment: 65535
+  m_characterSpacing: 0
+  m_wordSpacing: 0
+  m_lineSpacing: 0
+  m_lineSpacingMax: 0
+  m_paragraphSpacing: 0
+  m_charWidthMaxAdj: 0
+  m_enableWordWrapping: 1
+  m_wordWrappingRatios: 0.4
+  m_overflowMode: 0
+  m_linkedTextComponent: {fileID: 0}
+  parentLinkedComponent: {fileID: 0}
+  m_enableKerning: 1
+  m_enableExtraPadding: 0
+  checkPaddingRequired: 0
+  m_isRichText: 1
+  m_parseCtrlCharacters: 1
+  m_isOrthographic: 1
+  m_isCullingEnabled: 0
+  m_horizontalMapping: 0
+  m_verticalMapping: 0
+  m_uvLineOffset: 0
+  m_geometrySortingOrder: 0
+  m_IsTextObjectScaleStatic: 0
+  m_VertexBufferAutoSizeReduction: 0
+  m_useMaxVisibleDescender: 1
+  m_pageToDisplay: 1
+  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_isUsingLegacyAnimationComponent: 0
+  m_isVolumetricText: 0
+  m_hasFontAssetChanged: 0
+  m_baseMaterial: {fileID: 0}
+  m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
 --- !u!1 &3556469067698992513
 GameObject:
   m_ObjectHideFlags: 0
@@ -17442,6 +17576,9 @@ RectTransform:
   - {fileID: 9063423165193566880}
   - {fileID: 5365166219250921299}
   - {fileID: 5424702036076277810}
+  - {fileID: 2419349618505321208}
+  - {fileID: 2155162483248855179}
+  - {fileID: 7937303298084828294}
   - {fileID: 3577399163952755586}
   - {fileID: 8490638049782688463}
   - {fileID: 679296501096093101}
@@ -17462,7 +17599,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 2160}
+  m_SizeDelta: {x: 1000, y: 2440}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &6280569943139283066
 MonoBehaviour:
@@ -28448,11 +28585,11 @@ RectTransform:
   - {fileID: 2721630128766975360}
   m_Father: {fileID: 2096180837433185283}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 1000, y: 1000}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0.5, y: 1}
+  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchoredPosition: {x: 0, y: -20}
+  m_SizeDelta: {x: 1000, y: 900}
+  m_Pivot: {x: 0.5, y: 1}
 --- !u!222 &7338547890942705265
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -37155,7 +37292,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 500, y: -1475}
+  m_AnchoredPosition: {x: 500, y: -1755}
   m_SizeDelta: {x: 600, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6135681058103597063
@@ -42438,7 +42575,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: MainMenu
+      value: Main Menu
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -42506,7 +42643,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1560
+      value: -1840
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -42536,6 +42673,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Main Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (12)
@@ -42854,7 +42999,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1670
+      value: -1950
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -42890,7 +43035,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8964631683743593522, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: Tab
+      value: I
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -44997,7 +45142,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: ClassSelection
+      value: Class Selection
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -45065,7 +45210,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1890
+      value: -2170
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -45095,6 +45240,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Class Selection
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (15)
@@ -45341,7 +45494,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: SkillTree
+      value: Class Skill Tree
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -45409,7 +45562,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -2000
+      value: -2280
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -45439,6 +45592,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Class Skill Tree
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (16)
@@ -47239,7 +47400,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: ConsumablesTwo
+      value: Consumables Two
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -47307,7 +47468,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -840
+      value: -1120
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -47337,6 +47498,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Consumables Two
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (6)
@@ -47587,7 +47756,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: LearntAbilities
+      value: Learnt Abilities
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -47655,7 +47824,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -2110
+      value: -2390
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -47685,6 +47854,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Learnt Abilities
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (17)
@@ -48375,7 +48552,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: AbilityFour
+      value: Ability Four
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -48443,7 +48620,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1280
+      value: -1560
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -48473,6 +48650,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Ability Four
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (10)
@@ -48569,7 +48754,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1780
+      value: -2060
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -49928,6 +50113,140 @@ RectTransform:
 GameObject:
   m_CorrespondingSourceObject: {fileID: 8616388739272250296, guid: cf869019771a02047be1ca064cc44a8e, type: 3}
   m_PrefabInstance: {fileID: 3746411970782636071}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &3792400230891212014
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2721630128766975360}
+    m_Modifications:
+    - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Text
+      value: Cycle Closest Target
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -730
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Action
+      value: 
+      objectReference: {fileID: -3250167698992028901, guid: dc477a7945053c146806bc49c5d56cfe, type: 3}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_BindingId
+      value: 361db72a-2ead-44d3-beaa-3172f29242c0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_RebindText
+      value: 
+      objectReference: {fileID: 4550033609894394373}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_RebindOverlay
+      value: 
+      objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Cycle Closest Target
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Name
+      value: RebindKeysUi (18)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8964631683743593522, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Text
+      value: Tab
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+--- !u!224 &2155162483248855179 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+  m_PrefabInstance: {fileID: 3792400230891212014}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3832137924887150047
 PrefabInstance:
@@ -51695,7 +52014,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: AbilityThree
+      value: Ability Three
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -51763,7 +52082,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1170
+      value: -1450
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -51793,6 +52112,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Ability Three
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (9)
@@ -52368,7 +52695,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: AbilityOne
+      value: Ability One
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -52436,7 +52763,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -950
+      value: -1230
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -52466,6 +52793,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Ability One
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (7)
@@ -52483,6 +52818,140 @@ PrefabInstance:
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
   m_PrefabInstance: {fileID: 5086486870231558957}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &5147355426811756771
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 2721630128766975360}
+    m_Modifications:
+    - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Text
+      value: Cycle Furthest Target
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Pivot.x
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Pivot.y
+      value: 0.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMin.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: -0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: -840
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Action
+      value: 
+      objectReference: {fileID: 5841847542326897275, guid: dc477a7945053c146806bc49c5d56cfe, type: 3}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_BindingId
+      value: 562aac72-12f0-4a6d-b2f2-f7997808ba4e
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_RebindText
+      value: 
+      objectReference: {fileID: 4550033609894394373}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_RebindOverlay
+      value: 
+      objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Cycle Furthest Target
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Name
+      value: RebindKeysUi (19)
+      objectReference: {fileID: 0}
+    - target: {fileID: 8964631683743593522, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Text
+      value: Shift
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+--- !u!224 &7937303298084828294 stripped
+RectTransform:
+  m_CorrespondingSourceObject: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+  m_PrefabInstance: {fileID: 5147355426811756771}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &5227780027882122313
 PrefabInstance:
@@ -53919,6 +54388,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2721630128766975360}
     m_Modifications:
+    - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_Text
+      value: Main Attack
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -54007,6 +54480,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Main Attack
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (2)
@@ -54364,7 +54845,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: AbilityFive
+      value: Ability Five
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -54432,7 +54913,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1390
+      value: -1670
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -54462,6 +54943,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Ability Five
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (11)
@@ -55592,7 +56081,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: ConsumablesOne
+      value: Consumables One
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -55660,7 +56149,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -730
+      value: -1010
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -55690,6 +56179,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Consumables One
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (5)
@@ -55829,7 +56326,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: CameraZoom
+      value: Camera Zoom
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -55927,6 +56424,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Camera Zoom
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi
@@ -57282,7 +57787,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: RightClick
+      value: Right Click
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -57380,6 +57885,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Right Click
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (3)
@@ -58514,7 +59027,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2975158853322257379, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Text
-      value: AbilityTwo
+      value: Ability Two
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Pivot.x
@@ -58582,7 +59095,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -1060
+      value: -1340
       objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997989, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -58612,6 +59125,14 @@ PrefabInstance:
       propertyPath: m_RebindOverlay
       value: 
       objectReference: {fileID: 6396824269848641402}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_ActionLabelString
+      value: Ability Two
+      objectReference: {fileID: 0}
+    - target: {fileID: 2975158853800997990, guid: bd776189d1156ec40907e6c58e696853, type: 3}
+      propertyPath: m_OverRideActionLabel
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2975158853800997994, guid: bd776189d1156ec40907e6c58e696853, type: 3}
       propertyPath: m_Name
       value: RebindKeysUi (8)
