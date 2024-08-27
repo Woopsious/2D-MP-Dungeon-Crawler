@@ -93,6 +93,7 @@ public class ToolTipManager : MonoBehaviour
 		}
 		else if (slot.IsPlayerEquipmentSlot())
 		{
+			Debug.Log("Chosen Slot name: " + slot.name);
 			//overwite equipItem button with UnEquipItem button
 			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });
 			unEquipItemButton.gameObject.SetActive(true);
@@ -121,15 +122,16 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private void HideContextMenu()
 	{
-		discardItemButton.onClick.RemoveAllListeners();
-		handInItemButton.onClick.RemoveAllListeners();
-		splitItemButton.onClick.RemoveAllListeners();
 		equipItemButton.onClick.RemoveAllListeners();
 		equipItemButtonOne.onClick.RemoveAllListeners();
 		equipItemButtonTwo.onClick.RemoveAllListeners();
 		equipItemButtonThree.onClick.RemoveAllListeners();
 		equipItemButtonFour.onClick.RemoveAllListeners();
 		equipItemButtonFive.onClick.RemoveAllListeners();
+		unEquipItemButton.onClick.RemoveAllListeners();
+		discardItemButton.onClick.RemoveAllListeners();
+		splitItemButton.onClick.RemoveAllListeners();
+		handInItemButton.onClick.RemoveAllListeners();
 
 		contextWindow.gameObject.SetActive(false);
 		equipItemButton.gameObject.SetActive(false);
@@ -139,8 +141,8 @@ public class ToolTipManager : MonoBehaviour
 		equipItemButtonFour.gameObject.SetActive(false);
 		equipItemButtonFive.gameObject.SetActive(false);
 		unEquipItemButton.gameObject.SetActive(false);
-		splitItemButton.gameObject.SetActive(false);
 		discardItemButton.gameObject.SetActive(false);
+		splitItemButton.gameObject.SetActive(false);
 		handInItemButton.gameObject.SetActive(false);
 	}
 
@@ -235,19 +237,25 @@ public class ToolTipManager : MonoBehaviour
 			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
 			if (!slot.IsSlotEmpty()) continue;
 
-			slot.AddItemToSlot(oldSlot.itemInSlot);
 			HideContextMenu();
 			HideTip();
+
+			Debug.Log("old slot name: " + oldSlot.name);
+			Debug.Log("item in old slot: " + oldSlot.itemInSlot);
+
+			slot.AddItemToSlot(oldSlot.itemInSlot);
+			oldSlot.RemoveItemFromSlot();
 			return;
 		}
 		Debug.LogError("inventory full");
 	}
 	private void EquipItemToThisSlot(InventorySlotDataUi oldSlot, GameObject newSlot)
 	{
-		oldSlot.itemInSlot.parentAfterDrag = oldSlot.transform;
-		newSlot.GetComponent<InventorySlotDataUi>().EquipItemToSlot(oldSlot.itemInSlot);
 		HideContextMenu();
 		HideTip();
+
+		oldSlot.itemInSlot.parentAfterDrag = oldSlot.transform;
+		newSlot.GetComponent<InventorySlotDataUi>().EquipItemToSlot(oldSlot.itemInSlot);
 	}
 
 	private void SplitItem(InventorySlotDataUi slot)

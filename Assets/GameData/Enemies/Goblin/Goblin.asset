@@ -33,8 +33,8 @@ MonoBehaviour:
   manaRegenCooldown: 2
   possibleClassesList:
   - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
-  - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
-  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
   deathSfx: {fileID: 8300000, guid: 9771b0b29a5887b4bb5842c380bc522d, type: 3}
   hurtSfx: {fileID: 8300000, guid: 6274901710450704bac9a0b867987657, type: 3}
   idleSfx: {fileID: 8300000, guid: b00934f0ad1aa074793efb69a73d346e, type: 3}

@@ -85,6 +85,8 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	//types of item changes
 	public void AddItemToSlot(InventoryItemUi item)
 	{
+		Debug.Log("adding item to slot: " + gameObject.name);
+
 		item.parentAfterDrag = transform;
 		item.inventorySlotIndex = slotIndex;
 
@@ -95,6 +97,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public void RemoveItemFromSlot()
 	{
+		Debug.Log("removing item from slot: " + gameObject.name);
 		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);

@@ -121,6 +121,7 @@ public class SaveManager : MonoBehaviour
 
 		PlayerData playerData = new PlayerData
 		{
+			manualCastOffensiveAbilities = PlayerSettingsManager.Instance.manualCastOffensiveAbilities,
 			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
 			musicVolume = AudioManager.Instance.musicVolume,
 			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
@@ -144,6 +145,8 @@ public class SaveManager : MonoBehaviour
 
 		if (!string.IsNullOrEmpty(playerData.keybindsData))
 			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(playerData.keybindsData);
+
+		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.manualCastOffensiveAbilities);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -433,9 +436,12 @@ public class SaveManager : MonoBehaviour
 	}
 }
 
+//PLAYER DATA
 [System.Serializable]
 public class PlayerData
 {
+	public bool manualCastOffensiveAbilities;
+
 	public string keybindsData;
 
 	public float musicVolume;
@@ -444,6 +450,7 @@ public class PlayerData
 	public float sfxVolume;
 }
 
+//GAME DATA
 [System.Serializable]
 public class SlotData
 {
@@ -483,6 +490,7 @@ public class GameData
 	public List<QuestItemData> activePlayerQuests = new List<QuestItemData>();
 }
 
+//GAME DATA TYPES
 [System.Serializable]
 public class InventoryItemData
 {

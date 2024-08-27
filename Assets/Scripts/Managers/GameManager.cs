@@ -77,14 +77,13 @@ public class GameManager : MonoBehaviour
 			yield return null;
 	}
 
-	public void PauseGame()
+	public void PauseGame(bool pauseGame)
     {
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsClient) return;
-        Time.timeScale = 0f;
+
+        if (pauseGame)
+			Time.timeScale = 0f;
+		else
+		 Time.timeScale = 1.0f;
     }
-	public void UnPauseGame()
-	{
-		if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsClient) return;
-		Time.timeScale = 1.0f;
-	}
 }

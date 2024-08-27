@@ -32,6 +32,9 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject keybindsSettingsPanel;
 	public GameObject KeyboardKeybindsPanel;
 
+	[Header("Player Settings")]
+	public GameObject playerSettingsPanel;
+
 	[Header("Audio Panel")]
 	public GameObject audioSettingsPanel;
 
@@ -71,14 +74,15 @@ public class MainMenuManager : MonoBehaviour
 	public void PlayGameButton()
 	{
 		HideMainMenu();
-		GameManager.Instance.UnPauseGame();
+		GameManager.Instance.PauseGame(false);
 	}
 	public void StartNewGameButton()
 	{
 		GameManager.Instance.LoadHubArea(true);
 	}
 
-	//show/hide panel
+	//SHOW/HIDE PANELS
+	//main menu panel
 	public void ShowHideMainMenuKeybind()
 	{
 		if (confirmActionPanel.activeInHierarchy) return;
@@ -92,16 +96,18 @@ public class MainMenuManager : MonoBehaviour
 	{
 		HideSaveSlotsMenu();
 		HideKeybindsMenu();
+		HidePlayerSettingsMenu();
 		HideAudioMenu();
 		mainMenuPanel.SetActive(true);
-		GameManager.Instance.PauseGame();
+		GameManager.Instance.PauseGame(true);
 	}
 	public void HideMainMenu()
 	{
 		mainMenuPanel.SetActive(false);
-		GameManager.Instance.UnPauseGame();
+		GameManager.Instance.PauseGame(false);
 	}
 
+	//keybinds panel
 	public void ShowKeybindsMenu()
 	{
 		mainMenuPanel.SetActive(false);
@@ -119,6 +125,23 @@ public class MainMenuManager : MonoBehaviour
 		SaveManager.Instance.SavePlayerData();
 	}
 
+	//player settings panel
+	public void ShowPlayerSettingsMenu()
+	{
+		mainMenuPanel.SetActive(false);
+		playerSettingsPanel.SetActive(true);
+
+		SaveManager.Instance.LoadPlayerData();
+	}
+	public void HidePlayerSettingsMenu()
+	{
+		mainMenuPanel.SetActive(true);
+		playerSettingsPanel.SetActive(false);
+
+		SaveManager.Instance.SavePlayerData();
+	}
+
+	//audio panel
 	public void ShowAudioMenu()
 	{
 		mainMenuPanel.SetActive(false);
@@ -135,6 +158,7 @@ public class MainMenuManager : MonoBehaviour
 		AudioManager.Instance.UpdateAudioVolume();
 		SaveManager.Instance.SavePlayerData();
 	}
+
 	//SAVE LOAD GAME PANEL ACTIONS
 	public void ReloadSaveSlots()
 	{
@@ -142,7 +166,7 @@ public class MainMenuManager : MonoBehaviour
 		SaveManager.Instance.ReloadSaveSlots(saveSlotContainer);
 	}
 
-	//show/hide panel
+	//show/hide panel for saves
 	public void ShowSaveSlotsMenu()
 	{
 		ReloadSaveSlots();
