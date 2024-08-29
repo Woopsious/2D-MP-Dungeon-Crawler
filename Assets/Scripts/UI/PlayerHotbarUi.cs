@@ -42,7 +42,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject abilitySlotFive;
 
 	[Header("Equipped Abilities")]
-	public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
+	//public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
 	public Abilities equippedAbilityOne;
 	public Abilities equippedAbilityTwo;
 	public Abilities equippedAbilityThree;
@@ -142,12 +142,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void EquipAbility(SOClassAbilities newAbility, InventorySlotDataUi slotToEquipTo)
 	{
 		if (slotToEquipTo.itemInSlot != null)
-		{
-			if (equippedAbilities.Contains(slotToEquipTo.itemInSlot.abilityBaseRef))
-				equippedAbilities.Remove(slotToEquipTo.itemInSlot.abilityBaseRef);
-
 			Destroy(slotToEquipTo.itemInSlot.gameObject);
-		}
 
 		GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItemUi item = go.GetComponent<InventoryItemUi>();
@@ -169,8 +164,6 @@ public class PlayerHotbarUi : MonoBehaviour
 			equippedAbilityFour = item.GetComponent<Abilities>();
 		else if (slotToEquipTo.slotIndex == 4)
 			equippedAbilityFive = item.GetComponent<Abilities>();
-
-		equippedAbilities.Add(newAbility);
 	}
 	private void HandleEmptySlots(InventorySlotDataUi slot)
 	{
@@ -181,7 +174,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			if (slot.slotIndex == 1)
 				equippedConsumableTwo = null;
 		}
-		if (slot.slotType == InventorySlotDataUi.SlotType.ability)
+		if (slot.slotType == InventorySlotDataUi.SlotType.equippedAbilities)
 		{
 			if (slot.slotIndex == 0)
 				equippedAbilityOne = null;
@@ -195,6 +188,25 @@ public class PlayerHotbarUi : MonoBehaviour
 				equippedAbilityFive = null;
 		}
 	}
+	public bool IsAbilityAlreadyEquipped(SOClassAbilities newAbility)
+	{
+		if (equippedAbilityOne != null && equippedAbilityOne.abilityBaseRef == newAbility)
+			return true;
+
+		if (equippedAbilityTwo != null && equippedAbilityTwo.abilityBaseRef == newAbility)
+			return true;
+
+		if (equippedAbilityThree != null && equippedAbilityThree.abilityBaseRef == newAbility)
+			return true;
+
+		if (equippedAbilityFour != null && equippedAbilityFour.abilityBaseRef == newAbility)
+			return true;
+
+		if (equippedAbilityFive != null && equippedAbilityFive.abilityBaseRef == newAbility)
+			return true;
+
+       return false;
+    }
 
 	//clear hotbar ui of abilities
 	private void OnAbilityRefund(SOClassAbilities ability)
@@ -211,7 +223,6 @@ public class PlayerHotbarUi : MonoBehaviour
 				slotData.RemoveItemFromSlot();
 			}
 		}
-		equippedAbilities.Clear();
 	}
 
 	//UI CHANGES

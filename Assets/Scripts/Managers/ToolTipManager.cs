@@ -85,18 +85,17 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
 
-		if (!slot.IsPlayerEquipmentSlot()) //show either equip/uneuip item button based on if equipment slot
+		if (!slot.IsPlayerEquipmentSlot())	//show either equip item button
 		{
-			EquipItem(slot);    //button delegating and setting active in here
+			EquipItem(slot);    //button delegation in here (more complex with multiple slot destination etc..)
 			equipItemButton.gameObject.SetActive(true);
 			unEquipItemButton.gameObject.SetActive(false);
 		}
-		else if (slot.IsPlayerEquipmentSlot())
+		else if (slot.IsPlayerEquipmentSlot())	//show unEquipItem button
 		{
-			Debug.Log("Chosen Slot name: " + slot.name);
-			//overwite equipItem button with UnEquipItem button
 			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });
 			unEquipItemButton.gameObject.SetActive(true);
+			equipItemButton.gameObject.SetActive(false);
 		}
 
 		//keep rest hidden for learnt abilities inventory
@@ -232,22 +231,28 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private void UnEquipItem(InventorySlotDataUi oldSlot)
 	{
-		foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
+		HideContextMenu();
+		HideTip();
+
+		if (oldSlot.itemInSlot.abilityBaseRef != null)
 		{
-			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
-			if (!slot.IsSlotEmpty()) continue;
-
-			HideContextMenu();
-			HideTip();
-
-			Debug.Log("old slot name: " + oldSlot.name);
-			Debug.Log("item in old slot: " + oldSlot.itemInSlot);
-
-			slot.AddItemToSlot(oldSlot.itemInSlot);
+			Destroy(oldSlot.itemInSlot.gameObject);
 			oldSlot.RemoveItemFromSlot();
 			return;
 		}
-		Debug.LogError("inventory full");
+		else
+		{
+			foreach (GameObject obj in PlayerInventoryUi.Instance.InventorySlots)
+			{
+				InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
+				if (!slot.IsSlotEmpty()) continue;
+
+				slot.AddItemToSlot(oldSlot.itemInSlot);
+				oldSlot.RemoveItemFromSlot();
+				return;
+			}
+			Debug.LogError("inventory full");
+		}
 	}
 	private void EquipItemToThisSlot(InventorySlotDataUi oldSlot, GameObject newSlot)
 	{
