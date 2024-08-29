@@ -16,6 +16,9 @@ public class PlayerSettingsManager : MonoBehaviour
 	public bool manualCastOffensiveAbilities;
 	public TMP_Text manualCastOffensiveAbilitiesText;
 
+	public bool mainAttackIsAutomatic;
+	public TMP_Text mainAttackIsAutomaticText;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -35,9 +38,34 @@ public class PlayerSettingsManager : MonoBehaviour
 			manualCastOffensiveAbilities = true;
 		}
 	}
-
-	public void RestorePlayerSettingsData(bool manualCastOffensiveAbilities)
+	public void ToggleMainAttackIsAutomatic()
 	{
+		if (mainAttackIsAutomatic)
+		{
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: False";
+			mainAttackIsAutomatic = false;
+		}
+		else
+		{
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: True";
+			mainAttackIsAutomatic = true;
+		}
+	}
+
+	public void RestorePlayerSettingsData(bool manualCastOffensiveAbilities, bool mainAttackIsAutomatic)
+	{
+		if (manualCastOffensiveAbilities)
+			manualCastOffensiveAbilitiesText.text = "Manual Cast Offensive Abilities: False";
+		else
+			manualCastOffensiveAbilitiesText.text = "Manual Cast Offensive Abilities: True";
+
 		this.manualCastOffensiveAbilities = manualCastOffensiveAbilities;
+
+		if (mainAttackIsAutomatic)
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: False";
+		else
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: True";
+
+		this.mainAttackIsAutomatic = mainAttackIsAutomatic;
 	}
 }

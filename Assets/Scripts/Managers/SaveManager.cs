@@ -146,7 +146,7 @@ public class SaveManager : MonoBehaviour
 		if (!string.IsNullOrEmpty(playerData.keybindsData))
 			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(playerData.keybindsData);
 
-		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.manualCastOffensiveAbilities);
+		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.manualCastOffensiveAbilities, playerData.mainAttackIsAutomatic);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -441,6 +441,7 @@ public class SaveManager : MonoBehaviour
 public class PlayerData
 {
 	public bool manualCastOffensiveAbilities;
+	public bool mainAttackIsAutomatic;
 
 	public string keybindsData;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.EventSystems.EventTrigger;
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,13 +25,17 @@ public class PlayerController : MonoBehaviour
 
 	private float speed = 12;
 
+	//main attack auto attack timer
+	private readonly float mainAttackAutoAttackCooldown = 0.25f;
+	private float mainAttackAutoAttackTimer;
+
 	//target selection
 	public event Action<EntityStats> OnNewTargetSelected;
 	public List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
 	public EntityStats selectedEnemyTarget;
 	public int selectedEnemyTargetIndex;
 
-	//targetlist updates
+	//targetlist updates timer
 	private readonly float updateTargetListCooldown = 0.5f;
 	private float updateTargetListTimer;
 
@@ -104,6 +109,7 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 		PlayerMovement();
 		UpdateTargetsInList();
+		AutoAttackTimer();
 	}
 
 	public void Initilize()
@@ -149,6 +155,61 @@ public class PlayerController : MonoBehaviour
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);
+	}
+
+	//player auto attack
+	private void AutoAttackTimer()
+	{
+		if (!PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
+		if (EnemyTargetList.Count == 0) return;
+		if (playerEquipmentHandler.equippedWeapon == null) return;
+
+		mainAttackAutoAttackTimer -= Time.deltaTime;
+		if (mainAttackAutoAttackTimer < 0)
+		{
+			//reset cooldown timer + extra 0.25s delay, making manual attack better
+			AutoAttackWithMainWeapon();
+		}
+	}
+	private void AutoAttackWithMainWeapon()
+	{
+		//auto attack with main weapon, aiming for players selected target, if too close or out of range, attack closest target instead
+		//if no selected target aim for closest enemy (ranged weapon aim for closest enemy outside of min attack range if possible)
+
+		Weapons weapon = playerEquipmentHandler.equippedWeapon;
+		EntityStats entityToAttack = EnemyTargetList[0].entity; //grab closest enemy as default
+		mainAttackAutoAttackTimer = weapon.weaponBaseRef.baseAttackSpeed + mainAttackAutoAttackCooldown;
+
+		if (weapon.weaponBaseRef.isRangedWeapon)	//ranged weapon logic
+		{
+			if (selectedEnemyTarget != null)
+			{
+				weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
+			}
+			else	//if player selected target null, try find one within min and max attack range
+			{
+				foreach (EnemyDistance enemy in EnemyTargetList)
+				{
+					if (enemy.distance > weapon.weaponBaseRef.minAttackRange && enemy.distance < weapon.weaponBaseRef.maxAttackRange)
+						entityToAttack = enemy.entity;
+				}
+
+				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+					weapon.RangedAttack(entityToAttack.transform.position, projectilePrefab);
+			}
+		}
+		else	//melee weapon logic
+		{
+			if (selectedEnemyTarget != null && GrabDistanceToEntity(selectedEnemyTarget) < weapon.weaponBaseRef.maxAttackRange)
+			{
+				weapon.MeleeAttack(selectedEnemyTarget.transform.position);
+			}
+			else    //if player selected target null && out of range, attack closest enemy set at start of func
+			{
+				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+					weapon.MeleeAttack(entityToAttack.transform.position);
+			}
+		}
 	}
 
 	//PLAYER TARGETING OPTIONS
@@ -222,7 +283,8 @@ public class PlayerController : MonoBehaviour
 	public void AddNewEnemyTargetToList(EntityStats entity)
 	{
 		//add new enemy to list, then update targets
-		EnemyDistance enemy = new(entity.entityBaseStats.name, entity.classHandler.currentEntityClass.name, entity, 0);
+		EnemyDistance enemy = new(entity.entityBaseStats.name, 
+			entity.classHandler.currentEntityClass.name, entity, GrabDistanceToEntity(entity));
 		EnemyTargetList.Add(enemy);
 		UpdateSelectedTargetIndexOnListChanges();
 	}
@@ -247,10 +309,7 @@ public class PlayerController : MonoBehaviour
 			return;
 
 		foreach (EnemyDistance enemy in EnemyTargetList)
-		{
-			float distance = Vector2.Distance(transform.position, enemy.entity.transform.position);
-			enemy.distance = distance;
-		}
+			enemy.distance = GrabDistanceToEntity(enemy.entity);
 
 		EnemyTargetList.Sort((a, b) => a.distance.CompareTo(b.distance));
 		UpdateSelectedTargetIndexOnListChanges();
@@ -266,6 +325,11 @@ public class PlayerController : MonoBehaviour
 				return;
 			}
 		}
+	}
+	private float GrabDistanceToEntity(EntityStats entity)
+	{
+		float distance = Vector2.Distance(transform.position, entity.transform.position);
+		return distance;
 	}
 	private bool CheckIfTargetVisibleOnCycleTargets(EntityStats entity)
 	{
@@ -533,6 +597,7 @@ public class PlayerController : MonoBehaviour
 
 		if (queuedAbility == null)
 		{
+			if (PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
 			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
 				return;
 			Weapons weapon = playerEquipmentHandler.equippedWeapon;
@@ -551,7 +616,6 @@ public class PlayerController : MonoBehaviour
 				else
 					weapon.MeleeAttack(selectedEnemyTarget.transform.position);
 			}
-
 		}
 		else
 			CastQueuedAbility(queuedAbility);
