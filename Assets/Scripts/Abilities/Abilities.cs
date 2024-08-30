@@ -105,7 +105,10 @@ public class Abilities : MonoBehaviour
 			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
-			info += $"\nDeals {damage} damage to enemies ";
+			if (abilityBaseRef.isDOT)
+				info += $"\nDeals {damage * abilityBaseRef.abilityDuration} damage to enemies over {abilityBaseRef.abilityDuration}s ";
+			else
+				info += $"\nDeals {damage} damage to enemies ";
 
 			if (abilityBaseRef.isAOE) //optional
 				info += "inside AoE";
@@ -122,7 +125,7 @@ public class Abilities : MonoBehaviour
 		else
 			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (abilityBaseRef.isDOT)
+		if (abilityBaseRef.hasDuration)
 			info += $"\nlasts for {abilityBaseRef.abilityDuration}s"; //optional
 		return info;
 	}

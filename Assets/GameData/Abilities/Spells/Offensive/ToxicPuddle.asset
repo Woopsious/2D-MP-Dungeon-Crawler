@@ -13,15 +13,14 @@ MonoBehaviour:
   m_Name: ToxicPuddle
   m_EditorClassIdentifier: 
   Name: Toxic Puddle
-  Description: Summon a puddle of acid at location, damage anything that walks into
-    it
+  Description: Summon a puddle of toxins at location, anyting to touch it gets poisoned
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
   abilityCooldown: 12
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
+  statusEffectType: 3
   statusEffectPercentageModifier: 0
   isAOE: 1
   aoeSize: 50
@@ -31,7 +30,7 @@ MonoBehaviour:
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 30
+  damageValue: 10
   damageValuePercentage: 0
   damageType: 1
   isSpell: 1

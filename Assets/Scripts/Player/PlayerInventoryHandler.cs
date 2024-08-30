@@ -82,7 +82,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	}
 	private void SpawnClassStartingItems(SOClasses playerClass)
 	{
-		SpawnStartingItem(playerClass.startingWeapon);
+		SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
 
 		foreach (SOArmors SOarmor in playerClass.startingArmor)
 			SpawnStartingItem(SOarmor);
@@ -100,7 +100,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	private void DebugSpawnStartingItems(SOClasses playerClass)
 	{
 		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
-		SpawnStartingItem(playerClass.startingWeapon);
+		SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
 
 		foreach (SOArmors SOarmor in playerClass.startingArmor)
 			SpawnStartingItem(SOarmor);

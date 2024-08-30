@@ -162,7 +162,11 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
-			info += $"\nDeals {damage} damage to enemies ";
+			if (abilityUnlock.unlock.isDOT)
+				info += $"\nDeals {damage * abilityUnlock.unlock.abilityDuration} " +
+					$"damage to enemies over {abilityUnlock.unlock.abilityDuration}s ";
+			else
+				info += $"\nDeals {damage} damage to enemies ";
 
 			if (abilityUnlock.unlock.isAOE) //optional
 				info += "inside AoE";
@@ -179,7 +183,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		else
 			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (abilityUnlock.unlock.isDOT)
+		if (abilityUnlock.unlock.hasDuration)
 			info += $"\nlasts for {abilityUnlock.unlock.abilityDuration}s"; //optional
 		return info;
 	}

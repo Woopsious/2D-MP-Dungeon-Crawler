@@ -234,15 +234,6 @@ public class EntityStats : MonoBehaviour
 		if (!IsPlayerEntity())
 			entityBehaviour.AddToAggroRating(player, (int)damage);
 
-		if (IsPlayerEntity())
-		{
-			Debug.Log("player damage recieved: " + damage);
-		}
-		else
-		{
-			Debug.Log("enemy damage recieved: " + damage);
-		}
-
 		if (currentHealth <= 0)
 			OnDeath();
 
@@ -323,11 +314,11 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//status effect functions
-	public void ApplyStatusEffect(SOClassAbilities newStatusEffect)
+	public void ApplyStatusEffect(SOClassAbilities newStatusEffect, EntityStats casterInfo)
 	{
 		GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
 		AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-		statusEffect.Initilize(newStatusEffect, this);
+		statusEffect.Initilize(newStatusEffect, casterInfo, this);
 
 		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
 			damageDealtModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);

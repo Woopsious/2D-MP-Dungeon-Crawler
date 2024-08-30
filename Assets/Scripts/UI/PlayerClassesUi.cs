@@ -211,7 +211,19 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private string GetStartingEquipmentInfo(SOClasses soClass)
 	{
-		string info = $"Starts with 500 gold\n1x {soClass.startingWeapon.itemName}\n";
+		string info = "Starts with 500 gold\n";
+
+		if (soClass.startingWeapon.Count == 1)
+			info += $"1x {soClass.startingWeapon[0].itemName}";
+		else
+		{
+			info += "1x random ";
+
+			foreach (SOWeapons weapon in soClass.startingWeapon)
+				info += $"{weapon.itemName}, ";
+
+		}
+		info += "\n";
 
 		foreach (SOArmors armor in soClass.startingArmor)
 		{

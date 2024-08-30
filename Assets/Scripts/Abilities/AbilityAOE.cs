@@ -6,6 +6,7 @@ public class AbilityAOE : MonoBehaviour
 {
 	private PlayerController player;
 	public SOClassAbilities abilityBaseRef;
+	private EntityStats casterInfo;
 
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
@@ -33,6 +34,7 @@ public class AbilityAOE : MonoBehaviour
 		circleCollider.radius = 0.1f;
 		circleCollider.offset = new Vector2(0, 0);
 
+		this.casterInfo = casterInfo;
 		abilityDurationTimer = abilityBaseRef.abilityDuration;
 		if (abilityBaseRef.abilityDuration == 0)
 			abilityDurationTimer = 0.1f;
@@ -67,13 +69,17 @@ public class AbilityAOE : MonoBehaviour
 	{
 		if (other.gameObject.GetComponent<EntityStats>() == null) return;
 
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
-		{
-			//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-			if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-				other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
+		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
+			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
 				return;
 
+		EntityStats stats = other.gameObject.GetComponent<EntityStats>();
+		stats.ApplyStatusEffect(abilityBaseRef, casterInfo);
+
+		/*
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		{
 			EntityStats stats = other.gameObject.GetComponent<EntityStats>();
 			stats.ApplyStatusEffect(abilityBaseRef);
 		}
@@ -82,6 +88,7 @@ public class AbilityAOE : MonoBehaviour
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
 		}
+		*/
 	}
 
 	private void AbilityDurationTimer()

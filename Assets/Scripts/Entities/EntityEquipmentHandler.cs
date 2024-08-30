@@ -66,7 +66,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 	{
 		if (entityStats.entityBaseStats.canUseEquipment)
 		{
-			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon, equippedWeapon, weaponSlotContainer);		//main weapon
+			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
+				(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);//main weapon
 			//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);	//offhand weapon
 
 			foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)                             //armor

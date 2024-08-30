@@ -71,7 +71,8 @@ MonoBehaviour:
     LevelRequirement: 8
   canUseSpells: 1
   classRestriction: 1
-  startingWeapon: {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
+  startingWeapon:
+  - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
   startingArmor:
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
   - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}

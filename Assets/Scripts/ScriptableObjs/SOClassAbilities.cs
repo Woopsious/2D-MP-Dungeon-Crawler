@@ -23,6 +23,8 @@ public class SOClassAbilities : SOClassUnlocks
 	public bool canOnlyTargetSelf;
 
 	[Header("Status Effects Settings")]
+	[Tooltip("add effect name eg: poisoned/burning for ui (if left blank will use name)")]
+	public string statusEffectName;
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
 	public StatusEffectType statusEffectType;
 	public enum StatusEffectType
@@ -38,8 +40,12 @@ public class SOClassAbilities : SOClassUnlocks
 	public float aoeSize;
 
 	[Header("DoT Settings")]
-	[Tooltip("Mainly for status effects and some abilities that are AoE. EG: stances and wellOfRes spell")]
+	[Tooltip("check to apply damage over time")]
 	public bool isDOT;
+
+	[Header("Duration Settings")]
+	[Tooltip("for status effects and DoT effects")]
+	public bool hasDuration;
 	public float abilityDuration;
 
 	[Header("Projectile Settings")]

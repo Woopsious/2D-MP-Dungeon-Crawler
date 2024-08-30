@@ -453,11 +453,11 @@ public class PlayerController : MonoBehaviour
 		else if (ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
 		{
 			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef);
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
 			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef);
+				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
 			else if (!ability.abilityBaseRef.isOffensiveAbility)		 //add support/option to buff other players for MP
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef);
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
 			else
 			{
 				Debug.LogError("failed to cast status effect");

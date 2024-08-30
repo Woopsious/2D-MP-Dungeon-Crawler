@@ -367,9 +367,9 @@ public class EntityBehaviour : MonoBehaviour
 		else
 		{
 			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //add check to cast on friendly
-				entityStats.ApplyStatusEffect(ability);
+				entityStats.ApplyStatusEffect(ability, entityStats);
 			else if (ability.isOffensiveAbility && playerTarget != null)
-				playerTarget.playerStats.ApplyStatusEffect(ability);
+				playerTarget.playerStats.ApplyStatusEffect(ability, entityStats);
 		}
 		OnSuccessfulCast(ability);
 	}
