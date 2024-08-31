@@ -186,7 +186,7 @@ public class Weapons : Items
 		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(player, boxCollider, damage, 
-			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer);
+			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer, false);
 	}
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
 	{

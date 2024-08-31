@@ -41,6 +41,14 @@ public class AbilityStatusEffect : MonoBehaviour
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
+	public SOClassAbilities GrabAbilityBaseRef()
+	{
+		return abilityBaseRef;
+	}
+	public void ResetTimer()
+	{
+		abilityDurationTimer = abilityBaseRef.abilityDuration;
+	}
 
 	private void Update()
 	{
@@ -65,8 +73,8 @@ public class AbilityStatusEffect : MonoBehaviour
 		timerTillNextDamage -= Time.deltaTime;
 		if (timerTillNextDamage < 0)
 		{
-			entityEffectIsAppliedTo.GetComponent<Damageable>().OnHitFromDamageSource(null, null, damage, 
-				(IDamagable.DamageType)damageType, 0, false, false);
+			entityEffectIsAppliedTo.GetComponent<Damageable>().OnHitFromDamageSource(null, null, damage,
+				(IDamagable.DamageType)damageType, 0, false, false, true);
 			timerTillNextDamage = damageOverTimeCooldown;
 		}
 	}

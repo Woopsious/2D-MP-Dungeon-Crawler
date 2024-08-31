@@ -20,10 +20,10 @@ public class Damageable : MonoBehaviour
 	}
 
 	public void OnHitFromDamageSource(PlayerController player, Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
-		bool isPercentageValue, bool wasHitByPlayer)
+		bool isPercentageValue, bool wasHitByPlayer, bool wasEnviroment)
 	{
 		if (DebugInvincible) return;
-		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis) return;
+		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis && !wasEnviroment) return;
 
 		ApplyHitForce(other, knockBack);
 		OnHit?.Invoke(player, damage, damageType, isPercentageValue, isDestroyedInOneHit);

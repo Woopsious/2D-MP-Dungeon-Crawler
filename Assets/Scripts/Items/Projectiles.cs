@@ -86,7 +86,7 @@ public class Projectiles : MonoBehaviour
 
 		if (abilityBaseRef != null)
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
-				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile);
+				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile, false);
 		else
 		{
 			//half ranged weapon damage
@@ -94,7 +94,7 @@ public class Projectiles : MonoBehaviour
 				projectileDamage /= 2;
 
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
-				false, isPlayerProjectile);
+				false, isPlayerProjectile, false);
 		}
 		DungeonHandler.ProjectileCleanUp(this);
 	}

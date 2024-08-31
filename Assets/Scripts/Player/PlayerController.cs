@@ -447,7 +447,7 @@ public class PlayerController : MonoBehaviour
 		{
 			if (ability.abilityBaseRef.isOffensiveAbility)
 				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
-					* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true);
+					* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
 		}
 
 		else if (ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects

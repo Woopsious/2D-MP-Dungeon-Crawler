@@ -199,7 +199,7 @@ public class EntityStats : MonoBehaviour
 			else
 				damage -= poisonResistance.finalValue;
 		}
-		if (damageType == IDamagable.DamageType.isFireDamageType)
+		else if (damageType == IDamagable.DamageType.isFireDamageType)
 		{
 			//Debug.Log("Fire Dmg res: " + fireResistance.finalValue);
 			if (isPercentageValue)
@@ -207,7 +207,7 @@ public class EntityStats : MonoBehaviour
 			else
 				damage -= fireResistance.finalValue;
 		}
-		if (damageType == IDamagable.DamageType.isIceDamageType)
+		else if (damageType == IDamagable.DamageType.isIceDamageType)
 		{
 			//Debug.Log("Ice Dmg res: " + iceResistance.finalValue);
 			if (isPercentageValue)
@@ -231,7 +231,7 @@ public class EntityStats : MonoBehaviour
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(entityBaseStats.hurtSfx);
-		if (!IsPlayerEntity())
+		if (!IsPlayerEntity() && player != null)
 			entityBehaviour.AddToAggroRating(player, (int)damage);
 
 		if (currentHealth <= 0)
@@ -316,6 +316,10 @@ public class EntityStats : MonoBehaviour
 	//status effect functions
 	public void ApplyStatusEffect(SOClassAbilities newStatusEffect, EntityStats casterInfo)
 	{
+		AbilityStatusEffect duplicateStatusEffect = CheckIfStatusEffectAlreadyApplied(newStatusEffect);
+		if (duplicateStatusEffect != null)
+			duplicateStatusEffect.ResetTimer();
+
 		GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
 		AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
 		statusEffect.Initilize(newStatusEffect, casterInfo, this);
@@ -361,6 +365,15 @@ public class EntityStats : MonoBehaviour
 
 		currentStatusEffects.Remove(statusEffect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
+	}
+	private AbilityStatusEffect CheckIfStatusEffectAlreadyApplied(SOClassAbilities newStatusEffect)
+	{
+		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
+		{
+			if (statusEffect.GrabAbilityBaseRef() == newStatusEffect)
+				return statusEffect;
+		}
+		return null;
 	}
 
 	/// <summary>
