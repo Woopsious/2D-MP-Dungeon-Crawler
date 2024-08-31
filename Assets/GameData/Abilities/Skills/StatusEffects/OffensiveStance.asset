@@ -21,11 +21,13 @@ MonoBehaviour:
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
+  statusEffectName: 
   statusEffectType: 3
   statusEffectPercentageModifier: 0.1
   isAOE: 0
   aoeSize: 0
-  isDOT: 1
+  isDOT: 0
+  hasDuration: 1
   abilityDuration: 10
   isProjectile: 0
   projectileSprite: {fileID: 0}

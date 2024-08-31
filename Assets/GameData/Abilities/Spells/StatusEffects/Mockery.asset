@@ -20,16 +20,18 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 1
   canOnlyTargetSelf: 0
+  statusEffectName: 
   statusEffectType: 2
   statusEffectPercentageModifier: -0.1
   isAOE: 0
   aoeSize: 0
-  isDOT: 1
+  isDOT: 0
+  hasDuration: 1
   abilityDuration: 10
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 20
-  isDamagePercentageBased: 1
+  isDamagePercentageBased: 0
   damageValue: 0
   damageValuePercentage: 0
   damageType: 0

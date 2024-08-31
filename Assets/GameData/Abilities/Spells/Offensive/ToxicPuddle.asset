@@ -20,11 +20,13 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 3
+  statusEffectName: Poisoned
+  statusEffectType: 0
   statusEffectPercentageModifier: 0
   isAOE: 1
   aoeSize: 50
   isDOT: 1
+  hasDuration: 1
   abilityDuration: 3
   isProjectile: 0
   projectileSprite: {fileID: 0}

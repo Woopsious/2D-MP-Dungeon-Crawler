@@ -79,6 +79,7 @@
     <Compile Include="Assets\Scripts\Entities\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
+    <Compile Include="Assets\Scripts\Managers\TileMapHazardsManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyBaseState.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Assets\Scripts\Entities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveSlotDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
+    <Compile Include="Assets\GameData\TilemapData\TileData.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />

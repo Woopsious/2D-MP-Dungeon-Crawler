@@ -360,6 +360,7 @@ public class EntityStats : MonoBehaviour
 		}
 
 		currentStatusEffects.Remove(statusEffect);
+		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
 	}
 
 	/// <summary>

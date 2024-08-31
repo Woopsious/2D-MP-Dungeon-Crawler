@@ -10,34 +10,33 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: WellOfResistance
+  m_Name: Chilled
   m_EditorClassIdentifier: 
-  Name: Well of Resistance
-  Description: Cast a well of resistance, increasing resistances of friendlies inside
-    it
-  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  nonPlayerLevelRequirement: 1
-  abilityCooldown: 30
+  Name: Chilled
+  Description: 
+  abilitySprite: {fileID: 0}
+  nonPlayerLevelRequirement: 0
+  abilityCooldown: 0
   isOffensiveAbility: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
   statusEffectName: 
-  statusEffectType: 2
-  statusEffectPercentageModifier: 0.1
-  isAOE: 1
-  aoeSize: 40
-  isDOT: 0
+  statusEffectType: 0
+  statusEffectPercentageModifier: 0
+  isAOE: 0
+  aoeSize: 0
+  isDOT: 1
   hasDuration: 1
-  abilityDuration: 10
+  abilityDuration: 3
   isProjectile: 0
   projectileSprite: {fileID: 0}
-  projectileSpeed: 20
+  projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageValue: 0
+  damageValue: 10
   damageValuePercentage: 0
-  damageType: 0
-  isSpell: 1
-  manaCost: 20
-  minPercentCost: 15
+  damageType: 3
+  isSpell: 0
+  manaCost: 0
+  minPercentCost: 0
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
