@@ -225,7 +225,7 @@ public class PlayerController : MonoBehaviour
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
 		if (!entityStats.IsPlayerEntity())
 		{
-			for (int i = 0; i < EnemyTargetList.Count - 1; i++)
+			for (int i = 0; i < EnemyTargetList.Count; i++)
 			{
 				if (entityStats == EnemyTargetList[i].entity)
 				{
