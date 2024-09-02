@@ -14,7 +14,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	[SerializeField]
 	public static PlayerHotbarUi Instance;
 
-	public static event Action<Abilities, EntityStats> OnNewQueuedAbilities;
+	public GameObject statusEffectUiPrefab;
 
 	public TMP_Text playerLevelInfoText;
 	public TMP_Text playerClassInfoText;
@@ -42,12 +42,14 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject abilitySlotFive;
 
 	[Header("Equipped Abilities")]
-	//public List<SOClassAbilities> equippedAbilities = new List<SOClassAbilities>();
 	public Abilities equippedAbilityOne;
 	public Abilities equippedAbilityTwo;
 	public Abilities equippedAbilityThree;
 	public Abilities equippedAbilityFour;
 	public Abilities equippedAbilityFive;
+
+	[Header("Player Status Effects Ui")]
+	public GameObject playerStatusEffectsParentObj;
 
 	[Header("Selected Target Ui")]
 	public EntityStats selectedTarget;
@@ -59,6 +61,9 @@ public class PlayerHotbarUi : MonoBehaviour
 	public TMP_Text selectedTargetHealth;
 	public Image selectedTargetManaBarFiller;
 	public TMP_Text selectedTargetMana;
+
+	[Header("Selected Target Status Effects Ui")]
+	public GameObject selectedTargetStatusEffectsParentObj;
 
 	[Header("ExpBar")]
 	public Image expBarFiller;
@@ -118,6 +123,12 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
+
+		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
+		{
+			Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+			ability.gameObject.SetActive(false);
+		}
 	}
 
 	//Equip Consumables/Abilities
@@ -207,8 +218,6 @@ public class PlayerHotbarUi : MonoBehaviour
 
        return false;
     }
-
-	//clear hotbar ui of abilities
 	private void OnAbilityRefund(SOClassAbilities ability)
 	{
 		foreach (GameObject abilitySlot in AbilitySlots)
@@ -223,124 +232,6 @@ public class PlayerHotbarUi : MonoBehaviour
 				slotData.RemoveItemFromSlot();
 			}
 		}
-	}
-
-	//UI CHANGES
-	public void OpenInventoryButton()
-	{
-		PlayerEventManager.ShowPlayerInventory();
-	}
-	public void OpenLearntAbilitiesButton()
-	{
-		PlayerEventManager.ShowPlayerLearntAbilities();
-	}
-	public void OpenClassSelectionButton()
-	{
-		PlayerEventManager.ShowPlayerClassSelection();
-	}
-	public void OpenClassSkillTreeButton()
-	{
-		PlayerEventManager.ShowPlayerSkillTree();
-	}
-	public void OpenPlayerJournalButton()
-	{
-		PlayerEventManager.ShowPlayerJournal();
-	}
-
-	//Select Target event
-	public void OnNewTargetSelected(EntityStats entityStats)
-	{
-		if (!selectedTargetUi.activeInHierarchy)
-			selectedTargetUi.SetActive(true);
-		if (unSelectedTargetUi.activeInHierarchy)
-			unSelectedTargetUi.SetActive(false);
-
-		if (selectedTarget != null)
-		{
-			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-		}
-
-		selectedTarget = entityStats;
-		selectedTargetUiImage.sprite = entityStats.entityBaseStats.sprite;
-
-		string targetName;
-		if (selectedTarget.entityBaseStats.canUseEquipment)
-			targetName = entityStats.classHandler.currentEntityClass.className + " " + entityStats.entityBaseStats.entityName;
-		else
-			targetName = entityStats.entityBaseStats.entityName;
-		selectedTargetUiName.text = targetName;
-
-		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
-
-		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
-		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
-	}
-
-	//UI Selected Target events
-	private void OnTargetHealthChange(int MaxValue, int currentValue)
-	{
-		float percentage = (float)currentValue / MaxValue;
-		selectedTargetHealthBarFiller.fillAmount = percentage;
-		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
-	}
-	private void OnTargetManaChange(int MaxValue, int currentValue)
-	{
-		float percentage = (float)currentValue / MaxValue;
-		selectedTargetManaBarFiller.fillAmount = percentage;
-		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
-	}
-	private void OnTargetDeathUnSelect(GameObject obj)
-	{
-		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
-
-		if (selectedTargetUi.activeInHierarchy)
-			selectedTargetUi.SetActive(false);
-		if (!unSelectedTargetUi.activeInHierarchy)
-			unSelectedTargetUi.SetActive(true);
-
-		obj.GetComponent<EntityStats>().OnHealthChangeEvent -= OnTargetHealthChange;
-		obj.GetComponent<EntityStats>().OnManaChangeEvent -= OnTargetManaChange;
-	}
-
-	//UI Ability Uses
-	public void AddNewQueuedAbility(Abilities ability, PlayerController player)
-	{
-		OnNewQueuedAbilities?.Invoke(ability, player.GetComponent<EntityStats>());
-		queuedAbility = ability;
-
-		queuedAbilityTextInfo.SetActive(true);
-		if (ability.abilityBaseRef.isAOE)
-		{
-			queuedAbilityAoe.SetActive(true);
-			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
-		}
-	}
-	public void OnUseQueuedAbility(Abilities ability, PlayerController player)
-	{
-		queuedAbilityTextInfo.SetActive(false);
-		queuedAbilityAoe.SetActive(false);
-		queuedAbility = null;
-	}
-	public void OnCancelQueuedAbility(Abilities ability)
-	{
-		queuedAbilityTextInfo.SetActive(false);
-		queuedAbilityAoe.SetActive(false);
-		queuedAbility = null;
-	}
-	private void DisplayQueuedAbilityUi()
-	{
-		if (queuedAbilityTextInfo.activeInHierarchy)
-			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
-
-		if (queuedAbilityAoe.activeInHierarchy)
-			queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-	}
-	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
-	{
-		Vector3 scale = new(abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f);
-		queuedAbilityAoe.transform.localScale = scale;
 	}
 
 	//UI Player Updates
@@ -373,5 +264,163 @@ public class PlayerHotbarUi : MonoBehaviour
 		float percentage = (float)currentValue / MaxValue;
 		manaBarFiller.fillAmount = percentage;
 		manaBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	public void OnNewStatusEffectsForPlayer(AbilityStatusEffect statusEffect)
+	{
+		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
+		{
+			if (!playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			{
+				Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetTimer());
+				ability.gameObject.SetActive(true);
+				return;
+			}
+		}
+	}
+
+	//UI Player Abilities Updates
+	public void AddNewQueuedAbility(Abilities ability)
+	{
+		queuedAbility = ability;
+
+		queuedAbilityTextInfo.SetActive(true);
+		if (ability.abilityBaseRef.isAOE)
+		{
+			queuedAbilityAoe.SetActive(true);
+			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
+		}
+	}
+	public void OnUseQueuedAbility()
+	{
+		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityAoe.SetActive(false);
+		queuedAbility = null;
+	}
+	public void OnCancelQueuedAbility()
+	{
+		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityAoe.SetActive(false);
+		queuedAbility = null;
+	}
+	private void DisplayQueuedAbilityUi()
+	{
+		if (queuedAbilityTextInfo.activeInHierarchy)
+			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
+
+		if (queuedAbilityAoe.activeInHierarchy)
+			queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+	}
+	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
+	{
+		Vector3 scale = new(abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f);
+		queuedAbilityAoe.transform.localScale = scale;
+	}
+
+	//Selecting new target event
+	public void OnNewTargetSelected(EntityStats entityStats)
+	{
+		if (!selectedTargetUi.activeInHierarchy)
+			selectedTargetUi.SetActive(true);
+		if (unSelectedTargetUi.activeInHierarchy)
+			unSelectedTargetUi.SetActive(false);
+
+		if (selectedTarget != null) //unsub from old target
+		{
+			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
+			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
+			selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+		}
+
+		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
+		{
+			Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+			ability.gameObject.SetActive(false);
+		}
+
+		selectedTarget = entityStats;
+		selectedTargetUiImage.sprite = entityStats.entityBaseStats.sprite;
+
+		string targetName;
+		if (selectedTarget.entityBaseStats.canUseEquipment)
+			targetName = entityStats.classHandler.currentEntityClass.className + " " + entityStats.entityBaseStats.entityName;
+		else
+			targetName = entityStats.entityBaseStats.entityName;
+		selectedTargetUiName.text = targetName;
+
+		//new target event subs
+		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
+		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
+		selectedTarget.OnNewStatusEffect += OnNewStatusEffectsForSelectedTarget;
+
+		//initial setting data for ui
+		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
+		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
+
+		foreach (AbilityStatusEffect statusEffect in selectedTarget.currentStatusEffects)
+			OnNewStatusEffectsForSelectedTarget(statusEffect);
+	}
+
+	//Selected target events for updating ui
+	private void OnTargetHealthChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedTargetHealthBarFiller.fillAmount = percentage;
+		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	private void OnTargetManaChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedTargetManaBarFiller.fillAmount = percentage;
+		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	private void OnNewStatusEffectsForSelectedTarget(AbilityStatusEffect statusEffect)
+	{
+		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
+		{
+			if (!selectedTargetStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			{
+				Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetTimer());
+				ability.gameObject.SetActive(true);
+				return;
+			}
+		}
+	}
+	private void OnTargetDeathUnSelect(GameObject obj)
+	{
+		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
+
+		if (selectedTargetUi.activeInHierarchy)
+			selectedTargetUi.SetActive(false);
+		if (!unSelectedTargetUi.activeInHierarchy)
+			unSelectedTargetUi.SetActive(true);
+
+		EntityStats entity = obj.GetComponent<EntityStats>();
+		entity.OnHealthChangeEvent -= OnTargetHealthChange;
+		entity.OnManaChangeEvent -= OnTargetManaChange;
+		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+	}
+
+	//UI CHANGES
+	public void OpenInventoryButton()
+	{
+		PlayerEventManager.ShowPlayerInventory();
+	}
+	public void OpenLearntAbilitiesButton()
+	{
+		PlayerEventManager.ShowPlayerLearntAbilities();
+	}
+	public void OpenClassSelectionButton()
+	{
+		PlayerEventManager.ShowPlayerClassSelection();
+	}
+	public void OpenClassSkillTreeButton()
+	{
+		PlayerEventManager.ShowPlayerSkillTree();
+	}
+	public void OpenPlayerJournalButton()
+	{
+		PlayerEventManager.ShowPlayerJournal();
 	}
 }

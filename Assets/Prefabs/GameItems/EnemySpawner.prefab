@@ -61,9 +61,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
   - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
   - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
-  listOfPlayersInRange: []
-  closestPlayerDistance: 0
-  spawningDisabled: 0
 --- !u!58 &978756309994241589
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -98,4 +95,4 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 1
+  m_Radius: 30

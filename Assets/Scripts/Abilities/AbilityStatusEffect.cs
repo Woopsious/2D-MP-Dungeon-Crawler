@@ -49,6 +49,10 @@ public class AbilityStatusEffect : MonoBehaviour
 	{
 		abilityDurationTimer = abilityBaseRef.abilityDuration;
 	}
+	public float GetTimer()
+	{
+		return abilityDurationTimer;
+	}
 
 	private void Update()
 	{

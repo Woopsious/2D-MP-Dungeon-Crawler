@@ -297,7 +297,7 @@ public class ToolTipManager : MonoBehaviour
 	{
 		tipText.text = tip;
 		tipWindow.sizeDelta = new Vector2(tipText.preferredWidth > 300 ? 300 : 
-			tipText.preferredWidth * 1.25f, tipText.preferredHeight * 1.25f);
+			tipText.preferredWidth * 1.25f + 5, tipText.preferredHeight * 1.25f + 5);
 
 		tipWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		tipWindow.gameObject.SetActive(true);

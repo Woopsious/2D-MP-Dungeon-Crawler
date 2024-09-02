@@ -55,6 +55,11 @@ public class EntityStats : MonoBehaviour
 	public GameObject statusEffectsParentObj;
 	public List<AbilityStatusEffect> currentStatusEffects;
 
+	//events
+	public event Action<AbilityStatusEffect> OnNewStatusEffect;
+	public event Action<AbilityStatusEffect> OnRemoveStatusEffect;
+
+
 	public event Action<float, bool, float> OnRecieveHealingEvent;
 	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
@@ -341,6 +346,7 @@ public class EntityStats : MonoBehaviour
 			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
 		}
 
+		OnNewStatusEffect?.Invoke(statusEffect);
 		currentStatusEffects.Add(statusEffect);
 	}
 	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect, SOClassAbilities abilityBaseRef)
@@ -363,6 +369,7 @@ public class EntityStats : MonoBehaviour
 			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
 		}
 
+		OnRemoveStatusEffect?.Invoke(statusEffect);
 		currentStatusEffects.Remove(statusEffect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
 	}

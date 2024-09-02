@@ -4,12 +4,15 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Numerics;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class Abilities : MonoBehaviour
 {
+	private bool isStatusEffectTimerForUi;
+
 	[Header("Ability Info")]
 	private ToolTipUi toolTip;
 	public SOClassAbilities abilityBaseRef;
@@ -30,6 +33,7 @@ public class Abilities : MonoBehaviour
 
 	public void Initilize()
 	{
+		isStatusEffectTimerForUi = false;
 		name = abilityBaseRef.Name;
 		abilityName = abilityBaseRef.Name;
 		abilityDescription = abilityBaseRef.Description;
@@ -39,6 +43,24 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
 	}
+	//funcs used for statues effect on the ui
+	public void InitilizeStatusEffectUiTimer(SOClassAbilities ability, float currentTimer)
+	{
+		abilityBaseRef = ability;
+		isStatusEffectTimerForUi = true;
+		name = abilityBaseRef.Name;
+		abilityName = abilityBaseRef.Name;
+		if (abilityBaseRef.statusEffectName != "")
+			abilityDescription = abilityBaseRef.statusEffectName;
+		else
+			abilityDescription = abilityBaseRef.Name;
+
+		abilitySprite = abilityBaseRef.abilitySprite;
+		abilityCooldownTimer = currentTimer;
+
+		GetComponent<ToolTipUi>().tipToShow = $"{abilityDescription}	";
+	}
+
 	//tool tip
 	public virtual void SetToolTip(EntityStats playerStats)
 	{
@@ -132,7 +154,10 @@ public class Abilities : MonoBehaviour
 
 	private void Update()
 	{
-		AbilityCooldownTimer();
+		if (isStatusEffectTimerForUi)
+			StatusEffectUiCooldownTimer();
+		else
+			AbilityCooldownTimer();
 	}
 	private void AbilityCooldownTimer()
 	{
@@ -146,6 +171,19 @@ public class Abilities : MonoBehaviour
 			isOnCooldown = false;
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
+		}
+	}
+	private void StatusEffectUiCooldownTimer()
+	{
+		abilityCooldownTimer += Time.deltaTime;
+		abilityImage.fillAmount = abilityCooldownTimer / abilityBaseRef.abilityDuration;
+
+		if (abilityCooldownTimer >= abilityBaseRef.abilityDuration)
+		{
+			isOnCooldown = false;
+			abilityImage.fillAmount = 1;
+			abilityCooldownTimer = 0;
+			gameObject.SetActive(false);
 		}
 	}
 

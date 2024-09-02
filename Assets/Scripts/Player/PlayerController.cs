@@ -40,8 +40,9 @@ public class PlayerController : MonoBehaviour
 	private float updateTargetListTimer;
 
 	//abilities
-	public event Action<Abilities, PlayerController> OnUseQueuedAbilities;
-	public event Action<Abilities> OnCancelQueuedAbilities;
+	public event Action<Abilities> OnAddNewQueuedAbility;
+	public event Action OnUseQueuedAbility;
+	public event Action OnCancelQueuedAbility;
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
@@ -71,33 +72,33 @@ public class PlayerController : MonoBehaviour
 	private void Start()
 	{
 		Initilize();
-
-		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
-
-		PlayerHotbarUi.OnNewQueuedAbilities += OnNewQueuedAbility;
-		OnUseQueuedAbilities += PlayerHotbarUi.Instance.OnUseQueuedAbility;
-		OnUseQueuedAbilities += OnUseQueuedAbility;
-		OnCancelQueuedAbilities += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
-		OnCancelQueuedAbilities += OnCancelQueuedAbility;
 	}
 
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInfo;
 		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
+
+		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
+
+		OnAddNewQueuedAbility += PlayerHotbarUi.Instance.AddNewQueuedAbility;
+		OnUseQueuedAbility += PlayerHotbarUi.Instance.OnUseQueuedAbility;
+		OnCancelQueuedAbility += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
+
+		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
 	}
 	private void OnDisable()
 	{
-		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
-
-		PlayerHotbarUi.OnNewQueuedAbilities -= OnNewQueuedAbility;
-		OnUseQueuedAbilities -= PlayerHotbarUi.Instance.OnUseQueuedAbility;
-		OnUseQueuedAbilities -= OnUseQueuedAbility;
-		OnCancelQueuedAbilities -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
-		OnCancelQueuedAbilities -= OnCancelQueuedAbility;
-
 		SaveManager.RestoreData -= ReloadPlayerInfo;
 		DungeonHandler.OnEntityDeathEvent -= OnSelectedTargetDeath;
+
+		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
+
+		OnAddNewQueuedAbility -= PlayerHotbarUi.Instance.AddNewQueuedAbility;
+		OnUseQueuedAbility -= PlayerHotbarUi.Instance.OnUseQueuedAbility;
+		OnCancelQueuedAbility -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
+
+		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
 	}
 
 	private void Update()
@@ -346,16 +347,15 @@ public class PlayerController : MonoBehaviour
 
 	//PLAYER ABILITY CASTING
 	//events
-	private void OnNewQueuedAbility(Abilities ability, EntityStats playerStats)
+	private void AddNewQueuedAbility(Abilities ability)
 	{
+		OnAddNewQueuedAbility?.Invoke(ability);
 		queuedAbility = ability;
 	}
-	public void CastQueuedAbility(Abilities ability)
+	private void UseQueuedAbility(Abilities ability)
 	{
-		OnUseQueuedAbilities?.Invoke(ability, this);
-	}
-	private void OnUseQueuedAbility(Abilities ability, PlayerController player)
-	{
+		OnUseQueuedAbility?.Invoke();
+
 		if (ability.abilityBaseRef.isAOE)
 			CastAoeAbility(ability);
 		else if (ability.abilityBaseRef.isProjectile)
@@ -423,10 +423,7 @@ public class PlayerController : MonoBehaviour
 	}
 	public void CancelQueuedAbility(Abilities ability)
 	{
-		OnCancelQueuedAbilities?.Invoke(ability);
-	}
-	private void OnCancelQueuedAbility(Abilities ability)
-	{
+		OnCancelQueuedAbility?.Invoke();
 		queuedAbility = null;
 	}
 
@@ -618,7 +615,7 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 		else
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 	private void OnRightClick()
 	{
@@ -706,7 +703,7 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+		AddNewQueuedAbility(newQueuedAbility);
 
 		//capture all non aoe/directional abilities to check for player manual cast settings
 		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
@@ -714,7 +711,7 @@ public class PlayerController : MonoBehaviour
 		//add support for manual casting of defensive/support abilities here
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityTwo()
 	{
@@ -723,7 +720,7 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+		AddNewQueuedAbility(newQueuedAbility);
 
 		//capture all non aoe/directional abilities to check for player manual cast settings
 		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
@@ -731,7 +728,7 @@ public class PlayerController : MonoBehaviour
 		//add support for manual casting of defensive/support abilities here
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityThree()
 	{
@@ -740,7 +737,7 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+		AddNewQueuedAbility(newQueuedAbility);
 
 		//capture all non aoe/directional abilities to check for player manual cast settings
 		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
@@ -748,7 +745,7 @@ public class PlayerController : MonoBehaviour
 		//add support for manual casting of defensive/support abilities here
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFour()
 	{
@@ -757,7 +754,7 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+		AddNewQueuedAbility(newQueuedAbility);
 
 		//capture all non aoe/directional abilities to check for player manual cast settings
 		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
@@ -765,7 +762,7 @@ public class PlayerController : MonoBehaviour
 		//add support for manual casting of defensive/support abilities here
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 	private void OnAbilityFive()
 	{
@@ -774,7 +771,7 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		PlayerHotbarUi.Instance.AddNewQueuedAbility(newQueuedAbility, this);
+		AddNewQueuedAbility(newQueuedAbility);
 
 		//capture all non aoe/directional abilities to check for player manual cast settings
 		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
@@ -782,7 +779,7 @@ public class PlayerController : MonoBehaviour
 		//add support for manual casting of defensive/support abilities here
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			CastQueuedAbility(queuedAbility);
+			UseQueuedAbility(queuedAbility);
 	}
 
 	//ui actions
