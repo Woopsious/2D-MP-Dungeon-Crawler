@@ -72,12 +72,6 @@ public class PlayerController : MonoBehaviour
 	private void Start()
 	{
 		Initilize();
-	}
-
-	private void OnEnable()
-	{
-		SaveManager.RestoreData += ReloadPlayerInfo;
-		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
 
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
@@ -86,6 +80,12 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbility += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 
 		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
+	}
+
+	private void OnEnable()
+	{
+		SaveManager.RestoreData += ReloadPlayerInfo;
+		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{

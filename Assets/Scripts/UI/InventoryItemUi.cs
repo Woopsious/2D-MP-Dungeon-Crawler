@@ -235,32 +235,31 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		{
 			Weapons weapon = gameObject.AddComponent<Weapons>();
 			weapon.weaponBaseRef = weaponBaseRef;
-			weapon.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+			weapon.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
 		}
 		if (armorBaseRef != null)
 		{
 			Armors armor = gameObject.AddComponent<Armors>();
 			armor.armorBaseRef = armorBaseRef;
-			armor.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+			armor.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
 		}
 		if (accessoryBaseRef != null)
 		{
 			Accessories accessory = gameObject.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = accessoryBaseRef;
-			accessory.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+			accessory.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
 		}
 		if (consumableBaseRef != null)
 		{
 			Consumables consumable = gameObject.AddComponent<Consumables>();
 			consumable.consumableBaseRef = consumableBaseRef;
-			consumable.Initilize(Utilities.SetRarity(), Utilities.GetRandomNumber(20));
+			consumable.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
 		}
 		if (abilityBaseRef != null)
 		{
 			Abilities ability = gameObject.AddComponent<Abilities>();
 			ability.abilityBaseRef = abilityBaseRef;
 			ability.Initilize();
-			Debug.Log("initilize ability start");
 		}
 		Initilize();
 	}

@@ -84,7 +84,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void Update()
 	{
-		DisplayQueuedAbilityUi();
+		UpdateQueuedAbilityUiPosition();
 	}
 	private void OnEnable()
 	{
@@ -131,7 +131,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Equip Consumables/Abilities
+	//Equip/Unequip Consumables/Abilities to Ui
 	//not physically spawned in
 	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
@@ -234,7 +234,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//UI Player Updates
+	//Player Ui Updates
 	private void UpdatePlayerLevelInfo(EntityStats playerStats)
 	{
 		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
@@ -279,7 +279,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//UI Player Abilities Updates
+	//Player Ui Abilities Updates
 	public void AddNewQueuedAbility(Abilities ability)
 	{
 		queuedAbility = ability;
@@ -303,7 +303,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
 	}
-	private void DisplayQueuedAbilityUi()
+	private void UpdateQueuedAbilityUiPosition()
 	{
 		if (queuedAbilityTextInfo.activeInHierarchy)
 			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
