@@ -28,6 +28,7 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
+	//player class events
 	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
 		base.UpdateClass(newPlayerClass);
@@ -54,7 +55,6 @@ public class PlayerClassHandler : EntityClassHandler
 		base.RefundAbility(ability);
 		UpdateClassTreeUi();
 	}
-
 	private void UpdateAbilitySlotsOnLevelUp(EntityStats playerStats)
 	{
 		UpdateMaxAbilitySlots();

@@ -17,7 +17,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public GameObject playerClassSelectionPanel;
 	public GameObject closeplayerClassSelectionButton;
 	public SOClasses currentPlayerClass;
-	public List<ClassTreeNodeSlotUi> currentUnlockedClassNodes = new List<ClassTreeNodeSlotUi>();
+	public List<ClassTreeNodeUi> currentUnlockedClassNodes = new List<ClassTreeNodeUi>();
 
 	[Header("knight Class")]
 	public TMP_Text knightClassInfo;
@@ -75,7 +75,7 @@ public class PlayerClassesUi : MonoBehaviour
 	public static event Action<SOClassAbilities> OnRefundAbilityUnlock;
 
 	public GameObject classNodeSlotsPrefab;
-	private List<ClassTreeNodeSlotUi> nodeSlotUiList = new List<ClassTreeNodeSlotUi>();
+	private List<ClassTreeNodeUi> nodeSlotUiList = new List<ClassTreeNodeUi>();
 
 	/// <summary> (NEW IDEA)
 	/// player selects class on new game start. if reloading game, indexes of Unlocked ClassTreeSlotUi nodes are saved and loaded to disk,
@@ -144,6 +144,8 @@ public class PlayerClassesUi : MonoBehaviour
 
 		ShowPlayerClassSelection();
 	}
+
+	//set up text ui for class selection panel
 	private void SetUpKnightClassInfo()
 	{
 		string knightInfoText = "Knight Class Info:\n" +
@@ -254,11 +256,7 @@ public class PlayerClassesUi : MonoBehaviour
 		return info;
 	}
 
-	/// <summary>
-	/// instantiate ClassTreeNodeSlotUi template as children of specific ui elements based on if its a stat bonus/ability and
-	/// the level requirment to unlock it, then assign that stat buns/ability to ClassTreeNodeSlotUi ref, and Initilize node.
-	/// </summary>
-
+	//set up class trees ui for every class
 	private void SetUpKnightClassTree()
 	{
 		foreach (ClassStatUnlocks classStatUnlock in knightClass.classStatBonusList)
@@ -546,7 +544,7 @@ public class PlayerClassesUi : MonoBehaviour
 		Transform parent, int verticalParentIndex)
 	{
 		GameObject go = Instantiate(classNodeSlotsPrefab, GrabParentTransformFromUi(parent, verticalParentIndex));
-		ClassTreeNodeSlotUi nodeSlotUi = go.GetComponent<ClassTreeNodeSlotUi>();
+		ClassTreeNodeUi nodeSlotUi = go.GetComponent<ClassTreeNodeUi>();
 		nodeSlotUi.statUnlock = statUnlock;
 		nodeSlotUi.abilityUnlock = abilityUnlock;
 		nodeSlotUi.Initilize(verticalParentIndex);
@@ -557,13 +555,7 @@ public class PlayerClassesUi : MonoBehaviour
 		return parent.GetChild(0).transform.GetChild(verticalParentIndex).transform.GetChild(0).transform;
 	}
 
-	//reload player class
-	/// <summary>
-	/// for updating reloading of player class once rest of the code is finished.
-	/// have parent transform eg: MageStatBonusContent, save indexes of vertical child objs (what level/grade stat bonuses/abilities are)
-	/// then horizontal indexs for ClassTreeNodeSlotUi , based on those indexes force unlock these nodes
-	/// similar to how i set up Class Tree nodes.
-	/// </summary>
+	//reload player class + unlocked nodes
 	public void ReloadPlayerClass()
 	{
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
@@ -595,13 +587,13 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private void RestorePlayerNodes(Transform parent, int verticalParentIndex, int nodeHorizontalIndex)
 	{
-		ClassTreeNodeSlotUi nodeSlotUi = parent.GetChild(0).transform.GetChild(verticalParentIndex).transform.GetChild(0).
-			transform.GetChild(nodeHorizontalIndex).GetComponent<ClassTreeNodeSlotUi>();
+		ClassTreeNodeUi nodeSlotUi = parent.GetChild(0).transform.GetChild(verticalParentIndex).transform.GetChild(0).
+			transform.GetChild(nodeHorizontalIndex).GetComponent<ClassTreeNodeUi>();
 
 		nodeSlotUi.UnlockThisNode();
 	}
 
-	//change of classes calls reset class 
+	//set player class
 	private void SetPlayerClass(SOClasses newClass, bool displayClassSkillTree)
 	{
 		if (GameManager.isNewGame && currentPlayerClass == null)
@@ -613,7 +605,8 @@ public class PlayerClassesUi : MonoBehaviour
 		if (displayClassSkillTree)
 			PlayerEventManager.ShowPlayerSkillTree();
 	}
-	public void UpdatePlayerClass()
+	//handle resetting/swapping class by refunding unlocked nodes
+	private void UpdatePlayerClass()
 	{
 		for (int i = currentUnlockedClassNodes.Count - 1; i >= 0; i--)
 			currentUnlockedClassNodes[i].RefundThisNode();
@@ -625,14 +618,14 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 
 	//skill tree node event calls
-	public void UnlockStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	public void UnlockStatBonus(ClassTreeNodeUi classTreeSlot, SOClassStatBonuses statBonus)
 	{
 		classTreeSlot.isAlreadyUnlocked = true;
 
 		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void UnlockAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	public void UnlockAbility(ClassTreeNodeUi classTreeSlot, SOClassAbilities ability)
 	{
 		if (!DoesPlayerHaveFreeAbilitySlot())
 		{
@@ -647,14 +640,14 @@ public class PlayerClassesUi : MonoBehaviour
 		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewAbilityUnlock?.Invoke(ability);
 	}
-	public void RefundStatBonus(ClassTreeNodeSlotUi classTreeSlot, SOClassStatBonuses statBonus)
+	public void RefundStatBonus(ClassTreeNodeUi classTreeSlot, SOClassStatBonuses statBonus)
 	{
 		classTreeSlot.isAlreadyUnlocked = false;
 
 		currentUnlockedClassNodes.Remove(classTreeSlot);
 		OnRefundStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void RefundAbility(ClassTreeNodeSlotUi classTreeSlot, SOClassAbilities ability)
+	public void RefundAbility(ClassTreeNodeUi classTreeSlot, SOClassAbilities ability)
 	{
 		abilitySlotsUsed--;
 		classTreeSlot.isAlreadyUnlocked = false;
@@ -663,7 +656,6 @@ public class PlayerClassesUi : MonoBehaviour
 		currentUnlockedClassNodes.Remove(classTreeSlot);
 		OnRefundAbilityUnlock?.Invoke(ability);
 	}
-
 	public void UpdateNodesInClassTree(EntityStats playerStats)
 	{
 		OnClassNodeUnlocks?.Invoke(playerStats);
@@ -785,7 +777,7 @@ public class PlayerClassesUi : MonoBehaviour
 	//tool tips
 	private void UpdateToolTipsForClassNodes()
 	{
-		foreach (ClassTreeNodeSlotUi node in nodeSlotUiList)
+		foreach (ClassTreeNodeUi node in nodeSlotUiList)
 		{
 			if (node.GetComponent<ToolTipUi>() == null) continue;
 			ToolTipUi tip = node.GetComponent<ToolTipUi>();

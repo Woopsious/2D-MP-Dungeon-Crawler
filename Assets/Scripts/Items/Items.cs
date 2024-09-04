@@ -41,6 +41,7 @@ public class Items : MonoBehaviour, IInteractable
 	public int currentStackCount;
 	public int inventroySlot;
 
+	//set item data
 	public virtual void Initilize(Rarity setRarity, int setLevel)
 	{
 		audioHandler = GetComponent<AudioHandler>();
@@ -102,13 +103,13 @@ public class Items : MonoBehaviour, IInteractable
 		currentStackCount = count;
 	}
 
-	public virtual void OnMouseOverItem()
+	public virtual void OnMouseOverItem() //not implamented
 	{
 		//display what item it is eg: item price and name and rarity
 		//in child classes also display weapon stats if weapon or armor stats if armor
 	}
 
-	//item interactions
+	//player item interactions (pick up dropped items from floor)
 	public void Interact(PlayerController playerController)
 	{
 		PlayerInventoryHandler playerInventory = playerController.GetComponent<PlayerInventoryHandler>();

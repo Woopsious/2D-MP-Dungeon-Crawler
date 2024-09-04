@@ -18,11 +18,38 @@ public class AbilityAOE : MonoBehaviour
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
-	private void Start()
+
+	private void Update()
 	{
-		//Initilize(abilityBaseRef, FindObjectOfType<PlayerController>().GetComponent<EntityStats>());
+		AbilityDurationTimer();
+	}
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.GetComponent<EntityStats>() == null) return;
+
+		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
+			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
+			return;
+
+		EntityStats stats = other.gameObject.GetComponent<EntityStats>();
+		stats.ApplyStatusEffect(abilityBaseRef, casterInfo);
+
+		/*
+		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		{
+			EntityStats stats = other.gameObject.GetComponent<EntityStats>();
+			stats.ApplyStatusEffect(abilityBaseRef);
+		}
+		else
+		{
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
+				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
+		}
+		*/
 	}
 
+	//set data
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
@@ -61,36 +88,7 @@ public class AbilityAOE : MonoBehaviour
 		this.player = player;
 	}
 
-	private void Update()
-	{
-		AbilityDurationTimer();
-	}
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.gameObject.GetComponent<EntityStats>() == null) return;
-
-		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
-				return;
-
-		EntityStats stats = other.gameObject.GetComponent<EntityStats>();
-		stats.ApplyStatusEffect(abilityBaseRef, casterInfo);
-
-		/*
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
-		{
-			EntityStats stats = other.gameObject.GetComponent<EntityStats>();
-			stats.ApplyStatusEffect(abilityBaseRef);
-		}
-		else
-		{
-			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
-				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
-		}
-		*/
-	}
-
+	//timer
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer -= Time.deltaTime;

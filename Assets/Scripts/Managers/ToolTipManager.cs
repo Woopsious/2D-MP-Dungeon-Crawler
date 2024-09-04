@@ -29,7 +29,7 @@ public class ToolTipManager : MonoBehaviour
 
 	public static Action<InventoryItemUi, Vector2> OnMouseRightClick;
 
-	public static Action<QuestDataSlotUi, InventoryItemUi> OnTryHandInItem;
+	public static Action<QuestDataUi, InventoryItemUi> OnTryHandInItem;
 
 	private void OnEnable()
 	{
@@ -110,7 +110,7 @@ public class ToolTipManager : MonoBehaviour
 			discardItemButton.gameObject.SetActive(true);
 		}
 
-		QuestDataSlotUi quest = CanItemBeHandedIn(slot.itemInSlot);
+		QuestDataUi quest = CanItemBeHandedIn(slot.itemInSlot);
 		if (quest != null)
 		{
 			handInItemButton.gameObject.SetActive(true);
@@ -308,6 +308,7 @@ public class ToolTipManager : MonoBehaviour
 		tipWindow.gameObject.SetActive(false);
 	}
 
+	//bool check
 	private bool CheckIfListContainsSlot(List<GameObject> listOfSlots, InventorySlotDataUi slot)
 	{
 		if (listOfSlots.Contains(slot.gameObject))
@@ -315,17 +316,17 @@ public class ToolTipManager : MonoBehaviour
 		else
 			return false;
 	}
-	private QuestDataSlotUi CanItemBeHandedIn(InventoryItemUi item)
+	private QuestDataUi CanItemBeHandedIn(InventoryItemUi item)
 	{
 		if (item.itemType == InventoryItemUi.ItemType.isAbility) return null;
 
-		QuestDataSlotUi matchingQuest = null;
-		foreach(QuestDataSlotUi quest in PlayerJournalUi.Instance.activeQuests)
+		QuestDataUi matchingQuest = null;
+		foreach(QuestDataUi quest in PlayerJournalUi.Instance.activeQuests)
 		{
-			if (quest.questType != QuestDataSlotUi.QuestType.isItemHandInQuest)
+			if (quest.questType != QuestDataUi.QuestType.isItemHandInQuest)
 				continue;
 
-			if (quest.itemTypeToHandIn == QuestDataSlotUi.ItemType.isWeapon)
+			if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isWeapon)
 			{
 				if (quest.weaponToHandIn == item.weaponBaseRef)
 				{
@@ -334,7 +335,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataSlotUi.ItemType.isArmor)
+			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isArmor)
 			{
 				if (quest.armorToHandIn == item.armorBaseRef)
 				{
@@ -343,7 +344,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataSlotUi.ItemType.isAccessory)
+			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isAccessory)
 			{
 				if (quest.accessoryToHandIn == item.accessoryBaseRef)
 				{
@@ -351,7 +352,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataSlotUi.ItemType.isConsumable)
+			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isConsumable)
 			{
 				if (quest.consumableToHandIn == item.consumableBaseRef)
 				{

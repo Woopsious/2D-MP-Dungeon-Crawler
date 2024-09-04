@@ -28,6 +28,7 @@ public class PortalHandler : MonoBehaviour, IInteractable
 		PlayPortalSound();
 	}
 
+	//player interactions
 	public void Interact(PlayerController playerController)
 	{
 		PlayerEventManager.ShowPortalUi(this);

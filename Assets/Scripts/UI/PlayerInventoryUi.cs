@@ -121,7 +121,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 	}
 
-	//reload player inventory
+	//restore player inventory data
 	private void ReloadPlayerInventory()
 	{
 		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
@@ -204,7 +204,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		}
 	}
 
-	//PLAYER GOLD
+	//player gold updates
 	public int GetGoldAmount()
 	{
 		return playerGoldAmount;
@@ -215,11 +215,12 @@ public class PlayerInventoryUi : MonoBehaviour
 		GetGoldAmount();
 		PlayerEventManager.GoldAmountChange(playerGoldAmount);
 	}
-	public void OnQuestComplete(QuestDataSlotUi quest)
+	public void OnQuestComplete(QuestDataUi quest)
 	{
-		if (quest.questRewardType == QuestDataSlotUi.RewardType.isGoldReward)
+		if (quest.questRewardType == QuestDataUi.RewardType.isGoldReward)
 			UpdateGoldAmount(quest.rewardToAdd);
 	}
+
 	//buying/selling items
 	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
@@ -341,7 +342,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		}
 	}
 
-	//stack item to existing ui items
+	//item stacking
 	private void TryStackItem(InventoryItemUi newItem)
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
@@ -378,7 +379,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//ABILITIES
-	//Add new abilities to Ui
+	//Add/remove abilities to/from learnt abilities Ui
 	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
@@ -408,8 +409,6 @@ public class PlayerInventoryUi : MonoBehaviour
 		ability.abilityBaseRef = newAbility;
 		ability.Initilize();
 	}
-
-	//reset/clear learnt abilities from ui
 	private void OnAbilityRefund(SOClassAbilities ability)
 	{
 		foreach (GameObject abilitySlot in LearntAbilitySlots)
@@ -428,6 +427,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 
 	//UI CHANGES
+	//inventory
 	public void ShowInventory()
 	{
 		if (PlayerInfoAndInventoryPanelUi.activeInHierarchy)
@@ -443,6 +443,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerInfoAndInventoryPanelUi.SetActive(false);
 	}
 
+	//abilities
 	public void ShowLearntAbilities()
 	{
 		if (LearntAbilitiesPanelUi.activeInHierarchy)
@@ -506,7 +507,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		HideInventory();
 	}
 
-	//playerStorageChest
+	//player storage chest
 	public void ShowPlayerStoredWeaponsButton()
 	{
 		HidePlayerStorageChest(interactedChest);
@@ -613,6 +614,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		HideInventory();
 	}
 
+	//update items in ui incase any changes were made
 	private void UpdatePlayerInventoryItemsUi(List<GameObject> objList)
 	{
 		foreach (GameObject obj in objList)

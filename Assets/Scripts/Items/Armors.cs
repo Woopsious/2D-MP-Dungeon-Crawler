@@ -28,6 +28,7 @@ public class Armors : Items
 			GenerateStatsOnStart();
 	}
 
+	//set armor data
 	public override void Initilize(Rarity setRarity, int setLevel)
 	{
 		base.Initilize(setRarity, setLevel);

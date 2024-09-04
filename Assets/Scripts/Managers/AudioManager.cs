@@ -24,6 +24,8 @@ public class AudioManager : MonoBehaviour
 	{
 		Instance = this;
 	}
+	
+	//restore audio data
 	public void RestoreAudioVolume(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
 	{
 		this.musicVolume = musicVolume;
@@ -34,10 +36,13 @@ public class AudioManager : MonoBehaviour
 		UpdateAudioVolume();
 	}
 
+	//update audio event
 	public void UpdateAudioVolume()
 	{
 		OnAudioVolumeChangeEvent?.Invoke(musicVolume, menuSfxVolume, ambienceVolume, sfxVolume);
 	}
+
+	//update slider ui values to match
 	public void SetVolumeSliderValues()
 	{
 		musicVolumeSlider.value = musicVolume;
@@ -46,6 +51,7 @@ public class AudioManager : MonoBehaviour
 		sfxVolumeSlider.value = sfxVolume;
 	}
 
+	//ui slider events
 	public void UpdateMusicVolumeSlider()
 	{
 		musicVolume = musicVolumeSlider.value;

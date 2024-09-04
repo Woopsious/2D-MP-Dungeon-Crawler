@@ -46,9 +46,13 @@ public class MainMenuManager : MonoBehaviour
 	{
 		EnableMainMenuButtons();
 	}
+
+
 	private void EnableMainMenuButtons()
 	{
 		//enable buttons unique to main menu scene
+		if (GameManager.Instance == null)
+			Debug.LogWarning("Game Manager Instance not found, ignore if testing");
 		if (Utilities.GetCurrentlyActiveScene("TestingScene")) return;
 		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
 

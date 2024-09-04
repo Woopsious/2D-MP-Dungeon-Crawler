@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ClassTreeNodeSlotUi : MonoBehaviour
+public class ClassTreeNodeUi : MonoBehaviour
 {
 	public ClassStatUnlocks statUnlock;
 	public ClassAbilityUnlocks abilityUnlock;
@@ -50,6 +50,7 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		ResetNode(null);
 	}
 
+	//tool tip
 	public void SetToolTip(EntityStats playerStats)
 	{
 		toolTip = GetComponent<ToolTipUi>();
@@ -59,7 +60,6 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		if (abilityUnlock != null)
 			SetAbilityTypeToolTip(playerStats);
 	}
-	//tool tip
 	private void SetStatBonusToolTip()
 	{
 		string info = $"{statUnlock.unlock.Description} \n";
@@ -245,17 +245,15 @@ public class ClassTreeNodeSlotUi : MonoBehaviour
 		}
 		UnlockNode();
 	}
-
-	//checks
 	private bool AreStatBonusesForThisLevelAlreadyUnlocked()
 	{
 		Transform parentTransform = transform.parent;
 
-		if (parentTransform.GetChild(0).GetComponent<ClassTreeNodeSlotUi>().isAlreadyUnlocked == true)
+		if (parentTransform.GetChild(0).GetComponent<ClassTreeNodeUi>().isAlreadyUnlocked == true)
 			return true;
 		else if (parentTransform.childCount == 2)
 		{
-			if (parentTransform.GetChild(1).GetComponent<ClassTreeNodeSlotUi>().isAlreadyUnlocked == true)
+			if (parentTransform.GetChild(1).GetComponent<ClassTreeNodeUi>().isAlreadyUnlocked == true)
 				return true;
 			else return false;
 		}

@@ -44,6 +44,7 @@ public class Accessories : Items
 			GenerateStatsOnStart();
 	}
 
+	//set accessory data
 	public override void Initilize(Rarity setRarity, int setLevel)
 	{
 		base.Initilize(setRarity, setLevel);
@@ -123,6 +124,7 @@ public class Accessories : Items
 		toolTip.tipToShow = $"{info}\n{extraInfo}\n{equipInfo}";
 	}
 
+	//only called when loot drop or from shop
 	public void SetRandomDamageTypeOnDrop()
 	{
 		int num = Utilities.GetRandomNumber(3);

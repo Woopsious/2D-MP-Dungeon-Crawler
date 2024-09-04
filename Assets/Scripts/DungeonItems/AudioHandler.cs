@@ -27,21 +27,6 @@ public class AudioHandler : MonoBehaviour
 		AudioManager.OnAudioVolumeChangeEvent -= UpdateAudioSettings;
 	}
 
-	private void UpdateAudioSettings(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
-	{
-		if (audioType == AudioType.music)
-			audioSource.volume = musicVolume;
-
-		if (audioType == AudioType.menuSfx)
-			audioSource.volume = menuSfxVolume;
-
-		if (audioType == AudioType.ambience)
-			audioSource.volume = ambienceVolume;
-
-		if (audioType == AudioType.sfx)
-			audioSource.volume = sfxVolume;
-	}
-
 	public void PlayAudio(AudioClip clip)
 	{
 		if (IsAudioPlaying())
@@ -55,5 +40,21 @@ public class AudioHandler : MonoBehaviour
 		if (audioSource.isPlaying)
 			return true;
 		else return false;
+	}
+
+	//audio event listner
+	private void UpdateAudioSettings(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
+	{
+		if (audioType == AudioType.music)
+			audioSource.volume = musicVolume;
+
+		if (audioType == AudioType.menuSfx)
+			audioSource.volume = menuSfxVolume;
+
+		if (audioType == AudioType.ambience)
+			audioSource.volume = ambienceVolume;
+
+		if (audioType == AudioType.sfx)
+			audioSource.volume = sfxVolume;
 	}
 }

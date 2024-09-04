@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.InputSystem.Processors;
 using UnityEngine.UI;
 
-public class QuestDataSlotUi : MonoBehaviour
+public class QuestDataUi : MonoBehaviour
 {
 	[Header("Quest Ui")]
 	public TMP_Text questNameUi;
@@ -69,6 +69,8 @@ public class QuestDataSlotUi : MonoBehaviour
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
 	}
+
+	//set up quest data
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
@@ -230,6 +232,7 @@ public class QuestDataSlotUi : MonoBehaviour
 		if (isCurrentlyActiveQuest) //hide accept quest button (for when reloading active quests OnGameLoad)
 			acceptQuestButtonObj.SetActive(false);
 	}
+
 	public bool DoesHandInItemMatch(InventoryItemUi item)
 	{
 		if (itemTypeToHandIn == ItemType.isWeapon)
@@ -262,12 +265,11 @@ public class QuestDataSlotUi : MonoBehaviour
 		else return false;
 	}
 
-	public void OnQuestAccepted(QuestDataSlotUi quest)
+	//quest events
+	public void OnQuestAccepted(QuestDataUi quest)
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
-
-	//calls to global quest events to invoke said events passing in this quest info
 	public void AcceptThisQuest() //button call
 	{
 		PlayerJournalUi.Instance.AcceptQuest(this);

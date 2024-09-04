@@ -52,8 +52,6 @@ public class EnemyAttackState : EnemyBaseState
 		}
 	}
 
-	//abilites logic
-
 	//attack behaviour physics
 	private void AttackBehaviourPhysics(EntityBehaviour entity)
 	{
@@ -63,7 +61,7 @@ public class EnemyAttackState : EnemyBaseState
 		{
 			distanceToPlayer = Vector3.Distance(entity.transform.position, entity.playerTarget.transform.position);
 
-			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //player outside of max chase range
+			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
 				entity.ChangeStateIdle();
 
 			if (equippedWeapon == null) return;
@@ -71,7 +69,6 @@ public class EnemyAttackState : EnemyBaseState
 				KeepDistanceFromPlayer(entity);
 			else
 			{
-				//if melee weapon charge at player
 				if (entity.CheckDistanceToDestination())
 					entity.SetNewDestination(entity.playersLastKnownPosition);
 			}
@@ -79,9 +76,7 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	private void KeepDistanceFromPlayer(EntityBehaviour entity)
 	{
-		//idle when within ranges of max range		eg: 10 / 1.25 = 8		eg: 10 / 1.5 = 6.25
-		//chase player when out of max attack range till inside max range / 1.25f
-		//flee when player inside min attack range * 2	eg: 2 * 2 = 4
+		//with ranged weapons idle within min/max range of weapon. (	bow example: (10 / 1.25 = 8)	(10 / 1.5 = 6.25)	)
 
 		if (!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange / 1.25f) &&
 			CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange / 1.75f) && idleInWeaponRange == false)

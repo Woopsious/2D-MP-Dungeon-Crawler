@@ -4,6 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+//possibly scrap script and move player info ui into Player Inventory since text is only viewable in inventory.
+//move Interact with text to PlayerHotBar Ui. or move everything not related to hotbar into this script.
+//things like selected target ui, aoe ui etc as those arnt necessarily hotbar ui related and variou types player info ui
 public class PlayerInfoUi : MonoBehaviour
 {
 	public GameObject PlayerPrefab;
@@ -51,6 +54,7 @@ public class PlayerInfoUi : MonoBehaviour
 		PlayerEventManager.OnDetectNewInteractedObject += ShowHideInteractWithText;
 	}
 
+	//interact with text updates
 	private void ShowHideInteractWithText(GameObject obj, bool showText)
 	{
         if (showText)
@@ -59,6 +63,7 @@ public class PlayerInfoUi : MonoBehaviour
 			Instance.interactWithText.SetActive(false);
 		currentPlayerInteractedObj = obj;
 	}
+	//update text info in player inventory screen
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
 		playerInstance = stats.GetComponent<PlayerController>();

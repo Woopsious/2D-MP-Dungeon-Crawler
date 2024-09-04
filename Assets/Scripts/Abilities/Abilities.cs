@@ -31,6 +31,7 @@ public class Abilities : MonoBehaviour
 	[Header("Spell Cost")]
 	public int manaCost;
 
+	//set data types
 	public void Initilize()
 	{
 		isStatusEffectTimerForUi = false;
@@ -43,7 +44,6 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
 	}
-	//funcs used for statues effect on the ui
 	public void InitilizeStatusEffectUiTimer(SOClassAbilities ability, float currentTimer)
 	{
 		abilityBaseRef = ability;
@@ -159,6 +159,8 @@ public class Abilities : MonoBehaviour
 		else
 			AbilityCooldownTimer();
 	}
+
+	//timer types
 	private void AbilityCooldownTimer()
 	{
 		if (!isOnCooldown) return;
@@ -187,25 +189,18 @@ public class Abilities : MonoBehaviour
 		}
 	}
 
-	//cooldown and mana cost check
+	//bool checks
 	public bool CanUseAbility(EntityStats entityStats)
 	{
 		if (isOnCooldown)
-		{
-			Debug.Log(abilityName + " on cooldown");
 			return false;
-		}
 
 		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(entityStats.entityLevel));
 		if (entityStats.currentMana < totalManaCost)
-		{
-			Debug.Log("Not enough mana for " + abilityName);
 			return false;
-		}
 
 		return true;
 	}
-	//cast now
 	public bool CanInstantCastAbility(EntityStats selectedEnemy)
 	{
 		if (abilityBaseRef.canOnlyTargetSelf)
@@ -227,13 +222,13 @@ public class Abilities : MonoBehaviour
 				return false;
 			else
 			{
-				Debug.Log("failed to figure out if ability can be insta casted while requiring a target");
+				Debug.LogError("failed to figure out if ability can be insta casted while requiring a target");
 				return false;
 			}
 		}
 		else
 		{
-			Debug.Log("failed to figure out if ability can be insta casted");
+			Debug.LogError("failed to figure out if ability can be insta casted");
 			return false;
 		}
 	}

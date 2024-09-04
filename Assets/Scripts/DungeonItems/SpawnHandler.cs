@@ -59,6 +59,7 @@ public class SpawnHandler : MonoBehaviour
 		GameManager.OnSceneChangeFinish -= TrySpawnEntity;
 	}
 
+	//track players
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (listOfPlayersInRange.Count <= 0)
@@ -88,6 +89,7 @@ public class SpawnHandler : MonoBehaviour
 		TrackClosestPlayerToSpawner();
 	}
 
+	//event listeners
 	private void OnPlayerLevelUpUpdateSpawnerLevel(EntityStats playerStats)
 	{
 		spawnerLevel = playerStats.entityLevel;
@@ -118,6 +120,7 @@ public class SpawnHandler : MonoBehaviour
 		}
 	}
 
+	//entity spawning
 	private void TrySpawnEntity()
 	{
 		if (listOfSpawnedEnemies.Count >= maxNumOfEnemiesToSpawn) return;

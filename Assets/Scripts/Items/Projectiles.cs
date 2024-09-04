@@ -24,6 +24,28 @@ public class Projectiles : MonoBehaviour
 	Vector2 projectileOrigin;
 	float distanceTraveled;
 
+	//set weapon projectile data
+	public void Initilize(PlayerController player, Weapons weaponRef)
+	{
+		this.player = player;
+		this.abilityBaseRef = null;
+		this.weaponBaseRef = weaponRef.weaponBaseRef;
+		gameObject.name = weaponRef.itemName + "Projectile";
+		boxCollider = GetComponent<BoxCollider2D>();
+		projectileSprite = GetComponent<SpriteRenderer>();
+		projectileSprite.sprite = weaponRef.weaponBaseRef.projectileSprite;
+		boxCollider.size = projectileSprite.size;
+		boxCollider.offset = new Vector2(0, 0);
+
+		isPlayerProjectile = weaponRef.isEquippedByPlayer;
+		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
+		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
+		projectileDamage = weaponRef.damage;
+		projectileOrigin = transform.position;
+		gameObject.SetActive(true);
+	}
+
+	//set ability projectile data
 	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.abilityBaseRef = abilityBaseRef;
@@ -54,25 +76,7 @@ public class Projectiles : MonoBehaviour
 		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	public void Initilize(PlayerController player, Weapons weaponRef)
-	{
-		this.player = player;
-		this.abilityBaseRef = null;
-		this.weaponBaseRef = weaponRef.weaponBaseRef;
-		gameObject.name = weaponRef.itemName + "Projectile";
-		boxCollider = GetComponent<BoxCollider2D>();
-		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = weaponRef.weaponBaseRef.projectileSprite;
-		boxCollider.size = projectileSprite.size;
-		boxCollider.offset = new Vector2(0, 0);
 
-		isPlayerProjectile = weaponRef.isEquippedByPlayer;
-		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
-		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
-		projectileDamage = weaponRef.damage;
-		projectileOrigin = transform.position;
-		gameObject.SetActive(true);
-	}
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
@@ -98,7 +102,6 @@ public class Projectiles : MonoBehaviour
 		}
 		DungeonHandler.ProjectileCleanUp(this);
 	}
-
 	private void FixedUpdate()
 	{
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);

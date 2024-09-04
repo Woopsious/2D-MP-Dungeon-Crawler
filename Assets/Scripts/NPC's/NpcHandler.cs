@@ -14,7 +14,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 
 	[Header("Quests")]
 	public GameObject questPrefab;
-	public List<QuestDataSlotUi> avalableQuestList = new List<QuestDataSlotUi>();
+	public List<QuestDataUi> avalableQuestList = new List<QuestDataUi>();
 
 	[Header("Shop Items")]
 	public GameObject ItemPrefab;
@@ -44,6 +44,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		UpdateNpcTypeText();
 	}
 
+	//set up npc based on type
 	private void Initilize()
 	{
 		animator.SetBool("isIdle", true);
@@ -57,7 +58,14 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 			GenerateShopItems();
 	}
+	private void UpdateNpcTypeText()
+	{
+		if (!NpcTypeText.gameObject.activeInHierarchy) return;
+		NpcTypeText.transform.position =
+			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1f, 0));
+	}
 
+	//player interactions
 	public void Interact(PlayerController player)
 	{
 		player.isInteractingWithNpc = true;
@@ -82,12 +90,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 			PlayerEventManager.HideNpcShopInventory(this);
 	}
-	private void UpdateNpcTypeText()
-	{
-		if (!NpcTypeText.gameObject.activeInHierarchy) return;
-		NpcTypeText.transform.position =
-			Camera.main.WorldToScreenPoint(new Vector3(transform.position.x, transform.position.y + 1f, 0));
-	}
 
 	//quest npc functions
 	public void GenerateNewQuests()
@@ -106,7 +108,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	public void GenerateQuest()
 	{
 		GameObject go = Instantiate(questPrefab, npcContainer.transform);
-		QuestDataSlotUi quest = go.GetComponent<QuestDataSlotUi>();
+		QuestDataUi quest = go.GetComponent<QuestDataUi>();
 
 		int percentage = Utilities.GetRandomNumber(100);
 		if (percentage >= 86)
@@ -166,6 +168,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			item.accessoryBaseRef = accessory.accessoryBaseRef;
 			accessory.currentStackCount = 1;
 			accessory.Initilize(Utilities.SetRarity(0), playerLevel);
+			accessory.SetRandomDamageTypeOnDrop();
 		}
 		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
 		{
@@ -181,7 +184,8 @@ public class NpcHandler : MonoBehaviour, IInteractable
 		avalableShopItemsList.Add(item);
 	}
 
-	public void OnQuestAccepted(QuestDataSlotUi quest)
+	//quest npc events
+	public void OnQuestAccepted(QuestDataUi quest)
 	{
 		avalableQuestList.Remove(quest);
 		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;

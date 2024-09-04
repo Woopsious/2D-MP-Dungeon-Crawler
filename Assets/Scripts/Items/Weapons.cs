@@ -27,6 +27,7 @@ public class Weapons : Items
 			GenerateStatsOnStart();
 	}
 
+	//set weapon data
 	public override void Initilize(Rarity setRarity, int setLevel)
 	{
 		base.Initilize(setRarity, setLevel);
@@ -106,6 +107,39 @@ public class Weapons : Items
 
 		toolTip.tipToShow = $"{info}\n{damageInfo}\n{equipInfo}";
 	}
+
+	//set equipped weapon data
+	public void WeaponInitilization(SpriteRenderer idleWeaponSprite)
+	{
+		if (GetComponent<InventoryItemUi>() != null) return;    //return as this is an item in inventory
+		if (transform.parent == null) return;                   //weapon is not equipped
+
+		parentObj = transform.parent.gameObject;
+		parentObj.transform.rotation = Quaternion.Euler(Vector3.zero);
+		attackWeaponSprite = GetComponent<SpriteRenderer>();
+		this.idleWeaponSprite = idleWeaponSprite;
+		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		audioHandler = GetComponent<AudioHandler>();
+		animator = GetComponent<Animator>();
+		boxCollider = gameObject.AddComponent<BoxCollider2D>();
+		boxCollider.enabled = false;
+		boxCollider.isTrigger = true;
+		canAttackAgain = true;
+		animator.SetBool("isMeleeAttack", false);
+		animator.SetBool("isRangedAttack", false);
+
+		if (weaponBaseRef.isRangedWeapon)
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 180, 180);
+		else
+			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 0, 180);
+
+		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			idleWeaponSprite.enabled = true;
+	}
+	public void AddPlayerRef(PlayerController player)
+	{
+		this.player = player;
+	}
 	public void UpdateWeaponDamage(SpriteRenderer idleWeaponSprite, EntityStats stats, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier * stats.damageDealtModifier.finalPercentageValue);
@@ -145,38 +179,7 @@ public class Weapons : Items
 		return percentageMod;
 	}
 
-	public void WeaponInitilization(SpriteRenderer idleWeaponSprite)
-	{
-		if (GetComponent<InventoryItemUi>() != null) return;	//return as this is an item in inventory
-		if (transform.parent == null) return;					//weapon is not equipped
-
-		parentObj = transform.parent.gameObject;
-		parentObj.transform.rotation = Quaternion.Euler(Vector3.zero);
-		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		this.idleWeaponSprite = idleWeaponSprite;
-		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
-		audioHandler = GetComponent<AudioHandler>();
-		animator = GetComponent<Animator>();
-		boxCollider = gameObject.AddComponent<BoxCollider2D>();
-		boxCollider.enabled = false;
-		boxCollider.isTrigger = true;
-		canAttackAgain = true;
-		animator.SetBool("isMeleeAttack", false);
-		animator.SetBool("isRangedAttack", false);
-
-		if (weaponBaseRef.isRangedWeapon)
-			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 180, 180);
-		else
-			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 0, 180);
-
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
-			idleWeaponSprite.enabled = true;
-	}
-	public void AddPlayerRef(PlayerController player)
-	{
-		this.player = player;
-	}
-
+	//weapon attack
 	protected override void OnTriggerEnter2D(Collider2D other)
 	{
 		if (!isEquippedByPlayer && !isEquippedByOther)
@@ -234,6 +237,7 @@ public class Weapons : Items
 		canAttackAgain = true;
 	}
 
+	//sound + animation
 	private void OnWeaponAttack()
 	{
 		if (weaponBaseRef.isRangedWeapon)
@@ -259,7 +263,7 @@ public class Weapons : Items
 		attackWeaponSprite.enabled = false;
 	}
 
-	//direction attacks
+	//directional attacks
 	private void AttackInDirection(Projectiles projectile, float rotz)
 	{
 		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);

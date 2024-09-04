@@ -97,12 +97,6 @@ public class SaveManager : MonoBehaviour
 		}
 	}
 
-	/// <summary>
-	/// public funcs called from ui buttons etc, pass in directory path run bool checks, call private func that save/load 
-	/// Json data to disk, or delete Json data and files
-	/// auto save is normal save but only has 1 slot and cant be called by player (may add keybind later)
-	/// </summary>
-
 	//SAVING PLAYER DATA
 	public void SavePlayerData()
 	{
@@ -151,7 +145,7 @@ public class SaveManager : MonoBehaviour
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
 	}
-	public void DeletePlayerData()
+	private void DeletePlayerData()
 	{
 		string directory = Application.persistentDataPath + "/PlayerData";
 
@@ -175,7 +169,7 @@ public class SaveManager : MonoBehaviour
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 
-	//directory checks/creation
+	//called via ui buttons + auto features
 	public void SaveGameData(string directory)
 	{
 		if (DoesDirectoryExist(directory))
@@ -209,6 +203,8 @@ public class SaveManager : MonoBehaviour
 
 		DeleteJsonFile(directory, "/GameData.json");
 	}
+
+	//restore data event called on scene change
 	public void RestoreGameData()
 	{
 		RestoreData?.Invoke();
@@ -250,11 +246,11 @@ public class SaveManager : MonoBehaviour
 		SlotData = JsonUtility.FromJson<SlotData>(slotData);
 	}
 
-	//data to save to disk, loading data handled in other scripts that sub to OnGameLoad event (may make a OnGameSave event instead)
+	//data to save to disk, loading data handled in scripts that sub to OnGameLoad event
 	private void SaveSavedDungeonData()
 	{
 		GameData.savedDungeonsList.Clear();
-		foreach (DungeonDataSlotUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
+		foreach (DungeonDataUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
 			{
@@ -269,7 +265,7 @@ public class SaveManager : MonoBehaviour
 		}
 
 		GameData.activeDungeonsList.Clear();
-		foreach (DungeonDataSlotUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
+		foreach (DungeonDataUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
 			{
@@ -311,7 +307,7 @@ public class SaveManager : MonoBehaviour
 		GameData.unlockedClassNodeIndexesList.Clear();
 
 		bool isNodeStatBoost;
-		foreach (ClassTreeNodeSlotUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
+		foreach (ClassTreeNodeUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
 		{
 			if (node.statUnlock != null)
 				isNodeStatBoost = true;
@@ -394,11 +390,11 @@ public class SaveManager : MonoBehaviour
 			}
 		}
 	}
-	private void GrabQuestDataFromActiveOnes(List<QuestItemData> questDataList, List<QuestDataSlotUi> activeQuestList)
+	private void GrabQuestDataFromActiveOnes(List<QuestItemData> questDataList, List<QuestDataUi> activeQuestList)
 	{
 		questDataList.Clear();
 
-		foreach (QuestDataSlotUi quest in activeQuestList)
+		foreach (QuestDataUi quest in activeQuestList)
 		{
 			QuestItemData questData = new()
 			{

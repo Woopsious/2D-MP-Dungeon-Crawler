@@ -115,6 +115,8 @@ public class EntityStats : MonoBehaviour
 		PassiveManaRegen();
 		PlayIdleSound();
 	}
+
+	//set entity data
 	private void Initilize()
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
@@ -389,6 +391,9 @@ public class EntityStats : MonoBehaviour
 	/// hard numbers added so far: equipment values, 
 	/// percentage numbers added so far: level modifier
 	/// </summary>
+	/// 
+
+	//set base stats
 	public void CalculateBaseStats()
 	{
 		if (entityLevel == 1)  //get level modifier
@@ -427,6 +432,8 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
+
+	//update stat values/modifiers based on events
 	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
@@ -558,7 +565,8 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
-	//function will full heal entity if not player and at full health when stat changes
+
+	//full heal entity if not player and at full health on stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
 	{
 		if (GetComponent<PlayerController>() == null && oldCurrentHealthEqualToOldMaxHealth)
@@ -570,6 +578,7 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
+
 	public void UpdatePlayerStatInfoUi()
 	{
 		if (!IsPlayerEntity()) return;
@@ -578,7 +587,7 @@ public class EntityStats : MonoBehaviour
 		PlayerEventManager.PlayerStatChange(this);
 	}
 
-	//Checks
+	//bool checks
 	public bool IsEntityDead()
 	{
 		if (currentHealth <= 0)

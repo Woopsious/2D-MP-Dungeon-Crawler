@@ -42,12 +42,13 @@ public class GameManager : MonoBehaviour
 		SceneManager.sceneLoaded -= SceneChangeFinished;
 	}
 
+	//scene change finish event
 	private void SceneChangeFinished(Scene scene, LoadSceneMode mode)
 	{
 		OnSceneChangeFinish?.Invoke();
 	}
 
-	//saving and loading scenes
+	//loading different scenes
 	public void LoadMainMenu(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
@@ -68,6 +69,8 @@ public class GameManager : MonoBehaviour
 		GameManager.isNewGame = false;
 		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
+
+	//scene loading
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
@@ -77,6 +80,7 @@ public class GameManager : MonoBehaviour
 			yield return null;
 	}
 
+	//pause game
 	public void PauseGame(bool pauseGame)
     {
         if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsClient) return;

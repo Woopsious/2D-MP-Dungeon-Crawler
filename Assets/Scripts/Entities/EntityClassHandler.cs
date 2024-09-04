@@ -24,6 +24,8 @@ public class EntityClassHandler : MonoBehaviour
 	{
 		entityStats = GetComponent<EntityStats>();
 	}
+
+	//set classes + abilities of non players
 	public void SetEntityClass()
 	{
 		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
@@ -99,6 +101,7 @@ public class EntityClassHandler : MonoBehaviour
 		else return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
 	}
 
+	//duplicate ability check
 	private bool IsAbilityAlreadyEquipped(SOClassAbilities abilityToCheck)
 	{
 		if (abilityToCheck == entityStats.entityBehaviour.offensiveAbility) return true;
@@ -106,6 +109,7 @@ public class EntityClassHandler : MonoBehaviour
 		return false;
 	}
 
+	//entity class updates
 	protected virtual void UpdateClass(SOClasses newClass)
 	{
 		for (int i = unlockedStatBoostList.Count - 1; i >= 0; i--)
@@ -119,6 +123,7 @@ public class EntityClassHandler : MonoBehaviour
 		currentEntityClass = newClass;
 	}
 
+	//entity stat bonuses + ability event updates
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
 		unlockedStatBoostList.Add(statBoost);

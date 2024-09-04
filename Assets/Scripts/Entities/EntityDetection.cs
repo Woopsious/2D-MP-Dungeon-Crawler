@@ -5,18 +5,20 @@ using UnityEngine;
 
 public class EntityDetection : MonoBehaviour
 {
-	//set in entitybehaviour script on start
+	//refs set in respected scripts on Initilize()
 	[HideInInspector] public EntityBehaviour entityBehaviourRef;
 	[HideInInspector] public PlayerController player;
+
 	//in Mp will need to be modified to handle multiple players
+
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (entityBehaviourRef != null)
+		if (entityBehaviourRef != null) //detect players
 		{
 			if (other.gameObject.GetComponent<PlayerController>() != null)
 				entityBehaviourRef.AddPlayerToAggroList(other.gameObject.GetComponent<PlayerController>(), 0);
 		}
-		else if (player != null)
+		else if (player != null) //detect others
 		{
 			if (other.gameObject.GetComponent<EntityStats>() != null && other.gameObject.GetComponent<PlayerController>() == null)
 				player.AddNewEnemyTargetToList(other.gameObject.GetComponent<EntityStats>());
@@ -26,7 +28,7 @@ public class EntityDetection : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (entityBehaviourRef != null)
+		if (entityBehaviourRef != null) //detect players
 		{
 			if (other.gameObject.GetComponent<PlayerController>() != null)
 				entityBehaviourRef.RemovePlayerFromAggroList(other.gameObject.GetComponent<PlayerController>());
@@ -34,7 +36,7 @@ public class EntityDetection : MonoBehaviour
 			if (entityBehaviourRef.markedForCleanUp)
 				DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviourRef.entityStats);
 		}
-		else if (player != null)
+		else if (player != null) //detect others
 		{
 			if (other.gameObject.GetComponent<EntityStats>() != null && other.gameObject.GetComponent<PlayerController>() == null)
 				player.RemoveEnemyTargetFromList(other.gameObject.GetComponent<EntityStats>());

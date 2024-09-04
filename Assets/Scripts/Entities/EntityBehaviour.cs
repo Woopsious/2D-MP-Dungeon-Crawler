@@ -108,6 +108,7 @@ public class EntityBehaviour : MonoBehaviour
 		UpdateAnimationState();
 	}
 
+	//set behaviour data
 	private void Initilize()
 	{
 		UpdateBounds(transform.position);
@@ -198,7 +199,7 @@ public class EntityBehaviour : MonoBehaviour
 		}
 	}
 
-	//shared idle/attack behaviour 
+	//shared idle/attack movement behaviour 
 	public bool CheckDistanceToDestination()
 	{
 		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && HasReachedDestination == false)

@@ -63,6 +63,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			GenerateStatsOnStart();
 	}
 
+	//set item data
 	public void Initilize()
 	{
 		audioHandler = GetComponent<AudioHandler>();

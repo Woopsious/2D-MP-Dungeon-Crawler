@@ -61,7 +61,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		isPlayerEquipment = false;
 	}
 
-	//for entitys other then player to randomly equip items when they spawn in
+	//equip items to non players based on class
 	public void SpawnEntityEquipment()
 	{
 		if (entityStats.entityBaseStats.canUseEquipment)
@@ -115,7 +115,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
 
-	//weapons
+	//equipment changes events
 	protected void OnWeaponUnequip(Weapons weapon)
 	{
 		if (weapon == null) return;
@@ -153,7 +153,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		OnEquipmentChanges?.Invoke(this);
 	}
 
-	//armors
 	protected void OnArmorUnequip(Armors armor)
 	{
 		if (armor == null) return;
@@ -181,7 +180,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		OnEquipmentChanges?.Invoke(this);
 	}
 
-	//accessories
 	protected void OnAccessoryUnequip(Accessories accessory)
 	{
 		if (accessory == null) return;
@@ -227,6 +225,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		OnEquipmentChanges?.Invoke(this);
 	}
 
+	//physically spawned on entites
 	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
 	{
 		GameObject go;

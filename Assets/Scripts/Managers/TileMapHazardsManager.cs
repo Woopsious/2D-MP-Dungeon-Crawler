@@ -34,6 +34,7 @@ public class TileMapHazardsManager : MonoBehaviour
 		TryApplyEnviromentalEffect(collision);
 	}
 
+	//apply enviromental effects
 	private void TryApplyEnviromentalEffect(Collider2D collision)
 	{
 		Vector3Int gridPos = map.WorldToCell(collision.transform.position);
@@ -54,6 +55,7 @@ public class TileMapHazardsManager : MonoBehaviour
 			entity.ApplyStatusEffect(dataFromTiles[tile].effectToApply, entity);
 	}
 
+	//tile checks
 	private TileBase CheckCurrentTile(Vector3Int objPos)
 	{
 		if (map.GetTile(objPos) != null)

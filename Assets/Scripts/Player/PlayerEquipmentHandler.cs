@@ -22,6 +22,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		InventorySlotDataUi.OnItemEquip -= EquipItem;
 	}
 
+	//player equip item event listner
 	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
@@ -60,8 +61,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
 	}
-
-	//physically spawned in to player
 	private void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;

@@ -53,8 +53,6 @@ public class EnemyIdleState : EnemyBaseState
 		}
 	}
 
-	//abilityCasting
-
 	private void IdleAtPositionTimer(EntityBehaviour entity)
 	{
 		if (entity.HasReachedDestination == true)

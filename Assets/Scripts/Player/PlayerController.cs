@@ -113,6 +113,7 @@ public class PlayerController : MonoBehaviour
 		AutoAttackTimer();
 	}
 
+	//set player data
 	public void Initilize()
 	{
 		if (playerInputs == null)
@@ -281,6 +282,7 @@ public class PlayerController : MonoBehaviour
 		selectedEnemyTargetIndex = index;
 	}
 
+	//targeting updates
 	public void AddNewEnemyTargetToList(EntityStats entity)
 	{
 		//add new enemy to list, then update targets
@@ -537,10 +539,6 @@ public class PlayerController : MonoBehaviour
 			return true;
 		else return false;
 	}
-
-	/// <summary>
-	/// Below are functions to link to player so they can interact with them
-	/// </summary>
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{

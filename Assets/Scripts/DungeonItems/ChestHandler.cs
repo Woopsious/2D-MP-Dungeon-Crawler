@@ -40,6 +40,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		Initilize();
 	}
 
+	//set chest data
 	private void Initilize()
 	{
 		spriteRenderer.sprite = chestClosedSprite;
@@ -47,6 +48,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool);
 	}
 
+	//loot chest states
 	public void ActivateChest()
 	{
 		chestActive = true;
@@ -68,6 +70,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		}
 	}
 
+	//player interactions
 	public void Interact(PlayerController player)
 	{
 		if (!isPlayerStorageChest)

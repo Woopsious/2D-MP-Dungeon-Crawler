@@ -20,6 +20,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public int slotIndex;
 	public InventoryItemUi itemInSlot;
 
+	//slot indexing
 	public void SetSlotIndex()
 	{
 		slotIndex = transform.GetSiblingIndex();
@@ -99,6 +100,8 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
 	}
+
+	//other checks
 	public void CheckIfItemInEquipmentSlot(InventoryItemUi item)
 	{
 		if (!IsPlayerEquipmentSlot()) return;

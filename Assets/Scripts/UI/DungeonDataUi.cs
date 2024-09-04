@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static DungeonDataSlotUi;
+using static DungeonDataUi;
 
-public class DungeonDataSlotUi : MonoBehaviour
+public class DungeonDataUi : MonoBehaviour
 {
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
@@ -31,9 +31,10 @@ public class DungeonDataSlotUi : MonoBehaviour
 		physicalDamageMod, poisonDamageMod, fireDamageMod, iceDamageMod, mainWeaponDamageMod, dualWeaponDamageMod, rangedWeaponDamageMod
 	}
 
-	public static event Action<DungeonDataSlotUi> OnDungeonSave;
-	public static event Action<DungeonDataSlotUi> OnDungeonDelete;
+	public static event Action<DungeonDataUi> OnDungeonSave;
+	public static event Action<DungeonDataUi> OnDungeonDelete;
 
+	//set dungeon data
 	public void Initilize(int index)
 	{
 		hasExploredDungeon = false;
@@ -213,6 +214,8 @@ public class DungeonDataSlotUi : MonoBehaviour
 		else
 			Debug.LogError("modifer type out of range");
 	}
+
+	//actions
 	public void EnterDungeon()
 	{
 		hasExploredDungeon = true;

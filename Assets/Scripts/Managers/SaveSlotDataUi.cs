@@ -23,6 +23,7 @@ public class SaveSlotDataUi : MonoBehaviour
 	public string Level;
 	public string Date;
 
+	//set up ui + save data
 	public void Initilize(string directory, bool isAutoSaveSlot , bool isEmpty)
 	{
 		folderDirectory = directory;

@@ -52,15 +52,16 @@ public class PlayerHotbarUi : MonoBehaviour
 	public GameObject playerStatusEffectsParentObj;
 
 	[Header("Selected Target Ui")]
-	public EntityStats selectedTarget;
 	public GameObject unSelectedTargetUi;
 	public GameObject selectedTargetUi;
+	public GameObject selectedTargetTrackerUi;
 	public TMP_Text selectedTargetUiName;
 	public Image selectedTargetUiImage;
 	public Image selectedTargetHealthBarFiller;
 	public TMP_Text selectedTargetHealth;
 	public Image selectedTargetManaBarFiller;
 	public TMP_Text selectedTargetMana;
+	public EntityStats selectedTarget;
 
 	[Header("Selected Target Status Effects Ui")]
 	public GameObject selectedTargetStatusEffectsParentObj;
@@ -85,6 +86,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void Update()
 	{
 		UpdateQueuedAbilityUiPosition();
+		UpdateSelectedTargetTrackerUi();
 	}
 	private void OnEnable()
 	{
@@ -131,8 +133,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Equip/Unequip Consumables/Abilities to Ui
-	//not physically spawned in
+	//Equipping/Unequipping Consumables/Abilities to hotbar Ui slots
 	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
@@ -234,7 +235,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Player Ui Updates
+	//Player ui updates
 	private void UpdatePlayerLevelInfo(EntityStats playerStats)
 	{
 		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
@@ -279,7 +280,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Player Ui Abilities Updates
+	//Player ui abilities updates
 	public void AddNewQueuedAbility(Abilities ability)
 	{
 		queuedAbility = ability;
@@ -317,7 +318,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbilityAoe.transform.localScale = scale;
 	}
 
-	//Selecting new target event
+	//Selected target ui updates
 	public void OnNewTargetSelected(EntityStats entityStats)
 	{
 		if (!selectedTargetUi.activeInHierarchy)
@@ -360,8 +361,28 @@ public class PlayerHotbarUi : MonoBehaviour
 		foreach (AbilityStatusEffect statusEffect in selectedTarget.currentStatusEffects)
 			OnNewStatusEffectsForSelectedTarget(statusEffect);
 	}
+	private void OnTargetDeathUnSelect(GameObject obj)
+	{
+		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
 
-	//Selected target events for updating ui
+		if (selectedTargetUi.activeInHierarchy)
+			selectedTargetUi.SetActive(false);
+		if (!unSelectedTargetUi.activeInHierarchy)
+			unSelectedTargetUi.SetActive(true);
+
+		EntityStats entity = obj.GetComponent<EntityStats>();
+		entity.OnHealthChangeEvent -= OnTargetHealthChange;
+		entity.OnManaChangeEvent -= OnTargetManaChange;
+		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+	}
+	private void UpdateSelectedTargetTrackerUi()
+	{
+		if (selectedTarget == null || !selectedTargetTrackerUi.activeInHierarchy) return;
+		Vector2 position = Camera.main.WorldToScreenPoint(selectedTarget.transform.position);
+		selectedTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
+	}
+
+	//Selected target ui event updates
 	private void OnTargetHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
@@ -386,20 +407,6 @@ public class PlayerHotbarUi : MonoBehaviour
 				return;
 			}
 		}
-	}
-	private void OnTargetDeathUnSelect(GameObject obj)
-	{
-		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
-
-		if (selectedTargetUi.activeInHierarchy)
-			selectedTargetUi.SetActive(false);
-		if (!unSelectedTargetUi.activeInHierarchy)
-			unSelectedTargetUi.SetActive(true);
-
-		EntityStats entity = obj.GetComponent<EntityStats>();
-		entity.OnHealthChangeEvent -= OnTargetHealthChange;
-		entity.OnManaChangeEvent -= OnTargetManaChange;
-		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
 	}
 
 	//UI CHANGES

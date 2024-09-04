@@ -12,6 +12,7 @@ public class Consumables : Items
 			GenerateStatsOnStart();
 	}
 
+	//set consumable data
 	public override void Initilize(Rarity setRarity, int setLevel)
 	{
 		base.Initilize(setRarity, setLevel);
@@ -34,6 +35,7 @@ public class Consumables : Items
 		toolTip.tipToShow = $"{info}\n{extraInfo}";
 	}
 
+	//consume item
 	public void ConsumeItem(EntityStats entityStats)
 	{
 		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration && !EntityHealthFull(entityStats))
@@ -44,6 +46,8 @@ public class Consumables : Items
 
 		GetComponent<InventoryItemUi>().DecreaseStackCounter();
 	}
+
+	//bool checks
 	private bool EntityHealthFull(EntityStats entityStats)
 	{
 		if (entityStats.currentHealth >= entityStats.maxHealth.finalValue)

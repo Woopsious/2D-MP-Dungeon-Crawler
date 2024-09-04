@@ -34,6 +34,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 		hasRecievedMageItems = false;
 	}
 
+	//spawn starting items based on starting class + if already receieved them
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
 		if (debugSpawnStartingItems)

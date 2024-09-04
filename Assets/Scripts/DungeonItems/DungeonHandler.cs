@@ -40,7 +40,13 @@ public class DungeonHandler : MonoBehaviour
 		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
-	//entity deaths
+	//entity obj pooling + death event
+	public void AddNewEntitiesToPool(EntityStats entity)
+	{
+		entity.gameObject.SetActive(false);
+		entity.transform.position = Vector3.zero;
+		inActiveEntityPool.Add(entity);
+	}
 	public static void EntityDeathEvent(GameObject gameObject)
 	{
 		OnEntityDeathEvent?.Invoke(gameObject);
@@ -54,7 +60,7 @@ public class DungeonHandler : MonoBehaviour
 		inActiveEntityPool.Add(entityStats);
 	}
 
-	//reusable projectiles
+	//projectile obj pooling
 	public static Projectiles GetProjectile()
 	{
 		if (Instance.inActiveProjectilesPool.Count != 0)
@@ -71,7 +77,8 @@ public class DungeonHandler : MonoBehaviour
 		projectile.transform.position = Vector3.zero;
 		Instance.inActiveProjectilesPool.Add(projectile);
 	}
-	//reusable aoe abilities
+
+	//aoe obj pooling
 	public static AbilityAOE GetAoeAbility()
 	{
 		if (Instance.inActiveAoeAbilitesPool.Count != 0)
@@ -104,13 +111,7 @@ public class DungeonHandler : MonoBehaviour
 		}
 	}
 
-	public void AddNewEntitiesToPool(EntityStats entity)
-	{
-		entity.gameObject.SetActive(false);
-		entity.transform.position = Vector3.zero;
-		inActiveEntityPool.Add(entity);
-	}
-
+	//restore dungeon data
 	private void RestoreDungeonChestData()
 	{
 		if (playerStorageChest == null) return;

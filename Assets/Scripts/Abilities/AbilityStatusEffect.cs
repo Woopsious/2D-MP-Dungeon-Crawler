@@ -18,6 +18,13 @@ public class AbilityStatusEffect : MonoBehaviour
 	private float damageOverTimeCooldown = 1f;
 	private float timerTillNextDamage;
 
+	private void Update()
+	{
+		AbilityDurationTimer();
+		DamageOverTimeEffect();
+	}
+
+	//set data
 	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo, EntityStats entityToApplyEffectTo)
 	{
 		transform.localPosition = Vector3.zero;
@@ -41,25 +48,8 @@ public class AbilityStatusEffect : MonoBehaviour
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	public SOClassAbilities GrabAbilityBaseRef()
-	{
-		return abilityBaseRef;
-	}
-	public void ResetTimer()
-	{
-		abilityDurationTimer = abilityBaseRef.abilityDuration;
-	}
-	public float GetTimer()
-	{
-		return abilityDurationTimer;
-	}
 
-	private void Update()
-	{
-		AbilityDurationTimer();
-		DamageOverTimeEffect();
-	}
-
+	//timer
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer += Time.deltaTime;
@@ -70,6 +60,8 @@ public class AbilityStatusEffect : MonoBehaviour
 			Destroy(gameObject);
 		}
 	}
+
+	//dot effect if it has one
 	private void DamageOverTimeEffect()
 	{
 		if (!abilityBaseRef.isDOT) return;
@@ -81,5 +73,18 @@ public class AbilityStatusEffect : MonoBehaviour
 				(IDamagable.DamageType)damageType, 0, false, false, true);
 			timerTillNextDamage = damageOverTimeCooldown;
 		}
+	}
+
+	public void ResetTimer()
+	{
+		abilityDurationTimer = abilityBaseRef.abilityDuration;
+	}
+	public float GetTimer()
+	{
+		return abilityDurationTimer;
+	}
+	public SOClassAbilities GrabAbilityBaseRef()
+	{
+		return abilityBaseRef;
 	}
 }

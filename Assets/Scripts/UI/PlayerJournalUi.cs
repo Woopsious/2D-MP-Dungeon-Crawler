@@ -15,16 +15,16 @@ public class PlayerJournalUi : MonoBehaviour
 	public TMP_Text activeQuestsTrackerUi;
 	public GameObject playerJournalPanalUi;
 	public GameObject activeQuestContainer;
-	public List<QuestDataSlotUi> activeQuests = new List<QuestDataSlotUi>();
+	public List<QuestDataUi> activeQuests = new List<QuestDataUi>();
 
 	[Header("Interacted Npc Ui")]
 	public GameObject npcJournalPanalUi;
 	public GameObject avalableQuestContainer;
 	private NpcHandler interactedQuestNpc;
 
-	public static event Action<QuestDataSlotUi> OnNewQuestAccepted;
-	public static event Action<QuestDataSlotUi> OnQuestComplete;
-	public static event Action<QuestDataSlotUi> OnQuestAbandon;
+	public static event Action<QuestDataUi> OnNewQuestAccepted;
+	public static event Action<QuestDataUi> OnQuestComplete;
+	public static event Action<QuestDataUi> OnQuestAbandon;
 
 	private void Awake()
 	{
@@ -60,7 +60,8 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnHideNpcJournal -= HideAvailableNpcQuests;
 	}
 
-	public void AcceptQuest(QuestDataSlotUi quest)
+	//quest actions
+	public void AcceptQuest(QuestDataUi quest)
 	{
 		if (activeQuests.Count >= 5)
 		{
@@ -75,7 +76,7 @@ public class PlayerJournalUi : MonoBehaviour
 		OnNewQuestAccepted?.Invoke(quest);
 		UpdateActiveQuestTracker();
 	}
-	public void CompleteQuest(QuestDataSlotUi quest)
+	public void CompleteQuest(QuestDataUi quest)
 	{
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
@@ -83,7 +84,7 @@ public class PlayerJournalUi : MonoBehaviour
 		OnQuestComplete?.Invoke(quest);
 		UpdateActiveQuestTracker();
 	}
-	public void AbandonQuest(QuestDataSlotUi quest)
+	public void AbandonQuest(QuestDataUi quest)
 	{
 		activeQuests.Remove(quest);
 		Destroy(quest.gameObject);
@@ -92,17 +93,17 @@ public class PlayerJournalUi : MonoBehaviour
 		UpdateActiveQuestTracker();
 	}
 
-	//player quests
+	//restore player quests data
 	private void ReloadActiveQuests()
 	{
 		List<QuestItemData> questData = SaveManager.Instance.GameData.activePlayerQuests;
 		for (int i = 0; i < questData.Count; i++)
 		{
 			GameObject go = Instantiate(questPrefab, activeQuestContainer.transform);
-			QuestDataSlotUi quest = go.GetComponent<QuestDataSlotUi>();
+			QuestDataUi quest = go.GetComponent<QuestDataUi>();
 
 			quest.isCurrentlyActiveQuest = questData[i].isCurrentlyActiveQuest;
-			quest.questType = (QuestDataSlotUi.QuestType)questData[i].questType;
+			quest.questType = (QuestDataUi.QuestType)questData[i].questType;
 			quest.amount = questData[i].amount;
 			quest.currentAmount = questData[i].currentAmount;
 			quest.entityToKill = questData[i].entityToKill;
@@ -110,8 +111,8 @@ public class PlayerJournalUi : MonoBehaviour
 			quest.armorToHandIn = questData[i].armorToHandIn;
 			quest.accessoryToHandIn = questData[i].accessoryToHandIn;
 			quest.consumableToHandIn = questData[i].consumableToHandIn;
-			quest.itemTypeToHandIn = (QuestDataSlotUi.ItemType)questData[i].itemTypeToHandIn;
-			quest.questRewardType = (QuestDataSlotUi.RewardType)questData[i].questRewardType;
+			quest.itemTypeToHandIn = (QuestDataUi.ItemType)questData[i].itemTypeToHandIn;
+			quest.questRewardType = (QuestDataUi.RewardType)questData[i].questRewardType;
 			quest.rewardToAdd = questData[i].rewardToAdd;
 
 			quest.InitilizeText();
@@ -121,9 +122,9 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	private void OnEntityDeathUpdateKillQuests(GameObject obj)
 	{
-		foreach (QuestDataSlotUi quest in activeQuests)
+		foreach (QuestDataUi quest in activeQuests)
 		{
-			if (quest.questType == QuestDataSlotUi.QuestType.isItemHandInQuest) continue;
+			if (quest.questType == QuestDataUi.QuestType.isItemHandInQuest) continue;
 
 			if (quest.entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
 				quest.currentAmount++;
@@ -136,9 +137,9 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	public void HandInItemQuests(InventorySlotDataUi slot)
 	{
-		foreach (QuestDataSlotUi quest in activeQuests)
+		foreach (QuestDataUi quest in activeQuests)
 		{
-			if (quest.questType != QuestDataSlotUi.QuestType.isItemHandInQuest) continue;
+			if (quest.questType != QuestDataUi.QuestType.isItemHandInQuest) continue;
 
 			if (quest.DoesHandInItemMatch(slot.itemInSlot))
 			{
@@ -156,7 +157,7 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 
 	//UI CHANGES
-	//player Journal
+	//player Journal ui
 	private void ShowPlayerJournal()
 	{
 		if (playerJournalPanalUi.activeInHierarchy)
@@ -173,10 +174,10 @@ public class PlayerJournalUi : MonoBehaviour
 		activeQuestsTrackerUi.text = $"{activeQuests.Count} / 5 Active Quests";
 	}
 
-	//npc Journal
+	//npc Journal ui
 	private void ShowAvailableNpcQuests(NpcHandler npc)
 	{
-		foreach (QuestDataSlotUi quest in npc.avalableQuestList)
+		foreach (QuestDataUi quest in npc.avalableQuestList)
 			quest.transform.SetParent(avalableQuestContainer.transform);
 
 		interactedQuestNpc = npc;
@@ -185,7 +186,7 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	private void HideAvailableNpcQuests(NpcHandler npc)
 	{
-		foreach (QuestDataSlotUi quest in npc.avalableQuestList)
+		foreach (QuestDataUi quest in npc.avalableQuestList)
 			quest.transform.SetParent(npc.npcContainer.transform);
 
 		interactedQuestNpc = null;
