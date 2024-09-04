@@ -150,6 +150,8 @@ public class PlayerHotbarUi : MonoBehaviour
 			equippedConsumableOne = consumableToEquip;
 		else if (slotEquippedTo.slotIndex == 1)
 			equippedConsumableTwo = consumableToEquip;
+
+		slotEquippedTo.itemInSlot.CheckIfCanUseConsumables(0, 0);
 	}
 	private void EquipAbility(SOClassAbilities newAbility, InventorySlotDataUi slotToEquipTo)
 	{
@@ -165,6 +167,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		slotToEquipTo.itemInSlot = item;
 		slotToEquipTo.UpdateSlotSize();
 		item.Initilize();
+		item.UpdateCanCastAbility(0,0);
 
 		if (slotToEquipTo.slotIndex == 0)
 			equippedAbilityOne = item.GetComponent<Abilities>();

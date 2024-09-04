@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -17,7 +18,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public Image uiItemImage;
 	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
-	public TMP_Text uiCantEquipNotif;
+	public TMP_Text uiCantUtilizeItemNotif;
 	[HideInInspector] public Transform parentAfterDrag;
 
 	[Header("Item Base Ref")]
@@ -62,6 +63,12 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		if (generateStatsOnStart)
 			GenerateStatsOnStart();
 	}
+	private void OnDisable()
+	{
+		PlayerInfoUi.playerInstance.playerStats.OnHealthChangeEvent -= CheckIfCanUseConsumables;
+		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= CheckIfCanUseConsumables;
+		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= UpdateCanCastAbility;
+	}
 
 	//set item data
 	public void Initilize()
@@ -90,6 +97,15 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		isStackable = IsStackable();
 		maxStackCount = GetMaxStackCount();
 		currentStackCount = item.currentStackCount;
+
+		if (transform.parent == null) return;
+		InventorySlotDataUi slotDataUi = transform.parent.GetComponent<InventorySlotDataUi>();
+
+		if (slotDataUi.slotType == InventorySlotDataUi.SlotType.consumables)
+		{
+			PlayerInfoUi.playerInstance.playerStats.OnHealthChangeEvent += CheckIfCanUseConsumables;
+			PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent += CheckIfCanUseConsumables;
+		}
 	}
 	private void SetUpAbilities()
 	{
@@ -106,6 +122,12 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		ability.abilityImage = uiItemImage;
 		uiItemImage.type = Image.Type.Filled;
 		uiItemImage.fillMethod = Image.FillMethod.Radial360;
+
+		if (transform.parent == null) return;
+		InventorySlotDataUi slotDataUi = transform.parent.GetComponent<InventorySlotDataUi>();
+
+		if (slotDataUi.slotType == InventorySlotDataUi.SlotType.equippedAbilities)
+			PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent += UpdateCanCastAbility;
 	}
 	private ClassRestriction GetClassRestriction()
 	{
@@ -182,30 +204,71 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			audioHandler.PlayAudio(consumableBaseRef.equipItemSfx);
 	}
 
-	//update data
+	//update data + event listners
 	public void CheckIfCanEquipItem()
 	{
 		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable) return;
-		uiCantEquipNotif.gameObject.SetActive(true);
+		uiCantUtilizeItemNotif.gameObject.SetActive(true);
 
 		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel < itemLevel)
-			uiCantEquipNotif.text = "Cant Equip \n low level";
+			uiCantUtilizeItemNotif.text = "Cant Equip \n low level";
 		else if (itemType == ItemType.isWeapon)
 		{
 			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
-				uiCantEquipNotif.text = "Cant Equip \n too heavy";
+				uiCantUtilizeItemNotif.text = "Cant Equip \n too heavy";
 			else
-				uiCantEquipNotif.gameObject.SetActive(false);
+				uiCantUtilizeItemNotif.gameObject.SetActive(false);
 		}
 		else if (itemType == ItemType.isArmor)
 		{
 			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
-				uiCantEquipNotif.text = "Cant Equip \n too heavy";
+				uiCantUtilizeItemNotif.text = "Cant Equip \n too heavy";
 			else
-				uiCantEquipNotif.gameObject.SetActive(false);
+				uiCantUtilizeItemNotif.gameObject.SetActive(false);
 		}
 		else
-			uiCantEquipNotif.gameObject.SetActive(false);
+			uiCantUtilizeItemNotif.gameObject.SetActive(false);
+	}
+	public void CheckIfCanUseConsumables(int maxValue, int currentValue)
+	{
+		if (consumableBaseRef == null) return;
+
+		Consumables consumable = GetComponent<Consumables>();
+
+		if (consumable.consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
+		{
+			if (consumable.EntityHealthFull(PlayerInfoUi.playerInstance.playerStats))
+			{
+				uiCantUtilizeItemNotif.text = "max health";
+				uiCantUtilizeItemNotif.gameObject.SetActive(true);
+			}
+			else
+				uiCantUtilizeItemNotif.gameObject.SetActive(false);
+		}
+		else if (consumable.consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration)
+		{
+			if (consumable.EntityManaFull(PlayerInfoUi.playerInstance.playerStats))
+			{
+				uiCantUtilizeItemNotif.text = "max mana";
+				uiCantUtilizeItemNotif.gameObject.SetActive(true);
+			}
+			else
+				uiCantUtilizeItemNotif.gameObject.SetActive(false);
+		}
+	}
+	public void UpdateCanCastAbility(int maxMana, int currentMana)
+	{
+		if (abilityBaseRef == null) return;
+
+		Abilities equippedAbility = GetComponent<Abilities>();
+
+		if (!equippedAbility.CanAffordManaCost(PlayerInfoUi.playerInstance.playerStats))
+		{
+			uiCantUtilizeItemNotif.text = "Not enough mana";
+			uiCantUtilizeItemNotif.gameObject.SetActive(true);
+		}
+		else
+			uiCantUtilizeItemNotif.gameObject.SetActive(false);
 	}
 	public void SetStackCounter(int newCount)
 	{

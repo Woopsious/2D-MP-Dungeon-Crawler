@@ -31,6 +31,14 @@ public class Abilities : MonoBehaviour
 	[Header("Spell Cost")]
 	public int manaCost;
 
+	private void Update()
+	{
+		if (isStatusEffectTimerForUi)
+			StatusEffectUiCooldownTimer();
+		else
+			AbilityCooldownTimer();
+	}
+
 	//set data types
 	public void Initilize()
 	{
@@ -152,14 +160,6 @@ public class Abilities : MonoBehaviour
 		return info;
 	}
 
-	private void Update()
-	{
-		if (isStatusEffectTimerForUi)
-			StatusEffectUiCooldownTimer();
-		else
-			AbilityCooldownTimer();
-	}
-
 	//timer types
 	private void AbilityCooldownTimer()
 	{
@@ -195,11 +195,17 @@ public class Abilities : MonoBehaviour
 		if (isOnCooldown)
 			return false;
 
-		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(entityStats.entityLevel));
-		if (entityStats.currentMana < totalManaCost)
+		if (!CanAffordManaCost(entityStats))
 			return false;
 
 		return true;
+	}
+	public bool CanAffordManaCost(EntityStats entityStats)
+	{
+		int totalManaCost = (int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(entityStats.entityLevel));
+		if (entityStats.currentMana < totalManaCost)
+			return false;
+		else return true;
 	}
 	public bool CanInstantCastAbility(EntityStats selectedEnemy)
 	{

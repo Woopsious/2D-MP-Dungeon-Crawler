@@ -48,13 +48,13 @@ public class Consumables : Items
 	}
 
 	//bool checks
-	private bool EntityHealthFull(EntityStats entityStats)
+	public bool EntityHealthFull(EntityStats entityStats)
 	{
 		if (entityStats.currentHealth >= entityStats.maxHealth.finalValue)
 			return true;
         else return false;
     }
-	private bool EntityManaFull(EntityStats entityStats)
+	public bool EntityManaFull(EntityStats entityStats)
 	{
 		if (entityStats.currentMana >= entityStats.maxMana.finalValue)
 			return true;

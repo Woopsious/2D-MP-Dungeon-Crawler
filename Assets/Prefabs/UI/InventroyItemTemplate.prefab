@@ -204,7 +204,7 @@ MonoBehaviour:
   uiItemImage: {fileID: 5958060301181458448}
   uiItemLevel: {fileID: 2409673030259253399}
   uiItemStackCount: {fileID: 7047171973082148387}
-  uiCantEquipNotif: {fileID: 8884518238952670472}
+  uiCantUtilizeItemNotif: {fileID: 8884518238952670472}
   parentAfterDrag: {fileID: 0}
   abilityBaseRef: {fileID: 0}
   weaponBaseRef: {fileID: 0}
@@ -247,10 +247,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13d87a0fa4dbe914b96c0bfec3e1047c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  musicAudioList: []
-  menuSfxAudioList: []
-  ambienceAudioList: []
-  sfxAudioList: []
   audioType: 3
   audioSource: {fileID: 2599077992282181131}
 --- !u!1 &4762302495352001267
@@ -340,7 +336,7 @@ GameObject:
   - component: {fileID: 4502426974270447391}
   - component: {fileID: 8884518238952670472}
   m_Layer: 5
-  m_Name: CanEquipItemNotif
+  m_Name: CantUtilizeItemNotif
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
