@@ -9,34 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Script: {fileID: 11500000, guid: ee1e9bbec2a6a5b45ac9894189f68f5d, type: 3}
   m_Name: Bleeding
   m_EditorClassIdentifier: 
-  Name: Bleading
-  Description: 
-  abilitySprite: {fileID: 0}
-  nonPlayerLevelRequirement: 0
-  abilityCooldown: 0
-  isOffensiveAbility: 0
-  requiresTarget: 0
-  canOnlyTargetSelf: 0
-  statusEffectName: 
+  Name: Bleeding
   statusEffectType: 0
-  statusEffectPercentageModifier: 0
-  isAOE: 0
-  aoeSize: 0
   isDOT: 1
+  effectValue: 10
+  damageType: 0
   hasDuration: 1
   abilityDuration: 3
-  isProjectile: 0
-  projectileSprite: {fileID: 0}
-  projectileSpeed: 0
-  isDamagePercentageBased: 0
-  damageValue: 10
-  damageValuePercentage: 0
-  damageType: 0
-  isSpell: 0
-  manaCost: 0
-  minPercentCost: 0
-  hasParticleEffect: 0
+  hasParticleEffect: 1
   particleColour: {r: 0, g: 0, b: 0, a: 0}

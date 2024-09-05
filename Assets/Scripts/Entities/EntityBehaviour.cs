@@ -163,6 +163,13 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			animator.SetBool("isIdle", false);
 	}
+	public void UpdateMovementSpeed(AbilityStatusEffect statusEffect)
+	{
+		//if (statusEffect.GrabAbilityBaseRef().Name != "Chilled") return;
+		//if (navMeshAgent.speed == entityBehaviour.navMeshMoveSpeed)
+			//navMeshAgent.speed *= 0.75f;
+		//else navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
+	}
 
 	//player visible Check
 	public void CheckIfPlayerVisibleTimer()

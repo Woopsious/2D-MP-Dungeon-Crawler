@@ -82,6 +82,7 @@
     <Compile Include="Assets\Scripts\Managers\TileMapHazardsManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyBaseState.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOStatusEffects.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />

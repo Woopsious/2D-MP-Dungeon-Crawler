@@ -23,6 +23,9 @@ public class SOClassAbilities : SOClassUnlocks
 	public bool canOnlyTargetSelf;
 
 	[Header("Status Effects Settings")]
+	public bool hasStatusEffects;
+	public List<SOStatusEffects> statusEffects;
+
 	[Tooltip("add effect name eg: poisoned/burning for ui (if left blank will use name)")]
 	public string statusEffectName;
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
