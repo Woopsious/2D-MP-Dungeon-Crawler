@@ -32,21 +32,11 @@ public class AbilityAOE : MonoBehaviour
 			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
 			return;
 
-		EntityStats stats = other.gameObject.GetComponent<EntityStats>();
-		stats.ApplyStatusEffect(abilityBaseRef.statusEffects, casterInfo);
+		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
+			abilityBaseRef.isDamagePercentageBased, isPlayerAoe, false);
 
-		/*
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
-		{
-			EntityStats stats = other.gameObject.GetComponent<EntityStats>();
-			stats.ApplyStatusEffect(abilityBaseRef);
-		}
-		else
-		{
-			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
-				abilityBaseRef.isDamagePercentageBased, isPlayerAoe);
-		}
-		*/
+		if (abilityBaseRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
+			other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, casterInfo);
 	}
 
 	//set data

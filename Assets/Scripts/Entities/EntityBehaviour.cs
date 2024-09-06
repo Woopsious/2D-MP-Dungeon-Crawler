@@ -372,13 +372,24 @@ public class EntityBehaviour : MonoBehaviour
 			//eventually add support to heal friendlies
 			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
 		}
-		else
+
+		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //add check to cast on friendly
-				entityStats.ApplyStatusEffect(ability.statusEffects, entityStats);
-			else if (ability.isOffensiveAbility && playerTarget != null)
-				playerTarget.playerStats.ApplyStatusEffect(ability.statusEffects, entityStats);
+			playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), ability.damageValue
+				* entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
 		}
+
+		if (ability.hasStatusEffects)    //apply effects (if has any) based on what type it is.
+		{
+			//apply effects based on what type it is.
+			if (ability.canOnlyTargetSelf)
+				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			else if (ability.isOffensiveAbility && playerTarget != null)
+				playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
+				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+		}
+
 		OnSuccessfulCast(ability);
 	}
 	private void CastDirectionalAbility(SOClassAbilities ability)

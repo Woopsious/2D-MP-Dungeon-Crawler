@@ -43,6 +43,7 @@ public class Abilities : MonoBehaviour
 	//set data types
 	public void Initilize()
 	{
+		toolTip = GetComponent<ToolTipUi>();
 		isStatusEffectTimerForUi = false;
 		name = abilityBaseRef.Name;
 		abilityName = abilityBaseRef.Name;
@@ -68,62 +69,18 @@ public class Abilities : MonoBehaviour
 	}
 
 	//tool tip
-	public virtual void SetToolTip(EntityStats playerStats)
+	public void SetToolTip(EntityStats playerStats)
 	{
-		toolTip = GetComponent<ToolTipUi>();
-		string info = $"{abilityDescription}\n";
+		string info = $"{abilityBaseRef.Description}";
 
-		if (abilityBaseRef.canOnlyTargetSelf)
-			info += "\n Can only cast on self";
+		if (abilityBaseRef.canOnlyTargetSelf) //targeting info
+			info += "\nCan only cast on self";
 		else if (abilityBaseRef.requiresTarget && abilityBaseRef.isOffensiveAbility)
 			info += "\nNeeds selected enemy target";
 		else if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityBaseRef.hasStatusEffects)
-			info = SetStatusEffectToolTip(info);
-		else
-			info = SetAbilityToolTip(info, playerStats);
-
-		if (abilityBaseRef.isSpell) //optional
-			info += $"\nCosts {(int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
-
-		toolTip.tipToShow = $"{info}";
-	}
-	private string SetStatusEffectToolTip(string info)
-	{
-		foreach (SOStatusEffects effect in abilityBaseRef.statusEffects)
-		{
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
-				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
-			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
-				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
-			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
-			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-				info += $"\nreduces movement speed by {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}%";
-
-			if (abilityBaseRef.canOnlyTargetSelf)
-				info += "buff to yourself";
-			else
-			{
-				if (abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
-					info += "debuff to enemies inside AoE";
-				else if (!abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
-					info += "buff to friendlies/self inside AoE";
-
-				if (abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
-					info += "debuff to selected enemy";
-				else if (!abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
-					info += "buff to selected friendlies or self";
-			}
-			info += $"\nEffect lasts for {effect.abilityDuration}s";
-		}
-		return info;
-	}
-	private string SetAbilityToolTip(string info, EntityStats playerStats)
-	{
-		if (abilityBaseRef.damageType != SOClassAbilities.DamageType.isHealing && abilityBaseRef.isOffensiveAbility)
+		if (abilityBaseRef.damageType != SOClassAbilities.DamageType.isHealing) //abilty info
 		{
 			int damage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
 
@@ -136,22 +93,20 @@ public class Abilities : MonoBehaviour
 			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
-			if (abilityBaseRef.hasStatusEffects)
+			if (damage != 0) //optional instant damage info
 			{
-				foreach (SOStatusEffects effect in abilityBaseRef.statusEffects)
-				{
-					if (effect.isDOT)
-						info += $"\nDeals {damage * effect.abilityDuration} " +
-							$"damage to enemies over {effect.abilityDuration}s ";
-				}
-			}
-			else
 				info += $"\nDeals {damage} damage to enemies ";
+				if (abilityBaseRef.isAOE) //optional aoe info
+					info += "inside AoE";
+			}
 
-			if (abilityBaseRef.isAOE) //optional
-				info += "inside AoE";
+			if (abilityBaseRef.hasAoeDuration) //optional aoe info
+				info += $"\nAoe lasts for {abilityBaseRef.aoeDuration}s";
+
+			if (abilityBaseRef.hasStatusEffects) //optional effect info
+				info += SetStatusEffectToolTips(playerStats);
 		}
-		else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing && !abilityBaseRef.isOffensiveAbility)
+		else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //healing info
 		{
 			float healing = Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage);
 
@@ -160,11 +115,50 @@ public class Abilities : MonoBehaviour
 			else
 				info += $"\nHeals for {healing}% of health for selected friendlies or self ";
 		}
-		else
-			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (abilityBaseRef.hasAoeDuration)
-			info += $"\nAoe lasts for {abilityBaseRef.aoeDuration}s"; //optional
+		info += $"\nHas a {abilityBaseRef.abilityCooldown}s cooldown"; //cooldown effect info
+
+		if (abilityBaseRef.isSpell) //optional spell info
+			info += $"\nCosts {(int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
+
+		toolTip.tipToShow = $"{info}";
+	}
+	private string SetStatusEffectToolTips(EntityStats playerStats)
+	{
+		string info = "\n";
+
+		foreach (SOStatusEffects effect in abilityBaseRef.statusEffects) //list all effect info
+		{
+			if (effect.isDOT) //dot info
+				info += $"Deals {effect.effectValue * playerStats.levelModifier} damage every second";
+			else //effect info
+			{
+				if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect) //effect type info
+					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
+
+				if (abilityBaseRef.canOnlyTargetSelf) //target info
+					info += "buff to yourself";
+				else
+				{
+					if (abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+						info += "debuff to enemies inside AoE";
+					else if (!abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+						info += "buff to friendlies/self inside AoE";
+
+					if (abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+						info += "debuff to selected enemy";
+					else if (!abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+						info += "buff to selected friendlies or self";
+				}
+				info += $"\nEffect lasts for {effect.abilityDuration}s";
+			}
+		}
 		return info;
 	}
 

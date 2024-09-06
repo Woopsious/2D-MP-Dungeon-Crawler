@@ -49,7 +49,7 @@ public class SOClassAbilities : SOClassUnlocks
 	public DamageType damageType;
 	public enum DamageType
 	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing, isMana
+		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing
 	}
 	public int damageValue;
 	public float damageValuePercentage;

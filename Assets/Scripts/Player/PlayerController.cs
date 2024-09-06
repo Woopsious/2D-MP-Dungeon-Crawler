@@ -448,25 +448,25 @@ public class PlayerController : MonoBehaviour
 				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
 			else
 			{
-				CancelQueuedAbility(queuedAbility);      //add support/option to heal other players for MP
+				CancelQueuedAbility(queuedAbility);		//add support/option to heal other players for MP
 				return;
 			}
 		}
-		else if (!ability.abilityBaseRef.hasStatusEffects)	//insta damage abilities
+
+		if (ability.abilityBaseRef.damageValue != 0)	//apply damage for insta damage abilities
 		{
-			if (ability.abilityBaseRef.isOffensiveAbility)
-				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
-					* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
+			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
+				* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
 		}
 
-		else	//buffing/debuffing status effects
+		if (ability.abilityBaseRef.hasStatusEffects)	//apply effects (if has any) based on what type it is.
 		{
 			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
+				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
 			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (!ability.abilityBaseRef.isOffensiveAbility)		 //add support/option to buff other players for MP
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
+				enemyTarget.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+			else if (!ability.abilityBaseRef.isOffensiveAbility)         //add support/option to buff other players for MP
+				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
 			else
 			{
 				Debug.LogError("failed to cast status effect");

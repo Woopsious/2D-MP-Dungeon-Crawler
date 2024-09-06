@@ -20,8 +20,9 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  hasStatusEffects: 0
-  statusEffects: []
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: 6301da40ed397c443a68f792454c7944, type: 2}
   isAOE: 1
   aoeSize: 50
   hasAoeDuration: 1
@@ -32,7 +33,7 @@ MonoBehaviour:
   projectileSpeed: 0
   isDamagePercentageBased: 0
   damageType: 1
-  damageValue: 10
+  damageValue: 0
   damageValuePercentage: 0
   isSpell: 1
   manaCost: 15

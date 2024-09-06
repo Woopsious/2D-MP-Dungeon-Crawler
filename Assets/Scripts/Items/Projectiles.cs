@@ -7,8 +7,10 @@ using UnityEngine.EventSystems;
 public class Projectiles : MonoBehaviour
 {
 	private PlayerController player;
-	public SOClassAbilities abilityBaseRef;
+
 	public SOWeapons weaponBaseRef;
+	public SOClassAbilities abilityBaseRef;
+	public EntityStats casterInfo;	//only set for abilities
 
 	private BoxCollider2D boxCollider;
 	private SpriteRenderer projectileSprite;
@@ -28,8 +30,8 @@ public class Projectiles : MonoBehaviour
 	public void Initilize(PlayerController player, Weapons weaponRef)
 	{
 		this.player = player;
-		this.abilityBaseRef = null;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
+		this.abilityBaseRef = null;
 		gameObject.name = weaponRef.itemName + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
@@ -48,8 +50,9 @@ public class Projectiles : MonoBehaviour
 	//set ability projectile data
 	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
-		this.abilityBaseRef = abilityBaseRef;
 		this.weaponBaseRef = null;
+		this.abilityBaseRef = abilityBaseRef;
+		this.casterInfo = casterInfo;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
@@ -88,10 +91,15 @@ public class Projectiles : MonoBehaviour
 			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerProjectile)
 			return;
 
-		if (abilityBaseRef != null)
+		if (abilityBaseRef != null)		//abilities
+		{
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
 				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile, false);
-		else
+
+			if (abilityBaseRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
+				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, casterInfo);
+		}
+		else     //weapon projectiles
 		{
 			//half ranged weapon damage
 			if (distanceTraveled < weaponBaseRef.minAttackRange)

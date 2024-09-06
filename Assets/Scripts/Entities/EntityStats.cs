@@ -90,9 +90,9 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		OnRecieveHealingEvent += RecieveHealing;
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
+		OnRecieveHealingEvent += RecieveHealing;
 
 		classHandler.OnStatUnlock += OnStatUnlock;
 		classHandler.OnStatRefund += OnStatRefund;
@@ -101,9 +101,9 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		OnRecieveHealingEvent -= RecieveHealing;
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
+		OnRecieveHealingEvent -= RecieveHealing;
 
 		classHandler.OnStatUnlock -= OnStatUnlock;
 		classHandler.OnStatRefund -= OnStatRefund;
@@ -322,12 +322,8 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//status effect functions
-	public void ApplyStatusEffect(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
+	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
-		//loop through all status effects in ability ref
-		//check if they are already applied, if so reset status effect timer
-		//if not apply said status effect
-
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
 			AbilityStatusEffect duplicateStatusEffect = CheckIfStatusEffectAlreadyApplied(effect);
@@ -394,9 +390,9 @@ public class EntityStats : MonoBehaviour
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
 		{
 			if (IsPlayerEntity())
-				GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, false);
+				GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, true);
 			else
-				entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
+				entityBehaviour.UpdateMovementSpeed(effect.effectValue, true);
 		}
 
 		currentStatusEffects.Remove(statusEffect);

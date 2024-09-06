@@ -19,6 +19,6 @@ MonoBehaviour:
   effectValue: 10
   damageType: 0
   hasDuration: 1
-  abilityDuration: 5
+  abilityDuration: 3
   hasParticleEffect: 1
   particleColour: {r: 0, g: 0, b: 0, a: 0}

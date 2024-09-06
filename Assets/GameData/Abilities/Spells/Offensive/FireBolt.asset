@@ -20,19 +20,20 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
   isAOE: 0
   aoeSize: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
   isDOT: 0
-  abilityDuration: 0
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
+  damageType: 2
   damageValue: 40
   damageValuePercentage: 0
-  damageType: 2
   isSpell: 1
   manaCost: 8
   minPercentCost: 5

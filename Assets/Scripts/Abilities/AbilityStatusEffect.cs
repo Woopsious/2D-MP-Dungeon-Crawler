@@ -32,18 +32,8 @@ public class AbilityStatusEffect : MonoBehaviour
 		gameObject.name = statusEffect.Name + "Effect";
 		entityEffectIsAppliedTo = entityToApplyEffectTo;
 
-		int newDamage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
-
-		if (damageType == DamageType.isPhysicalDamageType)
-			damage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
-			damage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
-			damage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
-			damage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
-
-		//damage *= (int)casterInfo.damageDealtModifier.finalPercentageValue; DoT effects always do full damage (base damage is low already)
+		//dot effects only get level modifier
+		damage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 		timerTillNextDamage = 0f;
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)

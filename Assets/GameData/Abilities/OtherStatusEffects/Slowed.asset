@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Slowed
   m_EditorClassIdentifier: 
   Name: Slowed
-  statusEffectType: 2
+  effectSprite: {fileID: 0}
+  statusEffectType: 5
   isDOT: 0
   effectValue: 0.5
   damageType: 6
   hasDuration: 1
-  abilityDuration: 10
+  abilityDuration: 5
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
