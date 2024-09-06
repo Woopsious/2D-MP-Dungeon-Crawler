@@ -8,5 +8,5 @@ public class TileData : ScriptableObject
 {
 	public TileBase[] tiles;
 
-	public SOClassAbilities effectToApply;
+	public List<SOStatusEffects> effectsToApply;
 }

@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Poisoned
   m_EditorClassIdentifier: 
   Name: Poisoned
+  effectSprite: {fileID: 0}
   statusEffectType: 0
   isDOT: 1
   effectValue: 10
   damageType: 1
   hasDuration: 1
-  abilityDuration: 3
+  abilityDuration: 5
   hasParticleEffect: 1
   particleColour: {r: 0, g: 0, b: 0, a: 0}

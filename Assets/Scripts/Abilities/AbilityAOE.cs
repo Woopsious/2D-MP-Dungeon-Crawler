@@ -33,7 +33,7 @@ public class AbilityAOE : MonoBehaviour
 			return;
 
 		EntityStats stats = other.gameObject.GetComponent<EntityStats>();
-		stats.ApplyStatusEffect(abilityBaseRef, casterInfo);
+		stats.ApplyStatusEffect(abilityBaseRef.statusEffects, casterInfo);
 
 		/*
 		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
@@ -62,8 +62,8 @@ public class AbilityAOE : MonoBehaviour
 		circleCollider.offset = new Vector2(0, 0);
 
 		this.casterInfo = casterInfo;
-		abilityDurationTimer = abilityBaseRef.abilityDuration;
-		if (abilityBaseRef.abilityDuration == 0)
+		abilityDurationTimer = abilityBaseRef.aoeDuration;
+		if (abilityBaseRef.aoeDuration == 0)
 			abilityDurationTimer = 0.1f;
 
 		isPlayerAoe = casterInfo.IsPlayerEntity();

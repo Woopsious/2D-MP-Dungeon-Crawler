@@ -21,21 +21,21 @@ MonoBehaviour:
   isOffensiveAbility: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectName: 
-  statusEffectType: 2
-  statusEffectPercentageModifier: 0.1
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: c901b20874bc93d408a4cde899b3a70f, type: 2}
   isAOE: 1
   aoeSize: 40
+  hasAoeDuration: 1
+  aoeDuration: 10
   isDOT: 0
-  hasDuration: 1
-  abilityDuration: 10
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 20
   isDamagePercentageBased: 0
+  damageType: 0
   damageValue: 0
   damageValuePercentage: 0
-  damageType: 0
   isSpell: 1
   manaCost: 20
   minPercentCost: 15

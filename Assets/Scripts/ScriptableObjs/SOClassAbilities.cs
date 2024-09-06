@@ -26,30 +26,17 @@ public class SOClassAbilities : SOClassUnlocks
 	public bool hasStatusEffects;
 	public List<SOStatusEffects> statusEffects;
 
-	[Tooltip("add effect name eg: poisoned/burning for ui (if left blank will use name)")]
-	public string statusEffectName;
-	[Tooltip("only for status effects, leave as noEffect for anything else")]
-	public StatusEffectType statusEffectType;
-	public enum StatusEffectType
-	{
-		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isDamageRecievedEffect
-	}
-	public float statusEffectPercentageModifier;
-
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
 	[Range(30, 60)]
 	public float aoeSize;
+	public bool hasAoeDuration;
+	public float aoeDuration;
 
 	[Header("DoT Settings")]
 	[Tooltip("check to apply damage over time")]
 	public bool isDOT;
-
-	[Header("Duration Settings")]
-	[Tooltip("for status effects and DoT effects")]
-	public bool hasDuration;
-	public float abilityDuration;
 
 	[Header("Projectile Settings")]
 	public bool isProjectile;
@@ -58,16 +45,14 @@ public class SOClassAbilities : SOClassUnlocks
 	public float projectileSpeed;
 
 	[Header("Damage Settings")]
-	[Tooltip("Status effects are always percentage based, spells and skill")]
 	public bool isDamagePercentageBased;
-	public int damageValue;
-	public float damageValuePercentage;
-
 	public DamageType damageType;
 	public enum DamageType
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing, isMana
 	}
+	public int damageValue;
+	public float damageValuePercentage;
 
 	[Header("Spell Settings")]
 	public bool isSpell;

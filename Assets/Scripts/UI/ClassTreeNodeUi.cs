@@ -109,12 +109,10 @@ public class ClassTreeNodeUi : MonoBehaviour
 		else if (abilityUnlock.unlock.requiresTarget && !abilityUnlock.unlock.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityUnlock.unlock.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		if (abilityUnlock.unlock.hasStatusEffects)
 			info = SetStatusEffectToolTip(info);
-		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)
-			info = SetAbilityToolTip(info, playerStats);
 		else
-			Debug.LogError("Setting up ability tool tip failed");
+			info = SetAbilityToolTip(info, playerStats);
 
 		if (abilityUnlock.unlock.isSpell) //optional
 			info += $"\nCosts {(int)(abilityUnlock.unlock.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
@@ -123,29 +121,34 @@ public class ClassTreeNodeUi : MonoBehaviour
 	}
 	private string SetStatusEffectToolTip(string info)
 	{
-		if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage ";
-		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}% damage res ";
-		else if (abilityUnlock.unlock.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.statusEffectPercentageModifier)}" +
-				$"% damage recieved modifier ";
-
-		if (abilityUnlock.unlock.canOnlyTargetSelf)
-			info += "buff to yourself";
-		else
+		foreach (SOStatusEffects effect in abilityUnlock.unlock.statusEffects)
 		{
-			if (abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
-				info += "debuff to enemies inside AoE";
-			else if (!abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
-				info += "buff to friendlies/self inside AoE";
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+				info += $"\nreduces movement speed by {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}%";
 
-			if (abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
-				info += "debuff to selected enemy";
-			else if (!abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
-				info += "buff to selected friendlies or self";
+			if (abilityUnlock.unlock.canOnlyTargetSelf)
+				info += "buff to yourself";
+			else
+			{
+				if (abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
+					info += "debuff to enemies inside AoE";
+				else if (!abilityUnlock.unlock.isOffensiveAbility && abilityUnlock.unlock.isAOE)
+					info += "buff to friendlies/self inside AoE";
+
+				if (abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
+					info += "debuff to selected enemy";
+				else if (!abilityUnlock.unlock.isOffensiveAbility && !abilityUnlock.unlock.isAOE)
+					info += "buff to selected friendlies or self";
+			}
+			info += $"\nEffect lasts for {effect.abilityDuration}s";
 		}
-		return info += $"\nEffect lasts for {abilityUnlock.unlock.abilityDuration}s";
+		return info;
 	}
 	private string SetAbilityToolTip(string info, EntityStats playerStats)
 	{
@@ -162,9 +165,15 @@ public class ClassTreeNodeUi : MonoBehaviour
 			if (abilityUnlock.unlock.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
-			if (abilityUnlock.unlock.isDOT)
-				info += $"\nDeals {damage * abilityUnlock.unlock.abilityDuration} " +
-					$"damage to enemies over {abilityUnlock.unlock.abilityDuration}s ";
+			if (abilityUnlock.unlock.hasStatusEffects)
+			{
+				foreach (SOStatusEffects effect in abilityUnlock.unlock.statusEffects)
+				{
+					if (effect.isDOT)
+						info += $"\nDeals {damage * effect.abilityDuration} " +
+							$"damage to enemies over {effect.abilityDuration}s ";
+				}
+			}
 			else
 				info += $"\nDeals {damage} damage to enemies ";
 
@@ -183,8 +192,8 @@ public class ClassTreeNodeUi : MonoBehaviour
 		else
 			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (abilityUnlock.unlock.hasDuration)
-			info += $"\nlasts for {abilityUnlock.unlock.abilityDuration}s"; //optional
+		if (abilityUnlock.unlock.hasAoeDuration)
+			info += $"\nAoe lasts for {abilityUnlock.unlock.aoeDuration}s"; //optional
 		return info;
 	}
 

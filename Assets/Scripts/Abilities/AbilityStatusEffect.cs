@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class AbilityStatusEffect : MonoBehaviour
 {
-	private SOClassAbilities abilityBaseRef;
-	private float abilityDurationTimer;
+	private SOStatusEffects statusEffect;
+	public float abilityDurationTimer;
 	private EntityStats entityEffectIsAppliedTo;
 
 	public int damage;
@@ -25,14 +25,14 @@ public class AbilityStatusEffect : MonoBehaviour
 	}
 
 	//set data
-	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo, EntityStats entityToApplyEffectTo)
+	public void Initilize(SOStatusEffects statusEffect, EntityStats casterInfo, EntityStats entityToApplyEffectTo)
 	{
 		transform.localPosition = Vector3.zero;
-		this.abilityBaseRef = abilityBaseRef;
-		gameObject.name = abilityBaseRef.Name + "Effect";
+		this.statusEffect = statusEffect;
+		gameObject.name = statusEffect.Name + "Effect";
 		entityEffectIsAppliedTo = entityToApplyEffectTo;
 
-		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
+		int newDamage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 
 		if (damageType == DamageType.isPhysicalDamageType)
 			damage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
@@ -54,9 +54,9 @@ public class AbilityStatusEffect : MonoBehaviour
 	{
 		abilityDurationTimer += Time.deltaTime;
 
-		if (abilityDurationTimer >= abilityBaseRef.abilityDuration)
+		if (abilityDurationTimer >= statusEffect.abilityDuration)
 		{
-			entityEffectIsAppliedTo.UnApplyStatusEffect(this, abilityBaseRef);
+			entityEffectIsAppliedTo.UnApplyStatusEffect(this);
 			Destroy(gameObject);
 		}
 	}
@@ -64,7 +64,7 @@ public class AbilityStatusEffect : MonoBehaviour
 	//dot effect if it has one
 	private void DamageOverTimeEffect()
 	{
-		if (!abilityBaseRef.isDOT) return;
+		if (!statusEffect.isDOT) return;
 
 		timerTillNextDamage -= Time.deltaTime;
 		if (timerTillNextDamage < 0)
@@ -77,14 +77,14 @@ public class AbilityStatusEffect : MonoBehaviour
 
 	public void ResetTimer()
 	{
-		abilityDurationTimer = abilityBaseRef.abilityDuration;
+		abilityDurationTimer = 0;
 	}
 	public float GetTimer()
 	{
 		return abilityDurationTimer;
 	}
-	public SOClassAbilities GrabAbilityBaseRef()
+	public SOStatusEffects GrabAbilityBaseRef()
 	{
-		return abilityBaseRef;
+		return statusEffect;
 	}
 }

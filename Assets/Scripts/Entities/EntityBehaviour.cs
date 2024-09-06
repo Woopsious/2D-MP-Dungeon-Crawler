@@ -163,12 +163,12 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			animator.SetBool("isIdle", false);
 	}
-	public void UpdateMovementSpeed(AbilityStatusEffect statusEffect)
+	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
-		//if (statusEffect.GrabAbilityBaseRef().Name != "Chilled") return;
-		//if (navMeshAgent.speed == entityBehaviour.navMeshMoveSpeed)
-			//navMeshAgent.speed *= 0.75f;
-		//else navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
+		if (resetSpeed)
+			navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
+		else 
+			navMeshAgent.speed *= speedModifier;
 	}
 
 	//player visible Check
@@ -337,7 +337,7 @@ public class EntityBehaviour : MonoBehaviour
 			return;
 		}
 
-		if (offensiveAbility.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		if (offensiveAbility.hasStatusEffects)
 			CastEffect(offensiveAbility);
 		else
 		{
@@ -375,9 +375,9 @@ public class EntityBehaviour : MonoBehaviour
 		else
 		{
 			if (ability.canOnlyTargetSelf || !ability.isOffensiveAbility) //add check to cast on friendly
-				entityStats.ApplyStatusEffect(ability, entityStats);
+				entityStats.ApplyStatusEffect(ability.statusEffects, entityStats);
 			else if (ability.isOffensiveAbility && playerTarget != null)
-				playerTarget.playerStats.ApplyStatusEffect(ability, entityStats);
+				playerTarget.playerStats.ApplyStatusEffect(ability.statusEffects, entityStats);
 		}
 		OnSuccessfulCast(ability);
 	}

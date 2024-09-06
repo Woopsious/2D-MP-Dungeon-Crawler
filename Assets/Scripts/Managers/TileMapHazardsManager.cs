@@ -44,7 +44,7 @@ public class TileMapHazardsManager : MonoBehaviour
 			Debug.LogError("no tile or surrounding tile found, this shouldnt happen");
 
 		EntityStats entity = collision.GetComponent<EntityStats>();
-		entity.ApplyStatusEffect(dataFromTiles[tile].effectToApply, entity);
+		entity.ApplyStatusEffect(dataFromTiles[tile].effectsToApply, entity);
 	}
 	public void TryReApplyEffect(EntityStats entity)
 	{
@@ -52,7 +52,7 @@ public class TileMapHazardsManager : MonoBehaviour
 		TileBase tile = CheckCurrentTile(gridPos);
 
 		if (tile != null)
-			entity.ApplyStatusEffect(dataFromTiles[tile].effectToApply, entity);
+			entity.ApplyStatusEffect(dataFromTiles[tile].effectsToApply, entity);
 	}
 
 	//tile checks

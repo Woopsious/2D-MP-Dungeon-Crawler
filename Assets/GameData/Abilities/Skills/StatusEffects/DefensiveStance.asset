@@ -20,9 +20,9 @@ MonoBehaviour:
   isOffensiveAbility: 0
   requiresTarget: 1
   canOnlyTargetSelf: 1
-  statusEffectName: 
-  statusEffectType: 2
-  statusEffectPercentageModifier: 0.1
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: c901b20874bc93d408a4cde899b3a70f, type: 2}
   isAOE: 0
   aoeSize: 0
   isDOT: 0

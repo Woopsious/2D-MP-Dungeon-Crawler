@@ -7,11 +7,12 @@ public class SOStatusEffects : ScriptableObject
 {
 	[Header("Status Effects Settings")]
 	public string Name;
+	public Sprite effectSprite;
 	[Tooltip("only for status effects, leave as noEffect for anything else")]
 	public StatusEffectType statusEffectType;
 	public enum StatusEffectType
 	{
-		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isDamageRecievedEffect
+		noEffect, isHealthEffect, isResistanceEffect, isDamageEffect, isDamageRecievedEffect, isMovementEffect
 	}
 
 	[Header("Damage Settings")]

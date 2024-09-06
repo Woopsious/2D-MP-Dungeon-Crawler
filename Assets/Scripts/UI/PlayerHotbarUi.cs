@@ -282,6 +282,23 @@ public class PlayerHotbarUi : MonoBehaviour
 			}
 		}
 	}
+	public void OnResetStatusEffectTimerForPlayer(SOStatusEffects effect)
+	{
+		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
+		{
+			if (!playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+				continue;
+
+			Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+			if (ability.effectBaseRef != effect)
+				continue;
+			else
+			{
+				ability.ResetEffectTimer();
+				return;
+			}
+		}
+	}
 
 	//Player ui abilities updates
 	public void AddNewQueuedAbility(Abilities ability)
@@ -334,6 +351,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
 			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
 			selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+			selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
 		}
 
 		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
@@ -356,6 +374,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
 		selectedTarget.OnNewStatusEffect += OnNewStatusEffectsForSelectedTarget;
+		selectedTarget.OnResetStatusEffectTimer += OnResetStatusEffectTimerForSelectedTarget;
 
 		//initial setting data for ui
 		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
@@ -377,6 +396,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		entity.OnHealthChangeEvent -= OnTargetHealthChange;
 		entity.OnManaChangeEvent -= OnTargetManaChange;
 		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+		entity.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
 	}
 	private void UpdateSelectedTargetTrackerUi()
 	{
@@ -407,6 +427,23 @@ public class PlayerHotbarUi : MonoBehaviour
 				Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
 				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetTimer());
 				ability.gameObject.SetActive(true);
+				return;
+			}
+		}
+	}
+	private void OnResetStatusEffectTimerForSelectedTarget(SOStatusEffects effect)
+	{
+		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
+		{
+			if (!selectedTargetStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+				continue;
+
+			Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+			if (ability.effectBaseRef != effect)
+				continue;
+			else
+			{
+				ability.ResetEffectTimer();
 				return;
 			}
 		}

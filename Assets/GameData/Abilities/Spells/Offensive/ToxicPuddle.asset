@@ -20,21 +20,20 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectName: Poisoned
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
   isAOE: 1
   aoeSize: 50
+  hasAoeDuration: 1
+  aoeDuration: 3
   isDOT: 1
-  hasDuration: 1
-  abilityDuration: 3
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
+  damageType: 1
   damageValue: 10
   damageValuePercentage: 0
-  damageType: 1
   isSpell: 1
   manaCost: 15
   minPercentCost: 12

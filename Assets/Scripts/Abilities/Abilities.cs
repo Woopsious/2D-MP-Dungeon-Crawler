@@ -16,6 +16,7 @@ public class Abilities : MonoBehaviour
 	[Header("Ability Info")]
 	private ToolTipUi toolTip;
 	public SOClassAbilities abilityBaseRef;
+	public SOStatusEffects effectBaseRef;
 
 	public string abilityName;
 	public string abilityDescription;
@@ -52,18 +53,15 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
 	}
-	public void InitilizeStatusEffectUiTimer(SOClassAbilities ability, float currentTimer)
+	public void InitilizeStatusEffectUiTimer(SOStatusEffects effect, float currentTimer)
 	{
-		abilityBaseRef = ability;
+		effectBaseRef = effect;
 		isStatusEffectTimerForUi = true;
-		name = abilityBaseRef.Name;
-		abilityName = abilityBaseRef.Name;
-		if (abilityBaseRef.statusEffectName != "")
-			abilityDescription = abilityBaseRef.statusEffectName;
-		else
-			abilityDescription = abilityBaseRef.Name;
+		name = effect.Name;
+		abilityName = effect.Name;
+		abilityDescription = effect.Name;
 
-		abilitySprite = abilityBaseRef.abilitySprite;
+		abilitySprite = effect.effectSprite;
 		abilityCooldownTimer = currentTimer;
 
 		GetComponent<ToolTipUi>().tipToShow = $"{abilityDescription}	";
@@ -82,12 +80,10 @@ public class Abilities : MonoBehaviour
 		else if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)
+		if (abilityBaseRef.hasStatusEffects)
 			info = SetStatusEffectToolTip(info);
-		else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)
-			info = SetAbilityToolTip(info, playerStats);
 		else
-			Debug.LogError("Setting up ability tool tip failed");
+			info = SetAbilityToolTip(info, playerStats);
 
 		if (abilityBaseRef.isSpell) //optional
 			info += $"\nCosts {(int)(abilityBaseRef.manaCost * Utilities.GetLevelModifier(playerStats.entityLevel))} mana";
@@ -96,29 +92,34 @@ public class Abilities : MonoBehaviour
 	}
 	private string SetStatusEffectToolTip(string info)
 	{
-		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.statusEffectPercentageModifier)}% damage ";
-		else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.statusEffectPercentageModifier)}% damage res ";
-		else if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(abilityBaseRef.statusEffectPercentageModifier)}" +
-				$"% damage recieved modifier ";
-
-		if (abilityBaseRef.canOnlyTargetSelf)
-			info += "buff to yourself";
-		else
+		foreach (SOStatusEffects effect in abilityBaseRef.statusEffects)
 		{
-			if (abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
-				info += "debuff to enemies inside AoE";
-			else if (!abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
-				info += "buff to friendlies/self inside AoE";
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+				info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+			else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+				info += $"\nreduces movement speed by {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}%";
 
-			if (abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
-				info += "debuff to selected enemy";
-			else if (!abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
-				info += "buff to selected friendlies or self";
+			if (abilityBaseRef.canOnlyTargetSelf)
+				info += "buff to yourself";
+			else
+			{
+				if (abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+					info += "debuff to enemies inside AoE";
+				else if (!abilityBaseRef.isOffensiveAbility && abilityBaseRef.isAOE)
+					info += "buff to friendlies/self inside AoE";
+
+				if (abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+					info += "debuff to selected enemy";
+				else if (!abilityBaseRef.isOffensiveAbility && !abilityBaseRef.isAOE)
+					info += "buff to selected friendlies or self";
+			}
+			info += $"\nEffect lasts for {effect.abilityDuration}s";
 		}
-		return info += $"\nEffect lasts for {abilityBaseRef.abilityDuration}s";
+		return info;
 	}
 	private string SetAbilityToolTip(string info, EntityStats playerStats)
 	{
@@ -135,8 +136,15 @@ public class Abilities : MonoBehaviour
 			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
-			if (abilityBaseRef.isDOT)
-				info += $"\nDeals {damage * abilityBaseRef.abilityDuration} damage to enemies over {abilityBaseRef.abilityDuration}s ";
+			if (abilityBaseRef.hasStatusEffects)
+			{
+				foreach (SOStatusEffects effect in abilityBaseRef.statusEffects)
+				{
+					if (effect.isDOT)
+						info += $"\nDeals {damage * effect.abilityDuration} " +
+							$"damage to enemies over {effect.abilityDuration}s ";
+				}
+			}
 			else
 				info += $"\nDeals {damage} damage to enemies ";
 
@@ -155,8 +163,8 @@ public class Abilities : MonoBehaviour
 		else
 			Debug.LogError("Setting up non effect ability tool tip failed");
 
-		if (abilityBaseRef.hasDuration)
-			info += $"\nlasts for {abilityBaseRef.abilityDuration}s"; //optional
+		if (abilityBaseRef.hasAoeDuration)
+			info += $"\nAoe lasts for {abilityBaseRef.aoeDuration}s"; //optional
 		return info;
 	}
 
@@ -178,15 +186,19 @@ public class Abilities : MonoBehaviour
 	private void StatusEffectUiCooldownTimer()
 	{
 		abilityCooldownTimer += Time.deltaTime;
-		abilityImage.fillAmount = abilityCooldownTimer / abilityBaseRef.abilityDuration;
+		abilityImage.fillAmount = abilityCooldownTimer / effectBaseRef.abilityDuration;
 
-		if (abilityCooldownTimer >= abilityBaseRef.abilityDuration)
+		if (abilityCooldownTimer >= effectBaseRef.abilityDuration)
 		{
 			isOnCooldown = false;
 			abilityImage.fillAmount = 1;
 			abilityCooldownTimer = 0;
 			gameObject.SetActive(false);
 		}
+	}
+	public void ResetEffectTimer()
+	{
+		abilityCooldownTimer = 0;
 	}
 
 	//bool checks

@@ -57,7 +57,8 @@ public class EntityStats : MonoBehaviour
 
 	//events
 	public event Action<AbilityStatusEffect> OnNewStatusEffect;
-	public event Action<AbilityStatusEffect> OnRemoveStatusEffect;
+	public event Action<SOStatusEffects> OnResetStatusEffectTimer;
+	public event Action<SOStatusEffects> OnRemoveStatusEffect;
 
 
 	public event Action<float, bool, float> OnRecieveHealingEvent;
@@ -321,61 +322,88 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//status effect functions
-	public void ApplyStatusEffect(SOClassAbilities newStatusEffect, EntityStats casterInfo)
+	public void ApplyStatusEffect(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
-		AbilityStatusEffect duplicateStatusEffect = CheckIfStatusEffectAlreadyApplied(newStatusEffect);
-		if (duplicateStatusEffect != null)
-			duplicateStatusEffect.ResetTimer();
+		//loop through all status effects in ability ref
+		//check if they are already applied, if so reset status effect timer
+		//if not apply said status effect
 
-		GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
-		AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-		statusEffect.Initilize(newStatusEffect, casterInfo, this);
-
-		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			damageDealtModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+		foreach (SOStatusEffects effect in effectsToApply)
 		{
-			physicalResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			poisonResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			fireResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			iceResistance.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-		}
-		if (newStatusEffect.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
-		{
-			physicalDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			poisonDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			fireDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-			iceDamagePercentageModifier.AddPercentageValue(newStatusEffect.statusEffectPercentageModifier);
-		}
+			AbilityStatusEffect duplicateStatusEffect = CheckIfStatusEffectAlreadyApplied(effect);
+			if (duplicateStatusEffect != null)
+			{
+				duplicateStatusEffect.ResetTimer();
+				OnResetStatusEffectTimer?.Invoke(effect);
+				continue;
+			}
 
-		OnNewStatusEffect?.Invoke(statusEffect);
-		currentStatusEffects.Add(statusEffect);
+			GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
+			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
+			statusEffect.Initilize(effect, casterInfo, this);
+
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+				damageDealtModifier.AddPercentageValue(effect.effectValue);
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+			{
+				physicalResistance.AddPercentageValue(effect.effectValue);
+				poisonResistance.AddPercentageValue(effect.effectValue);
+				fireResistance.AddPercentageValue(effect.effectValue);
+				iceResistance.AddPercentageValue(effect.effectValue);
+			}
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
+			{
+				physicalDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+				poisonDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+				fireDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+				iceDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			}
+			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+			{
+				if (IsPlayerEntity())
+					GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, false);
+				else
+					entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
+			}
+
+			OnNewStatusEffect?.Invoke(statusEffect);
+			currentStatusEffects.Add(statusEffect);
+		}
 	}
-	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect, SOClassAbilities abilityBaseRef)
+	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect)
 	{
-		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageRecievedEffect)
-			damageDealtModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
 
-		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isResistanceEffect)
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+			damageDealtModifier.RemovePercentageValue(effect.effectValue);
+
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
 		{
-			physicalResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			poisonResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			fireResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			iceResistance.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			physicalResistance.RemovePercentageValue(effect.effectValue);
+			poisonResistance.RemovePercentageValue(effect.effectValue);
+			fireResistance.RemovePercentageValue(effect.effectValue);
+			iceResistance.RemovePercentageValue(effect.effectValue);
 		}
-		if (abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.isDamageEffect)
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
 		{
-			physicalDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			poisonDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			fireDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
-			iceDamagePercentageModifier.RemovePercentageValue(abilityBaseRef.statusEffectPercentageModifier);
+			physicalDamagePercentageModifier.RemovePercentageValue(effect.effectValue);
+			poisonDamagePercentageModifier.RemovePercentageValue(effect.effectValue);
+			fireDamagePercentageModifier.RemovePercentageValue(effect.effectValue);
+			iceDamagePercentageModifier.RemovePercentageValue(effect.effectValue);
+		}
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+		{
+			if (IsPlayerEntity())
+				GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, false);
+			else
+				entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
 		}
 
-		OnRemoveStatusEffect?.Invoke(statusEffect);
 		currentStatusEffects.Remove(statusEffect);
+		OnRemoveStatusEffect?.Invoke(effect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
 	}
-	private AbilityStatusEffect CheckIfStatusEffectAlreadyApplied(SOClassAbilities newStatusEffect)
+	private AbilityStatusEffect CheckIfStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{
 		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
 		{
@@ -384,14 +412,6 @@ public class EntityStats : MonoBehaviour
 		}
 		return null;
 	}
-
-	/// <summary>
-	/// recalculate stats when ever needed as hard bonuses and percentage bonuses need to be recalculated, if entity equipment for example
-	/// changes a piece of armor etc, so stats are consistant in how they are applied, especially when percentage modifiers are included
-	/// hard numbers added so far: equipment values, 
-	/// percentage numbers added so far: level modifier
-	/// </summary>
-	/// 
 
 	//set base stats
 	public void CalculateBaseStats()

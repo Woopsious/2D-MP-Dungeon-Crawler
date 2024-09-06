@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.AI;
 using static UnityEngine.EventSystems.EventTrigger;
 
 public class PlayerController : MonoBehaviour
@@ -80,6 +81,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbility += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 
 		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
+		playerStats.OnResetStatusEffectTimer += PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void OnEnable()
@@ -99,6 +101,7 @@ public class PlayerController : MonoBehaviour
 		OnCancelQueuedAbility -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 
 		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
+		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void Update()
@@ -143,6 +146,13 @@ public class PlayerController : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
+	}
+	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
+	{
+		if (resetSpeed)
+			speed = 12;
+		else
+			speed *= speedModifier;
 	}
 	private void UpdateSpriteDirection()
 	{
@@ -442,33 +452,27 @@ public class PlayerController : MonoBehaviour
 				return;
 			}
 		}
-		else if (ability.abilityBaseRef.statusEffectType == SOClassAbilities.StatusEffectType.noEffect)	//insta damage abilities
+		else if (!ability.abilityBaseRef.hasStatusEffects)	//insta damage abilities
 		{
 			if (ability.abilityBaseRef.isOffensiveAbility)
 				enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
 					* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
 		}
 
-		else if (ability.abilityBaseRef.statusEffectType != SOClassAbilities.StatusEffectType.noEffect)	//buffing/debuffing status effects
+		else	//buffing/debuffing status effects
 		{
 			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
 			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
+				enemyTarget.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
 			else if (!ability.abilityBaseRef.isOffensiveAbility)		 //add support/option to buff other players for MP
-				playerStats.ApplyStatusEffect(ability.abilityBaseRef, playerStats);
+				playerStats.ApplyStatusEffect(ability.abilityBaseRef.statusEffects, playerStats);
 			else
 			{
 				Debug.LogError("failed to cast status effect");
 				CancelQueuedAbility(queuedAbility);
 				return;
 			}
-		}
-		else
-		{
-			Debug.LogError("failed to cast ability effect");
-			CancelQueuedAbility(queuedAbility);
-			return;
 		}
 
 		OnSuccessfulCast(ability);
