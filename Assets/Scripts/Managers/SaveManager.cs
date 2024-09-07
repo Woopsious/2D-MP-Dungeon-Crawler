@@ -115,7 +115,12 @@ public class SaveManager : MonoBehaviour
 
 		PlayerData playerData = new PlayerData
 		{
+			mainAttackIsAutomatic = PlayerSettingsManager.Instance.mainAttackIsAutomatic,
 			manualCastOffensiveAbilities = PlayerSettingsManager.Instance.manualCastOffensiveAbilities,
+			autoCastOffensiveAoeAbilitiesOnSelectedTarget 
+			= PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget,
+			autoCastOffensiveDirectionalAbilitiesAtSelectedTarget 
+			= PlayerSettingsManager.Instance.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget,
 			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
 			musicVolume = AudioManager.Instance.musicVolume,
 			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
@@ -140,7 +145,8 @@ public class SaveManager : MonoBehaviour
 		if (!string.IsNullOrEmpty(playerData.keybindsData))
 			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(playerData.keybindsData);
 
-		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.manualCastOffensiveAbilities, playerData.mainAttackIsAutomatic);
+		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.mainAttackIsAutomatic, playerData.manualCastOffensiveAbilities,
+			playerData.autoCastOffensiveAoeAbilitiesOnSelectedTarget, playerData.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -436,8 +442,10 @@ public class SaveManager : MonoBehaviour
 [System.Serializable]
 public class PlayerData
 {
-	public bool manualCastOffensiveAbilities;
 	public bool mainAttackIsAutomatic;
+	public bool manualCastOffensiveAbilities;
+	public bool autoCastOffensiveAoeAbilitiesOnSelectedTarget;
+	public bool autoCastOffensiveDirectionalAbilitiesAtSelectedTarget;
 
 	public string keybindsData;
 

@@ -489,10 +489,10 @@ public class PlayerController : MonoBehaviour
 		projectile.transform.position = (Vector2)transform.position;
 		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
 
-		if (!debugUseSelectedTargetForAttackDirection)
-			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
-		else
+		if (PlayerSettingsManager.Instance.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget && selectedEnemyTarget != null)
 			SetProjectileDirection(projectile, GetAttackRotation(selectedEnemyTarget.transform.position));
+		else
+			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
 
 		OnSuccessfulCast(ability);
 	}
@@ -505,9 +505,14 @@ public class PlayerController : MonoBehaviour
 			abilityAOE = go.GetComponent<AbilityAOE>();
 		}
 
-		Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		Vector3 movePosition;
+		if (PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget)
+			movePosition = selectedEnemyTarget.transform.position;
+		else
+			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
 		abilityAOE.transform.SetParent(null);
-		abilityAOE.transform.position = (Vector2)mousePosition;
+		abilityAOE.transform.position = (Vector2)movePosition;
 		abilityAOE.Initilize(ability.abilityBaseRef, playerStats);
 		abilityAOE.AddPlayerRef(this);
 

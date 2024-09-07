@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -63,7 +64,20 @@ public static class PlayerEventManager
 	public static event Action OnShowPlayerClassSelectionEvent;
 	public static void ShowPlayerClassSelection()
 	{
-		OnShowPlayerClassSelectionEvent?.Invoke();
+		if (EditorApplication.isPlaying) //allow class swapping in all scenes when open in editor
+		{
+			OnShowPlayerClassSelectionEvent?.Invoke();
+
+			if (GameManager.Instance == null)
+				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
+		}
+		else //allow class swapping only in hub area
+		{
+			if (GameManager.Instance != null && Utilities.GetCurrentlyActiveScene(GameManager.Instance.hubAreaName))
+				OnShowPlayerClassSelectionEvent?.Invoke();
+			else
+				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
+		}
 	}
 	public static event Action OnShowPlayerSkillTreeEvent;
 	public static void ShowPlayerSkillTree()

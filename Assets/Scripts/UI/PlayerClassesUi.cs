@@ -687,7 +687,7 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 
 	//UI CHANGES
-	//classes
+	//classes changes
 	public void PlayAsKnightButton()
 	{
 		SetPlayerClass(knightClass, true);

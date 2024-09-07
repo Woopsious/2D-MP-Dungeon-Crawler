@@ -47,9 +47,14 @@ public class LootSpawnHandler : MonoBehaviour
 	//spawn loot
 	public void AddGold()
 	{
-		int goldToAdd = Utilities.GetRandomNumberBetween(minGold,
-			maxGold) * (int)levelModifier;
+		float goldModifier = levelModifier;
 
+		if (GameManager.Instance != null)   //add difficulty modifier to gold drops
+			goldModifier += GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
+		else
+			Debug.LogWarning("Game Manager not found whilst updating spawner level, ignore if scene testing");
+
+		int goldToAdd = Utilities.GetRandomNumberBetween((int)(minGold * goldModifier), (int)(maxGold * goldModifier));
 		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
 	}
 	public void SpawnLoot()

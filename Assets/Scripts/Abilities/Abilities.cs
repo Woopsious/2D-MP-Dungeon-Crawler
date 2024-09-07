@@ -218,7 +218,11 @@ public class Abilities : MonoBehaviour
 		if (abilityBaseRef.canOnlyTargetSelf)
 			return true;
 		if (abilityBaseRef.isAOE)
-			return false;
+		{
+			if (PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget && selectedEnemy != null)
+				return true;
+			else return false;
+		}
 		if (abilityBaseRef.isProjectile)
 			return true;
 

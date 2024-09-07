@@ -53,7 +53,7 @@ public class MainMenuManager : MonoBehaviour
 		//enable buttons unique to main menu scene
 		if (GameManager.Instance == null)
 		{
-			Debug.LogWarning("Game Manager Instance not found, ignore if testing");
+			Debug.LogWarning("Game Manager Instance not found hiding title screen buttons, ignore if testing");
 			return;
 		}
 
