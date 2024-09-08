@@ -28,6 +28,7 @@ public class Items : MonoBehaviour, IInteractable
 	}
 
 	public int itemLevel;
+	public int itemEnchantmentLevel;
 	public float levelModifier;
 
 	public Rarity rarity;
@@ -42,12 +43,13 @@ public class Items : MonoBehaviour, IInteractable
 	public int inventroySlot;
 
 	//set item data
-	public virtual void Initilize(Rarity setRarity, int setLevel)
+	public virtual void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		audioHandler = GetComponent<AudioHandler>();
 		rarity = setRarity;
 		itemLevel = setLevel;
-		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity);
+		itemEnchantmentLevel = setEnchantmentLevel;
+		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity, setEnchantmentLevel);
 
 		itemName = GetItemName();
 		name = itemName;
@@ -58,14 +60,21 @@ public class Items : MonoBehaviour, IInteractable
 		if (GetComponent<InventoryItemUi>() != null) return; //is inventoryItem so doesnt need this ref
 		GetComponent<SpriteRenderer>().sprite = itemSprite;
 	}
-	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity)
+	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity, int enchantmentLevel)
 	{
-		if (level == 1)  //get level modifier
+		if (level == 1)  //get level modifier, +10% per level
 			levelModifier = 1;
 		else
 			levelModifier = 1 + (level / 10f);
 
-		if (rarity == IGetStatModifier.Rarity.isLegendary) { levelModifier += 0.8f; } //get rarity modifier
+		if (enchantmentLevel == 1) //get enchantment modifier, +5% per level
+			levelModifier += 0.05f;
+		if (enchantmentLevel == 2)
+			levelModifier += 0.1f;
+		if (enchantmentLevel == 3)
+			levelModifier += 0.15f;
+
+		if (rarity == IGetStatModifier.Rarity.isLegendary) { levelModifier += 0.8f; } //get rarity modifier, +20% x2 per level
 		if (rarity == IGetStatModifier.Rarity.isEpic) { levelModifier += 0.4f; }
 		if (rarity == IGetStatModifier.Rarity.isRare) { levelModifier += 0.2f; }
 		else { levelModifier += 0; }
@@ -141,7 +150,7 @@ public class Items : MonoBehaviour, IInteractable
 	//Debug functions
 	public void GenerateStatsOnStart()
 	{
-		Initilize(rarity, itemLevel);
+		Initilize(rarity, itemLevel, 0);
 		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
 		collider2D.isTrigger = true;
 	}

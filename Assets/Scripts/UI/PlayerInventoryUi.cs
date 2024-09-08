@@ -157,8 +157,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Weapons weapon = inventoryItem.AddComponent<Weapons>();
 			weapon.weaponBaseRef = itemData.weaponBaseRef;
 			weapon.itemLevel = itemData.itemLevel;
+			weapon.itemEnchantmentLevel = itemData.enchantmentLevel;
 			weapon.rarity = (Items.Rarity)itemData.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel);
+			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
 			weapon.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.armorBaseRef != null)
@@ -167,8 +168,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Armors armor = inventoryItem.AddComponent<Armors>();
 			armor.armorBaseRef = itemData.armorBaseRef;
 			armor.itemLevel = itemData.itemLevel;
+			armor.itemEnchantmentLevel = itemData.enchantmentLevel;
 			armor.rarity = (Items.Rarity)itemData.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel);
+			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
 			armor.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.accessoryBaseRef != null)
@@ -177,8 +179,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = itemData.accessoryBaseRef;
 			accessory.itemLevel = itemData.itemLevel;
+			accessory.itemEnchantmentLevel = itemData.enchantmentLevel;
 			accessory.rarity = (Items.Rarity)itemData.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel);
+			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
 			accessory.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.consumableBaseRef != null)
@@ -187,8 +190,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
 			consumable.consumableBaseRef = itemData.consumableBaseRef;
 			consumable.itemLevel = itemData.itemLevel;
+			consumable.itemEnchantmentLevel = itemData.enchantmentLevel;
 			consumable.rarity = (Items.Rarity)itemData.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel);
+			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
 			consumable.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		if (itemData.abilityBaseRef != null)
@@ -293,7 +297,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItemUi newItem = go.GetComponent<InventoryItemUi>();
-
 		SetItemData(newItem, item);
 		newItem.Initilize();
 		return newItem;
@@ -306,8 +309,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Weapons weapon = inventoryItem.AddComponent<Weapons>();
 			weapon.weaponBaseRef = item.weaponBaseRef;
 			weapon.itemLevel = item.itemLevel;
+			weapon.itemEnchantmentLevel = item.itemEnchantmentLevel;
 			weapon.rarity = item.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel);
+			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
 			weapon.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.armorBaseRef != null)
@@ -316,8 +320,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Armors armor = inventoryItem.AddComponent<Armors>();
 			armor.armorBaseRef = item.armorBaseRef;
 			armor.itemLevel = item.itemLevel;
+			armor.itemEnchantmentLevel = item.itemEnchantmentLevel;
 			armor.rarity = item.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel);
+			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
 			armor.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.accessoryBaseRef != null)
@@ -326,8 +331,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = item.accessoryBaseRef;
 			accessory.itemLevel = item.itemLevel;
+			accessory.itemEnchantmentLevel = item.itemEnchantmentLevel;
 			accessory.rarity = item.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel);
+			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
 			accessory.SetCurrentStackCount(item.currentStackCount);
 		}
 		if (item.consumableBaseRef != null)
@@ -336,8 +342,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
 			consumable.consumableBaseRef = item.consumableBaseRef;
 			consumable.itemLevel = item.itemLevel;
+			consumable.itemEnchantmentLevel = item.itemEnchantmentLevel;
 			consumable.rarity = item.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel);
+			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
 		}
 	}

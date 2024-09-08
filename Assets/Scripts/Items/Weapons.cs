@@ -28,9 +28,9 @@ public class Weapons : Items
 	}
 
 	//set weapon data
-	public override void Initilize(Rarity setRarity, int setLevel)
+	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
-		base.Initilize(setRarity, setLevel);
+		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
 		isShield = weaponBaseRef.isShield;
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
@@ -68,7 +68,11 @@ public class Weapons : Items
 		else
 			weightClass = "Light Weight Restriction";
 
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price \n {weightClass}";
+		string info;
+		if (itemEnchantmentLevel == 0)
+			info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price \n{weightClass}";
+		else
+			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
 
 		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
 			info += "\n Main hand ";

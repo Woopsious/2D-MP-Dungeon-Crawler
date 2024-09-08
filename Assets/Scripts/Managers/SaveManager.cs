@@ -385,6 +385,7 @@ public class SaveManager : MonoBehaviour
 					abilityBaseRef = inventoryItem.abilityBaseRef,
 
 					itemLevel = inventoryItem.itemLevel,
+					enchantmentLevel = inventoryItem.itemEnchantmentLevel,
 					rarity = (InventoryItemData.Rarity)inventoryItem.rarity,
 
 					inventorySlotIndex = inventoryItem.inventorySlotIndex,
@@ -510,6 +511,7 @@ public class InventoryItemData
 
 	[Header("Item Info")]
 	public int itemLevel;
+	public int enchantmentLevel;
 	public Rarity rarity;
 	public enum Rarity
 	{

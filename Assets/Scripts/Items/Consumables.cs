@@ -13,9 +13,9 @@ public class Consumables : Items
 	}
 
 	//set consumable data
-	public override void Initilize(Rarity setRarity, int setLevel)
+	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
-		base.Initilize(setRarity, setLevel);
+		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 		isStackable = consumableBaseRef.isStackable;
 	}
 	public override void SetToolTip(EntityStats playerStats)

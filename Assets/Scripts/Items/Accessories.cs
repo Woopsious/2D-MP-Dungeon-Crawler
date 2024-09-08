@@ -45,9 +45,9 @@ public class Accessories : Items
 	}
 
 	//set accessory data
-	public override void Initilize(Rarity setRarity, int setLevel)
+	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
-		base.Initilize(setRarity, setLevel);
+		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
 		if (rarity == Rarity.isCommon)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[0];
@@ -85,7 +85,11 @@ public class Accessories : Items
 		else
 			rarity = "Common";
 
-		string info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price";
+		string info;
+		if (itemEnchantmentLevel == 0)
+			info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price";
+		else
+			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price";
 
 		string extraInfo;
 

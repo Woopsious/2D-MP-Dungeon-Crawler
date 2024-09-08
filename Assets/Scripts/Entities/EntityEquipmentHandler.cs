@@ -93,7 +93,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip;
-		equippedWeaponRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel);
+		equippedWeaponRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
 		equippedWeaponRef.AddPlayerRef(null);
 		equippedWeaponRef.isEquippedByOther = true;
 
@@ -109,7 +109,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = armorToEquip;
-		equippedArmorRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel);
+		equippedArmorRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);

@@ -149,7 +149,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			weapon.weaponBaseRef = (SOWeapons)npc.weaponSmithShopItems[Utilities.GetRandomNumber(npc.weaponSmithShopItems.Count - 1)];
 			item.weaponBaseRef = weapon.weaponBaseRef;
 			weapon.currentStackCount = 1;
-			weapon.Initilize(Utilities.SetRarity(0), playerLevel);
+			weapon.Initilize(Utilities.SetRarity(0), playerLevel, 0);
 		}
 		if (npc.shopType == SONpcs.ShopType.isArmorer)
 		{
@@ -158,7 +158,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			armor.armorBaseRef = (SOArmors)npc.armorerShopItems[Utilities.GetRandomNumber(npc.armorerShopItems.Count - 1)];
 			item.armorBaseRef = armor.armorBaseRef;
 			armor.currentStackCount = 1;
-			armor.Initilize(Utilities.SetRarity(0), playerLevel);
+			armor.Initilize(Utilities.SetRarity(0), playerLevel, 0);
 		}
 		if (npc.shopType == SONpcs.ShopType.isGoldSmith)
 		{
@@ -167,7 +167,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			accessory.accessoryBaseRef = (SOAccessories)npc.goldSmithShopItems[Utilities.GetRandomNumber(npc.goldSmithShopItems.Count - 1)];
 			item.accessoryBaseRef = accessory.accessoryBaseRef;
 			accessory.currentStackCount = 1;
-			accessory.Initilize(Utilities.SetRarity(0), playerLevel);
+			accessory.Initilize(Utilities.SetRarity(0), playerLevel, 0);
 			accessory.SetRandomDamageTypeOnDrop();
 		}
 		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
@@ -177,7 +177,7 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			consumable.consumableBaseRef = (SOConsumables)npc.generalStoreItems[Utilities.GetRandomNumber(npc.generalStoreItems.Count - 1)];
 			item.consumableBaseRef = consumable.consumableBaseRef;
 			consumable.currentStackCount = 3;
-			consumable.Initilize(Utilities.SetRarity(0), playerLevel);
+			consumable.Initilize(Utilities.SetRarity(0), playerLevel, 0);
 		}
 
 		item.Initilize();

@@ -70,7 +70,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel);
+		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, weaponToEquip.itemEnchantmentLevel);
 		equippedWeaponRef.AddPlayerRef(player);
 		equippedWeaponRef.isEquippedByPlayer = true;
 
@@ -86,7 +86,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.Initilize(armorToEquip.rarity, armorToEquip.itemLevel);
+		equippedArmorRef.Initilize(armorToEquip.rarity, armorToEquip.itemLevel, armorToEquip.itemEnchantmentLevel);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
@@ -100,7 +100,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		equippedAccessoryRef = go.AddComponent<Accessories>();
 
 		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
-		equippedAccessoryRef.Initilize(accessoryToEquip.rarity, accessoryToEquip.itemLevel);
+		equippedAccessoryRef.Initilize(accessoryToEquip.rarity, accessoryToEquip.itemLevel, accessoryToEquip.itemEnchantmentLevel);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);

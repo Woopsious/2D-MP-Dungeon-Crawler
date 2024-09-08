@@ -29,9 +29,9 @@ public class Armors : Items
 	}
 
 	//set armor data
-	public override void Initilize(Rarity setRarity, int setLevel)
+	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
-		base.Initilize(setRarity, setLevel);
+		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
 		bonusHealth = (int)(armorBaseRef.baseBonusHealth * levelModifier);
 		bonusMana = (int)(armorBaseRef.baseBonusMana * levelModifier);
@@ -67,7 +67,11 @@ public class Armors : Items
 		else
 			weightClass = "Light Weight Restriction";
 
-		string info = $"{rarity} Level {itemLevel} {itemName} \n {itemPrice} Price \n {weightClass}";
+		string info;
+		if (itemEnchantmentLevel == 0)
+			info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price \n{weightClass}";
+		else
+			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
 
 		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
 			$"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n" +

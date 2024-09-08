@@ -35,7 +35,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 25, y: 25}
+  m_SizeDelta: {x: 20, y: 25}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &1546364609853836008
 CanvasRenderer:
@@ -211,11 +211,12 @@ MonoBehaviour:
   armorBaseRef: {fileID: 0}
   accessoryBaseRef: {fileID: 0}
   consumableBaseRef: {fileID: 0}
+  itemType: 0
   itemName: 
   itemSprite: {fileID: 0}
   itemPrice: 0
   itemLevel: 0
-  itemType: 0
+  itemEnchantmentLevel: 0
   rarity: 0
   classRestriction: 0
   inventorySlotIndex: 0
@@ -314,7 +315,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
+  m_Sprite: {fileID: 131823207, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -493,7 +494,7 @@ RectTransform:
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 65, y: 25}
+  m_SizeDelta: {x: 75, y: 25}
   m_Pivot: {x: 1, y: 0}
 --- !u!222 &2828540109521776083
 CanvasRenderer:

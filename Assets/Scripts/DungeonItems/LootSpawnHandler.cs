@@ -79,7 +79,7 @@ public class LootSpawnHandler : MonoBehaviour
 
 			SetUpItem(go, index);
 
-			go.GetComponent<Items>().Initilize(Utilities.SetRarity(0), Utilities.SetItemLevel(lootSpawnerLevel));
+			go.GetComponent<Items>().Initilize(Utilities.SetRarity(0), Utilities.SetItemLevel(lootSpawnerLevel), 0);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}

@@ -145,7 +145,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 		}
 
 		Items item = go.GetComponent<Items>();
-		item.Initilize(Items.Rarity.isRare, GetComponent<EntityStats>().entityLevel);
+		item.Initilize(Items.Rarity.isRare, GetComponent<EntityStats>().entityLevel, 3);
 		BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 		collider.isTrigger = true;
 	}

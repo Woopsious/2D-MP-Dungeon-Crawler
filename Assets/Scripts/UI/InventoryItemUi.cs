@@ -27,6 +27,11 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
+	public ItemType itemType;
+	public enum ItemType
+	{
+		isConsumable, isWeapon, isArmor, isAccessory, isAbility
+	}
 
 	[Header("Item Info")]
 	public string itemName;
@@ -34,11 +39,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	private AudioHandler audioHandler;
 	public int itemPrice;
 	public int itemLevel;
-	public ItemType itemType;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public int itemEnchantmentLevel;
 	public Rarity rarity;
 	public enum Rarity
 	{
@@ -76,20 +77,20 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		audioHandler = GetComponent<AudioHandler>();
 
 		if (GetComponent<Items>() != null)
-			SetUpItems();
+			SetUpItems(GetComponent<Items>());
 		else if (GetComponent<Abilities>() != null)
-			SetUpAbilities();
+			SetUpAbilities(GetComponent<Abilities>());
 
 		SetUpUi();
 	}
-	private void SetUpItems()
+	private void SetUpItems(Items item)
 	{
-		Items item = GetComponent<Items>();
 		name = item.itemName;
 		itemName = item.itemName;
 		itemSprite = item.itemSprite;
 		itemPrice = item.itemPrice;
 		itemLevel = item.itemLevel;
+		itemEnchantmentLevel = item.itemEnchantmentLevel;
 		rarity = (Rarity)item.rarity;
 		itemType = (ItemType)item.itemType;
 		classRestriction = GetClassRestriction();
@@ -107,9 +108,8 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent += CheckIfCanUseConsumables;
 		}
 	}
-	private void SetUpAbilities()
+	private void SetUpAbilities(Abilities ability)
 	{
-		Abilities ability = GetComponent<Abilities>();
 		name = ability.abilityName;
 		itemName = ability.abilityName;
 		itemSprite = ability.abilitySprite;
@@ -154,8 +154,18 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		gameObject.name = itemName;
 		uiItemName.text = itemName;
+		if (itemEnchantmentLevel == 0 || itemType == ItemType.isConsumable)
+		{
+			uiItemName.text = itemName;
+			uiItemLevel.text = $"LVL: {itemLevel}";
+		}
+		else
+		{
+			uiItemName.text = $"Enchanted {itemName}";
+			uiItemLevel.text = $"LVL: {itemLevel} +{itemEnchantmentLevel}";
+		}
+
 		uiItemImage.sprite = itemSprite;
-		uiItemLevel.text = "LVL: " + itemLevel;
 		uiItemStackCount.text = currentStackCount.ToString();
 
 		if (rarity == Rarity.isRare)
@@ -299,25 +309,25 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		{
 			Weapons weapon = gameObject.AddComponent<Weapons>();
 			weapon.weaponBaseRef = weaponBaseRef;
-			weapon.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
+			weapon.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20), 0);
 		}
 		if (armorBaseRef != null)
 		{
 			Armors armor = gameObject.AddComponent<Armors>();
 			armor.armorBaseRef = armorBaseRef;
-			armor.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
+			armor.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20), 0);
 		}
 		if (accessoryBaseRef != null)
 		{
 			Accessories accessory = gameObject.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = accessoryBaseRef;
-			accessory.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
+			accessory.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20), 0);
 		}
 		if (consumableBaseRef != null)
 		{
 			Consumables consumable = gameObject.AddComponent<Consumables>();
 			consumable.consumableBaseRef = consumableBaseRef;
-			consumable.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20));
+			consumable.Initilize(Utilities.SetRarity(0), Utilities.GetRandomNumber(20), 0);
 		}
 		if (abilityBaseRef != null)
 		{
