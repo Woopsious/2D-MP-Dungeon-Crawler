@@ -50,12 +50,8 @@ public class PlayerController : MonoBehaviour
 	public Abilities queuedAbility;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithPortal;
-	private PortalHandler currentInteractedPortal;
-	[HideInInspector] public bool isInteractingWithNpc;
-	private NpcHandler currentInteractedNpc;
-	[HideInInspector] public bool isInteractingWithChest;
-	private ChestHandler currentInteractedChest;
+	[HideInInspector] public bool isInteractingWithInteractable;
+	private Interactables currentInteractedObject;
 
 	private void Awake()
 	{
@@ -544,7 +540,7 @@ public class PlayerController : MonoBehaviour
 	//bool checks
 	private bool IsPlayerInteracting()
 	{
-		if (isInteractingWithNpc || isInteractingWithPortal || isInteractingWithChest)
+		if (isInteractingWithInteractable)
 			return true;
 		else return false;
 	}
@@ -554,40 +550,45 @@ public class PlayerController : MonoBehaviour
 		if (other.GetComponent<PortalHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			currentInteractedPortal = other.GetComponent<PortalHandler>();
 		}
 		else if (other.GetComponent<NpcHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			currentInteractedNpc = other.GetComponent<NpcHandler>();
 		}
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			currentInteractedChest = other.GetComponent<ChestHandler>();
-			if (currentInteractedChest.chestStateOpened)
+			if (other.GetComponent<ChestHandler>().chestStateOpened)
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			else
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 		}
+		else if (other.GetComponent<EnchantmentHandler>() != null)
+		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+		}
+		currentInteractedObject = other.GetComponent<Interactables>();
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<PortalHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-			currentInteractedPortal = null;
 		}
 		else if (other.GetComponent<NpcHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-			currentInteractedNpc = null;
 		}
 		else if (other.GetComponent<ChestHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-			currentInteractedChest = null;
 		}
+		else if (other.GetComponent<EnchantmentHandler>() != null)
+		{
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+		}
+		currentInteractedObject = null;
+		isInteractingWithInteractable = false;
 	}
 
 	/// <summary>
@@ -642,32 +643,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInteract()
 	{
-		if (currentInteractedPortal != null)
-			currentInteractedPortal.Interact(this);
-		else if (currentInteractedChest != null)
-		{
-			if (PlayerInventoryUi.Instance.interactedInventorySlotsUi.activeInHierarchy)
-				currentInteractedChest.UnInteract(this);
-			else
-				currentInteractedChest.Interact(this);
-		}
-		else if (currentInteractedNpc != null)
-		{
-			if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isQuestNpc)
-			{
-				if (PlayerJournalUi.Instance.npcJournalPanalUi.activeInHierarchy)
-					currentInteractedNpc.UnInteract(this);
-				else
-					currentInteractedNpc.Interact(this);
-			}
-			else if (currentInteractedNpc.npc.npcType == SONpcs.NPCType.isShopNpc)
-			{
-				if (PlayerInventoryUi.Instance.npcShopPanalUi.activeInHierarchy)
-					currentInteractedNpc.UnInteract(this);
-				else
-					currentInteractedNpc.Interact(this);
-			}
-		}
+		if (currentInteractedObject == null) return;
+		currentInteractedObject.Interact(this);
 	}
 	private void OnTabTargetingForwards()
 	{

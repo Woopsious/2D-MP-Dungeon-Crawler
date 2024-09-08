@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ChestHandler : MonoBehaviour, IInteractable
+public class ChestHandler : MonoBehaviour, IInteractables
 {
 	public Sprite chestClosedSprite;
 	public Sprite chestOpenedSprite;
@@ -83,6 +83,7 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		{
 			audioHandler.PlayAudio(chestOpenSfx);
 			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
+			player.isInteractingWithInteractable = true;
 		}
 	}
 	public void UnInteract(PlayerController player)
@@ -90,5 +91,6 @@ public class ChestHandler : MonoBehaviour, IInteractable
 		if (!isPlayerStorageChest) return;
 		audioHandler.PlayAudio(chestCloseSfx);
 		PlayerInventoryUi.Instance.HidePlayerStorageChest(this);
+		player.isInteractingWithInteractable = false;
 	}
 }

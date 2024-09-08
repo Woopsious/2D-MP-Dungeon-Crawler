@@ -5,7 +5,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class NpcHandler : MonoBehaviour, IInteractable
+public class NpcHandler : MonoBehaviour, IInteractables
 {
 	public SONpcs npc;
 
@@ -68,8 +68,6 @@ public class NpcHandler : MonoBehaviour, IInteractable
 	//player interactions
 	public void Interact(PlayerController player)
 	{
-		player.isInteractingWithNpc = true;
-
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
 			PlayerEventManager.ShowPlayerJournal();
@@ -80,15 +78,16 @@ public class NpcHandler : MonoBehaviour, IInteractable
 			PlayerEventManager.ShowPlayerInventory();
 			PlayerEventManager.ShowNpcShopInventory(this);
 		}
+		player.isInteractingWithInteractable = true;
 	}
 	public void UnInteract(PlayerController player)
 	{
-		player.isInteractingWithNpc = false;
-
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 			PlayerEventManager.HideNpcJournal(this);
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
 			PlayerEventManager.HideNpcShopInventory(this);
+
+		player.isInteractingWithInteractable = false;
 	}
 
 	//quest npc functions

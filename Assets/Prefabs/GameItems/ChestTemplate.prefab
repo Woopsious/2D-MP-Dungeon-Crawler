@@ -45,6 +45,7 @@ GameObject:
   - component: {fileID: 1592219801647068157}
   - component: {fileID: 4883613355703765723}
   - component: {fileID: 8721437617354721535}
+  - component: {fileID: 4782606766347975966}
   m_Layer: 0
   m_Name: ChestTemplate
   m_TagString: Untagged
@@ -212,6 +213,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioType: 3
   audioSource: {fileID: 2235738337134764772}
+--- !u!114 &4782606766347975966
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7774828080601970958}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8512411158488975875
 GameObject:
   m_ObjectHideFlags: 0

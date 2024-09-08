@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PortalHandler : MonoBehaviour, IInteractable
+public class PortalHandler : MonoBehaviour, IInteractables
 {
 	private AudioHandler audioHandler;
 	public GameObject portalSpriteObj;
@@ -29,13 +29,15 @@ public class PortalHandler : MonoBehaviour, IInteractable
 	}
 
 	//player interactions
-	public void Interact(PlayerController playerController)
+	public void Interact(PlayerController player)
 	{
 		PlayerEventManager.ShowPortalUi(this);
+		player.isInteractingWithInteractable = true;
 	}
-	public void UnInteract(PlayerController playerController)
+	public void UnInteract(PlayerController player)
 	{
 		PlayerEventManager.HidePortalUi();
+		player.isInteractingWithInteractable = false;
 	}
 
 	//add a portal spin and wobble effect at some point via code or animator

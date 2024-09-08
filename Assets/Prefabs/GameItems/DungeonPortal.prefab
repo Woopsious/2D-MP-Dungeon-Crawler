@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6054492629619758222}
   - component: {fileID: 1826777425703636469}
   - component: {fileID: 8745414314128906248}
+  - component: {fileID: 1596457139433604635}
   m_Layer: 0
   m_Name: DungeonPortal
   m_TagString: Untagged
@@ -101,6 +102,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   audioType: 3
   audioSource: {fileID: 6793244455992991150}
+--- !u!114 &1596457139433604635
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2620254730795135041}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &3259987665536711695
 GameObject:
   m_ObjectHideFlags: 0

@@ -55,6 +55,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	public List<GameObject> interactedInventorySlots = new List<GameObject>();
 	public TMP_Text interactedInventorySlotsText;
 
+	[Header("Enchantment Ui")]
+	public GameObject EnchanterUi;
+	//
+
 	private void Awake()
 	{
 		Instance = this;
@@ -618,6 +622,20 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerEventManager.ShowPlayerInventory();
 		interactedInventorySlotsUi.SetActive(false);
 		storageChestPanelUi.SetActive(false);
+		HideInventory();
+	}
+
+	//enchanter
+	public void ShowEnchanterUi()
+	{
+		if (EnchanterUi.activeInHierarchy)
+			HideEnchanterUi();
+		else
+			EnchanterUi.SetActive(true);
+	}
+	public void HideEnchanterUi()
+	{
+		EnchanterUi.SetActive(false);
 		HideInventory();
 	}
 

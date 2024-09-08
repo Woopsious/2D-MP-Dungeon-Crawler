@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Items : MonoBehaviour, IInteractable
+public class Items : MonoBehaviour
 {
 	[Header("Debug settings")]
 	public bool generateStatsOnStart;

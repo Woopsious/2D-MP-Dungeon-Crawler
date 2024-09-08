@@ -66,7 +66,6 @@
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\DungeonHandler.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
-    <Compile Include="Assets\Scripts\Interfaces\IInteractable.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryHandler.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\SpawnHandler.cs" />
@@ -104,6 +103,7 @@
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyAttackState.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\EnchantmentHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />
@@ -117,6 +117,7 @@
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
     <Compile Include="Assets\Scripts\UI\InventorySlotDataUi.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\Interactables.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\ChestHandler.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />

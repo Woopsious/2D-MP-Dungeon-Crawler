@@ -145,6 +145,7 @@ GameObject:
   - component: {fileID: 2315527834557155763}
   - component: {fileID: 8245342908243549863}
   - component: {fileID: 5402060914043351995}
+  - component: {fileID: 3044297499072772357}
   - component: {fileID: 3808744899274543316}
   m_Layer: 0
   m_Name: NpcTemplate
@@ -210,11 +211,20 @@ MonoBehaviour:
   avalableQuestList: []
   ItemPrefab: {fileID: 2498642512250934063, guid: bd5f8a6a3c3a67641bb9b5aa36b339cb, type: 3}
   avalableShopItemsList: []
-  minNumOfShopItems: 5
-  maxNumOfShopItems: 10
   npcContainer: {fileID: 7278002718299386572}
   NpcTypeText: {fileID: 4560312773100162544}
-  interactWithText: {fileID: 4864529019645497215}
+--- !u!114 &3044297499072772357
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5626222275669290319}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!58 &3808744899274543316
 CircleCollider2D:
   m_ObjectHideFlags: 0

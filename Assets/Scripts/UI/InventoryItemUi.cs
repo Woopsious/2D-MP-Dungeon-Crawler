@@ -99,7 +99,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		maxStackCount = GetMaxStackCount();
 		currentStackCount = item.currentStackCount;
 
-		if (transform.parent == null) return;
+		if (transform.parent == null || transform.parent.GetComponent<InventorySlotDataUi>() == null) return;
 		InventorySlotDataUi slotDataUi = transform.parent.GetComponent<InventorySlotDataUi>();
 
 		if (slotDataUi.slotType == InventorySlotDataUi.SlotType.consumables)
