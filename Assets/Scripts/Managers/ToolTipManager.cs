@@ -85,13 +85,16 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
 
-		if (!slot.IsPlayerEquipmentSlot())	//show either equip item button
+		if (!slot.IsPlayerEquipmentSlot())	//show equip item buttons
 		{
 			EquipItem(slot);    //button delegation in here (more complex with multiple slot destination etc..)
 			equipItemButton.gameObject.SetActive(true);
 			unEquipItemButton.gameObject.SetActive(false);
+
+			discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); });
+			discardItemButton.gameObject.SetActive(true);
 		}
-		else if (slot.IsPlayerEquipmentSlot())	//show unEquipItem button
+		else //show unEquipItem button
 		{
 			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });
 			unEquipItemButton.gameObject.SetActive(true);
@@ -103,12 +106,6 @@ public class ToolTipManager : MonoBehaviour
 
 		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
 		splitItemButton.gameObject.SetActive(true);
-
-		if (!slot.IsPlayerEquipmentSlot())
-		{
-			discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); });
-			discardItemButton.gameObject.SetActive(true);
-		}
 
 		QuestDataUi quest = CanItemBeHandedIn(slot.itemInSlot);
 		if (quest != null)

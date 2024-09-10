@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UI;
 
 public class PlayerInventoryUi : MonoBehaviour
@@ -57,7 +58,9 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	[Header("Enchantment Ui")]
 	public GameObject EnchanterUi;
-	//
+	public TMP_Text enchanterSlotText;
+	public InventorySlotDataUi enchanterSlot;
+	public GameObject enchantItemButton;
 
 	private void Awake()
 	{
@@ -70,6 +73,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
+		InventorySlotDataUi.OnNewItemToEnchant += UpdateEnchantItemUiInfo;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += ShowInventory;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideInventory;
@@ -92,6 +96,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
+		InventorySlotDataUi.OnNewItemToEnchant -= UpdateEnchantItemUiInfo;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= ShowInventory;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideInventory;
@@ -637,6 +642,42 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		EnchanterUi.SetActive(false);
 		HideInventory();
+	}
+	public void UpdateEnchantItemUiInfo(InventoryItemUi item)
+	{
+		if (item == null)
+		{
+			enchantItemButton.SetActive(false);
+			enchanterSlotText.text = "Drag enchantable item here to enchant";
+			return;
+		}
+		else if (item.itemEnchantmentLevel >= 3)
+		{
+			enchantItemButton.SetActive(false);
+			enchanterSlotText.text = $"Cant Enchant {item.itemName}, already max enchantment level";
+		}
+		else
+		{
+			int goldCostToEnchant = item.itemPrice * (item.itemEnchantmentLevel + 1);
+
+			if (playerGoldAmount >= goldCostToEnchant)
+			{
+				enchantItemButton.SetActive(true);
+				enchanterSlotText.text = $"Enchant {item.itemName} for {goldCostToEnchant} gold";
+			}
+			else
+			{
+				enchantItemButton.SetActive(false);
+				enchanterSlotText.text = $"Cant Enchant {item.itemName}, you need {goldCostToEnchant} gold";
+			}
+		}
+	}
+	public void EnchantItemButton()
+	{
+		int goldCost = enchanterSlot.itemInSlot.itemPrice * (enchanterSlot.itemInSlot.itemEnchantmentLevel + 1);
+		UpdateGoldAmount(-goldCost);
+		enchanterSlot.EnchantItemInSlot();
+		UpdateEnchantItemUiInfo(enchanterSlot.itemInSlot);
 	}
 
 	//update items in ui incase any changes were made

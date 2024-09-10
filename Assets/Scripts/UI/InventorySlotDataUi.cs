@@ -8,13 +8,14 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 {
 	public static event Action<InventoryItemUi, InventorySlotDataUi> OnItemEquip;
 	public static event Action<InventoryItemUi, InventorySlotDataUi> OnHotbarItemEquip;
+	public static event Action<InventoryItemUi> OnNewItemToEnchant;
 
 	public SlotType slotType;
 	public enum SlotType
 	{
 		playerInventory, weaponMain, weaponOffhand, helmet, chestpiece, legs, consumables, 
 		necklace, ringOne, ringTwo, artifact, ability, equippedAbilities, shopSlot,
-		weaponStorage, armourStorage, accessoryStorage, consumablesStorage
+		weaponStorage, armourStorage, accessoryStorage, consumablesStorage, enchantItemSlot
 	}
 
 	public int slotIndex;
@@ -40,6 +41,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		if (!IsCorrectSlotType(item)) return;
 		if (IsNewSlotSameAsOldSlot(oldInventorySlot)) return;
 
+		//Abilities
 		if (slotType == SlotType.equippedAbilities)
 		{
 			if (PlayerHotbarUi.Instance.IsAbilityAlreadyEquipped(item.abilityBaseRef)) //only 1 copy of ability equipable
@@ -49,7 +51,15 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			return;
 		}
 
-		if (!IsSlotEmpty()) //swap slot data
+		//Items
+		if (IsSlotEmpty() && IsShopSlot() || oldInventorySlot.IsShopSlot()) //buying/selling items in empty slots
+		{
+			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
+				PlayerInventoryUi.Instance.OnItemSell(item, this);
+			else if (oldInventorySlot.IsShopSlot() && IsPlayerInventorySlot())
+				PlayerInventoryUi.Instance.OnItemTryBuy(item, this, oldInventorySlot);
+		}
+		else if (!IsSlotEmpty()) //logic when slot isnt empty
 		{
 			if (IsShopSlot() || item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsShopSlot()) //disable swapping of shop items
 			{
@@ -69,14 +79,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 				AddItemToSlot(item);
 			}
 		}
-		else if (IsShopSlot() || oldInventorySlot.IsShopSlot())
-		{
-			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
-				PlayerInventoryUi.Instance.OnItemSell(item, this);
-			else if (oldInventorySlot.IsShopSlot() && IsPlayerInventorySlot())
-				PlayerInventoryUi.Instance.OnItemTryBuy(item, this, oldInventorySlot);
-		}
-		else
+		else //logic when slot is empty
 		{
 			AddItemToSlot(item);
 			oldInventorySlot.RemoveItemFromSlot();
@@ -92,6 +95,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
+		CheckInItemInEnchantmentSlot(item);
 		item.transform.SetParent(transform);
 	}
 	public void RemoveItemFromSlot()
@@ -99,6 +103,18 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
+		CheckInItemInEnchantmentSlot(itemInSlot);
+	}
+
+	//unique enchant item
+	public void EnchantItemInSlot()
+	{
+		Items item = itemInSlot.GetComponent<Items>();
+		item.itemEnchantmentLevel++;
+
+		item.Initilize((Items.Rarity)itemInSlot.rarity, itemInSlot.itemLevel, item.itemEnchantmentLevel);
+		itemInSlot.Initilize();
+		item.SetToolTip(PlayerInfoUi.playerInstance.playerStats);
 	}
 
 	//other checks
@@ -113,6 +129,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			OnHotbarItemEquip?.Invoke(item, this);
 		else
 			OnItemEquip?.Invoke(item, this);
+	}
+	public void CheckInItemInEnchantmentSlot(InventoryItemUi item)
+	{
+		if (slotType == SlotType.enchantItemSlot)
+			OnNewItemToEnchant?.Invoke(item);
 	}
 	public void UpdateSlotSize()
 	{
@@ -146,6 +167,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectSlotType(InventoryItemUi item)
 	{
+		//enchanter checks
+		if (item.itemType != InventoryItemUi.ItemType.isConsumable && item.itemType != InventoryItemUi.ItemType.isAbility &&
+			slotType == SlotType.enchantItemSlot)
+				return true;
+
 		//ability checks
 		if (item.itemType == InventoryItemUi.ItemType.isAbility)
 		{
@@ -183,10 +209,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 
 		//equipping item checks: level/class restriction
 		if (!IsCorrectLevel(item))
-		{
-			Debug.Log("Player Level Too Low");
 			return false;
-		}
 
 		if (item.itemType == InventoryItemUi.ItemType.isAccessory)
 		{
@@ -201,10 +224,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 				return false;
 		}
 		else if (!CheckClassRestriction((int)item.classRestriction))
-		{
-			Debug.Log("Equipment weight too heavy");
 			return false;
-		}
 
 		if (item.itemType == InventoryItemUi.ItemType.isWeapon)
 		{
@@ -231,11 +251,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 				return true;
 			else return false;
 		}
-		else
-		{
-			Debug.Log("slot checks failed");
-			return false;
-		}
+
+		Debug.LogWarning("slot checks failed");
+		return false;
 	}
 	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
 	{
@@ -264,9 +282,10 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsPlayerEquipmentSlot()
 	{
-		if (slotType != SlotType.playerInventory && slotType != SlotType.shopSlot && slotType != SlotType.ability && 
-			slotType != SlotType.weaponStorage && slotType != SlotType.armourStorage && 
-			slotType != SlotType.accessoryStorage && slotType != SlotType.consumablesStorage)
+		if (slotType == SlotType.weaponMain || slotType == SlotType.weaponOffhand || 
+			slotType == SlotType.helmet || slotType == SlotType.chestpiece || slotType == SlotType.legs || 
+			slotType == SlotType.ringOne || slotType == SlotType.ringTwo || slotType == SlotType.necklace ||
+			slotType == SlotType.equippedAbilities)
 			return true;
 		else return false;
 	}
