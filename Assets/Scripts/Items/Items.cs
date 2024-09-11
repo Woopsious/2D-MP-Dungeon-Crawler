@@ -37,7 +37,7 @@ public class Items : MonoBehaviour
 		isCommon, isRare, isEpic, isLegendary
 	}
 
-	[Header("Inventroy Dynamic Info")]
+	[Header("Inventory Dynamic Info")]
 	public bool isStackable;
 	public int currentStackCount;
 	public int inventroySlot;
