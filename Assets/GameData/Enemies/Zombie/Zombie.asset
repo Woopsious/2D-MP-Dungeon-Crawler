@@ -15,7 +15,9 @@ MonoBehaviour:
   entityName: Zombie
   sprite: {fileID: -1684659544, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 5
+  enemySpawnChance: 0.25
   canUseEquipment: 1
+  UniqueAttackWeapon: {fileID: 0}
   expOnDeath: 40
   maxDroppedGoldAmount: 12
   minDroppedGoldAmount: 5

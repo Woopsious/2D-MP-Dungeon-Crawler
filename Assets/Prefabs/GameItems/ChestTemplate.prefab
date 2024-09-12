@@ -198,6 +198,8 @@ MonoBehaviour:
   lootPool: {fileID: 0}
   maxGold: 0
   minGold: 0
+  totalItemDropChance: 0
+  itemLootSpawnTable: []
 --- !u!114 &8721437617354721535
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -9,6 +9,9 @@ public class SOItems : ScriptableObject
 	public int itemPrice;
 	public int itemId;
 
+	[Range(0f, 1f)]
+	public float itemSpawnChance;
+
 	[Header("Item Type")]
 	public ItemType itemType;
 	public enum ItemType

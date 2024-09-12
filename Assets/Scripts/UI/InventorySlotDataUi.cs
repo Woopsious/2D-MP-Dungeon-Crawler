@@ -52,7 +52,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		}
 
 		//Items
-		if (IsSlotEmpty() && IsShopSlot() || oldInventorySlot.IsShopSlot()) //buying/selling items in empty slots
+		if (IsSlotEmpty() && IsShopSlot() || IsSlotEmpty() && oldInventorySlot.IsShopSlot()) //buying/selling items in empty slots
 		{
 			if (IsShopSlot() && oldInventorySlot.IsPlayerInventorySlot())
 				PlayerInventoryUi.Instance.OnItemSell(item, this);

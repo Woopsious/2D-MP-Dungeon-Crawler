@@ -121,6 +121,7 @@ public class EntityStats : MonoBehaviour
 	private void Initilize()
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
+		name = entityBaseStats.entityName;
 		CalculateBaseStats();
 
 		if (GetComponent<PlayerController>() == null)

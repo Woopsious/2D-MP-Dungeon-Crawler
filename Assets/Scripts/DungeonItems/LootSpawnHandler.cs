@@ -12,6 +12,9 @@ public class LootSpawnHandler : MonoBehaviour
 	private int lootSpawnerLevel;
 	private float levelModifier;
 
+	private float totalItemSpawnChance;
+	private List<float> itemSpawnChanceTable = new List<float>();
+
 	private void OnEnable()
 	{
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
@@ -21,6 +24,9 @@ public class LootSpawnHandler : MonoBehaviour
 	{
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
+
+		itemSpawnChanceTable.Clear();
+		totalItemSpawnChance = 0;
 	}
 
 	//set data
@@ -29,6 +35,30 @@ public class LootSpawnHandler : MonoBehaviour
 		this.maxGold = maxGold;
 		this.minGold = minGold;
 		lootPool = newLootPool;
+
+		CreateLootSpawnTable();
+	}
+	private void CreateLootSpawnTable()
+	{
+		foreach (SOItems item in lootPool.lootPoolList)
+			itemSpawnChanceTable.Add(item.itemSpawnChance);
+
+		foreach (float num in itemSpawnChanceTable)
+			totalItemSpawnChance += num;
+	}
+	private int GetIndexOfItemToDrop()
+	{
+		float rand = Random.Range(0, totalItemSpawnChance);
+		float cumChance = 0;
+
+		for (int i = 0; i < itemSpawnChanceTable.Count; i++)
+		{
+			cumChance += itemSpawnChanceTable[i];
+
+			if (rand <= cumChance)
+				return i;
+		}
+		return -1;
 	}
 
 	//event listners
@@ -62,7 +92,7 @@ public class LootSpawnHandler : MonoBehaviour
 		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);
 		for (int i = 0; i < numOfItemsToSpawn; i++)
 		{
-			int index = Utilities.GetRandomNumber(lootPool.lootPoolList.Count - 1);
+			int index = GetIndexOfItemToDrop();
 			GameObject go = Instantiate(droppedItemPrefab, transform.position, Quaternion.identity);
 
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isWeapon)

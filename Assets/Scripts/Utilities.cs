@@ -41,6 +41,7 @@ public class Utilities
 			return NormalDifficultyRarity(percentage, dropChanceModifier);
 		}
 	}
+	//modify chances based on dungeon difficulty
 	private static Items.Rarity HellDifficultyRarity(float percentage, float dropChanceModifier)
 	{
 		if (percentage >= 97.5 - dropChanceModifier) //2.5%

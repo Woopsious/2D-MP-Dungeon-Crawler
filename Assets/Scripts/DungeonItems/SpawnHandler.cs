@@ -4,6 +4,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Pool;
 using UnityEngine.Rendering;
 
 public class SpawnHandler : MonoBehaviour
@@ -30,20 +31,13 @@ public class SpawnHandler : MonoBehaviour
 	private float closestPlayerDistance;
 	private bool spawningDisabled;
 
+	private float totalEnemySpawnChance;
+	private List<float> enemySpawnChanceTable = new List<float>();
+
 	private void Awake()
 	{
-		playerCollider = GetComponent<CircleCollider2D>();
-		playerCollider.radius = maxSpawningDistance;
-		closestPlayerDistance = maxSpawningDistance;
-		spawningDisabled = false;
-
-		spawnBounds.min = new Vector3(transform.position.x - (minSpawningDistance / 3f),
-			transform.position.y - (minSpawningDistance / 3f), transform.position.z);
-
-		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
-			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
+		Initilize();
 	}
-
 	private void OnEnable()
 	{
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
@@ -57,6 +51,8 @@ public class SpawnHandler : MonoBehaviour
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntity;
+
+		StopAllCoroutines();
 	}
 
 	//track players
@@ -87,6 +83,44 @@ public class SpawnHandler : MonoBehaviour
 	private void FixedUpdate()
 	{
 		TrackClosestPlayerToSpawner();
+	}
+
+	private void Initilize()
+	{
+		playerCollider = GetComponent<CircleCollider2D>();
+		playerCollider.radius = maxSpawningDistance;
+		closestPlayerDistance = maxSpawningDistance;
+		spawningDisabled = false;
+
+		spawnBounds.min = new Vector3(transform.position.x - (minSpawningDistance / 3f),
+			transform.position.y - (minSpawningDistance / 3f), transform.position.z);
+
+		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
+			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
+
+		CreateEnemySpawnTable();
+	}
+	private void CreateEnemySpawnTable()
+	{
+		foreach (SOEntityStats enemy in possibleEntityTypesToSpawn)
+			enemySpawnChanceTable.Add(enemy.enemySpawnChance);
+
+		foreach (float num in enemySpawnChanceTable)
+			totalEnemySpawnChance += num;
+	}
+	private int GetIndexOfEnemyToSpawn()
+	{
+		float rand = Random.Range(0, totalEnemySpawnChance);
+		float cumChance = 0;
+
+		for (int i = 0; i < enemySpawnChanceTable.Count; i++)
+		{
+			cumChance += enemySpawnChanceTable[i];
+
+			if (rand <= cumChance)
+				return i;
+		}
+		return -1;
 	}
 
 	//event listeners
@@ -127,7 +161,7 @@ public class SpawnHandler : MonoBehaviour
 		if (listOfPlayersInRange.Count == 0) return;
 		if (spawningDisabled) return;
 
-		int num = Utilities.GetRandomNumber(possibleEntityTypesToSpawn.Count - 1);
+		int num = GetIndexOfEnemyToSpawn();
 		bool entityTypeMatches = false;
 
 		foreach (EntityStats entity in DungeonHandler.Instance.inActiveEntityPool)
@@ -160,7 +194,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void SpawnNewEntity()
 	{
-		int num = Utilities.GetRandomNumber(possibleEntityTypesToSpawn.Count - 1);
+		int num = GetIndexOfEnemyToSpawn();
 		GameObject go = Instantiate(enemyTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
 		entity.entityBaseStats = possibleEntityTypesToSpawn[num];

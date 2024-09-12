@@ -261,8 +261,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi newSlot)
 	{
-		Debug.Log("confirm buy");
-
 		goldTransaction = -item.itemPrice * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 		transactionInfoText.text = "Item Brought";
@@ -271,8 +269,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotDataUi oldSlot, string reason)
 	{
-		Debug.Log("cancel buy");
-
 		goldTransaction = 0;
 		transactionTrackerText.text = $"Gold: {goldTransaction}";
 		transactionInfoText.text = reason;

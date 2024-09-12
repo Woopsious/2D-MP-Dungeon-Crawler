@@ -13,6 +13,8 @@ public class SOEntityStats : ScriptableObject
 	{
 		isPlayer, isGoblin, isSkeleton, isBat, isSlime, isZombie
 	}
+	[Range(0f, 1f)]
+	public float enemySpawnChance;
 
 	[Header("Equipment Status")]
 	public bool canUseEquipment;

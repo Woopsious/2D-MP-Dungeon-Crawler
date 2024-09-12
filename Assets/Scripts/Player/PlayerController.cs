@@ -547,48 +547,31 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.GetComponent<PortalHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
+			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null)
 		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-		}
-		else if (other.GetComponent<NpcHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-		}
-		else if (other.GetComponent<ChestHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			if (other.GetComponent<ChestHandler>().chestStateOpened)
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			if (other.GetComponent<ChestHandler>() != null)
+			{
+				if (other.GetComponent<ChestHandler>().chestStateOpened)
+					PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+				else
+					PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			}
 			else
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+
+			currentInteractedObject = other.GetComponent<Interactables>();
 		}
-		else if (other.GetComponent<EnchantmentHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-		}
-		currentInteractedObject = other.GetComponent<Interactables>();
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.GetComponent<PortalHandler>() != null)
+		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
+			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			currentInteractedObject = null;
+			isInteractingWithInteractable = false;
 		}
-		else if (other.GetComponent<NpcHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-		}
-		else if (other.GetComponent<ChestHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-		}
-		else if (other.GetComponent<EnchantmentHandler>() != null)
-		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-		}
-		currentInteractedObject = null;
-		isInteractingWithInteractable = false;
 	}
 
 	/// <summary>

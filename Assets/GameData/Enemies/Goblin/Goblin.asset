@@ -15,6 +15,7 @@ MonoBehaviour:
   entityName: Goblin
   sprite: {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 1
+  enemySpawnChance: 0.25
   canUseEquipment: 1
   UniqueAttackWeapon: {fileID: 0}
   expOnDeath: 40

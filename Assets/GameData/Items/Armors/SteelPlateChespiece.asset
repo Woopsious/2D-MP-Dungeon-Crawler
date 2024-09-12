@@ -16,6 +16,7 @@ MonoBehaviour:
   itemImage: {fileID: -1699967566, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
   itemPrice: 300
   itemId: 0
+  itemSpawnChance: 0.2
   itemType: 2
   isEquipable: 1
   isStackable: 0

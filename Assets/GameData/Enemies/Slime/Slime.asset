@@ -15,6 +15,7 @@ MonoBehaviour:
   entityName: Slime
   sprite: {fileID: -1190363721, guid: 76686699748622a48b566623ca98afc6, type: 3}
   humanoidType: 4
+  enemySpawnChance: 0.8
   canUseEquipment: 0
   UniqueAttackWeapon: {fileID: 11400000, guid: 9523948a17ff1e54884b27933e2aacdf, type: 2}
   expOnDeath: 60
