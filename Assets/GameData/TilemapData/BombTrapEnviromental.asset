@@ -10,13 +10,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 035bc10ba5752f448858af93d42223ea, type: 3}
-  m_Name: FireEnviromental
+  m_Name: BombTrapEnviromental
   m_EditorClassIdentifier: 
   tiles:
-  - {fileID: 11400000, guid: 89ffebce6b74c424db6f8f617c68d746, type: 2}
-  doesInstantDamage: 0
-  baseDamageDealt: 0
+  - {fileID: 11400000, guid: 781449533c326a24484ac9aafc60f305, type: 2}
+  doesInstantDamage: 1
+  baseDamageDealt: 30
   baseDamageType: 0
-  appliesEffect: 1
-  effectsToApply:
-  - {fileID: 11400000, guid: aa784849ba0abc746b68fab534e09b64, type: 2}
+  appliesEffect: 0
+  effectsToApply: []

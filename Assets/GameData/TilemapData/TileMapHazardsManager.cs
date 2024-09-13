@@ -43,8 +43,18 @@ public class TileMapHazardsManager : MonoBehaviour
 		if (tile == null)
 			Debug.LogError("no tile or surrounding tile found, this shouldnt happen");
 
-		EntityStats entity = collision.GetComponent<EntityStats>();
-		entity.ApplyNewStatusEffects(dataFromTiles[tile].effectsToApply, entity);
+
+
+		if (collision.GetComponent<Damageable>() != null && dataFromTiles[tile].doesInstantDamage)
+		{
+			int damageToDo = (int)(dataFromTiles[tile].baseDamageDealt * collision.GetComponent<EntityStats>().levelModifier);
+			collision.GetComponent<Damageable>().OnHitFromDamageSource(null, collision, damageToDo,
+				(IDamagable.DamageType)dataFromTiles[tile].baseDamageType, 0, false, false, true);
+		}
+
+		if (collision.GetComponent<EntityStats>() != null && dataFromTiles[tile].appliesEffect)
+			collision.GetComponent<EntityStats>().ApplyNewStatusEffects(
+				dataFromTiles[tile].effectsToApply, collision.GetComponent<EntityStats>());
 	}
 	public void TryReApplyEffect(EntityStats entity)
 	{
