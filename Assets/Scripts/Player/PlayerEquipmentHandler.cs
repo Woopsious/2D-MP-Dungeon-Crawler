@@ -31,7 +31,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		else if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
 			Weapons weapon = item.GetComponent<Weapons>();
-			if (weapon.weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+			if (weapon.weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 				EquipWeapon(weapon, equippedWeapon, weaponSlotContainer);
 			else
 				EquipWeapon(weapon, equippedOffhandWeapon, offhandWeaponSlotContainer);

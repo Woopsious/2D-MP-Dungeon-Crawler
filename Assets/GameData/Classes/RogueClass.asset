@@ -18,6 +18,7 @@ MonoBehaviour:
     options for self healing besides health potions.
   classImageUi: {fileID: 0}
   baseClassAbilitySlots: 1
+  classType: 3
   statBonusLists: []
   abilityLists: []
   classStatBonusList:

@@ -149,7 +149,7 @@ public class ToolTipManager : MonoBehaviour
 		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isWeapon)
 		{
 			equipItemButton.gameObject.SetActive(true);
-			if (slot.itemInSlot.GetComponent<Weapons>().weaponBaseRef.weaponType == SOWeapons.WeaponType.isOffhand)
+			if (slot.itemInSlot.GetComponent<Weapons>().weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isOffhand)
 				equipItemButton.onClick.AddListener(
 					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.offHandEquipmentSlot); });
 			else

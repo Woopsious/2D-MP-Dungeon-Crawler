@@ -18,6 +18,7 @@ MonoBehaviour:
     protection though especially close up.
   classImageUi: {fileID: 0}
   baseClassAbilitySlots: 1
+  classType: 2
   statBonusLists: []
   abilityLists: []
   classStatBonusList:

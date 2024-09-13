@@ -28,6 +28,7 @@ MonoBehaviour:
   baseAttackSpeed: 1
   baseKnockback: 8
   classRestriction: 0
+  weaponGripType: 2
   weaponType: 2
   baseDamageType: 0
   isRangedWeapon: 0

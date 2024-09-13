@@ -34,6 +34,12 @@ public class SOClasses : ScriptableObject
 	public Image classImageUi;
 	public int baseClassAbilitySlots;
 
+	public ClassType classType;
+	public enum ClassType
+	{
+		isKnight, isMage, isRanger, isRogue, isWarrior
+	}
+
 	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();
 

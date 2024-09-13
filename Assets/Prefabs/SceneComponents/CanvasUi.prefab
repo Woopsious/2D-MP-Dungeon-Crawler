@@ -17122,6 +17122,8 @@ MonoBehaviour:
   - {fileID: 2892212617177758973}
   - {fileID: 5683562497401339064}
   - {fileID: 796935148150898954}
+  - {fileID: 4234379585444669435}
+  - {fileID: 8623597700901988767}
   EquipmentSlots:
   - {fileID: 8638427817227542090}
   - {fileID: 33010904956306343}
@@ -17231,22 +17233,6 @@ MonoBehaviour:
   - {fileID: 7672436919247907858}
   - {fileID: 7514077118248595792}
   - {fileID: 7048696960448698171}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   interactedInventorySlotsText: {fileID: 2230835766927711970}
   EnchanterUi: {fileID: 2555841858893295793}
   enchanterSlotText: {fileID: 3561051587298528245}
@@ -45971,6 +45957,11 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 8143366147060438381, guid: cf869019771a02047be1ca064cc44a8e, type: 3}
   m_PrefabInstance: {fileID: 17631233519188519}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &8623597700901988767 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8616388739272250296, guid: cf869019771a02047be1ca064cc44a8e, type: 3}
+  m_PrefabInstance: {fileID: 17631233519188519}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &20492959955106485
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -57837,6 +57828,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cf869019771a02047be1ca064cc44a8e, type: 3}
+--- !u!1 &4234379585444669435 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8616388739272250296, guid: cf869019771a02047be1ca064cc44a8e, type: 3}
+  m_PrefabInstance: {fileID: 5570959492765971523}
+  m_PrefabAsset: {fileID: 0}
 --- !u!224 &4346829584430096686 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 8143366147060438381, guid: cf869019771a02047be1ca064cc44a8e, type: 3}

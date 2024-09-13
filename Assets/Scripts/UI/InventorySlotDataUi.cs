@@ -230,11 +230,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		{
 			SOWeapons SOweapon = item.GetComponent<Weapons>().weaponBaseRef;
 
-			if (SOweapon.weaponType == SOWeapons.WeaponType.isMainHand && slotType == SlotType.weaponMain)
+			if (SOweapon.weaponGripType == SOWeapons.WeaponGripType.isMainHand && slotType == SlotType.weaponMain)
 				return true;
-			else if (SOweapon.weaponType == SOWeapons.WeaponType.isOffhand && slotType == SlotType.weaponOffhand)
+			else if (SOweapon.weaponGripType == SOWeapons.WeaponGripType.isOffhand && slotType == SlotType.weaponOffhand)
 				return true;
-			else if (SOweapon.weaponType == SOWeapons.WeaponType.isBoth)
+			else if (SOweapon.weaponGripType == SOWeapons.WeaponGripType.isBoth)
 				return true;
 			else
 				return false;

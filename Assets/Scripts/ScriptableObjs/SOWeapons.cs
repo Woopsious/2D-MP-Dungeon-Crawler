@@ -17,10 +17,16 @@ public class SOWeapons : SOItems
 		light, medium, heavy
 	}
 	[Header("Weapon Type")]
+	public WeaponGripType weaponGripType;
+	public enum WeaponGripType
+	{
+		isMainHand, isOffhand, isBoth
+	}
+
 	public WeaponType weaponType;
 	public enum WeaponType
 	{
-		isMainHand, isOffhand, isBoth
+		isAxe, isBow, isDagger, isMace, isShield, isStaff, isSword
 	}
 
 	[Header("Damage Type")]

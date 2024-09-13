@@ -18,6 +18,7 @@ MonoBehaviour:
     health potions.
   classImageUi: {fileID: 0}
   baseClassAbilitySlots: 1
+  classType: 4
   statBonusLists: []
   abilityLists: []
   classStatBonusList:

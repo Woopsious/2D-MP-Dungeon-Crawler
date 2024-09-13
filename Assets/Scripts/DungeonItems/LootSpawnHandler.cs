@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class LootSpawnHandler : MonoBehaviour
@@ -12,18 +13,20 @@ public class LootSpawnHandler : MonoBehaviour
 	private int lootSpawnerLevel;
 	private float levelModifier;
 
-	private float totalItemSpawnChance;
-	private List<float> itemSpawnChanceTable = new List<float>();
+	public float totalItemSpawnChance;
+	public List<float> itemSpawnChanceTable = new List<float>();
 
 	private void OnEnable()
 	{
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
+		PlayerClassesUi.OnClassChanges += UpdateLootSpawnTable;
 	}
 	private void OnDisable()
 	{
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
+		PlayerClassesUi.OnClassChanges -= UpdateLootSpawnTable;
 
 		itemSpawnChanceTable.Clear();
 		totalItemSpawnChance = 0;
@@ -36,15 +39,79 @@ public class LootSpawnHandler : MonoBehaviour
 		this.minGold = minGold;
 		lootPool = newLootPool;
 
-		CreateLootSpawnTable();
+		UpdateLootSpawnTable(PlayerClassesUi.Instance.currentPlayerClass);
 	}
-	private void CreateLootSpawnTable()
+	private void UpdateLootSpawnTable(SOClasses playerClass)
 	{
+		if (playerClass == null) return;
+
+		itemSpawnChanceTable.Clear();
+		totalItemSpawnChance = 0;
+
 		foreach (SOItems item in lootPool.lootPoolList)
-			itemSpawnChanceTable.Add(item.itemSpawnChance);
+		{
+			if (item.itemType == SOItems.ItemType.isWeapon)
+				itemSpawnChanceTable.Add(AdjustSpawnChanceForWeaponsBasedOnClass((SOWeapons)item, playerClass));
+			else if (item.itemType == SOItems.ItemType.isArmor)
+				itemSpawnChanceTable.Add(AdjustSpawnChanceForArmorsBasedOnClass((SOArmors)item, playerClass));
+			else
+				itemSpawnChanceTable.Add(item.itemSpawnChance);
+		}
 
 		foreach (float num in itemSpawnChanceTable)
 			totalItemSpawnChance += num;
+	}
+	private float AdjustSpawnChanceForWeaponsBasedOnClass(SOWeapons weapon, SOClasses playerClass)
+	{
+		if (playerClass.classType == SOClasses.ClassType.isKnight)
+		{
+			if (weapon.weaponType == SOWeapons.WeaponType.isAxe || weapon.weaponType == SOWeapons.WeaponType.isMace ||
+				weapon.weaponType == SOWeapons.WeaponType.isShield || weapon.weaponType == SOWeapons.WeaponType.isSword)
+				return weapon.itemSpawnChance * 1.5f;
+			else
+				return weapon.itemSpawnChance;
+		}
+		else if (playerClass.classType == SOClasses.ClassType.isWarrior)
+		{
+			if (weapon.weaponType == SOWeapons.WeaponType.isShield || weapon.weaponType == SOWeapons.WeaponType.isSword)
+				return weapon.itemSpawnChance * 1.5f;
+			else
+				return weapon.itemSpawnChance;
+		}
+		else if (playerClass.classType == SOClasses.ClassType.isRanger)
+		{
+			if (weapon.weaponType == SOWeapons.WeaponType.isShield || weapon.weaponType == SOWeapons.WeaponType.isBow)
+				return weapon.itemSpawnChance * 1.5f;
+			else
+				return weapon.itemSpawnChance;
+		}
+		else if (playerClass.classType == SOClasses.ClassType.isRogue)
+		{
+			if (weapon.weaponType == SOWeapons.WeaponType.isShield || weapon.weaponType == SOWeapons.WeaponType.isDagger)
+				return weapon.itemSpawnChance * 1.5f;
+			else
+				return weapon.itemSpawnChance;
+		}
+		else if (playerClass.classType == SOClasses.ClassType.isMage)
+		{
+			if (weapon.weaponType == SOWeapons.WeaponType.isStaff)
+				return weapon.itemSpawnChance * 1.5f;
+			else
+				return weapon.itemSpawnChance;
+		}
+		else return weapon.itemSpawnChance;
+	}
+	private float AdjustSpawnChanceForArmorsBasedOnClass(SOArmors armor, SOClasses playerClass)
+	{
+		if (armor.classRestriction == (SOArmors.ClassRestriction)playerClass.classRestriction)
+		{
+			if (playerClass.classType == SOClasses.ClassType.isMage && armor.baseBonusMana == 0)
+				return armor.itemSpawnChance * 1.5f;
+			else	//for mage class also increase chance for robes to spawn
+				return armor.itemSpawnChance * 1.5f;
+		}
+		else
+			return armor.itemSpawnChance;
 	}
 	private int GetIndexOfItemToDrop()
 	{

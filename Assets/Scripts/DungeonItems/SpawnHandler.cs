@@ -52,6 +52,8 @@ public class SpawnHandler : MonoBehaviour
 		PlayerEventManager.OnPlayerLevelUpEvent -= OnPlayerLevelUpUpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntity;
 
+		enemySpawnChanceTable.Clear();
+		totalEnemySpawnChance = 0;
 		StopAllCoroutines();
 	}
 
@@ -102,6 +104,9 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void CreateEnemySpawnTable()
 	{
+		enemySpawnChanceTable.Clear();
+		totalEnemySpawnChance = 0;
+
 		foreach (SOEntityStats enemy in possibleEntityTypesToSpawn)
 			enemySpawnChanceTable.Add(enemy.enemySpawnChance);
 

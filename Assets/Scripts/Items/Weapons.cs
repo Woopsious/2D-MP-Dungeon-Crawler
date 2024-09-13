@@ -74,11 +74,11 @@ public class Weapons : Items
 		else
 			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
 
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 			info += "\n Main hand ";
-		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isOffhand)
+		else if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isOffhand)
 			info += "\n Offhand ";
-		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+		else if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isBoth)
 			info += "\n Dual hand ";
 
 		if (isShield)
@@ -137,7 +137,7 @@ public class Weapons : Items
 		else
 			idleWeaponSprite.transform.rotation = Quaternion.Euler(0, 0, 180);
 
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand)
+		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 			idleWeaponSprite.enabled = true;
 	}
 	public void AddPlayerRef(PlayerController player)
@@ -172,9 +172,9 @@ public class Weapons : Items
 		else if (weaponBaseRef.baseDamageType == SOWeapons.DamageType.isIceDamageType)
 			percentageMod = stats.iceDamagePercentageModifier.finalPercentageValue;
 
-		if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isMainHand) //apply weapon type mod
+		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand) //apply weapon type mod
 			percentageMod += stats.mainWeaponDamageModifier.finalPercentageValue - 1;
-		else if (weaponBaseRef.weaponType == SOWeapons.WeaponType.isBoth)
+		else if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isBoth)
 			percentageMod += stats.dualWeaponDamageModifier.finalPercentageValue - 1;
 
 		if (weaponBaseRef.isRangedWeapon) //apply ranged weapon mod if it is one

@@ -19,6 +19,7 @@ MonoBehaviour:
     protection '
   classImageUi: {fileID: 0}
   baseClassAbilitySlots: 2
+  classType: 1
   statBonusLists: []
   abilityLists: []
   classStatBonusList:
