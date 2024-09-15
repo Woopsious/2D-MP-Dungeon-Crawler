@@ -26,6 +26,8 @@ public class DungeonHandler : MonoBehaviour
 
 	private void Awake()
 	{
+		Application.targetFrameRate = 60;
+
 		Instance = this;
 		ActivateRandomChests();
 	}

@@ -10,6 +10,8 @@ public class MainMenuManager : MonoBehaviour
 {
 	public static MainMenuManager Instance;
 
+	[HideInInspector] public Canvas canvasRef;
+
 	[Header("MainMenu Panel")]
 	public GameObject mainMenuPanel;
 	public GameObject runtimeUiContainer;
@@ -41,6 +43,7 @@ public class MainMenuManager : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;
+		canvasRef = GetComponent<Canvas>();
 	}
 	private void Start()
 	{

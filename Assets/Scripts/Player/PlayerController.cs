@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Update()
 	{
-		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, transform.position.z - 10);
+		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
 	}
 	private void FixedUpdate()
 	{

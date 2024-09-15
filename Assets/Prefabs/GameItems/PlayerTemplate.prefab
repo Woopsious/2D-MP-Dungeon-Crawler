@@ -401,9 +401,7 @@ MonoBehaviour:
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   queuedAbility: {fileID: 0}
-  isInteractingWithPortal: 0
-  isInteractingWithNpc: 0
-  isInteractingWithChest: 0
+  isInteractingWithInteractable: 0
 --- !u!114 &4412705391860920891
 MonoBehaviour:
   m_ObjectHideFlags: 0
