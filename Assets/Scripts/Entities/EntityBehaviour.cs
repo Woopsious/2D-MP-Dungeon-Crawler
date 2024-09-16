@@ -118,7 +118,7 @@ public class EntityBehaviour : MonoBehaviour
 		HasReachedDestination = true;
 
 		viewRangeCollider.radius = playerDetectionRange;
-		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviourRef = this;
+		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;
 
 		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
 		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;

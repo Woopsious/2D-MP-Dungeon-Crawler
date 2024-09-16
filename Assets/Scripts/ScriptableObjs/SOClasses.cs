@@ -43,6 +43,9 @@ public class SOClasses : ScriptableObject
 	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
 	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();
 
+	[Range(0f, 1f)]
+	public float trapDetectionChance;
+
 	[Header("Available Class Stat Bonuses")]
 	/// <summary>
 	/// loop through all of these when spawning any type of entity to apply stat bonuses.

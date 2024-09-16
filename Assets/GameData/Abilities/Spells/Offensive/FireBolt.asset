@@ -20,8 +20,11 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  hasStatusEffects: 0
-  statusEffects: []
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: aa784849ba0abc746b68fab534e09b64, type: 2}
+  - {fileID: 11400000, guid: c9171ad05a10a1e4f94b873cbfbbbca2, type: 2}
+  - {fileID: 11400000, guid: 9977dbf1049661f48952bc52aca76c4e, type: 2}
   isAOE: 0
   aoeSize: 0
   hasAoeDuration: 0

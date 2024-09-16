@@ -51,7 +51,7 @@ public class PlayerController : MonoBehaviour
 
 	//interactions
 	[HideInInspector] public bool isInteractingWithInteractable;
-	private Interactables currentInteractedObject;
+	public Interactables currentInteractedObject;
 
 	private void Awake()
 	{
@@ -548,8 +548,21 @@ public class PlayerController : MonoBehaviour
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
-			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null)
+			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null
+			|| other.GetComponent<TrapHandler>() != null)
 		{
+			currentInteractedObject = other.GetComponent<Interactables>();
+
+			if (other.GetComponent<TrapHandler>() != null)
+			{
+				TrapHandler trapHandler = other.GetComponent<TrapHandler>();
+				currentInteractedObject = other.GetComponent<Interactables>();
+
+				if (trapHandler.trapDetected)
+					PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+				else
+					PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			}
 			if (other.GetComponent<ChestHandler>() != null)
 			{
 				if (other.GetComponent<ChestHandler>().chestStateOpened)
@@ -559,14 +572,13 @@ public class PlayerController : MonoBehaviour
 			}
 			else
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-
-			currentInteractedObject = other.GetComponent<Interactables>();
 		}
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
 		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
-			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null)
+			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null
+			|| other.GetComponent<TrapHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedObject = null;

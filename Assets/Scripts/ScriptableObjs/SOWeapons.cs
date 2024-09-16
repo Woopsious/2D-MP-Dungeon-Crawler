@@ -6,7 +6,6 @@ public class SOWeapons : SOItems
 	[Header("Weapon Info")]
 	public bool isBareHands;
 	public bool isShield;
-	public int baseDamage;
 	public float baseAttackSpeed;
 	public float baseKnockback;
 
@@ -29,7 +28,8 @@ public class SOWeapons : SOItems
 		isAxe, isBow, isDagger, isMace, isShield, isStaff, isSword
 	}
 
-	[Header("Damage Type")]
+	[Header("Damage")]
+	public int baseDamage;
 	public DamageType baseDamageType;
 	public enum DamageType
 	{

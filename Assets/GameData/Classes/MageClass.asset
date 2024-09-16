@@ -22,6 +22,7 @@ MonoBehaviour:
   classType: 1
   statBonusLists: []
   abilityLists: []
+  trapDetectionChance: 0.3
   classStatBonusList:
   - unlock: {fileID: 11400000, guid: b21041236c71ecc439e62003199395ba, type: 2}
     LevelRequirement: 1

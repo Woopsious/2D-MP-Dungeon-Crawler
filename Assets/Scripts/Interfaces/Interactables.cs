@@ -4,13 +4,15 @@ using UnityEngine;
 
 public class Interactables : MonoBehaviour
 {
-	PortalHandler portalHandler;
-	ChestHandler chestHandler;
-	NpcHandler npcHandler;
-	EnchantmentHandler enchantmentHandler;
+	public TrapHandler trapHandler;
+	private PortalHandler portalHandler;
+	private ChestHandler chestHandler;
+	private NpcHandler npcHandler;
+	private EnchantmentHandler enchantmentHandler;
 
 	private void Awake()
 	{
+		trapHandler = GetComponent<TrapHandler>();
 		portalHandler = GetComponent<PortalHandler>();
 		chestHandler = GetComponent<ChestHandler>();
 		npcHandler = GetComponent<NpcHandler>();
@@ -19,7 +21,9 @@ public class Interactables : MonoBehaviour
 
 	public void Interact(PlayerController player)
 	{
-		if (portalHandler != null)
+        if (trapHandler != null)
+			trapHandler.Interact(player);
+        else if (portalHandler != null)
 		{
 			if (DungeonPortalUi.instance.portalPanelUi.activeInHierarchy)
 				portalHandler.UnInteract(player);
