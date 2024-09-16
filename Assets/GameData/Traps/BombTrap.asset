@@ -10,19 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97e679a778881f847afd4581ade12ee1, type: 3}
-  m_Name: SpikeTrap
+  m_Name: BombTrap
   m_EditorClassIdentifier: 
   trapName: Spike Trap
   trapSpriteUnDetected: {fileID: 0}
   trapSpriteDetected: {fileID: -349561432, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapSpriteActivated: {fileID: -777619921, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapDetectionDifficulty: 0.2
-  trapType: 0
-  trapActivationDelay: 0.1
-  baseDamage: 5
+  trapType: 1
+  trapActivationDelay: 0.5
+  baseDamage: 25
   baseDamageType: 0
-  hasEffects: 1
-  statusEffects:
-  - {fileID: 11400000, guid: e0c7d61841a155e46919a102f7d0c48d, type: 2}
-  aoeSize: 1
+  hasEffects: 0
+  statusEffects: []
+  aoeSize: 3
   trapActivatedSfx: {fileID: 8300000, guid: 2e8cd9eadf64c674fb5eb06b7b783e98, type: 3}

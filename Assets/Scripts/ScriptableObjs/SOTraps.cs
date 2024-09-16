@@ -21,6 +21,7 @@ public class SOTraps : ScriptableObject
 	{
 		isSpike, isBomb, isArrow, isMagic
 	}
+	public float trapActivationDelay;
 
 	[Header("Trap Damage")]
 	public int baseDamage;
@@ -34,8 +35,7 @@ public class SOTraps : ScriptableObject
 	public bool hasEffects;
 	public List<SOStatusEffects> statusEffects;
 
-	[Header("Trap Aoe")]
-	public bool hasAoe;
+	[Header("Trap Aoe size")]
 	public float aoeSize;
 
 	[Header("Audio")]

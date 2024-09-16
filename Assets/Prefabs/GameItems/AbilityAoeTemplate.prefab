@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1336004635016468017}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -7.21, y: 0.89, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 20, y: 20, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -48,7 +48,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   abilityBaseRef: {fileID: 11400000, guid: 1cc7e53592c66eb488bf4c772a6fbc14, type: 2}
-  abilityDurationTime: 0
   abilityDurationTimer: 0
   aoeDamage: 0
 --- !u!212 &3884023891650096865

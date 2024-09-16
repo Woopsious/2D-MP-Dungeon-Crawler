@@ -1,29 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
 
 public class TrapHandler : MonoBehaviour, IInteractables
 {
-	public SpriteRenderer spriteRenderer;
+	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 
 	[Header("Trap Info")]
 	public SOTraps trapBaseRef;
+	public LayerMask layerMask;
 	public bool trapDetected;
 	public bool trapDisabled;
 	public bool trapActivated;
 
-	public int trapLevel;
-	public float levelModifier;
+	private int trapLevel;
+	private float levelModifier;
 
 	public GameObject playerDetectionCollider;
 
 	[Header("Trap Damage")]
-	public int trapDamage;
+	private int trapDamage;
 
 	[Header("players")] //track players already trying to detect trap
-	public List<PlayerController> playersCheckedTrap = new List<PlayerController>();
+	private List<PlayerController> playersCheckedTrap = new List<PlayerController>();
 
 	[Header("Shared audio")]
 	public AudioClip trapDetectedSfx;
@@ -41,6 +43,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	private void OnDisable()
 	{
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateTrapLevel;
+		StopAllCoroutines();
 	}
 
 	private void OnTriggerEnter2D(Collider2D collision)
@@ -72,21 +75,36 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	}
 
 	//trap actions
-	public void ActivateTrap(PlayerController player, Collider2D coll)
+	public IEnumerator ActivateTrapDelay(PlayerController player, Collider2D coll)
+	{
+		yield return new WaitForSeconds(trapBaseRef.trapActivationDelay);
+		ActivateTrap(player, coll);
+	}
+	private void ActivateTrap(PlayerController player, Collider2D coll)
 	{
 		if (trapDisabled || trapActivated) return;
 
-		player.GetComponent<Damageable>().OnHitFromDamageSource(null, coll, trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType, 
-			0, false, false, true); //apply damage
-
-		if (trapBaseRef.hasEffects) //apply effects
-			player.playerStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, player.playerStats);
-
+		DamageEverythingInsideAoe(coll); //apply damage + effects
 		Debug.Log("trap activated");
 
 		trapActivated = true;
 		spriteRenderer.sprite = trapBaseRef.trapSpriteActivated;
 		audioHandler.PlayAudio(trapBaseRef.trapActivatedSfx);
+	}
+	private void DamageEverythingInsideAoe(Collider2D coll)
+	{
+		RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, trapBaseRef.aoeSize, Vector2.up, 0, layerMask);
+
+		foreach (RaycastHit2D hit in hits)
+		{
+			EntityStats entityStats = hit.transform.GetComponent<EntityStats>();
+
+			entityStats.GetComponent<Damageable>().OnHitFromDamageSource(null, coll, trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType,
+				0, false, false, true); //apply damage
+
+			if (trapBaseRef.hasEffects) //apply effects
+				entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);
+		}
 	}
 	private void TryDetectTrap(PlayerController newPlayer)
 	{
@@ -151,5 +169,11 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	public void UnInteract(PlayerController player)
 	{
 
+	}
+
+	public void OnDrawGizmos()
+	{
+		Gizmos.color = Color.red;
+		Gizmos.DrawWireSphere(transform.position, trapBaseRef.aoeSize);
 	}
 }

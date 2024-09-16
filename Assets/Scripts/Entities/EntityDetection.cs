@@ -17,7 +17,7 @@ public class EntityDetection : MonoBehaviour
 		if (trapHandler != null)
 		{
 			if (other.GetComponent<PlayerController>() != null)
-				trapHandler.ActivateTrap(other.GetComponent<PlayerController>(), other);
+				StartCoroutine(trapHandler.ActivateTrapDelay(other.GetComponent<PlayerController>(), other));
 		}
 		else if (entityBehaviour != null) //detect players
 		{
