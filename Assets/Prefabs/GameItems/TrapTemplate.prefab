@@ -142,10 +142,15 @@ MonoBehaviour:
   layerMask:
     serializedVersion: 2
     m_Bits: 768
+  projectileObstaclesMaskCheck:
+    serializedVersion: 2
+    m_Bits: 0
   trapDetected: 0
   trapDisabled: 0
   trapActivated: 0
   playerDetectionCollider: {fileID: 2493863654089023824}
+  projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
+  projectileSpawnPoint: {x: 0, y: 0}
   trapDetectedSfx: {fileID: 8300000, guid: 9dc5973aab0dd9040a6f7f719f9c40d9, type: 3}
   trapDeactivatedSfx: {fileID: 8300000, guid: 929ac3b0c9315084ca86d4524e395c0e, type: 3}
 --- !u!114 &3806139610005823432

@@ -2,7 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class TrapHandler : MonoBehaviour, IInteractables
 {
@@ -12,6 +14,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	[Header("Trap Info")]
 	public SOTraps trapBaseRef;
 	public LayerMask layerMask;
+	public LayerMask projectileObstaclesMaskCheck;
 	public bool trapDetected;
 	public bool trapDisabled;
 	public bool trapActivated;
@@ -20,12 +23,16 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	private float levelModifier;
 
 	public GameObject playerDetectionCollider;
+	public GameObject projectilePrefab;
 
 	[Header("Trap Damage")]
 	private int trapDamage;
 
-	[Header("players")] //track players already trying to detect trap
+	[Header("Players")] //track players already trying to detect trap
 	private List<PlayerController> playersCheckedTrap = new List<PlayerController>();
+
+	[Header("Projectile spawn point")]
+	public Vector2 projectileSpawnPoint;
 
 	[Header("Shared audio")]
 	public AudioClip trapDetectedSfx;
@@ -65,6 +72,9 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		trapDetected = false;
 		trapDisabled = false;
 		trapActivated = false;
+
+		if (trapBaseRef.hasProjectile)
+			FindSpawnPointForProjectiles();
 	}
 	private void UpdateTrapLevel(EntityStats playerStats)
 	{
@@ -99,12 +109,41 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		{
 			EntityStats entityStats = hit.transform.GetComponent<EntityStats>();
 
-			entityStats.GetComponent<Damageable>().OnHitFromDamageSource(null, coll, trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType,
-				0, false, false, true); //apply damage
+			if (trapBaseRef.hasProjectile) //no need to apply effects as projectiles do that already
+				ShootProjectiles(entityStats);
+			else
+			{
+				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(null, coll, trapDamage, 
+					(IDamagable.DamageType)trapBaseRef.baseDamageType, 0, false, false, true); //apply damage
 
-			if (trapBaseRef.hasEffects) //apply effects
-				entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);
+				if (trapBaseRef.hasEffects) //apply effects
+					entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);
+			}
 		}
+	}
+	private void ShootProjectiles(EntityStats entity)
+	{
+		Projectiles projectile = DungeonHandler.GetProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+		}
+		projectile.transform.SetParent(null);
+		projectile.transform.position = projectileSpawnPoint;
+		projectile.Initilize(trapBaseRef, trapDamage, projectileSpawnPoint);
+
+		SetProjectileDirection(projectile, GetAttackRotation(entity.transform.position));
+	}
+	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - (Vector3)projectileSpawnPoint;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		return rotz;
+	}
+	private void SetProjectileDirection(Projectiles projectile, float rotz)
+	{
+		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 	private void TryDetectTrap(PlayerController newPlayer)
 	{
@@ -154,6 +193,28 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		StartCoroutine(DisableObject(trapDeactivatedSfx.length));
 	}
 
+	//set projectile spawn point, avoiding positions too close or in LoS of obstacles
+	private void FindSpawnPointForProjectiles()
+	{
+		projectileSpawnPoint = FindPointWithinDonutShape();
+	}
+	private Vector2 FindPointWithinDonutShape()
+	{
+		for (var i = 0; i < 100; i++)
+		{
+			Vector2 pos = (Vector2)transform.position + (Random.insideUnitCircle * 7);
+			if (Vector3.Distance(pos, transform.position) > 4 && ProjectileSpawnPointInsideWall(pos))
+				return pos;
+		}
+		return Vector2.zero;
+	}
+	private bool ProjectileSpawnPointInsideWall(Vector2 pos)
+	{
+		if (Physics2D.Linecast(transform.position, pos, projectileObstaclesMaskCheck))
+			return false;
+		return true;
+	}
+
 	private IEnumerator DisableObject(float waitTime)
 	{
 		yield return new WaitForSeconds(waitTime);
@@ -173,7 +234,10 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 	public void OnDrawGizmos()
 	{
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireSphere(transform.position, 3);
+
 		Gizmos.color = Color.red;
-		Gizmos.DrawWireSphere(transform.position, trapBaseRef.aoeSize);
+		Gizmos.DrawWireSphere(transform.position, 1 * 5);
 	}
 }

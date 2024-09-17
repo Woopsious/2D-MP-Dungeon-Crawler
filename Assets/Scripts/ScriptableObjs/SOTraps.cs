@@ -38,6 +38,11 @@ public class SOTraps : ScriptableObject
 	[Header("Trap Aoe size")]
 	public float aoeSize;
 
+	[Header("Trap is Projectile based")]
+	public bool hasProjectile;
+	public Sprite projectileSprite;
+	public float projectileSpeed;
+
 	[Header("Audio")]
 	public AudioClip trapActivatedSfx;
 }

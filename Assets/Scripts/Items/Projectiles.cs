@@ -8,15 +8,17 @@ public class Projectiles : MonoBehaviour
 {
 	private PlayerController player;
 
+	public SOTraps trapBaseRef;
 	public SOWeapons weaponBaseRef;
 	public SOClassAbilities abilityBaseRef;
 	public EntityStats casterInfo;	//only set for abilities
 
 	private BoxCollider2D boxCollider;
 	private SpriteRenderer projectileSprite;
+	private bool isEnviromentalProjectile;
 	private bool isPlayerProjectile;
 	private float projectileSpeed;
-	private int projectileDamage;
+	public int projectileDamage;
 	private DamageType damageType;
 	enum DamageType
 	{
@@ -26,19 +28,49 @@ public class Projectiles : MonoBehaviour
 	Vector2 projectileOrigin;
 	float distanceTraveled;
 
+	//set trap projectile data
+	public void Initilize(SOTraps trapBaseRef, int trapDamage, Vector2 originPoint)
+	{
+		this.player = null;
+		this.trapBaseRef = trapBaseRef;
+		this.weaponBaseRef = null;
+		this.abilityBaseRef = null;
+		this.casterInfo = null;
+		gameObject.name = trapBaseRef.name + "Projectile";
+
+		boxCollider = GetComponent<BoxCollider2D>();
+		projectileSprite = GetComponent<SpriteRenderer>();
+		projectileSprite.sprite = trapBaseRef.projectileSprite;
+		boxCollider.size = projectileSprite.size;
+		boxCollider.offset = new Vector2(0, 0);
+
+		this.player = null;
+		isEnviromentalProjectile = true;
+		isPlayerProjectile = false;
+		projectileSpeed = trapBaseRef.projectileSpeed;
+		damageType = (DamageType)trapBaseRef.baseDamageType;
+		projectileDamage = trapDamage;
+		projectileOrigin = originPoint;
+		gameObject.SetActive(true);
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+
 	//set weapon projectile data
 	public void Initilize(PlayerController player, Weapons weaponRef)
 	{
 		this.player = player;
+		this.trapBaseRef = null;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
 		this.abilityBaseRef = null;
 		gameObject.name = weaponRef.itemName + "Projectile";
+
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
 		projectileSprite.sprite = weaponRef.weaponBaseRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
+		isEnviromentalProjectile = false;
 		isPlayerProjectile = weaponRef.isEquippedByPlayer;
 		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
 		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
@@ -50,17 +82,20 @@ public class Projectiles : MonoBehaviour
 	//set ability projectile data
 	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
 	{
+		this.player = player;
+		this.trapBaseRef = null;
 		this.weaponBaseRef = null;
 		this.abilityBaseRef = abilityBaseRef;
 		this.casterInfo = casterInfo;
 		gameObject.name = abilityBaseRef.Name + "Projectile";
+
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
 		projectileSprite.sprite = abilityBaseRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
-		this.player = player;
+		isEnviromentalProjectile = false;
 		isPlayerProjectile = casterInfo.IsPlayerEntity();
 		projectileSpeed = abilityBaseRef.projectileSpeed;
 		damageType = (DamageType)abilityBaseRef.damageType;
@@ -87,14 +122,22 @@ public class Projectiles : MonoBehaviour
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
-		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerProjectile ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerProjectile)
+		if (!isEnviromentalProjectile && other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerProjectile ||
+			!isEnviromentalProjectile && other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerProjectile)
 			return;
 
-		if (abilityBaseRef != null)		//abilities
+		if (trapBaseRef != null)	//traps
 		{
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
-				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile, false);
+				false, isPlayerProjectile, isEnviromentalProjectile);
+
+			if (trapBaseRef.hasEffects && other.gameObject.GetComponent<EntityStats>() != null)
+				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, casterInfo);
+		}
+		else if (abilityBaseRef != null)		//abilities
+		{
+			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
+				abilityBaseRef.isDamagePercentageBased, isPlayerProjectile, isEnviromentalProjectile);
 
 			if (abilityBaseRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
 				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, casterInfo);
@@ -106,7 +149,7 @@ public class Projectiles : MonoBehaviour
 				projectileDamage /= 2;
 
 			other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, projectileDamage, (IDamagable.DamageType)damageType, 0,
-				false, isPlayerProjectile, false);
+				false, isPlayerProjectile, isEnviromentalProjectile);
 		}
 		DungeonHandler.ProjectileCleanUp(this);
 	}
