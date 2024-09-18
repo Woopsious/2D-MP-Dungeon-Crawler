@@ -130,20 +130,8 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			projectile = go.GetComponent<Projectiles>();
 		}
 		projectile.transform.SetParent(null);
-		projectile.transform.position = projectileSpawnPoint;
-		projectile.Initilize(trapBaseRef, trapDamage, projectileSpawnPoint);
-
-		SetProjectileDirection(projectile, GetAttackRotation(entity.transform.position));
-	}
-	private float GetAttackRotation(Vector3 positionOfThingToAttack)
-	{
-		Vector3 rotation = positionOfThingToAttack - (Vector3)projectileSpawnPoint;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		return rotz;
-	}
-	private void SetProjectileDirection(Projectiles projectile, float rotz)
-	{
-		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		projectile.SetPositionAndAttackDirection(projectileSpawnPoint, entity.transform.position);
+		projectile.Initilize(this, trapDamage);
 	}
 	private void TryDetectTrap(PlayerController newPlayer)
 	{

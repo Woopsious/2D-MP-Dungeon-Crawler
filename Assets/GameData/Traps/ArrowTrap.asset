@@ -17,12 +17,14 @@ MonoBehaviour:
   trapSpriteDetected: {fileID: -349561432, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapSpriteActivated: {fileID: -777619921, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapDetectionDifficulty: 0.2
-  trapType: 0
+  trapType: 2
   trapActivationDelay: 0.1
-  baseDamage: 5
+  baseDamage: 20
   baseDamageType: 0
-  hasEffects: 1
-  statusEffects:
-  - {fileID: 11400000, guid: e0c7d61841a155e46919a102f7d0c48d, type: 2}
+  hasEffects: 0
+  statusEffects: []
   aoeSize: 1
+  hasProjectile: 1
+  projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
+  projectileSpeed: 5
   trapActivatedSfx: {fileID: 8300000, guid: 2e8cd9eadf64c674fb5eb06b7b783e98, type: 3}

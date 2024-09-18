@@ -29,10 +29,10 @@ public class Projectiles : MonoBehaviour
 	float distanceTraveled;
 
 	//set trap projectile data
-	public void Initilize(SOTraps trapBaseRef, int trapDamage, Vector2 originPoint)
+	public void Initilize(TrapHandler trap, int trapDamage)
 	{
 		this.player = null;
-		this.trapBaseRef = trapBaseRef;
+		this.trapBaseRef = trap.trapBaseRef;
 		this.weaponBaseRef = null;
 		this.abilityBaseRef = null;
 		this.casterInfo = null;
@@ -50,7 +50,6 @@ public class Projectiles : MonoBehaviour
 		projectileSpeed = trapBaseRef.projectileSpeed;
 		damageType = (DamageType)trapBaseRef.baseDamageType;
 		projectileDamage = trapDamage;
-		projectileOrigin = originPoint;
 		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
@@ -62,20 +61,19 @@ public class Projectiles : MonoBehaviour
 		this.trapBaseRef = null;
 		this.weaponBaseRef = weaponRef.weaponBaseRef;
 		this.abilityBaseRef = null;
-		gameObject.name = weaponRef.itemName + "Projectile";
+		gameObject.name = weaponBaseRef.itemName + "Projectile";
 
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = weaponRef.weaponBaseRef.projectileSprite;
+		projectileSprite.sprite = weaponBaseRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
 		isEnviromentalProjectile = false;
 		isPlayerProjectile = weaponRef.isEquippedByPlayer;
-		projectileSpeed = weaponRef.weaponBaseRef.projectileSpeed;
-		damageType = (DamageType)weaponRef.weaponBaseRef.baseDamageType;
+		projectileSpeed = weaponBaseRef.projectileSpeed;
+		damageType = (DamageType)weaponBaseRef.baseDamageType;
 		projectileDamage = weaponRef.damage;
-		projectileOrigin = transform.position;
 		gameObject.SetActive(true);
 	}
 
@@ -113,6 +111,16 @@ public class Projectiles : MonoBehaviour
 		projectileDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
 		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+
+	//set projectile position, rotation and target position
+	public void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+
+		transform.position = OriginPosition;
+		transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -155,10 +163,11 @@ public class Projectiles : MonoBehaviour
 	}
 	private void FixedUpdate()
 	{
-		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
 
 		if (weaponBaseRef == null) return;
+
+		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
 			DungeonHandler.ProjectileCleanUp(this);
 	}

@@ -199,7 +199,7 @@ public class Weapons : Items
 	{
 		if (!canAttackAgain) return;
 
-		AttackInDirection(null, GetAttackRotation(positionOfThingToAttack));
+		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -215,10 +215,10 @@ public class Weapons : Items
 		}
 
 		projectile.transform.SetParent(null);
-		projectile.transform.position = (Vector2)transform.position;
+		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
 		projectile.Initilize(player, this);
 
-		AttackInDirection(projectile, GetAttackRotation(positionOfThingToAttack));
+		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
@@ -267,17 +267,11 @@ public class Weapons : Items
 		attackWeaponSprite.enabled = false;
 	}
 
-	//directional attacks
-	private void AttackInDirection(Projectiles projectile, float rotz)
-	{
-		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
-		if (projectile != null)
-			projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
-	}
-	private float GetAttackRotation(Vector3 positionOfThingToAttack)
+	//set direction of melee swings + direction ranged weapons point
+	private void AttackInDirection(Vector3 positionOfThingToAttack)
 	{
 		Vector3 rotation = positionOfThingToAttack - transform.position;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		return rotz;
+		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
 	}
 }

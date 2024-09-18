@@ -481,14 +481,13 @@ public class PlayerController : MonoBehaviour
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 		}
-		projectile.transform.SetParent(null);
-		projectile.transform.position = (Vector2)transform.position;
-		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
 
+		projectile.transform.SetParent(null);
 		if (PlayerSettingsManager.Instance.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget && selectedEnemyTarget != null)
-			SetProjectileDirection(projectile, GetAttackRotation(selectedEnemyTarget.transform.position));
+			projectile.SetPositionAndAttackDirection(transform.position, selectedEnemyTarget.transform.position);
 		else
-			SetProjectileDirection(projectile, GetAttackRotation(Camera.main.ScreenToWorldPoint(Input.mousePosition)));
+			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
 
 		OnSuccessfulCast(ability);
 	}
@@ -523,18 +522,6 @@ public class PlayerController : MonoBehaviour
 		}
 		ability.isOnCooldown = true;
 		queuedAbility = null;
-	}
-
-	//directional ability attacks
-	private float GetAttackRotation(Vector3 positionOfThingToAttack)
-	{
-		Vector3 rotation = positionOfThingToAttack - transform.position;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		return rotz;
-	}
-	private void SetProjectileDirection(Projectiles projectile, float rotz)
-	{
-		projectile.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 
 	//bool checks
