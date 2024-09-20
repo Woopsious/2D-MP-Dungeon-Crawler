@@ -13,8 +13,8 @@ public class LootSpawnHandler : MonoBehaviour
 	private int lootSpawnerLevel;
 	private float levelModifier;
 
-	public float totalItemSpawnChance;
-	public List<float> itemSpawnChanceTable = new List<float>();
+	private float totalItemSpawnChance;
+	private List<float> itemSpawnChanceTable = new List<float>();
 
 	private void OnEnable()
 	{

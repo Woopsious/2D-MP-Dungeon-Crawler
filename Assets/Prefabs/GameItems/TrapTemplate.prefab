@@ -138,13 +138,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f0767236c7a345478d6ac975a5601e4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trapBaseRef: {fileID: 11400000, guid: c5dbeead6ddcb1b42b795661605579ce, type: 2}
+  trapTypes:
+  - {fileID: 11400000, guid: 05f4ffa87b7f0bb48985fa3ddee857b6, type: 2}
+  - {fileID: 11400000, guid: 9c1cb0876d51cda48961c02fe77ff6cb, type: 2}
+  - {fileID: 11400000, guid: 0f4ba76c707cf2c46bfe1cc4c855a3ea, type: 2}
+  - {fileID: 11400000, guid: 9451b0bb913df7a43bd80e298676ebfb, type: 2}
+  - {fileID: 11400000, guid: ee30051fbfc3a6c4aa1789eeecae11d8, type: 2}
+  - {fileID: 11400000, guid: 6a53cfc026932134ea60a2a3cf06a9be, type: 2}
+  - {fileID: 11400000, guid: c5dbeead6ddcb1b42b795661605579ce, type: 2}
+  trapBaseRef: {fileID: 0}
   layerMask:
     serializedVersion: 2
     m_Bits: 768
   projectileObstaclesMaskCheck:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   trapDetected: 0
   trapDisabled: 0
   trapActivated: 0
@@ -153,6 +161,8 @@ MonoBehaviour:
   projectileSpawnPoint: {x: 0, y: 0}
   trapDetectedSfx: {fileID: 8300000, guid: 9dc5973aab0dd9040a6f7f719f9c40d9, type: 3}
   trapDeactivatedSfx: {fileID: 8300000, guid: 929ac3b0c9315084ca86d4524e395c0e, type: 3}
+  totalTrapSpawnChance: 0
+  trapSpawnChanceTable: []
 --- !u!114 &3806139610005823432
 MonoBehaviour:
   m_ObjectHideFlags: 0

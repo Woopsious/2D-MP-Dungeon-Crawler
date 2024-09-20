@@ -29,10 +29,10 @@ public class Projectiles : MonoBehaviour
 	float distanceTraveled;
 
 	//set trap projectile data
-	public void Initilize(TrapHandler trap, int trapDamage)
+	public void Initilize(SOTraps trap, int trapDamage)
 	{
 		this.player = null;
-		this.trapBaseRef = trap.trapBaseRef;
+		this.trapBaseRef = trap;
 		this.weaponBaseRef = null;
 		this.abilityBaseRef = null;
 		this.casterInfo = null;

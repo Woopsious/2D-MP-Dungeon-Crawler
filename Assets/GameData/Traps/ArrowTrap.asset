@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 97e679a778881f847afd4581ade12ee1, type: 3}
   m_Name: ArrowTrap
   m_EditorClassIdentifier: 
-  trapName: Spike Trap
+  trapName: Arrow Trap
   trapSpriteUnDetected: {fileID: 0}
   trapSpriteDetected: {fileID: -349561432, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapSpriteActivated: {fileID: -777619921, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  trapDetectionDifficulty: 0.2
+  trapDetectionDifficulty: 0.4
   trapType: 2
   trapActivationDelay: 0.1
-  baseDamage: 20
+  baseDamage: 25
   baseDamageType: 0
   hasEffects: 0
   statusEffects: []
@@ -27,4 +27,5 @@ MonoBehaviour:
   hasProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 5
+  trapSpawnChance: 0.4
   trapActivatedSfx: {fileID: 8300000, guid: 2e8cd9eadf64c674fb5eb06b7b783e98, type: 3}

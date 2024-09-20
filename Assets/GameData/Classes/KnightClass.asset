@@ -25,7 +25,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
   - {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
   abilityLists: []
-  trapDetectionChance: 0.1
+  trapDetectionChance: 0.25
   classStatBonusList:
   - unlock: {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
     LevelRequirement: 1

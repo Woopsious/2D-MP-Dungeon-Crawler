@@ -12,14 +12,15 @@ public class SOTraps : ScriptableObject
 	public Sprite trapSpriteDetected;
 	public Sprite trapSpriteActivated;
 
-	[Range(0f, 1f)]
+	[Header("Trap detection")]
+	[Range(0.2f, 0.5f)]
 	public float trapDetectionDifficulty;
 
 	[Header("Trap Type")]
 	public TrapType trapType;
 	public enum TrapType
 	{
-		isSpike, isBomb, isArrow, isMagic
+		isSpike, isBomb, isArrow, isMagic, isGas
 	}
 	public float trapActivationDelay;
 
@@ -42,6 +43,10 @@ public class SOTraps : ScriptableObject
 	public bool hasProjectile;
 	public Sprite projectileSprite;
 	public float projectileSpeed;
+
+	[Header("Trap spawn chance")]
+	[Range(0f, 1f)]
+	public float trapSpawnChance;
 
 	[Header("Audio")]
 	public AudioClip trapActivatedSfx;

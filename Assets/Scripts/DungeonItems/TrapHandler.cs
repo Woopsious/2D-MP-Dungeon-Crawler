@@ -1,10 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Services.Lobbies.Models;
-using UnityEditor;
-using UnityEditor.Playables;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class TrapHandler : MonoBehaviour, IInteractables
 {
@@ -12,6 +8,8 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	private AudioHandler audioHandler;
 
 	[Header("Trap Info")]
+	public List<SOTraps> trapTypes = new List<SOTraps>();
+	public bool debugOverrideTrapType;
 	public SOTraps trapBaseRef;
 	public LayerMask layerMask;
 	public LayerMask projectileObstaclesMaskCheck;
@@ -37,6 +35,10 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	[Header("Shared audio")]
 	public AudioClip trapDetectedSfx;
 	public AudioClip trapDeactivatedSfx;
+
+	[Header("Trap spawn chances")]
+	public float totalTrapSpawnChance;
+	public List<float> trapSpawnChanceTable = new List<float>();
 
 	private void Awake()
 	{
@@ -67,6 +69,12 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		audioHandler = GetComponent<AudioHandler>();
 		playerDetectionCollider.GetComponent<EntityDetection>().trapHandler = this;
 
+		if (!debugOverrideTrapType)
+		{
+			CreateTrapSpawnTable();
+			trapBaseRef = trapTypes[GetIndexOfTrapToSpawn()];
+		}
+
 		spriteRenderer.sprite = null;
 		name = trapBaseRef.name;
 		trapDetected = false;
@@ -75,6 +83,31 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 		if (trapBaseRef.hasProjectile)
 			FindSpawnPointForProjectiles();
+	}
+	private void CreateTrapSpawnTable()
+	{
+		trapSpawnChanceTable.Clear();
+		totalTrapSpawnChance = 0;
+
+		foreach (SOTraps trap in trapTypes)
+			trapSpawnChanceTable.Add(trap.trapSpawnChance);
+
+		foreach (float num in trapSpawnChanceTable)
+			totalTrapSpawnChance += num;
+	}
+	private int GetIndexOfTrapToSpawn()
+	{
+		float rand = Random.Range(0, totalTrapSpawnChance);
+		float cumChance = 0;
+
+		for (int i = 0; i < trapSpawnChanceTable.Count; i++)
+		{
+			cumChance += trapSpawnChanceTable[i];
+
+			if (rand <= cumChance)
+				return i;
+		}
+		return -1;
 	}
 	private void UpdateTrapLevel(EntityStats playerStats)
 	{
@@ -131,7 +164,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		}
 		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(projectileSpawnPoint, entity.transform.position);
-		projectile.Initilize(this, trapDamage);
+		projectile.Initilize(trapBaseRef, trapDamage);
 	}
 	private void TryDetectTrap(PlayerController newPlayer)
 	{
@@ -165,8 +198,22 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	private bool RollPlayerDetectChance(PlayerController newPlayer)
 	{
 		playersCheckedTrap.Add(newPlayer);
+		SOClasses playerClass = newPlayer.playerClassHandler.currentEntityClass;
+		float trapDetectionChance = 0;
 
-		if (newPlayer.playerClassHandler.currentEntityClass.trapDetectionChance >= trapBaseRef.trapDetectionDifficulty)
+		//magic traps easier to spot for mages but harder for rogues (other classes leave as is since magic traps have high detection)
+		if (playerClass.classType == SOClasses.ClassType.isMage && trapBaseRef.trapType == SOTraps.TrapType.isMagic)
+			trapDetectionChance += 0.05f;
+		else if (playerClass.classType == SOClasses.ClassType.isRogue && trapBaseRef.trapType == SOTraps.TrapType.isMagic)
+			trapDetectionChance -= 0.05f;
+
+		//randomise chance slighty whilst leaving rogue as best trap spotter
+		trapDetectionChance += Random.Range(-0.1f, 0.1f) + playerClass.trapDetectionChance;
+
+		Debug.Log("trap detect chance: " +  trapDetectionChance);
+		Debug.Log("trap detect difficulty: " + trapBaseRef.trapDetectionDifficulty);
+
+		if (trapDetectionChance >= trapBaseRef.trapDetectionDifficulty)
 			return true;
 		else return false;
 	}
