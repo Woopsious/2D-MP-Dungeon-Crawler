@@ -127,14 +127,12 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	{
 		if (trapDisabled || trapActivated) return;
 
-		DamageEverythingInsideAoe(coll); //apply damage + effects
-		Debug.Log("trap activated");
-
+		TryDamageThingsInsideAoe(coll); //apply damage + effects
 		trapActivated = true;
 		spriteRenderer.sprite = trapBaseRef.trapSpriteActivated;
 		audioHandler.PlayAudio(trapBaseRef.trapActivatedSfx);
 	}
-	private void DamageEverythingInsideAoe(Collider2D coll)
+	private void TryDamageThingsInsideAoe(Collider2D coll)
 	{
 		RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, trapBaseRef.aoeSize, Vector2.up, 0, layerMask);
 
@@ -162,10 +160,12 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 		}
+
 		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(projectileSpawnPoint, entity.transform.position);
 		projectile.Initilize(trapBaseRef, trapDamage);
 	}
+
 	private void TryDetectTrap(PlayerController newPlayer)
 	{
 		if (trapDisabled || trapActivated) return;
@@ -176,21 +176,16 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			if (newPlayer == player)
 			{
 				playerAlreadyTried = true;
-				Debug.Log("same player detected breaking loop");
 				break;
 			}
 		}
 		if (playerAlreadyTried) return;
 
-		if (!RollPlayerDetectChance(newPlayer)) //roll for detect
-		{
-			Debug.Log("trap not detected");
+		//roll for detect
+		if (!RollPlayerDetectChance(newPlayer))
 			return; //failed detect
-		}
 
 		//detect trap
-		Debug.Log("trap detected");
-
 		trapDetected = true;
 		spriteRenderer.sprite = trapBaseRef.trapSpriteActivated;
 		audioHandler.PlayAudio(trapDetectedSfx);
@@ -201,7 +196,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		SOClasses playerClass = newPlayer.playerClassHandler.currentEntityClass;
 		float trapDetectionChance = 0;
 
-		//magic traps easier to spot for mages but harder for rogues (other classes leave as is since magic traps have high detection)
+		//magic traps easier to spot for mages but harder for rogues (other classes leave as is since magic traps difficult to spot)
 		if (playerClass.classType == SOClasses.ClassType.isMage && trapBaseRef.trapType == SOTraps.TrapType.isMagic)
 			trapDetectionChance += 0.05f;
 		else if (playerClass.classType == SOClasses.ClassType.isRogue && trapBaseRef.trapType == SOTraps.TrapType.isMagic)
@@ -210,18 +205,14 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		//randomise chance slighty whilst leaving rogue as best trap spotter
 		trapDetectionChance += Random.Range(-0.1f, 0.1f) + playerClass.trapDetectionChance;
 
-		Debug.Log("trap detect chance: " +  trapDetectionChance);
-		Debug.Log("trap detect difficulty: " + trapBaseRef.trapDetectionDifficulty);
-
 		if (trapDetectionChance >= trapBaseRef.trapDetectionDifficulty)
 			return true;
 		else return false;
 	}
+
 	private void DeactivateTrap()
 	{
 		if (trapDisabled || trapActivated) return;
-
-		Debug.Log("trap deactivated");
 
 		trapDisabled = true;
 		audioHandler.PlayAudio(trapDeactivatedSfx);

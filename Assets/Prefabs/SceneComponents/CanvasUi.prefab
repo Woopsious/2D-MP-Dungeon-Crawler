@@ -17993,14 +17993,16 @@ MonoBehaviour:
   portalPanelUi: {fileID: 4131075794459089128}
   dungeonInfoSlotPrefab: {fileID: 5065303211986392817, guid: c400e7f6bc1c2cd428112058c036233c, type: 3}
   dungeonListInfoText: {fileID: 99725108637773057}
-  portalEnterenceUi: {fileID: 2354824965160371721}
+  dungeonEnterenceUi: {fileID: 2354824965160371721}
   activeDungeonListPanel: {fileID: 1349624710191424296}
   activeDungeonListContent: {fileID: 1548163323073715722}
   savedDungeonListPanel: {fileID: 6132123012647444487}
   savedDungeonListContent: {fileID: 6821613009861385746}
   activeDungeonLists: []
   savedDungeonLists: []
-  portalExitUi: {fileID: 4352316967900762123}
+  dungeonExitUi: {fileID: 4352316967900762123}
+  bossDungeonEnterenceUi: {fileID: 0}
+  bossDungeonExitUi: {fileID: 0}
 --- !u!1 &3516892429967239256
 GameObject:
   m_ObjectHideFlags: 0
@@ -20990,7 +20992,7 @@ GameObject:
   - component: {fileID: 6512020283393711961}
   - component: {fileID: 2898607957961635550}
   m_Layer: 5
-  m_Name: DungeonPortalUiPanel
+  m_Name: PortalUiPanel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

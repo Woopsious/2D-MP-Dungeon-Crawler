@@ -6,9 +6,16 @@ using UnityEngine.SceneManagement;
 
 public class PortalHandler : MonoBehaviour, IInteractables
 {
+	[Header("Portal Info")]
 	private AudioHandler audioHandler;
 	public GameObject portalSpriteObj;
-	public bool isDungeonEnterencePortal;
+
+	[Header("Portal Type")]
+	public PortalType portalType;
+	public enum PortalType
+	{
+		isDungeonEnterencePortal, isDungeonExitPortal, isBossDungeonEnterencePortal, isBossDungeonExitPortal
+	}
 
 	[Header("Portal Sound Settings")]
 	public AudioClip portalSfx;

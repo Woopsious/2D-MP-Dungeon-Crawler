@@ -13,7 +13,7 @@ public class DungeonPortalUi : MonoBehaviour
 	public TMP_Text dungeonListInfoText;
 
 	[Header("Dungeon Enterence Ui")]
-	public GameObject portalEnterenceUi;
+	public GameObject dungeonEnterenceUi;
 	public GameObject activeDungeonListPanel;
 	public GameObject activeDungeonListContent;
 	public GameObject savedDungeonListPanel;
@@ -23,7 +23,13 @@ public class DungeonPortalUi : MonoBehaviour
 	public List<DungeonDataUi> savedDungeonLists = new List<DungeonDataUi>();
 
 	[Header("Dungeon Exit Ui")]
-	public GameObject portalExitUi;
+	public GameObject dungeonExitUi;
+
+	[Header("Boss Dungeon Enterence Ui")]
+	public GameObject bossDungeonEnterenceUi;
+
+	[Header("Boss Dungeon Exit Ui")]
+	public GameObject bossDungeonExitUi;
 
 	private void Awake()
 	{
@@ -143,16 +149,20 @@ public class DungeonPortalUi : MonoBehaviour
 		else
 		{
 			portalPanelUi.SetActive(true);
-			portalEnterenceUi.SetActive(false);
-			portalExitUi.SetActive(false);
+			dungeonEnterenceUi.SetActive(false);
+			dungeonExitUi.SetActive(false);
 
-			if (portal.isDungeonEnterencePortal)
+			if (portal.portalType == PortalHandler.PortalType.isDungeonEnterencePortal)
 			{
-				portalEnterenceUi.SetActive(true);
+				dungeonEnterenceUi.SetActive(true);
 				ShowActiveDungeonListUi();
 			}
-			else
-				portalExitUi.SetActive(true);
+			else if (portal.portalType == PortalHandler.PortalType.isDungeonExitPortal)
+				dungeonExitUi.SetActive(true);
+			else if (portal.portalType == PortalHandler.PortalType.isBossDungeonEnterencePortal)
+				bossDungeonEnterenceUi.SetActive(true);
+			else if (portal.portalType == PortalHandler.PortalType.isBossDungeonExitPortal)
+				bossDungeonExitUi.SetActive(true);
 		}
 	}
 	public void ShowActiveDungeonListUi() //button click
@@ -170,7 +180,9 @@ public class DungeonPortalUi : MonoBehaviour
 	public void HidePortalUi()
 	{
 		portalPanelUi.SetActive(false);
-		portalEnterenceUi.SetActive(false);
-		portalExitUi.SetActive(false);
+		dungeonEnterenceUi.SetActive(false);
+		dungeonExitUi.SetActive(false);
+		bossDungeonEnterenceUi.SetActive(false);
+		bossDungeonExitUi.SetActive(false);
 	}
 }
