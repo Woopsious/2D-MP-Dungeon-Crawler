@@ -56,8 +56,8 @@ public class DungeonPortalUi : MonoBehaviour
 
 	private void GenerateNewDungeons()
 	{
-		if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.hubAreaName)) return; //if not hub area return
+		//if (GameManager.Instance == null) return; //disables for test scene
+		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return; //if not hub area return
 
 		activeDungeonLists.Clear();
 
