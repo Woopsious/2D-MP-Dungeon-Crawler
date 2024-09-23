@@ -12,7 +12,7 @@ public class EntityBehaviour : MonoBehaviour
 	public SOEntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityStats entityStats;
 	private SpriteRenderer spriteRenderer;
-	private EnemyBaseState currentState;
+	protected EnemyBaseState currentState;
 	private EnemyIdleState idleState = new EnemyIdleState();
 	private EnemyAttackState attackState = new EnemyAttackState();
 
@@ -44,13 +44,13 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Healing Ability Cooldown")]
 	public SOClassAbilities healingAbility;
-	public bool canCastHealingAbility;
-	public float healingAbilityTimer;
+	private bool canCastHealingAbility;
+	private float healingAbilityTimer;
 
 	[Header("Offensive Ability Cooldown")]
 	public SOClassAbilities offensiveAbility;
-	public bool canCastOffensiveAbility;
-	public float offensiveAbilityTimer;
+	private bool canCastOffensiveAbility;
+	private float offensiveAbilityTimer;
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -82,7 +82,7 @@ public class EntityBehaviour : MonoBehaviour
 		entityStats.OnHealthChangeEvent -= CastHealingAbility;
 	}
 
-	private void Update()
+	protected virtual void Update()
 	{
 		if (entityStats.IsEntityDead()) return;
 		currentState.UpdateLogic(this);
@@ -93,7 +93,7 @@ public class EntityBehaviour : MonoBehaviour
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
 	}
-	private void FixedUpdate()
+	protected virtual void FixedUpdate()
 	{
 		if (entityStats.IsEntityDead()) return;
 		currentState.UpdatePhysics(this);
@@ -353,7 +353,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//casting of ability types
-	private bool HasEnoughManaToCast(SOClassAbilities ability)
+	protected bool HasEnoughManaToCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{
@@ -365,7 +365,7 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return true;
 	}
-	private void CastEffect(SOClassAbilities ability)
+	protected void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
@@ -392,7 +392,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	private void CastDirectionalAbility(SOClassAbilities ability)
+	protected void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -406,7 +406,7 @@ public class EntityBehaviour : MonoBehaviour
 		projectile.Initilize(null, ability, entityStats);
 		OnSuccessfulCast(ability);
 	}
-	private void CastAoeAbility(SOClassAbilities ability)
+	protected void CastAoeAbility(SOClassAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)

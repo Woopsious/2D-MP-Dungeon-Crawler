@@ -18,6 +18,9 @@ public class DungeonPortalUi : MonoBehaviour
 	public List<DungeonDataUi> savedDungeonLists = new List<DungeonDataUi>();
 	public List<DungeonDataUi> bossDungeonLists = new List<DungeonDataUi>();
 
+	[Header("Dungeon Bosses")]
+	public int bossesInGame;
+
 	[Header("Shared Dungeon list Ui")]
 	public GameObject dungeonListContent;
 	public GameObject hiddenDungeonsParentObj;
@@ -33,13 +36,6 @@ public class DungeonPortalUi : MonoBehaviour
 
 	[Header("Dungeon Exit Ui")]
 	public GameObject dungeonExitUi;
-
-	[Header("Boss Dungeon Enterence Ui")]
-	public GameObject bossDungeonEnterenceUi;
-	public int bossesInGame;
-
-	[Header("Boss Dungeon Exit Ui")]
-	public GameObject bossDungeonExitUi;
 
 	private void Awake()
 	{
@@ -195,12 +191,8 @@ public class DungeonPortalUi : MonoBehaviour
 				dungeonEnterenceUi.SetActive(true);
 				ShowActiveDungeonListUi();
 			}
-			else if (portal.portalType == PortalHandler.PortalType.isDungeonExitPortal)
+			else
 				dungeonExitUi.SetActive(true);
-			else if (portal.portalType == PortalHandler.PortalType.isBossDungeonEnterencePortal)
-				bossDungeonEnterenceUi.SetActive(true);
-			else if (portal.portalType == PortalHandler.PortalType.isBossDungeonExitPortal)
-				bossDungeonExitUi.SetActive(true);
 		}
 	}
 	public void ShowActiveDungeonListUi() //button click
@@ -261,7 +253,5 @@ public class DungeonPortalUi : MonoBehaviour
 		portalPanelUi.SetActive(false);
 		dungeonEnterenceUi.SetActive(false);
 		dungeonExitUi.SetActive(false);
-		//bossDungeonEnterenceUi.SetActive(false);
-		//bossDungeonExitUi.SetActive(false);
 	}
 }

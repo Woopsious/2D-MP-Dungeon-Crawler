@@ -22,7 +22,10 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
-		AttackBehaviourLogic(entity);
+		if (entity.entityStats.entityBaseStats.isBossVersion)
+			BossAttackBehaviourLogic((BossEntityBehaviour)entity);
+		else
+			AttackBehaviourLogic(entity);
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
@@ -49,6 +52,22 @@ public class EnemyAttackState : EnemyBaseState
 				equippedWeapon.RangedAttack(entity.playerTarget.transform.position, entity.projectilePrefab);
 			else
 				equippedWeapon.MeleeAttack(entity.playerTarget.transform.position);
+		}
+	}
+
+	private void BossAttackBehaviourLogic(BossEntityBehaviour bossEntity)
+	{
+		bossEntity.CastOffensiveAbility();
+		bossEntity.CastOffensiveAbilityTwo();
+
+		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
+
+		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange * 1.25f)
+		{
+			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
+				equippedWeapon.RangedAttack(bossEntity.playerTarget.transform.position, bossEntity.projectilePrefab);
+			else
+				equippedWeapon.MeleeAttack(bossEntity.playerTarget.transform.position);
 		}
 	}
 

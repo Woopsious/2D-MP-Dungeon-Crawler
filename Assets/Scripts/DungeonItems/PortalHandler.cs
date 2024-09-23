@@ -14,7 +14,7 @@ public class PortalHandler : MonoBehaviour, IInteractables
 	public PortalType portalType;
 	public enum PortalType
 	{
-		isDungeonEnterencePortal, isDungeonExitPortal, isBossDungeonEnterencePortal, isBossDungeonExitPortal
+		isDungeonEnterencePortal, isDungeonExitPortal, isBossDungeonExitPortal
 	}
 
 	[Header("Portal Sound Settings")]

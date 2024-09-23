@@ -15422,7 +15422,7 @@ GameObject:
   - component: {fileID: 5293504643992729699}
   - component: {fileID: 4454334002273015361}
   m_Layer: 5
-  m_Name: CloseDungeonButton
+  m_Name: CancelLeaveDungeonButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -18155,16 +18155,15 @@ MonoBehaviour:
   portalPanelUi: {fileID: 4131075794459089128}
   dungeonInfoSlotPrefab: {fileID: 5065303211986392817, guid: c400e7f6bc1c2cd428112058c036233c, type: 3}
   dungeonListInfoText: {fileID: 99725108637773057}
+  activeDungeonLists: []
+  savedDungeonLists: []
+  bossDungeonLists: []
+  bossesInGame: 0
   dungeonListContent: {fileID: 1548163323073715722}
   hiddenDungeonsParentObj: {fileID: 1838769789357102534}
   dungeonListTypeToShow: 0
   dungeonEnterenceUi: {fileID: 2354824965160371721}
-  activeDungeonLists: []
-  savedDungeonLists: []
-  bossDungeonLists: []
   dungeonExitUi: {fileID: 4352316967900762123}
-  bossDungeonEnterenceUi: {fileID: 0}
-  bossDungeonExitUi: {fileID: 0}
 --- !u!1 &3516892429967239256
 GameObject:
   m_ObjectHideFlags: 0
@@ -20380,7 +20379,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Cancel Leave Dungeon
+  m_text: Cancel
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -21996,7 +21995,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &4822999561123063640
 RectTransform:
   m_ObjectHideFlags: 0
@@ -22016,7 +22015,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 50}
-  m_SizeDelta: {x: 600, y: 150}
+  m_SizeDelta: {x: 600, y: 125}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!223 &3144391692982382915
 Canvas:
@@ -36527,7 +36526,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Leave Dungeon
+  m_text: Return to Hub
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

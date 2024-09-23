@@ -14,16 +14,24 @@ public class SpawnHandler : MonoBehaviour
 	public bool debugSpawnEnemiesAtSetLevel;
 
 	public int spawnerLevel;
-	public int maxNumOfEnemiesToSpawn;
-	private List<EntityStats> listOfSpawnedEnemies = new List<EntityStats>();
+	public int maxNumOfEntitiesToSpawn;
+	public int maxNumOfBossesToSpawn;
+	private List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
 
 	[Header("Spawner Range Settings")]
 	public int maxSpawningDistance;
 	public int minSpawningDistance;
 	[HideInInspector] public Bounds spawnBounds;
 
+	[Header("Boss Spawner Settings")]
+	public bool isBossRoomSpawner;
+	public bool isBossSpawner;
+	private int numOfSpawnedBosses;
+	public GameObject bossEntityTemplatePrefab;
+	public SOEntityStats bossEntityToSpawn;
+
 	[Header("Spawner Entity Types")]
-	public GameObject enemyTemplatePrefab;
+	public GameObject entityTemplatePrefab;
 	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
 
 	private CircleCollider2D playerCollider;
@@ -31,6 +39,7 @@ public class SpawnHandler : MonoBehaviour
 	private float closestPlayerDistance;
 	private bool spawningDisabled;
 
+	[Header("Spawn Table")]
 	private float totalEnemySpawnChance;
 	private List<float> enemySpawnChanceTable = new List<float>();
 
@@ -60,7 +69,7 @@ public class SpawnHandler : MonoBehaviour
 	//track players
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (listOfPlayersInRange.Count <= 0)
+		if (listOfPlayersInRange.Count <= 0 && CheckIfSpawnerShouldRespawnEnemies())
 			spawningDisabled = false;
 
 		if (other.GetComponent<PlayerController>() != null)
@@ -78,8 +87,11 @@ public class SpawnHandler : MonoBehaviour
 		closestPlayerDistance = maxSpawningDistance;
 		if (listOfPlayersInRange.Count != 0) return;
 
-		spawningDisabled = false;
-		CleanUpEntities();
+		if (!isBossRoomSpawner)
+			CleanUpEntities();
+
+		if (CheckIfSpawnerShouldRespawnEnemies())
+			spawningDisabled = false;
 	}
 
 	private void FixedUpdate()
@@ -99,6 +111,9 @@ public class SpawnHandler : MonoBehaviour
 
 		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
 			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
+
+		if (isBossSpawner)
+			maxNumOfEntitiesToSpawn = 2;
 
 		CreateEnemySpawnTable();
 	}
@@ -135,10 +150,17 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEntityDeath(GameObject obj)
 	{
-		if (listOfSpawnedEnemies.Contains(obj.GetComponent<EntityStats>()))
+		if (listOfSpawnedEntities.Contains(obj.GetComponent<EntityStats>()))
 		{
-			listOfSpawnedEnemies.Remove(obj.GetComponent<EntityStats>());
+			listOfSpawnedEntities.Remove(obj.GetComponent<EntityStats>());
 			TrySpawnEntity();
+			if (isBossRoomSpawner) //decrease spawns on enemy death
+			{
+				if (obj.GetComponent<EntityStats>().entityBaseStats.isBossVersion)
+					maxNumOfBossesToSpawn--;
+				else
+					maxNumOfEntitiesToSpawn--;
+			}
 		}
 	}
 
@@ -146,26 +168,33 @@ public class SpawnHandler : MonoBehaviour
 	{
 		if (listOfPlayersInRange.Count != 0) return;
 
-		for (int i = listOfSpawnedEnemies.Count - 1; i >= 0; i--)
+		for (int i = listOfSpawnedEntities.Count - 1; i >= 0; i--)
 		{
-			if (listOfSpawnedEnemies[i] == null) return;
+			if (listOfSpawnedEntities[i] == null) return;
 
-			if (listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().playerTarget == null)
-				DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEnemies[i]);
+			if (listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().playerTarget == null)
+				DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEntities[i]);
 			else
-				listOfSpawnedEnemies[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
+				listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
 
-			listOfSpawnedEnemies.Remove(listOfSpawnedEnemies[i]);
+			listOfSpawnedEntities.Remove(listOfSpawnedEntities[i]);
 		}
 	}
 
-	//entity spawning
+	//SPAWNING OF ENTITIES AND BOSSES
 	private void TrySpawnEntity()
 	{
-		if (listOfSpawnedEnemies.Count >= maxNumOfEnemiesToSpawn) return;
+		if (listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn) return;
 		if (listOfPlayersInRange.Count == 0) return;
 		if (spawningDisabled) return;
 
+		SpawnEntity();
+		if (isBossSpawner)
+			SpawnBossEntity();
+	}
+	//entity spawning
+	private void SpawnEntity()
+	{
 		int num = GetIndexOfEnemyToSpawn();
 		bool entityTypeMatches = false;
 
@@ -180,7 +209,7 @@ public class SpawnHandler : MonoBehaviour
 			}
 		}
 		if (!entityTypeMatches)
-			SpawnNewEntity();
+			InstantiateNewEntity();
 	}
 	private void RespawnInActiveEntity(EntityStats entity)
 	{
@@ -188,7 +217,7 @@ public class SpawnHandler : MonoBehaviour
 		entity.gameObject.SetActive(true);
 		entity.ResetEntityStats();
 		entity.ResetEntityBehaviour(this);
-		listOfSpawnedEnemies.Add(entity);
+		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
 			entity.entityLevel = debugSpawnerLevel;
@@ -197,14 +226,14 @@ public class SpawnHandler : MonoBehaviour
 
 		TrySpawnEntity();
 	}
-	private void SpawnNewEntity()
+	private void InstantiateNewEntity()
 	{
 		int num = GetIndexOfEnemyToSpawn();
-		GameObject go = Instantiate(enemyTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
+		GameObject go = Instantiate(entityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
 		entity.entityBaseStats = possibleEntityTypesToSpawn[num];
 		entity.GetComponent<EntityBehaviour>().entityBehaviour = possibleEntityTypesToSpawn[num].entityBehaviour;
-		listOfSpawnedEnemies.Add(entity);
+		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
 			entity.entityLevel = debugSpawnerLevel;
@@ -213,7 +242,38 @@ public class SpawnHandler : MonoBehaviour
 
 		TrySpawnEntity();
 	}
+	//boss entity spawning
+	private void SpawnBossEntity()
+	{
+		//spawn the boss entity just like regular entities after grabbing its SO from GameManager.GameData.dungeonData etc..
+		//grab its entityBossStats script etc and sub to its health events to force spawn eneimes when health gets to 75-50-25 %
 
+		if (numOfSpawnedBosses >= maxNumOfBossesToSpawn) return;
+		InstantiateNewBossEntity();
+	}
+	private void InstantiateNewBossEntity()
+	{
+		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
+		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
+		bossEntity.entityBaseStats = bossEntityToSpawn;
+		bossEntity.GetComponent<BossEntityBehaviour>().entityBehaviour = bossEntityToSpawn.entityBehaviour;
+		numOfSpawnedBosses++;
+
+		if (debugSpawnEnemiesAtSetLevel)
+			bossEntity.entityLevel = debugSpawnerLevel;
+		else
+			bossEntity.entityLevel = spawnerLevel;
+	}
+
+	private bool CheckIfSpawnerShouldRespawnEnemies()
+	{
+		if (!isBossRoomSpawner) return true;
+		if (maxNumOfEntitiesToSpawn > 0)
+			return true; 
+		else return false;
+	}
+
+	//track closest player
 	private void TrackClosestPlayerToSpawner()
 	{
 		if (listOfPlayersInRange.Count <= 0) return;

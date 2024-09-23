@@ -8,6 +8,7 @@ public class SOEntityStats : ScriptableObject
 	public string entityName;
 	public Sprite sprite;
 
+	public bool isBossVersion;
 	public HumanoidTypes humanoidType;
 	public enum HumanoidTypes
 	{

@@ -48,13 +48,18 @@ MonoBehaviour:
   debugSpawnerLevel: 0
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
-  maxNumOfEnemiesToSpawn: 5
+  maxNumOfEntitiesToSpawn: 5
+  maxNumOfBossesToSpawn: 1
+  isBossRoomSpawner: 0
+  isBossSpawner: 0
+  bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
+  bossEntityToSpawn: {fileID: 0}
   maxSpawningDistance: 30
   minSpawningDistance: 25
   spawnBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  enemyTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
+  entityTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
   possibleEntityTypesToSpawn:
   - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
   - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}

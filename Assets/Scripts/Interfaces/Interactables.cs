@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Interactables : MonoBehaviour
 {
-	public TrapHandler trapHandler;
+	private TrapHandler trapHandler;
 	private PortalHandler portalHandler;
 	private ChestHandler chestHandler;
 	private NpcHandler npcHandler;
