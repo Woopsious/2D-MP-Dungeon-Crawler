@@ -481,6 +481,7 @@ public class GameData
 	public bool hasRecievedRangerItems;
 	public bool hasRecievedMageItems;
 
+	public DungeonData currentBossDungeon;
 	public DungeonData currentDungeon;
 	public SOClasses currentPlayerClass;
 	public List<ClassTreeNodeData> unlockedClassNodeIndexesList = new List<ClassTreeNodeData>();
