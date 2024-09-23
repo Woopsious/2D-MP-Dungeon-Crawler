@@ -19,7 +19,7 @@ public class DungeonPortalUi : MonoBehaviour
 	public List<DungeonDataUi> bossDungeonLists = new List<DungeonDataUi>();
 
 	[Header("Dungeon Bosses")]
-	public int bossesInGame;
+	public List<SOEntityStats> bossesInGame = new List<SOEntityStats>();
 
 	[Header("Shared Dungeon list Ui")]
 	public GameObject dungeonListContent;
@@ -66,7 +66,7 @@ public class DungeonPortalUi : MonoBehaviour
 		//if (GameManager.Instance == null) return; //disables for test scene
 		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return;
 
-		for (int i = 0; i < 3; i++) //generate dungond for each boss
+		for (int i = 0; i < bossesInGame.Count; i++) //generate dungond for each boss
 		{
 			Transform parentTransform;
 			if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
@@ -77,7 +77,7 @@ public class DungeonPortalUi : MonoBehaviour
 			{
 				GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
 				DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
-				dungeonData.Initilize(i, j);
+				dungeonData.Initilize(i, j, bossesInGame[i]);
 				bossDungeonLists.Add(dungeonData);
 			}
 		}

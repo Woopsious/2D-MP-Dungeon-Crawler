@@ -18158,7 +18158,8 @@ MonoBehaviour:
   activeDungeonLists: []
   savedDungeonLists: []
   bossDungeonLists: []
-  bossesInGame: 0
+  bossesInGame:
+  - {fileID: 11400000, guid: ba9e0e514cd645d48a919eca75198f71, type: 2}
   dungeonListContent: {fileID: 1548163323073715722}
   hiddenDungeonsParentObj: {fileID: 1838769789357102534}
   dungeonListTypeToShow: 0

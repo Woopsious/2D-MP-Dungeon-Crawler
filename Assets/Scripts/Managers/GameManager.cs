@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviour
 			if (sceneName.Contains("Boss"))
 				bossSceneNamesList.Add(sceneName);
 		}
-		Debug.Log("boss scenes count: " + bossSceneNamesList.Count);
 	}
 
 	//scene change finish event

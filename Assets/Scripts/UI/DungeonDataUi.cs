@@ -21,6 +21,7 @@ public class DungeonDataUi : MonoBehaviour
 	public int dungeonNumber;
 
 	public int maxDungeonModifiers;
+	public SOEntityStats bossToSpawn;
 	public DungeonStatModifier dungeonStatModifiers;
 	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 
@@ -139,17 +140,18 @@ public class DungeonDataUi : MonoBehaviour
 		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
 	}
-	public void Initilize(int index, int dungeonDifficulty) //initilize boss dungeon
+	public void Initilize(int index, int dungeonDifficulty, SOEntityStats bossToSpawn) //initilize boss dungeon
 	{
 		hasExploredDungeon = false;
 		isDungeonSaved = false;
 		dungeonIndex = index;
 		dungeonNumber = -1; //-1 to indicate its boss dungeon and scene it loads is randomized on enter
+		this.bossToSpawn = bossToSpawn;
 		int modifier = dungeonDifficulty;
 
 		//repurpose text to display what boss player will face
 		dungeonUnExploredText.gameObject.SetActive(true);
-		dungeonUnExploredText.text = "Boss number: " + index;
+		dungeonUnExploredText.text = bossToSpawn.entityName;
 
 		//for now boss dungeons have no modifiers just difficulty
 		if (modifier == 0)
@@ -272,6 +274,7 @@ public class DungeonDataUi : MonoBehaviour
 		GameManager.Instance.currentDungeonData.isDungeonSaved = isDungeonSaved;
 		GameManager.Instance.currentDungeonData.dungeonIndex = dungeonIndex;
 		GameManager.Instance.currentDungeonData.dungeonNumber = dungeonNumber;
+		GameManager.Instance.currentDungeonData.bossToSpawn = bossToSpawn;
 		GameManager.Instance.currentDungeonData.dungeonStatModifiers = dungeonStatModifiers;
 		GameManager.Instance.currentDungeonData.dungeonChestData = dungeonChestData;
 

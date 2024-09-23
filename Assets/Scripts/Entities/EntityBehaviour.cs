@@ -315,6 +315,8 @@ public class EntityBehaviour : MonoBehaviour
 	//casting of each ability
 	public void CastHealingAbility(int maxHealth, int currentHealth)
 	{
+		if (entityStats.entityBaseStats.isBossVersion) return;
+
 		if (maxHealth == 0) return;
 		if (!canCastHealingAbility || healingAbility == null) return;
 

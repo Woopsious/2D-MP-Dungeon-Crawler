@@ -575,6 +575,7 @@ public class DungeonData
 	public bool isDungeonSaved;
 	public int dungeonIndex;
 	public int dungeonNumber;
+	public SOEntityStats bossToSpawn;
 	public DungeonStatModifier dungeonStatModifiers;
 	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 }

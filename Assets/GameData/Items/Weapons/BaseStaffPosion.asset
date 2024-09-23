@@ -24,16 +24,16 @@ MonoBehaviour:
   equipItemSfx: {fileID: 8300000, guid: 47e153cc603d1c943a995aeb9feb7bc4, type: 3}
   isBareHands: 0
   isShield: 0
-  baseDamage: 30
   baseAttackSpeed: 2
   baseKnockback: 8
   classRestriction: 0
   weaponGripType: 0
   weaponType: 5
+  baseDamage: 30
   baseDamageType: 1
   isRangedWeapon: 1
-  maxAttackRange: 15
-  minAttackRange: 4
+  maxAttackRange: 12
+  minAttackRange: 3
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   baseBonusMana: 0

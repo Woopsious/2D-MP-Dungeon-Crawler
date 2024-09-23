@@ -116,11 +116,10 @@ public class Projectiles : MonoBehaviour
 	//set projectile position, rotation and target position
 	public void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
 	{
-		Vector3 rotation = positionOfThingToAttack - transform.position;
+		projectileOrigin = OriginPosition;
+		Vector3 rotation = positionOfThingToAttack - OriginPosition;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-
-		transform.position = OriginPosition;
-		transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
+		transform.SetPositionAndRotation(OriginPosition, Quaternion.Euler(0, 0, rotz - 90));
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)
@@ -164,7 +163,6 @@ public class Projectiles : MonoBehaviour
 	private void FixedUpdate()
 	{
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
-
 		if (weaponBaseRef == null) return;
 
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);

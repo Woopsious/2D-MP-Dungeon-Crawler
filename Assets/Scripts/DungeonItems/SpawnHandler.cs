@@ -248,14 +248,33 @@ public class SpawnHandler : MonoBehaviour
 		//spawn the boss entity just like regular entities after grabbing its SO from GameManager.GameData.dungeonData etc..
 		//grab its entityBossStats script etc and sub to its health events to force spawn eneimes when health gets to 75-50-25 %
 
-		if (numOfSpawnedBosses >= maxNumOfBossesToSpawn) return;
-		InstantiateNewBossEntity();
+		SOEntityStats bossToSpawn = null;
+
+		if (GameManager.Instance != null) //get ref from dungeonData in regular build
+		{
+			bossToSpawn = GameManager.Instance.currentDungeonData.bossToSpawn;
+			Debug.Log("getting ref of boss from GM:" + GameManager.Instance.currentDungeonData.bossToSpawn);
+		}
+		else if (bossEntityToSpawn != null) //check if ref was set in Unity Inspector
+		{
+			bossToSpawn = bossEntityToSpawn;
+			Debug.LogWarning("bossEntityToSpawn reference found for spawner, ignore if testing");
+		}
+		else
+			Debug.LogError("bossEntityToSpawn reference null, add reference if testing");
+
+		Debug.Log("boss to spawn ref:" + bossToSpawn);
+
+		if (numOfSpawnedBosses >= maxNumOfBossesToSpawn || bossToSpawn == null) return;
+		InstantiateNewBossEntity(bossToSpawn);
 	}
-	private void InstantiateNewBossEntity()
+	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn)
 	{
+		Debug.Log("Spawning boss entity");
+
 		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
-		bossEntity.entityBaseStats = bossEntityToSpawn;
+		bossEntity.entityBaseStats = bossToSpawn;
 		bossEntity.GetComponent<BossEntityBehaviour>().entityBehaviour = bossEntityToSpawn.entityBehaviour;
 		numOfSpawnedBosses++;
 
