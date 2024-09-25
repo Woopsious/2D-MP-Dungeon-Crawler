@@ -128,7 +128,8 @@ public class EntityStats : MonoBehaviour
 		{
 			classHandler.SetEntityClass();
 			equipmentHandler.SpawnEntityEquipment();
-			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, entityBaseStats.lootPool);
+			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, 
+				entityBaseStats.lootPool, entityBaseStats.itemRarityChanceModifier);
 		}
 
 		if (GameManager.Instance == null) return; //for now leave this line in

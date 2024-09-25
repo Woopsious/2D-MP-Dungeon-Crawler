@@ -45,7 +45,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	{
 		spriteRenderer.sprite = chestClosedSprite;
 		chestStateOpened = false;
-		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool);
+		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
 	}
 
 	//loot chest states

@@ -12,6 +12,7 @@ public class LootSpawnHandler : MonoBehaviour
 	public int minGold;
 	private int lootSpawnerLevel;
 	private float levelModifier;
+	private float itemRarityChanceModifier;
 
 	private float totalItemSpawnChance;
 	private List<float> itemSpawnChanceTable = new List<float>();
@@ -33,11 +34,12 @@ public class LootSpawnHandler : MonoBehaviour
 	}
 
 	//set data
-	public void Initilize(int maxGold, int minGold, SOLootPools newLootPool)
+	public void Initilize(int maxGold, int minGold, SOLootPools newLootPool, float itemRarityChanceModifier)
 	{
 		this.maxGold = maxGold;
 		this.minGold = minGold;
 		lootPool = newLootPool;
+		this.itemRarityChanceModifier = itemRarityChanceModifier;
 
 		UpdateLootSpawnTable(PlayerClassesUi.Instance.currentPlayerClass);
 	}
@@ -125,7 +127,7 @@ public class LootSpawnHandler : MonoBehaviour
 			if (rand <= cumChance)
 				return i;
 		}
-		return -1;
+		return 0; //incase of fail return first item
 	}
 
 	//event listners
@@ -162,6 +164,14 @@ public class LootSpawnHandler : MonoBehaviour
 			int index = GetIndexOfItemToDrop();
 			GameObject go = Instantiate(droppedItemPrefab, transform.position, Quaternion.identity);
 
+			//throwing index out of range?? leave check in for now
+			if (lootPool.lootPoolList[index] == null)
+			{
+				Debug.LogError("item index: " + index);
+				Debug.LogError("loot pool count: " + lootPool.lootPoolList.Count);
+				return;
+			}
+
 			if (lootPool.lootPoolList[index].itemType == SOItems.ItemType.isWeapon)
 				SetUpWeaponItem(go, index);
 
@@ -176,7 +186,7 @@ public class LootSpawnHandler : MonoBehaviour
 
 			SetUpItem(go, index);
 
-			go.GetComponent<Items>().Initilize(Utilities.SetRarity(0), Utilities.SetItemLevel(lootSpawnerLevel), 0);
+			go.GetComponent<Items>().Initilize(Utilities.SetRarity(itemRarityChanceModifier), Utilities.SetItemLevel(lootSpawnerLevel), 0);
 			BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 			collider.isTrigger = true;
 		}

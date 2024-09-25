@@ -26,6 +26,8 @@ public class SOEntityStats : ScriptableObject
 	public int expOnDeath;
 	public int maxDroppedGoldAmount;
 	public int minDroppedGoldAmount;
+	[Range(0f, 100f)]
+	public float itemRarityChanceModifier;
 	public SOLootPools lootPool;
 
 	[Header("Behaviour")]

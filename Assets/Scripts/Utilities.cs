@@ -22,55 +22,56 @@ public class Utilities
 	}
 
 	//return random rarity
-	public static Items.Rarity SetRarity(float dropChanceModifier)
+	public static Items.Rarity SetRarity(float rarityChanceModifier)
 	{
-		float percentage = GetRandomNumber(100); //3% for legendary | 10% for epic | 35% for rare | 57% for common
+		float percentage = GetRandomNumber(100); //0.5% for legendary | 5% for epic | 10% for rare | 84.5% for common (Normal Difficulty)
 
 		if (GameManager.Instance != null && GameManager.Instance.currentDungeonData != null)
 		{
 			if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.25f)
-				return HellDifficultyRarity(percentage, dropChanceModifier);
+				return HellDifficultyRarity(percentage, rarityChanceModifier);
 			else if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.1f)
-				return HardDifficultyRarity(percentage, dropChanceModifier);
+				return HardDifficultyRarity(percentage, rarityChanceModifier);
 			else
-				return NormalDifficultyRarity(percentage, dropChanceModifier);
+				return NormalDifficultyRarity(percentage, rarityChanceModifier);
 		}
 		else
 		{
-			Debug.LogWarning("GameManager Instance not found set NormalDifficultyRarity, if testing ignore");
-			return NormalDifficultyRarity(percentage, dropChanceModifier);
+			Debug.LogWarning("GameManager Instance not found for setting item rarity, " +
+				"defaulting to NormalDifficultyRarity, if testing ignore");
+			return NormalDifficultyRarity(percentage, rarityChanceModifier);
 		}
 	}
 	//modify chances based on dungeon difficulty
-	private static Items.Rarity HellDifficultyRarity(float percentage, float dropChanceModifier)
+	private static Items.Rarity HellDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
-		if (percentage >= 97.5 - dropChanceModifier) //2.5%
+		if (percentage >= 97.5 - rarityChanceModifier) //2.5%
 			return Items.Rarity.isLegendary;
-		else if (percentage >= 87.5 - dropChanceModifier && percentage < 97.5 - dropChanceModifier) //10%
+		else if (percentage >= 87.5 - rarityChanceModifier && percentage < 97.5 - rarityChanceModifier) //10%
 			return Items.Rarity.isEpic;
-		else if (percentage >= 67.5 - dropChanceModifier && percentage < 87.5 - dropChanceModifier) //20%
+		else if (percentage >= 67.5 - rarityChanceModifier && percentage < 87.5 - rarityChanceModifier) //20%
 			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
 	}
-	private static Items.Rarity HardDifficultyRarity(float percentage, float dropChanceModifier)
+	private static Items.Rarity HardDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
-		if (percentage >= 99 - dropChanceModifier) //1%
+		if (percentage >= 99 - rarityChanceModifier) //1%
 			return Items.Rarity.isLegendary;
-		else if (percentage >= 91.5 - dropChanceModifier && percentage < 99 - dropChanceModifier) //7.5%
+		else if (percentage >= 91.5 - rarityChanceModifier && percentage < 99 - rarityChanceModifier) //7.5%
 			return Items.Rarity.isEpic;
-		else if (percentage >= 76.5 - dropChanceModifier && percentage < 91.5 - dropChanceModifier) //15%
+		else if (percentage >= 76.5 - rarityChanceModifier && percentage < 91.5 - rarityChanceModifier) //15%
 			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
 	}
-	private static Items.Rarity NormalDifficultyRarity(float percentage, float dropChanceModifier)
+	private static Items.Rarity NormalDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
-		if (percentage >= 99.5 - dropChanceModifier) //0.5%
+		if (percentage >= 99.5 - rarityChanceModifier) //0.5%
 			return Items.Rarity.isLegendary;
-		else if (percentage >= 94.5 - dropChanceModifier && percentage < 99.5 - dropChanceModifier) //5%
+		else if (percentage >= 94.5 - rarityChanceModifier && percentage < 99.5 - rarityChanceModifier) //5%
 			return Items.Rarity.isEpic;
-		else if (percentage >= 84.5 - dropChanceModifier && percentage < 94.5 - dropChanceModifier) //10%
+		else if (percentage >= 84.5 - rarityChanceModifier && percentage < 94.5 - rarityChanceModifier) //10%
 			return Items.Rarity.isRare;
 		else
 			return Items.Rarity.isCommon;
