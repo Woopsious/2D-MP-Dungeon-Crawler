@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b7d5269192bf0f47ac736cc80f4de49, type: 3}
+  m_Name: BossGoblinBehaviour 1
+  m_EditorClassIdentifier: 
+  idleWaitTime: 3
+  idleWanderRadius: 20
+  aggroRange: 20
+  maxChaseRange: 25
+  navMeshMoveSpeed: 5
+  navMeshTurnSpeed: 75
+  navMeshAcceleration: 5
+  navMeshStoppingDistance: 1.75
+  abilityOne: {fileID: 11400000, guid: 56319319c036b0c418884038f3b87eae, type: 2}
+  abilityTwo: {fileID: 11400000, guid: 55ff08dd5ce2d17469fb5c0ff3ae885e, type: 2}
+  abilityThree: {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}

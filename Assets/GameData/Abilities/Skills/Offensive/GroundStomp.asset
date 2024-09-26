@@ -23,7 +23,7 @@ MonoBehaviour:
   hasStatusEffects: 0
   statusEffects: []
   isAOE: 1
-  aoeSize: 0
+  aoeSize: 30
   hasAoeDuration: 0
   aoeDuration: 0
   isDOT: 0

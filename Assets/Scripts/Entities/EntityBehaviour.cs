@@ -33,6 +33,7 @@ public class EntityBehaviour : MonoBehaviour
 	public LayerMask includeMe;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
+	public float distanceToPlayerTarget;
 	public bool currentPlayerTargetInView;
 	public Vector2 playersLastKnownPosition;
 
@@ -88,6 +89,7 @@ public class EntityBehaviour : MonoBehaviour
 		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
+		TrackDistanceToPlayerTarget();
 		CheckIfPlayerVisibleTimer();
 
 		HealingAbilityTimer();
@@ -109,7 +111,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//set behaviour data
-	private void Initilize()
+	protected virtual void Initilize()
 	{
 		UpdateBounds(transform.position);
 		ResetBehaviour();
@@ -283,6 +285,10 @@ public class EntityBehaviour : MonoBehaviour
 		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
 		return (int)aggroRating;
 	}
+	private void TrackDistanceToPlayerTarget()
+	{
+		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
+	}
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
 	{
 		bool playerAlreadyInAggroList = false;
@@ -309,6 +315,24 @@ public class EntityBehaviour : MonoBehaviour
 
 		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
 		playerTarget = playerAggroList[0].player;
+	}
+
+	//Attacking
+	public void AttackWithMainWeapon()
+	{
+		if (entityStats.equipmentHandler.equippedWeapon == null) return;
+
+		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
+
+		if (!weapon.canAttackAgain) return;
+
+		if (distanceToPlayerTarget <= weapon.weaponBaseRef.maxAttackRange)
+		{
+			if (weapon.weaponBaseRef.isRangedWeapon)
+				weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
+			else
+				weapon.MeleeAttack(playerTarget.transform.position);
+		}
 	}
 
 	//ABILITIES

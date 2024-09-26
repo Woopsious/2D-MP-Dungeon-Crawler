@@ -8,13 +8,11 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class EnemyAttackState : EnemyBaseState
 {
 	Weapons equippedWeapon;
-	float distanceToPlayer;
 	bool idleInWeaponRange;
 
 	public override void Enter(EntityBehaviour entity)
 	{
 		equippedWeapon = entity.entityStats.equipmentHandler.equippedWeapon;
-		distanceToPlayer = entity.entityBehaviour.aggroRange;
 	}
 	public override void Exit(EntityBehaviour entity)
 	{
@@ -42,33 +40,19 @@ public class EnemyAttackState : EnemyBaseState
 	//attack behaviour logic
 	private void AttackBehaviourLogic(EntityBehaviour entity)
 	{
+		entity.AttackWithMainWeapon();
+
 		entity.CastOffensiveAbility();
-
-		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
-
-		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange)
-		{
-			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
-				equippedWeapon.RangedAttack(entity.playerTarget.transform.position, entity.projectilePrefab);
-			else
-				equippedWeapon.MeleeAttack(entity.playerTarget.transform.position);
-		}
 	}
 
 	private void BossAttackBehaviourLogic(BossEntityBehaviour bossEntity)
 	{
+		bossEntity.AttackWithMainWeapon();
+
 		bossEntity.CastOffensiveAbility();
-		bossEntity.CastOffensiveAbilityTwo();
-
-		if (equippedWeapon == null && !equippedWeapon.canAttackAgain) return;
-
-		if (distanceToPlayer <= equippedWeapon.weaponBaseRef.maxAttackRange * 1.25f)
-		{
-			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
-				equippedWeapon.RangedAttack(bossEntity.playerTarget.transform.position, bossEntity.projectilePrefab);
-			else
-				equippedWeapon.MeleeAttack(bossEntity.playerTarget.transform.position);
-		}
+		bossEntity.CastBossAbilityOne();
+		bossEntity.CastBossAbilityTwo();
+		bossEntity.CastBossAbilityThree();
 	}
 
 	//attack behaviour physics
@@ -78,8 +62,6 @@ public class EnemyAttackState : EnemyBaseState
 			entity.ChangeStateIdle();
 		else
 		{
-			distanceToPlayer = Vector3.Distance(entity.transform.position, entity.playerTarget.transform.position);
-
 			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
 				entity.ChangeStateIdle();
 

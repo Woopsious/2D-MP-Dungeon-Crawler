@@ -59,6 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\DungeonItems\TrapHandler.cs" />
+    <Compile Include="Assets\Scripts\ScriptableObjs\SOBossEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\UI\ToolTipUi.cs" />
     <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Entities\EnemyIdleState.cs" />

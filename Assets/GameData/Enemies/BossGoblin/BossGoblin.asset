@@ -24,7 +24,7 @@ MonoBehaviour:
   minDroppedGoldAmount: 15
   itemRarityChanceModifier: 0.05
   lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
-  entityBehaviour: {fileID: 11400000, guid: 71e4b908c9eb2fb41a612bbd25862c65, type: 2}
+  entityBehaviour: {fileID: 11400000, guid: a9d7a6a162486d143acd0998313d689c, type: 2}
   maxHealth: 250
   damageDealtBaseModifier: 0.5
   physicalDamageResistance: 8
