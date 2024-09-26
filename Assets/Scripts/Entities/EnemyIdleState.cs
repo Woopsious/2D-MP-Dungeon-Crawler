@@ -37,7 +37,7 @@ public class EnemyIdleState : EnemyBaseState
 				IdleAtPositionTimer(entity);
 		}
 		else
-			entity.ChangeStateAttack();
+			entity.ChangeState(entity.attackState);
 	}
 	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
 	{

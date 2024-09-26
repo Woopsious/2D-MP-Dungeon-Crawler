@@ -27,14 +27,7 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		UpdatePlayerPosition(entity);
 		AttackBehaviourPhysics(entity);
-	}
-
-	private void UpdatePlayerPosition(EntityBehaviour entity)
-	{
-		if (entity.playerTarget != null && entity.currentPlayerTargetInView)
-			entity.playersLastKnownPosition = entity.playerTarget.transform.position;
 	}
 	
 	//attack behaviour logic
@@ -59,11 +52,11 @@ public class EnemyAttackState : EnemyBaseState
 	private void AttackBehaviourPhysics(EntityBehaviour entity)
 	{
 		if (!entity.currentPlayerTargetInView)
-			entity.ChangeStateIdle();
+			entity.ChangeState(entity.idleState);
 		else
 		{
 			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
-				entity.ChangeStateIdle();
+				entity.ChangeState(entity.idleState);
 
 			if (equippedWeapon == null) return;
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)

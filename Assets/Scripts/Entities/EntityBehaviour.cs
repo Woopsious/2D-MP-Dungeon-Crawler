@@ -13,8 +13,8 @@ public class EntityBehaviour : MonoBehaviour
 	[HideInInspector] public EntityStats entityStats;
 	private SpriteRenderer spriteRenderer;
 	protected EnemyBaseState currentState;
-	private EnemyIdleState idleState = new EnemyIdleState();
-	private EnemyAttackState attackState = new EnemyAttackState();
+	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
+	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
 
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -89,7 +89,7 @@ public class EntityBehaviour : MonoBehaviour
 		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
-		TrackDistanceToPlayerTarget();
+		TrackPlayerTarget();
 		CheckIfPlayerVisibleTimer();
 
 		HealingAbilityTimer();
@@ -134,7 +134,7 @@ public class EntityBehaviour : MonoBehaviour
 		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
-		ChangeStateIdle();
+		ChangeState(idleState);
 	}
 	public void UpdateBounds(Vector3 position)
 	{
@@ -285,8 +285,11 @@ public class EntityBehaviour : MonoBehaviour
 		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
 		return (int)aggroRating;
 	}
-	private void TrackDistanceToPlayerTarget()
+	private void TrackPlayerTarget()
 	{
+		if (playerTarget == null || !currentPlayerTargetInView) return;
+
+		playersLastKnownPosition = playerTarget.transform.position;
 		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
 	}
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
@@ -478,14 +481,9 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//STATE CHANGES
-	public void ChangeStateIdle()
+	public void ChangeState(EnemyBaseState newState)
 	{
-		currentState = idleState;
-		currentState.Enter(this);
-	}
-	public void ChangeStateAttack()
-	{
-		currentState = attackState;
+		currentState = newState;
 		currentState.Enter(this);
 	}
 
