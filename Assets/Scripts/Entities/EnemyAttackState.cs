@@ -8,7 +8,6 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class EnemyAttackState : EnemyBaseState
 {
 	Weapons equippedWeapon;
-	bool idleInWeaponRange;
 
 	public override void Enter(EntityBehaviour entity)
 	{
@@ -52,11 +51,11 @@ public class EnemyAttackState : EnemyBaseState
 	private void AttackBehaviourPhysics(EntityBehaviour entity)
 	{
 		if (!entity.currentPlayerTargetInView)
-			entity.ChangeState(entity.idleState);
+			entity.ChangeState(entity.wanderState);
 		else
 		{
 			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
-				entity.ChangeState(entity.idleState);
+				entity.ChangeState(entity.wanderState);
 
 			if (equippedWeapon == null) return;
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
@@ -70,36 +69,46 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	private void KeepDistanceFromPlayer(EntityBehaviour entity)
 	{
-		//with ranged weapons idle within min/max range of weapon. (	bow example: (10 / 1.25 = 8)	(10 / 1.5 = 6.25)	)
+		//with ranged weapons idle within max range of weapon. (bow example: (10 - 2 = 8)	(2 + 2 = 4))
 
-		if (!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange / 1.25f) &&
-			CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange / 1.75f) && idleInWeaponRange == false)
-		{
-			entity.HasReachedDestination = true;
-			idleInWeaponRange = true;
-		}
-		else if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange))
-		{
-			entity.SetNewDestination(entity.playersLastKnownPosition);
-			idleInWeaponRange = false;
-		}
-		else if (!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange * 2))
-		{
-			Vector3 dirToPlayer =  entity.playersLastKnownPosition - new Vector2(entity.transform.position.x, entity.transform.position.y);
-			Vector3 fleeDir = entity.transform.position - dirToPlayer;
+		if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)) &&
+			!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2)) //stop within ranges
+				entity.HasReachedDestination = true;
 
-			entity.SetNewDestination(fleeDir);
-			idleInWeaponRange = false;
-		}
+		else if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)))//move closer
+			entity.SetNewDestination(MoveCloserToPlayer(entity.transform.position, entity.playersLastKnownPosition, 0.3f));
+
+		else if (!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2))//flee from player
+			entity.SetNewDestination(FleeFromPlayer(entity.transform.position, entity.playersLastKnownPosition));
+	}
+	private int GetDistanceToKeepFromPlayer(EntityBehaviour entity)
+	{
+		int distance;
+		if ((int)entity.entityBehaviour.aggroRange < equippedWeapon.weaponBaseRef.maxAttackRange - 2)
+			distance = (int)entity.entityBehaviour.aggroRange;
+		else
+			distance = (int)equippedWeapon.weaponBaseRef.maxAttackRange - 2;
+
+		return distance;
 	}
 	private bool CheckDistanceToPlayerIsBigger(EntityBehaviour entity, float distanceToCheck)
 	{
 		if (entity.playerTarget == null) return false;
-		float distance = Vector2.Distance(entity.transform.position, entity.playerTarget.transform.position);
+		float distance = Vector2.Distance(entity.transform.position, entity.playersLastKnownPosition);
 
 		if (distance > distanceToCheck)
 			return true;
 		else
 			return false;
+	}
+	private Vector2 FleeFromPlayer(Vector2 start, Vector2 end)
+	{
+		Vector2 fleePos = start - (end - start);
+		return fleePos;
+	}
+	private Vector2 MoveCloserToPlayer(Vector2 start, Vector2 end, float percent)
+	{
+		Vector2 closerPos = start + percent * (end - start);
+		return closerPos;
 	}
 }

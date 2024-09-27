@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Slime
   sprite: {fileID: -1190363721, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 0
   humanoidType: 4
   enemySpawnChance: 0.8
   canUseEquipment: 0
@@ -21,6 +22,7 @@ MonoBehaviour:
   expOnDeath: 60
   maxDroppedGoldAmount: 15
   minDroppedGoldAmount: 8
+  itemRarityChanceModifier: 0
   lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 702a6b51e7de0ff4baa053da75e6d489, type: 2}
   maxHealth: 50

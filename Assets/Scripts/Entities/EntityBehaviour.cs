@@ -13,7 +13,7 @@ public class EntityBehaviour : MonoBehaviour
 	[HideInInspector] public EntityStats entityStats;
 	private SpriteRenderer spriteRenderer;
 	protected EnemyBaseState currentState;
-	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
+	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
 
 	private Rigidbody2D rb;
@@ -134,7 +134,7 @@ public class EntityBehaviour : MonoBehaviour
 		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
-		ChangeState(idleState);
+		ChangeState(wanderState);
 	}
 	public void UpdateBounds(Vector3 position)
 	{
@@ -187,24 +187,28 @@ public class EntityBehaviour : MonoBehaviour
 		if (playerDetectionTimer <= 0)
 		{
 			playerDetectionTimer = playerDetectionCooldown;
-
-			if (Vector2.Distance(transform.position, playerTarget.transform.position) > entityBehaviour.aggroRange)
-			{
-				currentPlayerTargetInView = false;
-				return;
-			}
-
 			RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, playerTarget.transform.position, includeMe);
 
 			foreach (RaycastHit2D hit in hits)
 			{
-				if (hit.point != null && hit.collider.gameObject == playerTarget.gameObject)
+				if (hit.point == null || hit.collider.gameObject != playerTarget.gameObject) continue;
+
+				//check if player visible within max aggro range whilst in wander state
+				if (currentState == wanderState &&
+					Vector2.Distance(transform.position, playerTarget.transform.position) < entityBehaviour.aggroRange)
+				{
+					currentPlayerTargetInView = true;
+					return;
+				}
+				//check if player visible within max chase range whilst in attack state
+				else if (currentState != wanderState && 
+					Vector2.Distance(transform.position, playerTarget.transform.position) < entityBehaviour.maxChaseRange)
 				{
 					currentPlayerTargetInView = true;
 					return;
 				}
 			}
-			currentPlayerTargetInView = false;
+			currentPlayerTargetInView = false; //player blocked by walls etc or out of aggro and chase range
 		}
 	}
 

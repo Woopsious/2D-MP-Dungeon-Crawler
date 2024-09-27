@@ -16,6 +16,7 @@ MonoBehaviour:
   itemImage: {fileID: 1576718399, guid: 76686699748622a48b566623ca98afc6, type: 3}
   itemPrice: 0
   itemId: 0
+  itemSpawnChance: 0
   itemType: 1
   isEquipable: 1
   isStackable: 0
@@ -23,15 +24,16 @@ MonoBehaviour:
   equipItemSfx: {fileID: 0}
   isBareHands: 1
   isShield: 0
-  baseDamage: 25
   baseAttackSpeed: 2
   baseKnockback: 5
   classRestriction: 0
+  weaponGripType: 0
   weaponType: 0
+  baseDamage: 25
   baseDamageType: 0
   isRangedWeapon: 1
   maxAttackRange: 12
-  minAttackRange: 6
+  minAttackRange: 4
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   baseBonusMana: 0

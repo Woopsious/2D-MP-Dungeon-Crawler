@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.GraphicsBuffer;
 
-public class EnemyIdleState : EnemyBaseState
+public class EnemyWanderState : EnemyBaseState
 {
 	public override void Enter(EntityBehaviour entity)
 	{
@@ -22,12 +21,12 @@ public class EnemyIdleState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		IdleBehaviour(entity);
+		WanderBehaviour(entity);
 	}
 
-	//idle behaviour
+	//Wander behaviour
 	//movement
-	private void IdleBehaviour(EntityBehaviour entity)
+	private void WanderBehaviour(EntityBehaviour entity)
 	{
 		if (!entity.currentPlayerTargetInView)
 		{
