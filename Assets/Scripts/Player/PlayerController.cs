@@ -103,13 +103,15 @@ public class PlayerController : MonoBehaviour
 	private void Update()
 	{
 		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+
+		if (IsPlayerInteracting()) return;
+		UpdateTargetsInList();
+		AutoAttackTimer();
 	}
 	private void FixedUpdate()
 	{
 		if (IsPlayerInteracting()) return;
 		PlayerMovement();
-		UpdateTargetsInList();
-		AutoAttackTimer();
 	}
 
 	//set player data
@@ -136,6 +138,7 @@ public class PlayerController : MonoBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 	}
 
+	//movement
 	private void PlayerMovement()
 	{
 		rb.velocity = new Vector2(playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);

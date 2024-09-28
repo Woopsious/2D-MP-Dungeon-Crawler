@@ -19,6 +19,12 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
+		if (!entity.CurrentPlayerTargetVisible())
+			entity.ChangeState(entity.wanderState);
+
+		if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
+			entity.ChangeState(entity.wanderState);
+
 		if (entity.entityStats.entityBaseStats.isBossVersion)
 			BossAttackBehaviourLogic((BossEntityBehaviour)entity);
 		else
@@ -26,12 +32,18 @@ public class EnemyAttackState : EnemyBaseState
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		AttackBehaviourPhysics(entity);
+
 	}
 	
 	//attack behaviour logic
 	private void AttackBehaviourLogic(EntityBehaviour entity)
 	{
+		if (equippedWeapon == null) return;
+		if (equippedWeapon.weaponBaseRef.isRangedWeapon)
+			KeepDistanceFromPlayer(entity);
+		else
+			KeepPlayerInMeleeRange(entity);
+
 		entity.AttackWithMainWeapon();
 
 		entity.CastOffensiveAbility();
@@ -39,6 +51,12 @@ public class EnemyAttackState : EnemyBaseState
 
 	private void BossAttackBehaviourLogic(BossEntityBehaviour bossEntity)
 	{
+		if (equippedWeapon == null) return;
+		if (equippedWeapon.weaponBaseRef.isRangedWeapon)
+			KeepDistanceFromPlayer(bossEntity);
+		else
+			KeepPlayerInMeleeRange(bossEntity);
+
 		bossEntity.AttackWithMainWeapon();
 
 		bossEntity.CastOffensiveAbility();
@@ -47,35 +65,22 @@ public class EnemyAttackState : EnemyBaseState
 		bossEntity.CastBossAbilityThree();
 	}
 
-	//attack behaviour physics
-	private void AttackBehaviourPhysics(EntityBehaviour entity)
+	//melee weapon logic
+	private void KeepPlayerInMeleeRange(EntityBehaviour entity)
 	{
-		if (!entity.currentPlayerTargetInView)
-			entity.ChangeState(entity.wanderState);
-		else
-		{
-			if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
-				entity.ChangeState(entity.wanderState);
-
-			if (equippedWeapon == null) return;
-			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
-				KeepDistanceFromPlayer(entity);
-			else
-			{
-				if (entity.CheckDistanceToDestination())
-					entity.SetNewDestination(entity.playersLastKnownPosition);
-			}
-		}
+		if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange - 0.5f))
+			entity.SetNewDestination(entity.playersLastKnownPosition);
 	}
+
+	//ranged weapon logic
 	private void KeepDistanceFromPlayer(EntityBehaviour entity)
 	{
+		//if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)) &&
+			//!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2)) //stop within ranges
+				//return;
+
 		//with ranged weapons idle within max range of weapon. (bow example: (10 - 2 = 8)	(2 + 2 = 4))
-
-		if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)) &&
-			!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2)) //stop within ranges
-				entity.HasReachedDestination = true;
-
-		else if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)))//move closer
+		if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)))//move closer
 			entity.SetNewDestination(MoveCloserToPlayer(entity.transform.position, entity.playersLastKnownPosition, 0.3f));
 
 		else if (!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2))//flee from player
@@ -91,16 +96,6 @@ public class EnemyAttackState : EnemyBaseState
 
 		return distance;
 	}
-	private bool CheckDistanceToPlayerIsBigger(EntityBehaviour entity, float distanceToCheck)
-	{
-		if (entity.playerTarget == null) return false;
-		float distance = Vector2.Distance(entity.transform.position, entity.playersLastKnownPosition);
-
-		if (distance > distanceToCheck)
-			return true;
-		else
-			return false;
-	}
 	private Vector2 FleeFromPlayer(Vector2 start, Vector2 end)
 	{
 		Vector2 fleePos = start - (end - start);
@@ -110,5 +105,16 @@ public class EnemyAttackState : EnemyBaseState
 	{
 		Vector2 closerPos = start + percent * (end - start);
 		return closerPos;
+	}
+
+	//distance checks
+	private bool CheckDistanceToPlayerIsBigger(EntityBehaviour entity, float distanceToCheck)
+	{
+		float distance = Vector2.Distance(entity.transform.position, entity.playersLastKnownPosition);
+
+		if (distance > distanceToCheck)
+			return true;
+		else
+			return false;
 	}
 }

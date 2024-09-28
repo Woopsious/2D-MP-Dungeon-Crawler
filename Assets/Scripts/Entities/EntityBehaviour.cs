@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Diagnostics;
 using UnityEngine.UIElements;
 
 public class EntityBehaviour : MonoBehaviour
@@ -12,7 +13,10 @@ public class EntityBehaviour : MonoBehaviour
 	public SOEntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityStats entityStats;
 	private SpriteRenderer spriteRenderer;
+
+	[Header("Entity States")]
 	protected EnemyBaseState currentState;
+	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
 	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
 
@@ -23,11 +27,11 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Bounds Settings")]
 	[HideInInspector] public Bounds idleBounds;
+	[HideInInspector] public Bounds aggroBounds;
 	[HideInInspector] public Bounds chaseBounds;
 
 	[Header("Movement Settings")]
 	public float idleTimer;
-	public bool HasReachedDestination;
 
 	[Header("Player Targeting")]
 	public LayerMask includeMe;
@@ -89,8 +93,8 @@ public class EntityBehaviour : MonoBehaviour
 		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
-		TrackPlayerTarget();
-		CheckIfPlayerVisibleTimer();
+		TrackCurrentPlayerTarget();
+		IsPlayerTargetVisibleTimer();
 
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
@@ -99,6 +103,12 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		if (entityStats.IsEntityDead()) return;
 		currentState.UpdatePhysics(this);
+
+		aggroBounds.min = new Vector3(transform.position.x - entityBehaviour.aggroRange,
+			transform.position.y - entityBehaviour.aggroRange, transform.position.z);
+
+		aggroBounds.max = new Vector3(transform.position.x + entityBehaviour.aggroRange,
+		transform.position.y + entityBehaviour.aggroRange, transform.position.z);
 
 		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
 		transform.position.y - entityBehaviour.maxChaseRange, transform.position.z);
@@ -117,7 +127,6 @@ public class EntityBehaviour : MonoBehaviour
 		ResetBehaviour();
 
 		markedForCleanUp = false;
-		HasReachedDestination = true;
 
 		viewRangeCollider.radius = playerDetectionRange;
 		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;
@@ -130,7 +139,6 @@ public class EntityBehaviour : MonoBehaviour
 	public void ResetBehaviour()
 	{
 		markedForCleanUp = false;
-		HasReachedDestination = true;
 		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
@@ -143,6 +151,12 @@ public class EntityBehaviour : MonoBehaviour
 
 		idleBounds.max = new Vector3(position.x + entityBehaviour.idleWanderRadius,
 			position.y + entityBehaviour.idleWanderRadius, position.z);
+
+		aggroBounds.min = new Vector3(position.x - entityBehaviour.aggroRange,
+			position.y - entityBehaviour.aggroRange, position.z);
+
+		aggroBounds.max = new Vector3(position.x + entityBehaviour.aggroRange,
+			position.y + entityBehaviour.aggroRange, position.z);
 
 		chaseBounds.min = new Vector3(position.x - entityBehaviour.maxChaseRange,
 			position.y - entityBehaviour.maxChaseRange, position.z);
@@ -173,63 +187,105 @@ public class EntityBehaviour : MonoBehaviour
 			navMeshAgent.speed *= speedModifier;
 	}
 
-	//player visible Check
-	public void CheckIfPlayerVisibleTimer()
+	//player visible Checks + timer
+	private void IsPlayerTargetVisibleTimer() //0.1s timer
 	{
 		if (playerTarget == null)
-		{
-			currentPlayerTargetInView = false;
 			return;
-		}
 
 		playerDetectionTimer -= Time.deltaTime;
 
 		if (playerDetectionTimer <= 0)
 		{
 			playerDetectionTimer = playerDetectionCooldown;
-			RaycastHit2D[] hits = Physics2D.LinecastAll(transform.position, playerTarget.transform.position, includeMe);
 
-			foreach (RaycastHit2D hit in hits)
+			//check if player behind obstacles. check if player within aggro/chase ranges based on currentState
+			if (PlayerVisible(playerTarget) && PlayerWithinRange(playerTarget))
 			{
-				if (hit.point == null || hit.collider.gameObject != playerTarget.gameObject) continue;
-
-				//check if player visible within max aggro range whilst in wander state
-				if (currentState == wanderState &&
-					Vector2.Distance(transform.position, playerTarget.transform.position) < entityBehaviour.aggroRange)
-				{
-					currentPlayerTargetInView = true;
-					return;
-				}
-				//check if player visible within max chase range whilst in attack state
-				else if (currentState != wanderState && 
-					Vector2.Distance(transform.position, playerTarget.transform.position) < entityBehaviour.maxChaseRange)
-				{
-					currentPlayerTargetInView = true;
-					return;
-				}
+				currentPlayerTargetInView = true;
+				return;
 			}
-			currentPlayerTargetInView = false; //player blocked by walls etc or out of aggro and chase range
+			else
+			{
+				currentPlayerTargetInView = false;
+				return;
+			}
 		}
 	}
-
-	//shared idle/attack movement behaviour 
-	public bool CheckDistanceToDestination()
+	private bool PlayerVisible(PlayerController player)
 	{
-		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance && HasReachedDestination == false)
+		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
+
+		if (hit.point != null && hit.collider.GetComponent<PlayerController>() != null)
+			return true;
+		else return false;
+	}
+	private bool PlayerWithinRange(PlayerController player)
+	{
+		if (currentState == idleState || currentState == wanderState)
 		{
-			HasReachedDestination = true;
-			return false;
+			if (Vector2.Distance(transform.position, player.transform.position) < entityBehaviour.aggroRange)
+				return true;
+			else return false;
 		}
 		else
-			return true;
-	}
-	public void SetNewDestination(Vector2 destination)
-	{
-		HasReachedDestination = false;
-		navMeshAgent.SetDestination(destination);
+		{
+			if (Vector2.Distance(transform.position, player.transform.position) < entityBehaviour.maxChaseRange)
+				return true;
+			else return false;
+		}
 	}
 
-	//aggro list
+	//playerTarget checks and pos tracking
+	public bool CurrentPlayerTargetVisible()
+	{
+		if (playerTarget == null) return false;
+
+		if (currentPlayerTargetInView)
+			return true;
+		else return false;
+	}
+	private void TrackCurrentPlayerTarget()
+	{
+		if (!CurrentPlayerTargetVisible()) return;
+
+		playersLastKnownPosition = playerTarget.transform.position;
+		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
+	}
+
+	//MOVEMENT
+	public void SetNewDestination(Vector2 destination)
+	{
+		navMeshAgent.SetDestination(destination);
+	}
+	public bool HasReachedDestination()
+	{
+		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance)
+			return true;
+		else
+			return false;
+	}
+
+	//ATTACKING
+	public void AttackWithMainWeapon()
+	{
+		if (entityStats.equipmentHandler.equippedWeapon == null) return;
+
+		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
+
+		if (!weapon.canAttackAgain) return;
+
+		if (distanceToPlayerTarget <= weapon.weaponBaseRef.maxAttackRange)
+		{
+			if (weapon.weaponBaseRef.isRangedWeapon)
+				weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
+			else
+				weapon.MeleeAttack(playerTarget.transform.position);
+		}
+	}
+
+	//ENEMY AGGRO LIST
+	//sort + update list then set playerTarget
 	private void UpdateAggroRatingTimer()
 	{
 		if (playerAggroList.Count <= 0)
@@ -246,6 +302,55 @@ public class EntityBehaviour : MonoBehaviour
 			UpdateAggroList();
 		}
 	}
+	private void UpdateAggroList()
+	{
+		foreach (PlayerAggroRating aggroStats in playerAggroList)
+		{
+			aggroStats.aggroRatingDistance = GetAggroDistanceFromPlayer(aggroStats.player, aggroStats.aggroModifier);
+			aggroStats.aggroRatingTotal = aggroStats.aggroRatingDistance + aggroStats.aggroRatingDamage;
+		}
+
+		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
+		SetCurrentPlayerTarget();
+	}
+	private void SetCurrentPlayerTarget()
+	{
+		for (int i = 0; i < playerAggroList.Count; i++)
+		{
+			if (PlayerVisible(playerAggroList[i].player) && PlayerWithinRange(playerAggroList[i].player))
+			{
+				playerTarget = playerAggroList[i].player;
+				return;
+			}
+		}
+		playerTarget = null;
+	}
+
+	//updating damage/distance values
+	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
+	{
+		float distance = Vector2.Distance(transform.position, player.transform.position);
+		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
+		return (int)aggroRating;
+	}
+	public void AddToAggroRating(PlayerController player, int damageRecieved)
+	{
+		bool playerAlreadyInAggroList = false;
+
+		foreach (PlayerAggroRating aggroStats in playerAggroList)
+		{
+			if (aggroStats.player == player)
+			{
+				aggroStats.aggroRatingDamage += damageRecieved;
+				playerAlreadyInAggroList = true;
+			}
+		}
+
+		if (playerAlreadyInAggroList) return;
+		AddPlayerToAggroList(player, damageRecieved);
+	}
+
+	//adding/removing players
 	public void AddPlayerToAggroList(PlayerController player, int damageRecieved)
 	{
 		foreach (PlayerAggroRating aggroRating in playerAggroList)
@@ -281,64 +386,6 @@ public class EntityBehaviour : MonoBehaviour
 		{
 			if (playerAggroList[i].player == player)
 				playerAggroList.RemoveAt(i);
-		}
-	}
-	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
-	{
-		float distance = Vector2.Distance(transform.position, player.transform.position);
-		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
-		return (int)aggroRating;
-	}
-	private void TrackPlayerTarget()
-	{
-		if (playerTarget == null || !currentPlayerTargetInView) return;
-
-		playersLastKnownPosition = playerTarget.transform.position;
-		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
-	}
-	public void AddToAggroRating(PlayerController player, int damageRecieved)
-	{
-		bool playerAlreadyInAggroList = false;
-
-		foreach (PlayerAggroRating aggroStats in playerAggroList)
-		{
-			if (aggroStats.player == player)
-			{
-				aggroStats.aggroRatingDamage += damageRecieved;
-				playerAlreadyInAggroList = true;
-			}
-		}
-
-		if (playerAlreadyInAggroList) return;
-		AddPlayerToAggroList(player, damageRecieved);
-	}
-	private void UpdateAggroList()
-	{
-		foreach (PlayerAggroRating aggroStats in playerAggroList)
-		{
-			aggroStats.aggroRatingDistance = GetAggroDistanceFromPlayer(aggroStats.player, aggroStats.aggroModifier);
-			aggroStats.aggroRatingTotal = aggroStats.aggroRatingDistance + aggroStats.aggroRatingDamage;
-		}
-
-		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
-		playerTarget = playerAggroList[0].player;
-	}
-
-	//Attacking
-	public void AttackWithMainWeapon()
-	{
-		if (entityStats.equipmentHandler.equippedWeapon == null) return;
-
-		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
-
-		if (!weapon.canAttackAgain) return;
-
-		if (distanceToPlayerTarget <= weapon.weaponBaseRef.maxAttackRange)
-		{
-			if (weapon.weaponBaseRef.isRangedWeapon)
-				weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
-			else
-				weapon.MeleeAttack(playerTarget.transform.position);
 		}
 	}
 
@@ -498,6 +545,7 @@ public class EntityBehaviour : MonoBehaviour
 		Gizmos.DrawWireSphere(idleBounds.center, idleBounds.extents.x);
 
 		Gizmos.color = Color.blue;
+		Gizmos.DrawWireSphere(aggroBounds.center, aggroBounds.extents.x);
 		Gizmos.DrawWireSphere(chaseBounds.center, chaseBounds.extents.x);
 
 		Gizmos.color = Color.red;

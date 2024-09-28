@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   idleWaitTime: 3
   idleWanderRadius: 18
-  aggroRange: 15
-  maxChaseRange: 18
+  aggroRange: 18
+  maxChaseRange: 22
   navMeshMoveSpeed: 6.5
   navMeshTurnSpeed: 120
   navMeshAcceleration: 6

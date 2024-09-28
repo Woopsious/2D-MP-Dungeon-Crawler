@@ -9,7 +9,7 @@ public class EnemyWanderState : EnemyBaseState
 {
 	public override void Enter(EntityBehaviour entity)
 	{
-
+		FindNewIdlePosition(entity);
 	}
 	public override void Exit(EntityBehaviour entity)
 	{
@@ -17,58 +17,41 @@ public class EnemyWanderState : EnemyBaseState
 	}
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
-
+		WanderBehaviour(entity);
 	}
 	public override void UpdatePhysics(EntityBehaviour entity)
 	{
-		WanderBehaviour(entity);
+
 	}
 
 	//Wander behaviour
-	//movement
 	private void WanderBehaviour(EntityBehaviour entity)
 	{
-		if (!entity.currentPlayerTargetInView)
+		if (!entity.CurrentPlayerTargetVisible())
 		{
 			InvestigatePlayersLastKnownPos(entity);
 
-			if (entity.CheckDistanceToDestination())
-				IdleAtPositionTimer(entity);
+			if (entity.HasReachedDestination())
+				entity.ChangeState(entity.idleState);
 		}
 		else
 			entity.ChangeState(entity.attackState);
 	}
 	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
 	{
-		if (entity.playersLastKnownPosition != new Vector2(0, 0))
-		{
-			entity.SetNewDestination(entity.playersLastKnownPosition);
+		if (entity.playersLastKnownPosition == new Vector2(0, 0)) return;
 
-			if (entity.CheckDistanceToDestination())
-			{
-				entity.playersLastKnownPosition = new Vector2(0, 0);
-				IdleAtPositionTimer(entity);
-			}
+		entity.SetNewDestination(entity.playersLastKnownPosition);
+
+		if (entity.HasReachedDestination())
+		{
+			entity.playersLastKnownPosition = new Vector2(0, 0);
+			entity.ChangeState(entity.idleState);
 		}
 	}
 
-	private void IdleAtPositionTimer(EntityBehaviour entity)
-	{
-		if (entity.HasReachedDestination == true)
-		{
-			entity.idleTimer -= Time.deltaTime;
-
-			if (entity.idleTimer < 0)
-			{
-				entity.idleTimer = entity.entityBehaviour.idleWaitTime;
-				FindNewIdlePosition(entity);
-			}
-		}
-	}
 	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
-		entity.HasReachedDestination = false;
-
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
 		NavMeshPath path = new NavMeshPath();
 
