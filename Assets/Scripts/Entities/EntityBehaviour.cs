@@ -37,13 +37,13 @@ public class EntityBehaviour : MonoBehaviour
 	public LayerMask includeMe;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
-	public float distanceToPlayerTarget;
-	public bool currentPlayerTargetInView;
+	private float distanceToPlayerTarget;
+	private bool currentPlayerTargetInView;
 	public Vector2 playersLastKnownPosition;
 
 	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
-	public float playerDetectionRange;
+	private float playerDetectionRange;
 	private readonly float playerDetectionCooldown = 0.1f;
 	private float playerDetectionTimer;
 
@@ -269,19 +269,19 @@ public class EntityBehaviour : MonoBehaviour
 	//ATTACKING
 	public void AttackWithMainWeapon()
 	{
-		if (entityStats.equipmentHandler.equippedWeapon == null) return;
-
 		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
+		if (weapon == null || !weapon.canAttackAgain) return;
 
-		if (!weapon.canAttackAgain) return;
+		float distanceToCheck = weapon.weaponBaseRef.maxAttackRange;
+		if (entityStats.entityBaseStats.isBossVersion)
+			distanceToCheck = weapon.weaponBaseRef.maxAttackRange * 2;
 
-		if (distanceToPlayerTarget <= weapon.weaponBaseRef.maxAttackRange)
-		{
-			if (weapon.weaponBaseRef.isRangedWeapon)
-				weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
-			else
-				weapon.MeleeAttack(playerTarget.transform.position);
-		}
+		if (distanceToPlayerTarget > distanceToCheck) return;
+
+		if (weapon.weaponBaseRef.isRangedWeapon)
+			weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
+		else
+			weapon.MeleeAttack(playerTarget.transform.position);
 	}
 
 	//ENEMY AGGRO LIST

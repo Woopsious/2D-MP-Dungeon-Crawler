@@ -68,8 +68,16 @@ public class EnemyAttackState : EnemyBaseState
 	//melee weapon logic
 	private void KeepPlayerInMeleeRange(EntityBehaviour entity)
 	{
-		if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange - 0.5f))
-			entity.SetNewDestination(entity.playersLastKnownPosition);
+		if (entity.entityStats.entityBaseStats.isBossVersion)
+		{
+			if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange + 0.5f))
+				entity.SetNewDestination(entity.playersLastKnownPosition);
+		}
+		else
+		{
+			if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange - 0.5f))
+				entity.SetNewDestination(entity.playersLastKnownPosition);
+		}
 	}
 
 	//ranged weapon logic

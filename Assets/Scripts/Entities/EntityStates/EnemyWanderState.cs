@@ -49,7 +49,6 @@ public class EnemyWanderState : EnemyBaseState
 			entity.ChangeState(entity.idleState);
 		}
 	}
-
 	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
