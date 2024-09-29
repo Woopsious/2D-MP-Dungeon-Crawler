@@ -153,7 +153,6 @@ public class SpawnHandler : MonoBehaviour
 		if (obj.GetComponent<EntityStats>().entityBaseStats.isBossVersion) //boss entity deaths, unsub to event and set to null
 		{
 			if (bossEntity == null) return; //occasionally called multiple times so ignore if null
-			bossEntity.OnHealthChangeEvent -= ForceSpawnEntitiesBasedOnBossHealth;
 			bossEntity = null;
 			return;
 		}
@@ -186,16 +185,10 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//SPAWNING OF ENTITIES AND BOSSES
-	private void ForceSpawnEntitiesBasedOnBossHealth(int maxHealth, int currentHealth) //event call
+	public void ForceSpawnEntitiesForBosses() //called via health change event in bosses
 	{
-		float newPercentage = (float)currentHealth / maxHealth;
-
-		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
-		{
-			for (int i = 0; i < maxNumOfEntitiesToSpawnForBossFights; i++)
-				SpawnEntity();
-		}
-		lastBossHealthPercentage = newPercentage;
+		for (int i = 0; i < maxNumOfEntitiesToSpawnForBossFights; i++)
+			SpawnEntity();
 	}
 	private void TrySpawnEntities()
 	{
@@ -231,9 +224,9 @@ public class SpawnHandler : MonoBehaviour
 		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 		bossEntity.entityBaseStats = bossToSpawn;
+		bossEntity.spawner = this;
 		bossEntity.GetComponent<BossEntityBehaviour>().entityBehaviour = bossEntityToSpawn.entityBehaviour;
 		this.bossEntity = bossEntity;
-		bossEntity.OnHealthChangeEvent += ForceSpawnEntitiesBasedOnBossHealth;
 
 		if (debugSpawnEnemiesAtSetLevel)
 			bossEntity.entityLevel = debugSpawnerLevel;

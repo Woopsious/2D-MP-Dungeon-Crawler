@@ -586,7 +586,7 @@ GameObject:
   - component: {fileID: 2101720315493770296}
   - component: {fileID: 8699016188329775386}
   - component: {fileID: 6487939770394363396}
-  - component: {fileID: 8171261531979810465}
+  - component: {fileID: 7014067007669844556}
   - component: {fileID: 5524032958697930596}
   - component: {fileID: 7819874737091508958}
   - component: {fileID: -3271526235124138567}
@@ -907,7 +907,7 @@ MonoBehaviour:
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 4324401266549769224}
   currentStatusEffects: []
---- !u!114 &8171261531979810465
+--- !u!114 &7014067007669844556
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -916,7 +916,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8615628319028095835}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f1e37a322be8caf4286c47e2e3b074f7, type: 3}
+  m_Script: {fileID: 11500000, guid: 13512f354c8e0e84590eaca82fc6c4c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   entityBehaviour: {fileID: 0}
@@ -926,20 +926,20 @@ MonoBehaviour:
   idleBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  aggroBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
   chaseBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   idleTimer: 0
-  HasReachedDestination: 0
   includeMe:
     serializedVersion: 2
     m_Bits: 320
   playerAggroList: []
   playerTarget: {fileID: 0}
-  currentPlayerTargetInView: 0
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
-  playerDetectionRange: 30
   healingAbility: {fileID: 0}
   offensiveAbility: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}

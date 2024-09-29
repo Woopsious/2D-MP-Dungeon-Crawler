@@ -43,7 +43,7 @@ public class EntityBehaviour : MonoBehaviour
 
 	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
-	private float playerDetectionRange;
+	private float playerDetectionRange = 30;
 	private readonly float playerDetectionCooldown = 0.1f;
 	private float playerDetectionTimer;
 
@@ -190,9 +190,6 @@ public class EntityBehaviour : MonoBehaviour
 	//player visible Checks + timer
 	private void IsPlayerTargetVisibleTimer() //0.1s timer
 	{
-		if (playerTarget == null)
-			return;
-
 		playerDetectionTimer -= Time.deltaTime;
 
 		if (playerDetectionTimer <= 0)
@@ -214,6 +211,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	private bool PlayerVisible(PlayerController player)
 	{
+		if (player == null) return false;
 		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
 
 		if (hit.point != null && hit.collider.GetComponent<PlayerController>() != null)
@@ -222,6 +220,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 	private bool PlayerWithinRange(PlayerController player)
 	{
+		if (player == null) return false;
 		if (currentState == idleState || currentState == wanderState)
 		{
 			if (Vector2.Distance(transform.position, player.transform.position) < entityBehaviour.aggroRange)
@@ -270,7 +269,7 @@ public class EntityBehaviour : MonoBehaviour
 	public void AttackWithMainWeapon()
 	{
 		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
-		if (weapon == null || !weapon.canAttackAgain) return;
+		if (!weapon.canAttackAgain) return;
 
 		float distanceToCheck = weapon.weaponBaseRef.maxAttackRange;
 		if (entityStats.entityBaseStats.isBossVersion)

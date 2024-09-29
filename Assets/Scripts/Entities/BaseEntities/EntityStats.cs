@@ -118,7 +118,7 @@ public class EntityStats : MonoBehaviour
 	}
 
 	//set entity data
-	private void Initilize()
+	public void Initilize()
 	{
 		spriteRenderer.sprite = entityBaseStats.sprite;
 		name = entityBaseStats.entityName;
