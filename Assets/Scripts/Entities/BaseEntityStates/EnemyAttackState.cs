@@ -35,15 +35,13 @@ public class EnemyAttackState : EnemyBaseState
 	//attack behaviour logic
 	protected void AttackBehaviourLogic(EntityBehaviour entity)
 	{
-		if (equippedWeapon == null) return;
 		if (equippedWeapon.weaponBaseRef.isRangedWeapon)
 			KeepDistanceFromPlayer(entity);
 		else
 			KeepPlayerInMeleeRange(entity);
 
-		entity.AttackWithMainWeapon();
-
-		entity.CastOffensiveAbility();
+		entity.TryAttackWithMainWeapon();
+		entity.TryCastOffensiveAbility();
 	}
 
 	//melee weapon logic

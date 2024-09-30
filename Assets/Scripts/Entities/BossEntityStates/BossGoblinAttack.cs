@@ -43,6 +43,7 @@ public class BossGoblinAttack : EnemyAttackState
 
 	private void PhaseOneBossBehaviour(EntityBehaviour entity)
 	{
+		AttackBehaviourLogic(entity); //attack behaviour same as regular entities
 		Debug.Log("First Phase");
 	}
 	private void PhaseTwoBossBehaviour(EntityBehaviour entity)

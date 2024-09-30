@@ -29,7 +29,7 @@ public class BossEntityStats : EntityStats
 
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
-			//call transition state here
+			//call change transition state here
 			spawner.ForceSpawnEntitiesForBosses();
 		}
 		lastBossHealthPercentage = newPercentage;

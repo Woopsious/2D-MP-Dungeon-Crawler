@@ -12,6 +12,7 @@ public class EntityBehaviour : MonoBehaviour
 	[Header("Behaviour Info")]
 	public SOEntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityStats entityStats;
+	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
 
 	[Header("Entity States")]
@@ -68,6 +69,7 @@ public class EntityBehaviour : MonoBehaviour
 	private void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
+		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
@@ -80,11 +82,11 @@ public class EntityBehaviour : MonoBehaviour
 
 	private void OnEnable()
 	{
-		entityStats.OnHealthChangeEvent += CastHealingAbility;
+		entityStats.OnHealthChangeEvent += TryCastHealingAbility;
 	}
 	private void OnDisable()
 	{
-		entityStats.OnHealthChangeEvent -= CastHealingAbility;
+		entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
 	}
 
 	protected virtual void Update()
@@ -266,21 +268,20 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//ATTACKING
-	public void AttackWithMainWeapon()
+	public void TryAttackWithMainWeapon()
 	{
-		Weapons weapon = entityStats.equipmentHandler.equippedWeapon;
-		if (!weapon.canAttackAgain) return;
+		if (equipmentHandler.equippedWeapon == null) return;
 
-		float distanceToCheck = weapon.weaponBaseRef.maxAttackRange;
+		float distanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange;
 		if (entityStats.entityBaseStats.isBossVersion)
-			distanceToCheck = weapon.weaponBaseRef.maxAttackRange * 2;
+			distanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange * 2;
 
 		if (distanceToPlayerTarget > distanceToCheck) return;
 
-		if (weapon.weaponBaseRef.isRangedWeapon)
-			weapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
+		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
+			equipmentHandler.equippedWeapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
 		else
-			weapon.MeleeAttack(playerTarget.transform.position);
+			equipmentHandler.equippedWeapon.MeleeAttack(playerTarget.transform.position);
 	}
 
 	//ENEMY AGGRO LIST
@@ -390,12 +391,12 @@ public class EntityBehaviour : MonoBehaviour
 
 	//ABILITIES
 	//casting of each ability
-	public void CastHealingAbility(int maxHealth, int currentHealth)
+	public void TryCastHealingAbility(int maxHealth, int currentHealth)
 	{
 		if (entityStats.entityBaseStats.isBossVersion) return;
 
+		if (healingAbility == null || !canCastHealingAbility) return;
 		if (maxHealth == 0) return;
-		if (!canCastHealingAbility || healingAbility == null) return;
 
 		int healthPercentage = (int)((float)currentHealth / maxHealth * 100);
 		if (healthPercentage > 50) return;
@@ -404,9 +405,9 @@ public class EntityBehaviour : MonoBehaviour
 		healingAbilityTimer = healingAbility.abilityCooldown;
 		CastEffect(healingAbility);
 	}
-	public void CastOffensiveAbility()
+	public void TryCastOffensiveAbility()
 	{
-		if (!canCastOffensiveAbility || offensiveAbility == null) return;
+		if (offensiveAbility == null || !canCastOffensiveAbility) return;
 		if (playerTarget == null) return;
 
 		if (!HasEnoughManaToCast(offensiveAbility))
@@ -432,7 +433,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//casting of ability types
-	protected bool HasEnoughManaToCast(SOClassAbilities ability)
+	protected virtual bool HasEnoughManaToCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{
@@ -444,7 +445,7 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return true;
 	}
-	protected void CastEffect(SOClassAbilities ability)
+	protected virtual void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
@@ -471,7 +472,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	protected void CastDirectionalAbility(SOClassAbilities ability)
+	protected virtual void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -485,7 +486,7 @@ public class EntityBehaviour : MonoBehaviour
 		projectile.Initilize(null, ability, entityStats);
 		OnSuccessfulCast(ability);
 	}
-	protected void CastAoeAbility(SOClassAbilities ability)
+	protected virtual void CastAoeAbility(SOClassAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)
@@ -501,7 +502,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	private void OnSuccessfulCast(SOClassAbilities ability)
+	protected virtual void OnSuccessfulCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{
