@@ -27,15 +27,23 @@ public class EnemyWanderState : EnemyBaseState
 	//Wander behaviour
 	private void WanderBehaviour(EntityBehaviour entity)
 	{
-		if (!entity.CurrentPlayerTargetVisible())
+		if (entity.CurrentPlayerTargetVisible())
+		{
+			if (entity.entityStats.entityBaseStats.isBossVersion)
+			{
+				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
+				bossEntity.ChangeState(bossEntity.goblinAttackState);
+			}
+			else
+				entity.ChangeState(entity.attackState);
+		}
+		else
 		{
 			InvestigatePlayersLastKnownPos(entity);
 
 			if (entity.HasReachedDestination())
 				entity.ChangeState(entity.idleState);
 		}
-		else
-			entity.ChangeState(entity.attackState);
 	}
 	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
 	{

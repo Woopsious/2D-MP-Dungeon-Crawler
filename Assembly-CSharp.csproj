@@ -136,6 +136,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />
     <Compile Include="Assets\Scripts\Entities\Stat.cs" />
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
+    <Compile Include="Assets\Scripts\Entities\BossEntityStates\BossGoblinTransitions.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputHandler.cs" />

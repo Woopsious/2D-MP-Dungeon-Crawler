@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class BossEntityBehaviour : EntityBehaviour
 {
+	[Header("Boss Goblin States")]
+	[HideInInspector] public BossGoblinTransitions goblinTransitionState = new BossGoblinTransitions();
+	[HideInInspector] public BossGoblinAttack goblinAttackState = new BossGoblinAttack();
+
 	[Header("Boss Abilities")]
 	[Header("Ability One")]
 	public SOClassAbilities abilityOne;
@@ -146,5 +150,37 @@ public class BossEntityBehaviour : EntityBehaviour
 
 		if (abilityTimerThreeCounter <= 0)
 			canCastAbilityThree = true;
+	}
+
+	//make public for bosses (some boss skills will have unique behaviour)
+	public new bool HasEnoughManaToCast(SOClassAbilities ability)
+	{
+		return base.HasEnoughManaToCast(ability);
+	}
+	public new void CastEffect(SOClassAbilities ability)
+	{
+		base.CastEffect(ability);
+	}
+	public new void CastDirectionalAbility(SOClassAbilities ability)
+	{
+		base.CastAoeAbility(ability);
+	}
+	public new void CastAoeAbility(SOClassAbilities ability)
+	{
+		base.CastAoeAbility(ability);
+	}
+	public new void OnSuccessfulCast(SOClassAbilities ability)
+	{
+		base.OnSuccessfulCast(ability);
+	}
+
+	//STATE CHANGES
+	public override void ChangeState(EnemyBaseState newState)
+	{
+		currentState?.Exit(this);
+		currentState = newState;
+		currentState.Enter(this);
+
+		Debug.Log("new state: " + newState);
 	}
 }

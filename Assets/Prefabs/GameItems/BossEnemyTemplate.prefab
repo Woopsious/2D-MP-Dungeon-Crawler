@@ -779,7 +779,7 @@ MonoBehaviour:
     percentageBonuses: []
   currentMana: 0
   manaRegenPercentage:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -824,7 +824,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   damageDealtModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -833,7 +833,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   healingPercentageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -842,7 +842,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   physicalDamagePercentageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -851,7 +851,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   poisonDamagePercentageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -860,7 +860,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   fireDamagePercentageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -869,7 +869,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   iceDamagePercentageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -878,7 +878,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   mainWeaponDamageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -887,7 +887,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   dualWeaponDamageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -896,7 +896,7 @@ MonoBehaviour:
     equipmentPercentageValue: 0
     percentageBonuses: []
   rangedWeaponDamageModifier:
-    isPercentageStat: 0
+    isPercentageStat: 1
     baseValue: 0
     finalValue: 0
     basePercentageValue: 0
@@ -907,6 +907,9 @@ MonoBehaviour:
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 4324401266549769224}
   currentStatusEffects: []
+  spawner: {fileID: 0}
+  lastBossHealthPercentage: 0
+  bossPhase: 0
 --- !u!114 &3519794317990881909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -921,30 +924,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityBehaviour: {fileID: 0}
   entityStats: {fileID: 0}
+  equipmentHandler: {fileID: 0}
   navMeshAgent: {fileID: 0}
   markedForCleanUp: 0
   idleBounds:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0, y: 0, z: 0}
+  aggroBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   chaseBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
   idleTimer: 0
-  HasReachedDestination: 0
   includeMe:
     serializedVersion: 2
     m_Bits: 320
   playerAggroList: []
   playerTarget: {fileID: 0}
-  currentPlayerTargetInView: 0
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
-  playerDetectionRange: 30
   healingAbility: {fileID: 0}
   offensiveAbility: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
-  offensiveAbilityTwo: {fileID: 0}
+  abilityOne: {fileID: 0}
+  canCastAbilityOne: 0
+  abilityTimerOneCounter: 0
+  abilityTwo: {fileID: 0}
+  canCastAbilityTwo: 0
+  abilityTimerTwoCounter: 0
+  abilityThree: {fileID: 0}
+  canCastAbilityThree: 0
+  abilityTimerThreeCounter: 0
 --- !u!114 &5524032958697930596
 MonoBehaviour:
   m_ObjectHideFlags: 0

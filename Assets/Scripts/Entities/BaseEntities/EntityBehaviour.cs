@@ -16,7 +16,7 @@ public class EntityBehaviour : MonoBehaviour
 	private SpriteRenderer spriteRenderer;
 
 	[Header("Entity States")]
-	protected EnemyBaseState currentState;
+	public EnemyBaseState currentState;
 	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
 	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
@@ -145,6 +145,7 @@ public class EntityBehaviour : MonoBehaviour
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
 		ChangeState(wanderState);
+		Debug.LogWarning(currentState);
 	}
 	public void UpdateBounds(Vector3 position)
 	{
@@ -433,7 +434,7 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//casting of ability types
-	protected virtual bool HasEnoughManaToCast(SOClassAbilities ability)
+	protected bool HasEnoughManaToCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{
@@ -445,7 +446,7 @@ public class EntityBehaviour : MonoBehaviour
 		else
 			return true;
 	}
-	protected virtual void CastEffect(SOClassAbilities ability)
+	protected void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
@@ -472,7 +473,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	protected virtual void CastDirectionalAbility(SOClassAbilities ability)
+	protected void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -486,7 +487,7 @@ public class EntityBehaviour : MonoBehaviour
 		projectile.Initilize(null, ability, entityStats);
 		OnSuccessfulCast(ability);
 	}
-	protected virtual void CastAoeAbility(SOClassAbilities ability)
+	protected void CastAoeAbility(SOClassAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)
@@ -502,7 +503,7 @@ public class EntityBehaviour : MonoBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	protected virtual void OnSuccessfulCast(SOClassAbilities ability)
+	protected void OnSuccessfulCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{
@@ -532,8 +533,9 @@ public class EntityBehaviour : MonoBehaviour
 	}
 
 	//STATE CHANGES
-	public void ChangeState(EnemyBaseState newState)
+	public virtual void ChangeState(EnemyBaseState newState)
 	{
+		currentState?.Exit(this);
 		currentState = newState;
 		currentState.Enter(this);
 	}

@@ -72,7 +72,7 @@ public class EntityStats : MonoBehaviour
 	private float idleSoundTimer;
 	private readonly int chanceOfIdleSound = 25;
 
-	private void Awake()
+	protected virtual void Awake()
 	{
 		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
@@ -84,11 +84,11 @@ public class EntityStats : MonoBehaviour
 		idleWeaponSprite = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 	}
-	private void Start()
+	protected virtual void Start()
 	{
 		Initilize();
 	}
-	private void OnEnable()
+	protected virtual void OnEnable()
 	{
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
@@ -99,7 +99,7 @@ public class EntityStats : MonoBehaviour
 
 		equipmentHandler.OnEquipmentChanges += OnEquipmentChanges;
 	}
-	private void OnDisable()
+	protected virtual void OnDisable()
 	{
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
@@ -111,7 +111,7 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.OnEquipmentChanges -= OnEquipmentChanges;
 	}
 
-	private void Update()
+	protected virtual void Update()
 	{
 		PassiveManaRegen();
 		PlayIdleSound();
@@ -177,8 +177,11 @@ public class EntityStats : MonoBehaviour
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 
+		Debug.Log(healthValue);
+
 		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
 		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
+		Debug.Log(healthValue);
 
 		if (currentHealth > maxHealth.finalValue)
 			currentHealth = maxHealth.finalValue;

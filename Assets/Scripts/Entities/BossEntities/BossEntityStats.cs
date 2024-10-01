@@ -15,12 +15,22 @@ public class BossEntityStats : EntityStats
 		firstPhase, secondPhase, thirdPhase
 	}
 
-	private void OnEnable()
+	protected override void Awake()
 	{
+		base.Awake();
+	}
+	protected override void Start()
+	{
+		base.Start();
+	}
+	protected override void OnEnable()
+	{
+		base.OnEnable();
 		OnHealthChangeEvent += UpdateBossHealthPercentage;
 	}
-	private void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		OnHealthChangeEvent -= UpdateBossHealthPercentage;
 	}
 	private void UpdateBossHealthPercentage(int maxHealth, int currentHealth)
@@ -29,7 +39,11 @@ public class BossEntityStats : EntityStats
 
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
+			BossEntityBehaviour bossBehaviour = (BossEntityBehaviour)entityBehaviour;
+
 			//call change transition state here
+			bossPhase++;
+			bossBehaviour.ChangeState(bossBehaviour.goblinTransitionState);
 			spawner.ForceSpawnEntitiesForBosses();
 		}
 		lastBossHealthPercentage = newPercentage;

@@ -15,7 +15,15 @@ public class EnemyIdleState : EnemyBaseState
 	public override void UpdateLogic(EntityBehaviour entity)
 	{
 		if (entity.CurrentPlayerTargetVisible())
-			entity.ChangeState(entity.attackState);
+		{
+			if (entity.entityStats.entityBaseStats.isBossVersion)
+			{
+				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
+				bossEntity.ChangeState(bossEntity.goblinAttackState);
+			}
+			else
+				entity.ChangeState(entity.attackState);
+		}
 		else
 			IdleAtPositionTimer(entity);
 	}

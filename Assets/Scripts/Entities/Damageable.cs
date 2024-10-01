@@ -27,6 +27,7 @@ public class Damageable : MonoBehaviour
 
 		ApplyHitForce(other, knockBack);
 		OnHit?.Invoke(player, damage, damageType, isPercentageValue, isDestroyedInOneHit);
+		//Debug.Log(gameObject.name + " was hit");
 	}
 	public void ApplyHitForce(Collider2D other, float knockback)
 	{
