@@ -1,6 +1,7 @@
 using NavMeshPlus.Extensions;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,6 +21,18 @@ public class EntityBehaviour : MonoBehaviour
 	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
 	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
+
+	[Header("Entity GOAP")]
+	AgentGoal lastGoal;
+	public AgentGoal currentGoal;
+	public ActionPlan actionPlan;
+	public AgentAction currentAction;
+
+	IGoapPlanner goapPlanner;
+
+	public Dictionary<string, AgentBelief> beliefs;
+	public HashSet<AgentAction> actions;
+	public HashSet<AgentGoal> goals;
 
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -74,10 +87,13 @@ public class EntityBehaviour : MonoBehaviour
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
+
+		goapPlanner = new GoapPlanner();
 	}
 	private void Start()
 	{
 		Initilize();
+		InitilizeGOAP();
 	}
 
 	private void OnEnable()
@@ -92,7 +108,7 @@ public class EntityBehaviour : MonoBehaviour
 	protected virtual void Update()
 	{
 		if (entityStats.IsEntityDead()) return;
-		currentState.UpdateLogic(this);
+		//currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
@@ -100,11 +116,13 @@ public class EntityBehaviour : MonoBehaviour
 
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
+
+		GOAPUpdate();
 	}
 	protected virtual void FixedUpdate()
 	{
 		if (entityStats.IsEntityDead()) return;
-		currentState.UpdatePhysics(this);
+		//currentState.UpdatePhysics(this);
 
 		aggroBounds.min = new Vector3(transform.position.x - entityBehaviour.aggroRange,
 			transform.position.y - entityBehaviour.aggroRange, transform.position.z);
@@ -120,6 +138,124 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
+	}
+
+	//set entity GOAPS
+	public void InitilizeGOAP()
+	{
+		SetupBeliefs();
+		SetupActions();
+		SetupGoals();
+	}
+	public void SetupBeliefs()
+	{
+		beliefs = new Dictionary<string, AgentBelief>();
+		BeliefFactory factory = new BeliefFactory(entityStats, beliefs);
+
+		factory.AddBelief("Nothing", () => false);
+
+		factory.AddBelief("Idle", () => !navMeshAgent.hasPath);
+		factory.AddBelief("Moving", () => navMeshAgent.hasPath);
+	}
+	public void SetupActions()
+	{
+		actions = new HashSet<AgentAction>
+		{
+			new AgentAction.Builder("Relax")
+			.WithStrategy(new IdleStrategy(entityBehaviour.idleWaitTime))
+			.AddEffect(beliefs["Nothing"])
+			.Build(),
+
+			new AgentAction.Builder("Wander")
+			.WithStrategy(new WanderStrategy(entityStats, idleBounds, entityBehaviour.navMeshStoppingDistance))
+			.AddEffect(beliefs["Moving"])
+			.Build(),
+		};
+	}
+	public void SetupGoals()
+	{
+		goals = new HashSet<AgentGoal>
+		{
+			new AgentGoal.Builder("Relax")
+			.WithPriority(1)
+			.WithDesiredEffect(beliefs["Nothing"])
+			.Build(),
+
+			new AgentGoal.Builder("Wander")
+			.WithPriority(1)
+			.WithDesiredEffect(beliefs["Moving"])
+			.Build(),
+		};
+	}
+
+	public void GOAPUpdate()
+	{
+		// Update the plan and current action if there is one
+		if (currentAction == null)
+		{
+			Debug.Log("Calculating any potential new plan");
+			CalculatePlan();
+
+			if (actionPlan != null && actionPlan.Actions.Count > 0)
+			{
+				navMeshAgent.ResetPath();
+
+				currentGoal = actionPlan.AgentGoal;
+				Debug.Log($"Goal: {currentGoal.Name} with {actionPlan.Actions.Count} actions in plan");
+				currentAction = actionPlan.Actions.Pop();
+				Debug.Log($"Popped action: {currentAction.Name}");
+				// Verify all precondition effects are true
+				if (currentAction.Preconditions.All(b => b.Evaluate()))
+				{
+					currentAction.Start();
+				}
+				else
+				{
+					Debug.Log("Preconditions not met, clearing current action and goal");
+					currentAction = null;
+					currentGoal = null;
+				}
+			}
+		}
+
+		// If we have a current action, execute it
+		if (actionPlan != null && currentAction != null)
+		{
+			currentAction.Update(Time.deltaTime);
+
+			if (currentAction.Complete)
+			{
+				Debug.Log($"{currentAction.Name} complete");
+				currentAction.Stop();
+				currentAction = null;
+
+				if (actionPlan.Actions.Count == 0)
+				{
+					Debug.Log("Plan complete");
+					lastGoal = currentGoal;
+					currentGoal = null;
+				}
+			}
+		}
+	}
+	void CalculatePlan()
+	{
+		var priorityLevel = currentGoal?.Priority ?? 0;
+
+		HashSet<AgentGoal> goalsToCheck = goals;
+
+		// If we have a current goal, we only want to check goals with higher priority
+		if (currentGoal != null)
+		{
+			Debug.Log("Current goal exists, checking goals with higher priority");
+			goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
+		}
+
+		var potentialPlan = goapPlanner.Plan(entityStats, goalsToCheck, lastGoal);
+		if (potentialPlan != null)
+		{
+			actionPlan = potentialPlan;
+		}
 	}
 
 	//set behaviour data
@@ -145,7 +281,6 @@ public class EntityBehaviour : MonoBehaviour
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
 		ChangeState(wanderState);
-		Debug.LogWarning(currentState);
 	}
 	public void UpdateBounds(Vector3 position)
 	{
@@ -464,11 +599,20 @@ public class EntityBehaviour : MonoBehaviour
 		{
 			//apply effects based on what type it is.
 			if (ability.canOnlyTargetSelf)
+			{
+				Debug.Log("target self apply effect");
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			}
 			else if (ability.isOffensiveAbility && playerTarget != null)
+			{
+				Debug.Log("target player apply effect");
 				playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			}
 			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
+			{
+				Debug.Log("target self/friendly apply effect");
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			}
 		}
 
 		OnSuccessfulCast(ability);
@@ -535,6 +679,7 @@ public class EntityBehaviour : MonoBehaviour
 	//STATE CHANGES
 	public virtual void ChangeState(EnemyBaseState newState)
 	{
+		return;
 		currentState?.Exit(this);
 		currentState = newState;
 		currentState.Enter(this);
