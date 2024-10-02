@@ -23,16 +23,16 @@ public class EntityBehaviour : MonoBehaviour
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
 
 	[Header("Entity GOAP")]
-	AgentGoal lastGoal;
-	public AgentGoal currentGoal;
-	public ActionPlan actionPlan;
-	public AgentAction currentAction;
-
 	IGoapPlanner goapPlanner;
 
 	public Dictionary<string, AgentBelief> beliefs;
 	public HashSet<AgentAction> actions;
 	public HashSet<AgentGoal> goals;
+
+	AgentGoal lastGoal;
+	public ActionPlan actionPlan;
+	public AgentGoal currentGoal;
+	public AgentAction currentAction;
 
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -52,7 +52,7 @@ public class EntityBehaviour : MonoBehaviour
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
 	private float distanceToPlayerTarget;
-	private bool currentPlayerTargetInView;
+	public bool currentPlayerTargetInView;
 	public Vector2 playersLastKnownPosition;
 
 	[Header("Player Detection")]
@@ -88,12 +88,12 @@ public class EntityBehaviour : MonoBehaviour
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
 
-		goapPlanner = new GoapPlanner();
+		//goapPlanner = new GoapPlanner();
 	}
 	private void Start()
 	{
 		Initilize();
-		InitilizeGOAP();
+		//InitilizeGOAP();
 	}
 
 	private void OnEnable()
@@ -108,7 +108,7 @@ public class EntityBehaviour : MonoBehaviour
 	protected virtual void Update()
 	{
 		if (entityStats.IsEntityDead()) return;
-		//currentState.UpdateLogic(this);
+		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
@@ -117,12 +117,12 @@ public class EntityBehaviour : MonoBehaviour
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
 
-		GOAPUpdate();
+		//GOAPUpdate();
 	}
 	protected virtual void FixedUpdate()
 	{
 		if (entityStats.IsEntityDead()) return;
-		//currentState.UpdatePhysics(this);
+		currentState.UpdatePhysics(this);
 
 		aggroBounds.min = new Vector3(transform.position.x - entityBehaviour.aggroRange,
 			transform.position.y - entityBehaviour.aggroRange, transform.position.z);
@@ -140,6 +140,7 @@ public class EntityBehaviour : MonoBehaviour
 		UpdateAnimationState();
 	}
 
+	/* GOAP related functions
 	//set entity GOAPS
 	public void InitilizeGOAP()
 	{
@@ -155,20 +156,27 @@ public class EntityBehaviour : MonoBehaviour
 		factory.AddBelief("Nothing", () => false);
 
 		factory.AddBelief("Idle", () => !navMeshAgent.hasPath);
-		factory.AddBelief("Moving", () => navMeshAgent.hasPath);
+		factory.AddBelief("Wander", () => navMeshAgent.hasPath);
+		factory.AddBelief("Investigate", () => !currentPlayerTargetInView && playersLastKnownPosition != new Vector2(0, 0));
+		factory.AddBelief("Attack", () => currentPlayerTargetInView);
 	}
 	public void SetupActions()
 	{
 		actions = new HashSet<AgentAction>
 		{
-			new AgentAction.Builder("Relax")
-			.WithStrategy(new IdleStrategy(entityBehaviour.idleWaitTime))
-			.AddEffect(beliefs["Nothing"])
+			new AgentAction.Builder("Idle")
+			.WithStrategy(new IdleStrategy(entityStats, entityBehaviour.idleWaitTime))
+			.AddEffect(beliefs["Idle"])
 			.Build(),
 
 			new AgentAction.Builder("Wander")
-			.WithStrategy(new WanderStrategy(entityStats, idleBounds, entityBehaviour.navMeshStoppingDistance))
-			.AddEffect(beliefs["Moving"])
+			.WithStrategy(new WanderStrategy(entityStats))
+			.AddEffect(beliefs["Wander"])
+			.Build(),
+
+			new AgentAction.Builder("Attack")
+			.WithStrategy(new AttackStrategy(entityStats))
+			.AddEffect(beliefs["Attack"])
 			.Build(),
 		};
 	}
@@ -176,14 +184,19 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		goals = new HashSet<AgentGoal>
 		{
-			new AgentGoal.Builder("Relax")
+			new AgentGoal.Builder("Idle")
 			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Nothing"])
+			.WithDesiredEffect(beliefs["Idle"])
 			.Build(),
 
 			new AgentGoal.Builder("Wander")
 			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Moving"])
+			.WithDesiredEffect(beliefs["Wander"])
+			.Build(),
+
+			new AgentGoal.Builder("Attack")
+			.WithPriority(2)
+			.WithDesiredEffect(beliefs["Attack"])
 			.Build(),
 		};
 	}
@@ -257,6 +270,7 @@ public class EntityBehaviour : MonoBehaviour
 			actionPlan = potentialPlan;
 		}
 	}
+	*/
 
 	//set behaviour data
 	protected virtual void Initilize()
@@ -679,7 +693,6 @@ public class EntityBehaviour : MonoBehaviour
 	//STATE CHANGES
 	public virtual void ChangeState(EnemyBaseState newState)
 	{
-		return;
 		currentState?.Exit(this);
 		currentState = newState;
 		currentState.Enter(this);

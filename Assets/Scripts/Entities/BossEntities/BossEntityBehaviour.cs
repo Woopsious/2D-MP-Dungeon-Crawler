@@ -177,11 +177,8 @@ public class BossEntityBehaviour : EntityBehaviour
 	//STATE CHANGES
 	public override void ChangeState(EnemyBaseState newState)
 	{
-		return;
 		currentState?.Exit(this);
 		currentState = newState;
 		currentState.Enter(this);
-
-		Debug.Log("new state: " + newState);
 	}
 }
