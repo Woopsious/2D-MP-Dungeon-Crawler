@@ -133,6 +133,7 @@
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityDetection.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerSettingsManager.cs" />
+    <Compile Include="Assets\Scripts\Entities\GOAP\EntityBehaviourEditor.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
