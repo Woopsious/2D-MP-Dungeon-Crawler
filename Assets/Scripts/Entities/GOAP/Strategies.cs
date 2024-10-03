@@ -28,20 +28,20 @@ public interface IActionStrategy
 
 public class AttackStrategy : IActionStrategy
 {
-	readonly EntityStats entity;
+	readonly EntityBehaviour entity;
 	readonly NavMeshAgent agent;
 	readonly Weapons equippedWeapon;
 
 	readonly float distanceCheckDuration = 0.1f;
 	float distanceCheckTimer;
 
-	public bool CanPerform => entity.entityBehaviour.currentPlayerTargetInView;
-	public bool Complete => !entity.entityBehaviour.currentPlayerTargetInView;
+	public bool CanPerform => entity.currentPlayerTargetInView;
+	public bool Complete => !entity.currentPlayerTargetInView;
 
-	public AttackStrategy(EntityStats entity)
+	public AttackStrategy(EntityBehaviour entity)
 	{
 		this.entity = entity;
-		this.agent = entity.entityBehaviour.navMeshAgent;
+		this.agent = entity.navMeshAgent;
 		this.equippedWeapon = entity.equipmentHandler.equippedWeapon;
 	}
 
@@ -51,8 +51,8 @@ public class AttackStrategy : IActionStrategy
 	}
 	public void Update(float time)
 	{
-		entity.entityBehaviour.TryAttackWithMainWeapon();
-		entity.entityBehaviour.TryCastOffensiveAbility();
+		entity.TryAttackWithMainWeapon();
+		entity.TryCastOffensiveAbility();
 
 		distanceCheckTimer -= time;
 
@@ -61,9 +61,9 @@ public class AttackStrategy : IActionStrategy
 			distanceCheckTimer = distanceCheckDuration;
 
 			if (equippedWeapon.weaponBaseRef.isRangedWeapon)
-				KeepDistanceFromPlayer(entity.entityBehaviour);
+				KeepDistanceFromPlayer(entity);
 			else
-				KeepPlayerInMeleeRange(entity.entityBehaviour);
+				KeepPlayerInMeleeRange(entity);
 		}
 	}
 	public void Stop() => agent.ResetPath();
@@ -132,39 +132,21 @@ public class AttackStrategy : IActionStrategy
 
 public class WanderStrategy : IActionStrategy
 {
-	readonly EntityStats entity;
-	readonly NavMeshAgent agent;
-	readonly float stoppingDistance;
+	EntityBehaviour entity;
+	NavMeshAgent navMesh;
 
-	public bool CanPerform => !entity.entityBehaviour.currentPlayerTargetInView;
-	public bool Complete => agent.remainingDistance <= stoppingDistance && !agent.pathPending;
+	public bool CanPerform => !entity.currentPlayerTargetInView && !Complete && entity.idleTimer > 0;
+	public bool Complete => navMesh.remainingDistance <= navMesh.stoppingDistance && !navMesh.pathPending;
 
-	public WanderStrategy(EntityStats entity)
+	public WanderStrategy(EntityBehaviour entity)
 	{
 		this.entity = entity;
-		this.agent = entity.entityBehaviour.navMeshAgent;
-		this.stoppingDistance = entity.entityBehaviour.entityBehaviour.navMeshStoppingDistance;
+		navMesh = entity.navMeshAgent;
 	}
 
-	public void Start() => Move();
-	public void Move()
+	public void Start()
 	{
-		if (entity.entityBehaviour.playersLastKnownPosition == new Vector2(0, 0))
-			FindNewIdlePosition(entity.entityBehaviour);
-		else
-			InvestigatePlayersLastKnownPos(entity.entityBehaviour);
-	}
-	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
-	{
-		if (entity.playersLastKnownPosition == new Vector2(0, 0)) return;
-
-		entity.SetNewDestination(entity.playersLastKnownPosition);
-
-		if (entity.HasReachedDestination())
-		{
-			entity.playersLastKnownPosition = new Vector2(0, 0);
-			entity.ChangeState(entity.idleState);
-		}
+		FindNewIdlePosition(entity);
 	}
 	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
@@ -172,7 +154,10 @@ public class WanderStrategy : IActionStrategy
 		NavMeshPath path = new NavMeshPath();
 
 		if (entity.navMeshAgent.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
+		{
+			entity.idleTimer = entity.entityBehaviour.idleWaitTime;
 			entity.navMeshAgent.SetPath(path);
+		}
 		else
 			FindNewIdlePosition(entity);
 	}
@@ -180,26 +165,18 @@ public class WanderStrategy : IActionStrategy
 
 public class IdleStrategy : IActionStrategy
 {
-	EntityStats entity;
-	float idleDuration;
-	float idleTimer;
+	EntityBehaviour entity;
 
-	public bool CanPerform => !entity.entityBehaviour.currentPlayerTargetInView; // Agent can always Idle
-	public bool Complete => idleTimer <= 0;
+	public bool CanPerform => !entity.currentPlayerTargetInView;
+	public bool Complete => entity.idleTimer <= 0;
 
-	public IdleStrategy(EntityStats entity, float idleDuration)
+	public IdleStrategy(EntityBehaviour entity)
 	{
 		this.entity = entity;
-		this.idleDuration = idleDuration;
 	}
 
-	public void Start() => SetTimer();
-	private void SetTimer()
+	public void Update(float deltaTime)
 	{
-		idleTimer = idleDuration;
-	}
-	public void Update(float time)
-	{
-		idleTimer -= time;
+		entity.idleTimer -= Time.deltaTime;
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Damageable : MonoBehaviour
 {
-	public bool DebugInvincible;
+	public bool invincible;
 	public bool isDestroyedInOneHit;
 	private bool CanOtherEntitiesDamageThis;
 
@@ -22,7 +22,7 @@ public class Damageable : MonoBehaviour
 	public void OnHitFromDamageSource(PlayerController player, Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
 		bool isPercentageValue, bool wasHitByPlayer, bool wasEnviroment)
 	{
-		if (DebugInvincible) return;
+		if (invincible) return;
 		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis && !wasEnviroment) return;
 
 		ApplyHitForce(other, knockBack);

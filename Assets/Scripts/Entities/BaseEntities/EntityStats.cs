@@ -177,11 +177,8 @@ public class EntityStats : MonoBehaviour
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 
-		Debug.Log(healthValue);
-
 		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
 		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
-		Debug.Log(healthValue);
 
 		if (currentHealth > maxHealth.finalValue)
 			currentHealth = maxHealth.finalValue;

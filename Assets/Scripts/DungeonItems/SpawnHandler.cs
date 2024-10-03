@@ -15,7 +15,7 @@ public class SpawnHandler : MonoBehaviour
 
 	public int spawnerLevel;
 	public int maxNumOfEntitiesToSpawn;
-	private List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
+	public List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
 
 	[Header("Spawner Range Settings")]
 	public int maxSpawningDistance;
@@ -196,9 +196,10 @@ public class SpawnHandler : MonoBehaviour
 		if (listOfPlayersInRange.Count == 0) return;
 		if (spawningDisabled) return;
 
-		SpawnEntity();
 		if (isBossSpawner)
 			SpawnBossEntity();
+
+		SpawnEntity();
 	}
 	//boss entity spawning
 	private void SpawnBossEntity()
@@ -289,6 +290,13 @@ public class SpawnHandler : MonoBehaviour
 		if (!isBossRoomSpawner) return true;
 		if (maxNumOfEntitiesToSpawn > 0)
 			return true; 
+		else return false;
+	}
+
+	public bool CheckIfSpawnedEntitiesListEmpty()
+	{
+		if (listOfSpawnedEntities.Count <= 0)
+			return true;
 		else return false;
 	}
 

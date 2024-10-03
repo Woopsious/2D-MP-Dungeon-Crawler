@@ -88,7 +88,7 @@ public class EntityBehaviour : MonoBehaviour
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
 
-		//goapPlanner = new GoapPlanner();
+		goapPlanner = new GoapPlanner();
 	}
 	private void Start()
 	{
@@ -155,28 +155,28 @@ public class EntityBehaviour : MonoBehaviour
 
 		factory.AddBelief("Nothing", () => false);
 
-		factory.AddBelief("Idle", () => !navMeshAgent.hasPath);
-		factory.AddBelief("Wander", () => navMeshAgent.hasPath);
-		factory.AddBelief("Investigate", () => !currentPlayerTargetInView && playersLastKnownPosition != new Vector2(0, 0));
-		factory.AddBelief("Attack", () => currentPlayerTargetInView);
+		factory.AddBelief("Idling", () => !navMeshAgent.hasPath);
+		factory.AddBelief("Moving", () => navMeshAgent.hasPath);
+		factory.AddBelief("Wandering", () => !currentPlayerTargetInView && playersLastKnownPosition != new Vector2(0, 0));
+		factory.AddBelief("Attacking", () => currentPlayerTargetInView);
 	}
 	public void SetupActions()
 	{
 		actions = new HashSet<AgentAction>
 		{
 			new AgentAction.Builder("Idle")
-			.WithStrategy(new IdleStrategy(entityStats, entityBehaviour.idleWaitTime))
-			.AddEffect(beliefs["Idle"])
+			.WithStrategy(new IdleStrategy(this))
+			.AddEffect(beliefs["Idling"])
 			.Build(),
 
 			new AgentAction.Builder("Wander")
-			.WithStrategy(new WanderStrategy(entityStats))
-			.AddEffect(beliefs["Wander"])
+			.WithStrategy(new WanderStrategy(this))
+			.AddEffect(beliefs["Wandering"])
 			.Build(),
 
 			new AgentAction.Builder("Attack")
-			.WithStrategy(new AttackStrategy(entityStats))
-			.AddEffect(beliefs["Attack"])
+			.WithStrategy(new AttackStrategy(this))
+			.AddEffect(beliefs["Attacking"])
 			.Build(),
 		};
 	}
@@ -186,17 +186,17 @@ public class EntityBehaviour : MonoBehaviour
 		{
 			new AgentGoal.Builder("Idle")
 			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Idle"])
+			.WithDesiredEffect(beliefs["Idling"])
 			.Build(),
 
 			new AgentGoal.Builder("Wander")
 			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Wander"])
+			.WithDesiredEffect(beliefs["Wandering"])
 			.Build(),
 
 			new AgentGoal.Builder("Attack")
 			.WithPriority(2)
-			.WithDesiredEffect(beliefs["Attack"])
+			.WithDesiredEffect(beliefs["Attacking"])
 			.Build(),
 		};
 	}
@@ -613,20 +613,11 @@ public class EntityBehaviour : MonoBehaviour
 		{
 			//apply effects based on what type it is.
 			if (ability.canOnlyTargetSelf)
-			{
-				Debug.Log("target self apply effect");
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			}
 			else if (ability.isOffensiveAbility && playerTarget != null)
-			{
-				Debug.Log("target player apply effect");
 				playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			}
 			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
-			{
-				Debug.Log("target self/friendly apply effect");
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			}
 		}
 
 		OnSuccessfulCast(ability);

@@ -6,6 +6,7 @@ public class BossEntityStats : EntityStats
 {
 
 	[Header("Additional Boss Variables")]
+	public Damageable damageable;
 	public SpawnHandler spawner;
 	public float lastBossHealthPercentage;
 
@@ -18,6 +19,7 @@ public class BossEntityStats : EntityStats
 	protected override void Awake()
 	{
 		base.Awake();
+		damageable = GetComponent<Damageable>();
 	}
 	protected override void Start()
 	{
@@ -40,11 +42,11 @@ public class BossEntityStats : EntityStats
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
 			BossEntityBehaviour bossBehaviour = (BossEntityBehaviour)entityBehaviour;
-
-			//call change transition state here
 			bossPhase++;
-			bossBehaviour.ChangeState(bossBehaviour.goblinTransitionState);
 			spawner.ForceSpawnEntitiesForBosses();
+
+			if (entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
+				bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
 		}
 		lastBossHealthPercentage = newPercentage;
 	}
