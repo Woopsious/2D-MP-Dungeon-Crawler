@@ -3,14 +3,20 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Services.Lobbies.Models;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Diagnostics;
 using UnityEngine.UIElements;
 
-public class EntityBehaviour : MonoBehaviour
+public class EntityBehaviour : Tree
 {
 	[Header("Behaviour Info")]
+	public BehaviourType behaviourTypeToUse;
+	public enum BehaviourType
+	{
+		useStateMachine, useBehaviourTree, useGOAP
+	}
 	public SOEntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
@@ -90,10 +96,18 @@ public class EntityBehaviour : MonoBehaviour
 
 		goapPlanner = new GoapPlanner();
 	}
-	private void Start()
+	protected override void Start()
 	{
+		behaviourTypeToUse = BehaviourType.useBehaviourTree;
+
 		Initilize();
-		//InitilizeGOAP();
+
+		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+			return;
+		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+			base.Start();
+		else if (behaviourTypeToUse == BehaviourType.useGOAP)
+			InitilizeGOAP();
 	}
 
 	private void OnEnable()
@@ -105,10 +119,9 @@ public class EntityBehaviour : MonoBehaviour
 		entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
 	}
 
-	protected virtual void Update()
+	protected override void Update()
 	{
 		if (entityStats.IsEntityDead()) return;
-		currentState.UpdateLogic(this);
 
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
@@ -117,12 +130,16 @@ public class EntityBehaviour : MonoBehaviour
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
 
-		//GOAPUpdate();
+		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+			currentState.UpdateLogic(this);
+		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+			base.Update();
+		else if (behaviourTypeToUse == BehaviourType.useGOAP)
+			GOAPUpdate();
 	}
 	protected virtual void FixedUpdate()
 	{
 		if (entityStats.IsEntityDead()) return;
-		currentState.UpdatePhysics(this);
 
 		aggroBounds.min = new Vector3(transform.position.x - entityBehaviour.aggroRange,
 			transform.position.y - entityBehaviour.aggroRange, transform.position.z);
@@ -138,9 +155,37 @@ public class EntityBehaviour : MonoBehaviour
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
+
+		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+			currentState.UpdateLogic(this);
+		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+			return;
+		else if (behaviourTypeToUse == BehaviourType.useGOAP)
+			return;
 	}
 
-	/* GOAP related functions
+	//BehaviourTree related functions
+	//set entity GOAPS
+	protected override BTNode SetupTree()
+	{
+		BTNode root = new Selector(new List<BTNode>
+		{
+            //new Sequence(new List<Node>
+            //{
+            //    new CheckEnemyInAttackRange(transform),
+            //    new TaskAttack(transform),
+            //}),
+            new Selector(new List<BTNode>
+			{
+			new TaskIdle(entityStats),
+			new TaskWander(entityStats),
+			}),
+		});
+
+		return root;
+	}
+
+	// GOAP related functions
 	//set entity GOAPS
 	public void InitilizeGOAP()
 	{
@@ -270,7 +315,6 @@ public class EntityBehaviour : MonoBehaviour
 			actionPlan = potentialPlan;
 		}
 	}
-	*/
 
 	//set behaviour data
 	protected virtual void Initilize()
@@ -349,7 +393,7 @@ public class EntityBehaviour : MonoBehaviour
 			playerDetectionTimer = playerDetectionCooldown;
 
 			//check if player behind obstacles. check if player within aggro/chase ranges based on currentState
-			if (PlayerVisible(playerTarget) && PlayerWithinRange(playerTarget))
+			if (PlayerTargetVisible(playerTarget))
 			{
 				currentPlayerTargetInView = true;
 				return;
@@ -361,7 +405,20 @@ public class EntityBehaviour : MonoBehaviour
 			}
 		}
 	}
-	private bool PlayerVisible(PlayerController player)
+	private bool PlayerTargetVisible(PlayerController player)
+	{
+		if (player == null) return false; //check null
+		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
+
+		if (hit.point == null || hit.collider.GetComponent<PlayerController>() == null) //check LoS
+			return false;
+
+		if (Vector2.Distance(transform.position, player.transform.position) > entityBehaviour.aggroRange) //check aggro range
+			return false;
+		
+		return true;
+	}
+	private bool PlayerInLoS(PlayerController player)
 	{
 		if (player == null) return false;
 		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
@@ -467,7 +524,7 @@ public class EntityBehaviour : MonoBehaviour
 	{
 		for (int i = 0; i < playerAggroList.Count; i++)
 		{
-			if (PlayerVisible(playerAggroList[i].player) && PlayerWithinRange(playerAggroList[i].player))
+			if (PlayerTargetVisible(playerAggroList[i].player))
 			{
 				playerTarget = playerAggroList[i].player;
 				return;

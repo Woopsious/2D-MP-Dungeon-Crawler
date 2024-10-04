@@ -78,8 +78,10 @@
     <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BossEntities\BossEntityStats.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Tree.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityClassHandler.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Selector.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassStatBonuses.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
@@ -93,7 +95,10 @@
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Leafs\TaskAttack.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerJournalUi.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Leafs\TaskWander.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BTNode.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\Entities\BaseEntities\EntityStats.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryItemUi.cs" />
@@ -102,12 +107,14 @@
     <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Sequence.cs" />
     <Compile Include="Assets\GameData\TilemapData\TileMapHazardsManager.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveSlotDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Weapons.cs" />
     <Compile Include="Assets\GameData\TilemapData\TileData.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Checks\CheckPlayerTargetVisible.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\EnchantmentHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
@@ -135,6 +142,7 @@
     <Compile Include="Assets\Scripts\Managers\PlayerSettingsManager.cs" />
     <Compile Include="Assets\Scripts\Entities\GOAP\EntityBehaviourEditor.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Leafs\TaskIdle.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />

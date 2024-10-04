@@ -21,7 +21,7 @@ public class GoapPlanner : IGoapPlanner
 		// Try to solve each goal in order
 		foreach (var goal in orderedGoals)
 		{
-			Node goalNode = new Node(null, null, goal.DesiredEffects, 0);
+			GOAPNode goalNode = new GOAPNode(null, null, goal.DesiredEffects, 0);
 
 			// If we can find a path to the goal, return the plan
 			if (FindPath(goalNode, entity.entityBehaviour.actions))
@@ -46,7 +46,7 @@ public class GoapPlanner : IGoapPlanner
 	}
 
 	// TODO: Consider a more powerful search algorithm like A* or D*
-	bool FindPath(Node parent, HashSet<AgentAction> actions)
+	bool FindPath(GOAPNode parent, HashSet<AgentAction> actions)
 	{
 		// Order actions by cost, ascending
 		var orderedActions = actions.OrderBy(a => a.Cost);
@@ -73,7 +73,7 @@ public class GoapPlanner : IGoapPlanner
 				var newAvailableActions = new HashSet<AgentAction>(actions);
 				newAvailableActions.Remove(action);
 
-				var newNode = new Node(parent, action, newRequiredEffects, parent.Cost + action.Cost);
+				var newNode = new GOAPNode(parent, action, newRequiredEffects, parent.Cost + action.Cost);
 
 				// Explore the new node recursively
 				if (FindPath(newNode, newAvailableActions))
@@ -94,22 +94,22 @@ public class GoapPlanner : IGoapPlanner
 	}
 }
 
-public class Node
+public class GOAPNode
 {
-	public Node Parent { get; }
+	public GOAPNode Parent { get; }
 	public AgentAction Action { get; }
 	public HashSet<AgentBelief> RequiredEffects { get; }
-	public List<Node> Leaves { get; }
+	public List<GOAPNode> Leaves { get; }
 	public float Cost { get; }
 
 	public bool IsLeafDead => Leaves.Count == 0 && Action == null;
 
-	public Node(Node parent, AgentAction action, HashSet<AgentBelief> effects, float cost)
+	public GOAPNode(GOAPNode parent, AgentAction action, HashSet<AgentBelief> effects, float cost)
 	{
 		Parent = parent;
 		Action = action;
 		RequiredEffects = new HashSet<AgentBelief>(effects);
-		Leaves = new List<Node>();
+		Leaves = new List<GOAPNode>();
 		Cost = cost;
 	}
 }
