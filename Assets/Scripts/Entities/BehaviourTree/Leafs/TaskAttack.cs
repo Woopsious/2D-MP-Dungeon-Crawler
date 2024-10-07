@@ -22,9 +22,7 @@ public class TaskAttack : BTNode
 	public override NodeState Evaluate()
 	{
 		Debug.Log(stats.name + " attack task");
-
 		AttackBehaviourLogic();
-
 		return state = NodeState.RUNNING;
 	}
 

@@ -33,38 +33,6 @@ public class TaskWander : BTNode
 	}
 
 	//Wander behaviour
-	private void WanderBehaviour(EntityBehaviour entity)
-	{
-		if (entity.CurrentPlayerTargetVisible())
-		{
-			if (entity.entityStats.entityBaseStats.isBossVersion)
-			{
-				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
-				bossEntity.ChangeState(bossEntity.goblinAttackState);
-			}
-			else
-				entity.ChangeState(entity.attackState);
-		}
-		else
-		{
-			InvestigatePlayersLastKnownPos(entity);
-
-			if (entity.HasReachedDestination())
-				entity.ChangeState(entity.idleState);
-		}
-	}
-	private void InvestigatePlayersLastKnownPos(EntityBehaviour entity)
-	{
-		if (entity.playersLastKnownPosition == new Vector2(0, 0)) return;
-
-		entity.SetNewDestination(entity.playersLastKnownPosition);
-
-		if (entity.HasReachedDestination())
-		{
-			entity.playersLastKnownPosition = new Vector2(0, 0);
-			entity.ChangeState(entity.idleState);
-		}
-	}
 	private void FindNewIdlePosition(EntityBehaviour entity)
 	{
 		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);

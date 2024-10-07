@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Services.Lobbies.Models;
 using UnityEditor.Experimental.GraphView;
+using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Diagnostics;
@@ -168,29 +169,28 @@ public class EntityBehaviour : Tree
 	//set entity GOAPS
 	protected override BTNode SetupTree()
 	{
-		BTNode root = new Sequence(new List<BTNode>
+		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
 		{
-            //new Sequence(new List<Node>
-            //{
-            //    new CheckEnemyInAttackRange(transform),
-            //    new TaskAttack(transform),
-            //}),
-
-			new Selector(new List<BTNode>
+			new Sequence(new List<BTNode> //attack behaviour
 			{
+				new CheckPlayerTargetVisible(entityStats),
+				new TaskAttack(entityStats),
+			}),
+
+			new Sequence(new List<BTNode> //investigate behaviour
+			{
+				new CheckPlayerTargetLastPos(entityStats),
 				new Sequence(new List<BTNode>
 				{
-					new CheckPlayerTargetVisible(entityStats),
-					new TaskAttack(entityStats),
-				}),
-
-				new Selector(new List<BTNode>
-				{
-					new TaskIdle(entityStats),
-					new TaskWander(entityStats),
+					new TaskInvestigate(entityStats),
 				}),
 			}),
 
+			new Selector(new List<BTNode> //wander behaviour
+			{
+				new TaskIdle(entityStats),
+				new TaskWander(entityStats),
+			}),
 		});
 
 		return root;

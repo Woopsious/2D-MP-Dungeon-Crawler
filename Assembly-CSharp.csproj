@@ -114,6 +114,7 @@
     <Compile Include="Assets\GameData\TilemapData\TileData.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Checks\CheckPlayerTargetLastPos.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Checks\CheckPlayerTargetVisible.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\EnchantmentHandler.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="Assets\Scripts\Managers\ToolTipManager.cs" />
     <Compile Include="Assets\Scripts\Entities\BaseEntities\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\NPC&apos;s\NpcHandler.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\Leafs\TaskInvestigate.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
     <Compile Include="Assets\Scripts\UI\InventorySlotDataUi.cs" />
