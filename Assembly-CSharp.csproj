@@ -77,8 +77,8 @@
     <Compile Include="Assets\Scripts\DungeonItems\SpawnHandler.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
-    <Compile Include="Assets\Scripts\Entities\BossEntities\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Tree.cs" />
+    <Compile Include="Assets\Scripts\Entities\BossEntities\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Entities\EntityClassHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Selector.cs" />

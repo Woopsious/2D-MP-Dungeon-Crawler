@@ -125,7 +125,7 @@ public class EntityBehaviour : Tree
 
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
-		IsPlayerTargetVisibleTimer();
+		//IsPlayerTargetVisibleTimer();
 
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
@@ -168,18 +168,29 @@ public class EntityBehaviour : Tree
 	//set entity GOAPS
 	protected override BTNode SetupTree()
 	{
-		BTNode root = new Selector(new List<BTNode>
+		BTNode root = new Sequence(new List<BTNode>
 		{
             //new Sequence(new List<Node>
             //{
             //    new CheckEnemyInAttackRange(transform),
             //    new TaskAttack(transform),
             //}),
-            new Selector(new List<BTNode>
+
+			new Selector(new List<BTNode>
 			{
-			new TaskIdle(entityStats),
-			new TaskWander(entityStats),
+				new Sequence(new List<BTNode>
+				{
+					new CheckPlayerTargetVisible(entityStats),
+					new TaskAttack(entityStats),
+				}),
+
+				new Selector(new List<BTNode>
+				{
+					new TaskIdle(entityStats),
+					new TaskWander(entityStats),
+				}),
 			}),
+
 		});
 
 		return root;
