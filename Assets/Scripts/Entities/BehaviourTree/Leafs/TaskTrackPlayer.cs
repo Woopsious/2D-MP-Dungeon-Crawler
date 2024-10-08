@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TaskAttack : BTNode
+public class TaskTrackPlayer : BTNode
 {
 	EntityStats stats;
 	EntityBehaviour behaviour;
@@ -11,7 +11,7 @@ public class TaskAttack : BTNode
 	NavMeshAgent navMesh;
 	
 
-	public TaskAttack(EntityStats entity)
+	public TaskTrackPlayer(EntityStats entity)
 	{
 		stats = entity;
 		behaviour = entity.entityBehaviour;
@@ -21,27 +21,20 @@ public class TaskAttack : BTNode
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(stats.name + " attack task");
-		AttackBehaviourLogic();
-		return state = NodeState.RUNNING;
-	}
+		Debug.Log(stats.name + " track player task");
 
-	//attack behaviour logic
-	protected void AttackBehaviourLogic()
-	{
 		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
 			KeepDistanceFromPlayer(behaviour);
 		else
 			KeepPlayerInMeleeRange(behaviour);
 
-		behaviour.TryAttackWithMainWeapon();
-		behaviour.TryCastOffensiveAbility();
+		return NodeState.RUNNING;
 	}
 
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity)
 	{
-		if (entity.entityStats.entityBaseStats.isBossVersion)
+		if (entity.entityStats.statsRef.isBossVersion)
 		{
 			if (CheckDistanceToPlayerIsBigger(entity, equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange + 0.5f))
 				entity.SetNewDestination(entity.playersLastKnownPosition);
@@ -70,8 +63,8 @@ public class TaskAttack : BTNode
 	protected int GetDistanceToKeepFromPlayer(EntityBehaviour entity)
 	{
 		int distance;
-		if ((int)entity.entityBehaviour.aggroRange < equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange - 2)
-			distance = (int)entity.entityBehaviour.aggroRange;
+		if ((int)entity.behaviourRef.aggroRange < equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange - 2)
+			distance = (int)entity.behaviourRef.aggroRange;
 		else
 			distance = (int)equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange - 2;
 

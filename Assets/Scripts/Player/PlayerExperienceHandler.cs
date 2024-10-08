@@ -55,7 +55,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 		else if (Obj.GetComponent<PlayerController>() == null && Obj.GetComponent<EntityStats>() != null)
 		{
 			EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
-			int expToAdd = otherEntityStats.entityBaseStats.expOnDeath;
+			int expToAdd = otherEntityStats.statsRef.expOnDeath;
 
 			//reduce exp given based on level difference (should rarely happen as entities scale to player)
 			int levelDifference = playerStats.entityLevel - otherEntityStats.entityLevel;

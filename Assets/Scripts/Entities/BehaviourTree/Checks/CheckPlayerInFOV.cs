@@ -2,14 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckPlayerTargetVisible : BTNode
+public class CheckPlayerInFOV : BTNode
 {
 	EntityStats stats;
 	EntityBehaviour behaviour;
 	float playerDetectionTimer;
 	float playerDetectionCooldown;
 
-	public CheckPlayerTargetVisible(EntityStats entity)
+	public CheckPlayerInFOV(EntityStats entity)
 	{
 		stats = entity;
 		behaviour = entity.entityBehaviour;
@@ -27,14 +27,14 @@ public class CheckPlayerTargetVisible : BTNode
 			if (PlayerTargetVisible(behaviour.playerTarget))
 			{
 				behaviour.playersLastKnownPosition = behaviour.playerTarget.transform.position;
-				return state = NodeState.SUCCESS;
+				return NodeState.SUCCESS;
 			}
 			else
 			{
-				return state = NodeState.FAILURE;
+				return NodeState.FAILURE;
 			}
 		}
-		return state = NodeState.RUNNING;
+		return NodeState.RUNNING;
 	}
 
 	private bool PlayerTargetVisible(PlayerController player)
@@ -46,7 +46,7 @@ public class CheckPlayerTargetVisible : BTNode
 			return false;
 
 		//check aggro range
-		if (Vector2.Distance(behaviour.transform.position, player.transform.position) > behaviour.entityBehaviour.aggroRange)
+		if (Vector2.Distance(behaviour.transform.position, player.transform.position) > behaviour.behaviourRef.aggroRange)
 			return false;
 
 		return true;

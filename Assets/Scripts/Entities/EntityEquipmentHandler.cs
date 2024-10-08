@@ -64,7 +64,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 	//equip items to non players based on class
 	public void SpawnEntityEquipment()
 	{
-		if (entityStats.entityBaseStats.canUseEquipment)
+		if (entityStats.statsRef.canUseEquipment)
 		{
 			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
 				(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);//main weapon
@@ -82,7 +82,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			//Accessory functions here if/when i decide to add it
 		}
 		else
-			EquipWeapon(entityStats.entityBaseStats.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
+			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
 	}
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{

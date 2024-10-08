@@ -295,7 +295,7 @@ public class PlayerController : MonoBehaviour
 	public void AddNewEnemyTargetToList(EntityStats entity)
 	{
 		//add new enemy to list, then update targets
-		EnemyDistance enemy = new(entity.entityBaseStats.name, 
+		EnemyDistance enemy = new(entity.statsRef.name, 
 			entity.classHandler.currentEntityClass.name, entity, GrabDistanceToEntity(entity));
 		EnemyTargetList.Add(enemy);
 		UpdateSelectedTargetIndexOnListChanges();

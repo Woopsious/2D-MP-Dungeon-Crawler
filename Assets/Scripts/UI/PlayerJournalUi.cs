@@ -126,7 +126,7 @@ public class PlayerJournalUi : MonoBehaviour
 		{
 			if (quest.questType == QuestDataUi.QuestType.isItemHandInQuest) continue;
 
-			if (quest.entityToKill = obj.GetComponent<EntityStats>().entityBaseStats)
+			if (quest.entityToKill = obj.GetComponent<EntityStats>().statsRef)
 				quest.currentAmount++;
 
 			quest.questTrackerUi.text = $"{quest.currentAmount} / {quest.amount} Killed";

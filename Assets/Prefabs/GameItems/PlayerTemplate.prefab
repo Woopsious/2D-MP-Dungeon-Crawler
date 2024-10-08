@@ -402,6 +402,7 @@ MonoBehaviour:
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   queuedAbility: {fileID: 0}
   isInteractingWithInteractable: 0
+  currentInteractedObject: {fileID: 0}
 --- !u!114 &4412705391860920891
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,7 +415,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fa8324c379d8ce4eb7197d91f4fde73, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBaseStats: {fileID: 11400000, guid: 62769b5b0b4d3c04e85ef46bac28b8e3, type: 2}
+  statsRef: {fileID: 11400000, guid: 62769b5b0b4d3c04e85ef46bac28b8e3, type: 2}
   entityBehaviour: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
@@ -582,7 +583,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugInvincible: 0
+  invincible: 0
   isDestroyedInOneHit: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
@@ -1110,7 +1111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed91e617b5c092429d74e2e7803ba80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBehaviourRef: {fileID: 0}
+  trapHandler: {fileID: 0}
+  entityBehaviour: {fileID: 0}
   player: {fileID: 0}
 --- !u!58 &4430825405675616512
 CircleCollider2D:

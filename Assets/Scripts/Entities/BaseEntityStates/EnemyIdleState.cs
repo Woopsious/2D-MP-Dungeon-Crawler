@@ -16,11 +16,11 @@ public class EnemyIdleState : EnemyBaseState
 	{
 		if (entity.CurrentPlayerTargetVisible())
 		{
-			if (entity.entityStats.entityBaseStats.isBossVersion)
+			if (entity.entityStats.statsRef.isBossVersion)
 			{
 				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
 
-				if (entity.entityStats.entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
+				if (entity.entityStats.statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
 					bossEntity.ChangeState(bossEntity.goblinAttackState);
 			}
 			else
@@ -40,7 +40,7 @@ public class EnemyIdleState : EnemyBaseState
 
 		if (entity.idleTimer < 0)
 		{
-			entity.idleTimer = entity.entityBehaviour.idleWaitTime;
+			entity.idleTimer = entity.behaviourRef.idleWaitTime;
 			entity.ChangeState(entity.wanderState);
 		}
 	}

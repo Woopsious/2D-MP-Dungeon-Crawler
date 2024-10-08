@@ -37,7 +37,7 @@ public class BossEntityBehaviour : EntityBehaviour
 	{
 		base.Initilize();
 
-		SOBossEntityBehaviour behaviour = (SOBossEntityBehaviour)entityBehaviour;
+		SOBossEntityBehaviour behaviour = (SOBossEntityBehaviour)behaviourRef;
 		abilityOne = behaviour.abilityOne;
 		abilityTwo = behaviour.abilityTwo;
 		abilityThree = behaviour.abilityThree;

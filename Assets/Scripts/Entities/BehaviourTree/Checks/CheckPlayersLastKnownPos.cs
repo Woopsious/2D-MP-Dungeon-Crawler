@@ -2,11 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CheckPlayerTargetLastPos : BTNode
+public class CheckPlayersLastKnownPos : BTNode
 {
 	EntityBehaviour behaviour;
 
-	public CheckPlayerTargetLastPos(EntityStats entity)
+	public CheckPlayersLastKnownPos(EntityStats entity)
 	{
 		behaviour = entity.entityBehaviour;
 	}
@@ -14,12 +14,8 @@ public class CheckPlayerTargetLastPos : BTNode
 	public override NodeState Evaluate()
 	{
 		if (behaviour.playersLastKnownPosition == new Vector2 (0, 0))
-		{
-			return state = NodeState.FAILURE;
-		}
+			return NodeState.FAILURE;
 		else
-		{
-			return state = NodeState.SUCCESS;
-		}
+			return NodeState.SUCCESS;
 	}
 }

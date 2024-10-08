@@ -22,14 +22,13 @@ public class TaskWander : BTNode
 
 		if (navMesh.remainingDistance < navMesh.stoppingDistance && entityBehaviour.idleTimer <= 0)
 		{
-			Debug.Log(entity.name + " get path");
-			entityBehaviour.idleTimer = entityBehaviour.entityBehaviour.idleWaitTime;
+			entityBehaviour.idleTimer = entityBehaviour.behaviourRef.idleWaitTime;
 			FindNewIdlePosition(entityBehaviour);
 		}
 
 		if (navMesh.remainingDistance > navMesh.stoppingDistance)
-			return state = NodeState.RUNNING;
-		else return state = NodeState.FAILURE;
+			return NodeState.RUNNING;
+		else return NodeState.FAILURE;
 	}
 
 	//Wander behaviour

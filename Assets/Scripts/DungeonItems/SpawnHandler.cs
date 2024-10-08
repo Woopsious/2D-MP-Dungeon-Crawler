@@ -150,7 +150,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEntityDeath(GameObject obj)
 	{
-		if (obj.GetComponent<EntityStats>().entityBaseStats.isBossVersion) //boss entity deaths, unsub to event and set to null
+		if (obj.GetComponent<EntityStats>().statsRef.isBossVersion) //boss entity deaths, unsub to event and set to null
 		{
 			if (bossEntity == null) return; //occasionally called multiple times so ignore if null
 			bossEntity = null;
@@ -224,9 +224,9 @@ public class SpawnHandler : MonoBehaviour
 	{
 		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
-		bossEntity.entityBaseStats = bossToSpawn;
+		bossEntity.statsRef = bossToSpawn;
 		bossEntity.spawner = this;
-		bossEntity.GetComponent<BossEntityBehaviour>().entityBehaviour = bossEntityToSpawn.entityBehaviour;
+		bossEntity.GetComponent<BossEntityBehaviour>().behaviourRef = bossEntityToSpawn.entityBehaviour;
 		this.bossEntity = bossEntity;
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -242,7 +242,7 @@ public class SpawnHandler : MonoBehaviour
 
 		foreach (EntityStats entity in DungeonHandler.Instance.inActiveEntityPool)
 		{
-			if (entity.entityBaseStats == possibleEntityTypesToSpawn[num])
+			if (entity.statsRef == possibleEntityTypesToSpawn[num])
 			{
 				entityTypeMatches = true;
 				DungeonHandler.Instance.inActiveEntityPool.Remove(entity);
@@ -273,8 +273,8 @@ public class SpawnHandler : MonoBehaviour
 		int num = GetIndexOfEnemyToSpawn();
 		GameObject go = Instantiate(entityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
-		entity.entityBaseStats = possibleEntityTypesToSpawn[num];
-		entity.GetComponent<EntityBehaviour>().entityBehaviour = possibleEntityTypesToSpawn[num].entityBehaviour;
+		entity.statsRef = possibleEntityTypesToSpawn[num];
+		entity.GetComponent<EntityBehaviour>().behaviourRef = possibleEntityTypesToSpawn[num].entityBehaviour;
 		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)

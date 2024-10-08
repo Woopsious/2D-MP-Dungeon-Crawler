@@ -22,7 +22,7 @@ public class EnemyAttackState : EnemyBaseState
 		if (!entity.CurrentPlayerTargetVisible())
 			entity.ChangeState(entity.wanderState);
 
-		if (CheckDistanceToPlayerIsBigger(entity, entity.entityBehaviour.maxChaseRange)) //de aggro
+		if (CheckDistanceToPlayerIsBigger(entity, entity.behaviourRef.maxChaseRange)) //de aggro
 			entity.ChangeState(entity.wanderState);
 
 		AttackBehaviourLogic(entity);
@@ -47,7 +47,7 @@ public class EnemyAttackState : EnemyBaseState
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity)
 	{
-		if (entity.entityStats.entityBaseStats.isBossVersion)
+		if (entity.entityStats.statsRef.isBossVersion)
 		{
 			if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange + 0.5f))
 				entity.SetNewDestination(entity.playersLastKnownPosition);
@@ -76,8 +76,8 @@ public class EnemyAttackState : EnemyBaseState
 	protected int GetDistanceToKeepFromPlayer(EntityBehaviour entity)
 	{
 		int distance;
-		if ((int)entity.entityBehaviour.aggroRange < equippedWeapon.weaponBaseRef.maxAttackRange - 2)
-			distance = (int)entity.entityBehaviour.aggroRange;
+		if ((int)entity.behaviourRef.aggroRange < equippedWeapon.weaponBaseRef.maxAttackRange - 2)
+			distance = (int)entity.behaviourRef.aggroRange;
 		else
 			distance = (int)equippedWeapon.weaponBaseRef.maxAttackRange - 2;
 

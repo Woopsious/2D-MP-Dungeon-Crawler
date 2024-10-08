@@ -29,7 +29,7 @@ public class EnemyWanderState : EnemyBaseState
 	{
 		if (entity.CurrentPlayerTargetVisible())
 		{
-			if (entity.entityStats.entityBaseStats.isBossVersion)
+			if (entity.entityStats.statsRef.isBossVersion)
 			{
 				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
 				bossEntity.ChangeState(bossEntity.goblinAttackState);

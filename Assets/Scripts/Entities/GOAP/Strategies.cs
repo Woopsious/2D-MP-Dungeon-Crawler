@@ -71,7 +71,7 @@ public class AttackStrategy : IActionStrategy
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity)
 	{
-		if (entity.entityStats.entityBaseStats.isBossVersion)
+		if (entity.entityStats.statsRef.isBossVersion)
 		{
 			if (CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.maxAttackRange + 0.5f))
 				entity.SetNewDestination(entity.playersLastKnownPosition);
@@ -100,8 +100,8 @@ public class AttackStrategy : IActionStrategy
 	protected int GetDistanceToKeepFromPlayer(EntityBehaviour entity)
 	{
 		int distance;
-		if ((int)entity.entityBehaviour.aggroRange < equippedWeapon.weaponBaseRef.maxAttackRange - 2)
-			distance = (int)entity.entityBehaviour.aggroRange;
+		if ((int)entity.behaviourRef.aggroRange < equippedWeapon.weaponBaseRef.maxAttackRange - 2)
+			distance = (int)entity.behaviourRef.aggroRange;
 		else
 			distance = (int)equippedWeapon.weaponBaseRef.maxAttackRange - 2;
 
@@ -155,7 +155,7 @@ public class WanderStrategy : IActionStrategy
 
 		if (entity.navMeshAgent.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
 		{
-			entity.idleTimer = entity.entityBehaviour.idleWaitTime;
+			entity.idleTimer = entity.behaviourRef.idleWaitTime;
 			entity.navMeshAgent.SetPath(path);
 		}
 		else

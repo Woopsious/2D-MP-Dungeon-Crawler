@@ -3,12 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor.Experimental.GraphView;
 using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Diagnostics;
 using UnityEngine.UIElements;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class EntityBehaviour : Tree
 {
@@ -18,7 +20,7 @@ public class EntityBehaviour : Tree
 	{
 		useStateMachine, useBehaviourTree, useGOAP
 	}
-	public SOEntityBehaviour entityBehaviour;
+	public SOEntityBehaviour behaviourRef;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private SpriteRenderer spriteRenderer;
@@ -58,7 +60,7 @@ public class EntityBehaviour : Tree
 	public LayerMask includeMe;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
-	private float distanceToPlayerTarget;
+	public float distanceToPlayerTarget;
 	public bool currentPlayerTargetInView;
 	public Vector2 playersLastKnownPosition;
 
@@ -68,14 +70,17 @@ public class EntityBehaviour : Tree
 	private readonly float playerDetectionCooldown = 0.1f;
 	private float playerDetectionTimer;
 
+	[Header("Global Attack Cooldown")]
+	public float globalAttackTimer;
+
 	[Header("Healing Ability Cooldown")]
 	public SOClassAbilities healingAbility;
-	private bool canCastHealingAbility;
+	public bool canCastHealingAbility;
 	private float healingAbilityTimer;
 
 	[Header("Offensive Ability Cooldown")]
 	public SOClassAbilities offensiveAbility;
-	private bool canCastOffensiveAbility;
+	public bool canCastOffensiveAbility;
 	private float offensiveAbilityTimer;
 
 	[Header("Prefabs")]
@@ -126,7 +131,6 @@ public class EntityBehaviour : Tree
 
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
-		//IsPlayerTargetVisibleTimer();
 
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
@@ -134,7 +138,11 @@ public class EntityBehaviour : Tree
 		if (behaviourTypeToUse == BehaviourType.useStateMachine)
 			currentState.UpdateLogic(this);
 		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+		{
+			GlobalAttackTimer();
+			IsPlayerTargetVisibleTimer();
 			base.Update();
+		}
 		else if (behaviourTypeToUse == BehaviourType.useGOAP)
 			GOAPUpdate();
 	}
@@ -142,17 +150,17 @@ public class EntityBehaviour : Tree
 	{
 		if (entityStats.IsEntityDead()) return;
 
-		aggroBounds.min = new Vector3(transform.position.x - entityBehaviour.aggroRange,
-			transform.position.y - entityBehaviour.aggroRange, transform.position.z);
+		aggroBounds.min = new Vector3(transform.position.x - behaviourRef.aggroRange,
+			transform.position.y - behaviourRef.aggroRange, transform.position.z);
 
-		aggroBounds.max = new Vector3(transform.position.x + entityBehaviour.aggroRange,
-		transform.position.y + entityBehaviour.aggroRange, transform.position.z);
+		aggroBounds.max = new Vector3(transform.position.x + behaviourRef.aggroRange,
+		transform.position.y + behaviourRef.aggroRange, transform.position.z);
 
-		chaseBounds.min = new Vector3(transform.position.x - entityBehaviour.maxChaseRange,
-		transform.position.y - entityBehaviour.maxChaseRange, transform.position.z);
+		chaseBounds.min = new Vector3(transform.position.x - behaviourRef.maxChaseRange,
+		transform.position.y - behaviourRef.maxChaseRange, transform.position.z);
 
-		chaseBounds.max = new Vector3(transform.position.x + entityBehaviour.maxChaseRange,
-		transform.position.y + entityBehaviour.maxChaseRange, transform.position.z);
+		chaseBounds.max = new Vector3(transform.position.x + behaviourRef.maxChaseRange,
+		transform.position.y + behaviourRef.maxChaseRange, transform.position.z);
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
@@ -173,13 +181,30 @@ public class EntityBehaviour : Tree
 		{
 			new Sequence(new List<BTNode> //attack behaviour
 			{
-				new CheckPlayerTargetVisible(entityStats),
-				new TaskAttack(entityStats),
+				new CheckPlayerInFOV(entityStats), 
+				new TaskTrackPlayer(entityStats),
+
+				new Sequence(new List<BTNode> //attack options
+				{
+					new CheckGlobalAttackCooldown(entityStats),
+					new Selector(new List<BTNode> //weapon attack
+					{
+						new Sequence(new List<BTNode> //use ability
+						{
+							new TaskUseAbility(entityStats),
+						}),
+						new Sequence(new List<BTNode> //weapon attack
+						{
+							new CheckPlayerInAttackRange(entityStats),
+							new TaskWeaponAttack(entityStats),
+						}),
+					}),
+				}),
 			}),
 
 			new Sequence(new List<BTNode> //investigate behaviour
 			{
-				new CheckPlayerTargetLastPos(entityStats),
+				new CheckPlayersLastKnownPos(entityStats),
 				new Sequence(new List<BTNode>
 				{
 					new TaskInvestigate(entityStats),
@@ -338,10 +363,10 @@ public class EntityBehaviour : Tree
 		viewRangeCollider.radius = playerDetectionRange;
 		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;
 
-		navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
-		navMeshAgent.angularSpeed = entityBehaviour.navMeshTurnSpeed;
-		navMeshAgent.acceleration = entityBehaviour.navMeshAcceleration;
-		navMeshAgent.stoppingDistance = entityBehaviour.navMeshStoppingDistance;
+		navMeshAgent.speed = behaviourRef.navMeshMoveSpeed;
+		navMeshAgent.angularSpeed = behaviourRef.navMeshTurnSpeed;
+		navMeshAgent.acceleration = behaviourRef.navMeshAcceleration;
+		navMeshAgent.stoppingDistance = behaviourRef.navMeshStoppingDistance;
 	}
 	public void ResetBehaviour()
 	{
@@ -353,23 +378,23 @@ public class EntityBehaviour : Tree
 	}
 	public void UpdateBounds(Vector3 position)
 	{
-		idleBounds.min = new Vector3(position.x - entityBehaviour.idleWanderRadius,
-			position.y - entityBehaviour.idleWanderRadius, position.z);
+		idleBounds.min = new Vector3(position.x - behaviourRef.idleWanderRadius,
+			position.y - behaviourRef.idleWanderRadius, position.z);
 
-		idleBounds.max = new Vector3(position.x + entityBehaviour.idleWanderRadius,
-			position.y + entityBehaviour.idleWanderRadius, position.z);
+		idleBounds.max = new Vector3(position.x + behaviourRef.idleWanderRadius,
+			position.y + behaviourRef.idleWanderRadius, position.z);
 
-		aggroBounds.min = new Vector3(position.x - entityBehaviour.aggroRange,
-			position.y - entityBehaviour.aggroRange, position.z);
+		aggroBounds.min = new Vector3(position.x - behaviourRef.aggroRange,
+			position.y - behaviourRef.aggroRange, position.z);
 
-		aggroBounds.max = new Vector3(position.x + entityBehaviour.aggroRange,
-			position.y + entityBehaviour.aggroRange, position.z);
+		aggroBounds.max = new Vector3(position.x + behaviourRef.aggroRange,
+			position.y + behaviourRef.aggroRange, position.z);
 
-		chaseBounds.min = new Vector3(position.x - entityBehaviour.maxChaseRange,
-			position.y - entityBehaviour.maxChaseRange, position.z);
+		chaseBounds.min = new Vector3(position.x - behaviourRef.maxChaseRange,
+			position.y - behaviourRef.maxChaseRange, position.z);
 
-		chaseBounds.max = new Vector3(position.x + entityBehaviour.maxChaseRange,
-			position.y + entityBehaviour.maxChaseRange, position.z);
+		chaseBounds.max = new Vector3(position.x + behaviourRef.maxChaseRange,
+			position.y + behaviourRef.maxChaseRange, position.z);
 	}
 
 	private void UpdateSpriteDirection()
@@ -389,7 +414,7 @@ public class EntityBehaviour : Tree
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
 		if (resetSpeed)
-			navMeshAgent.speed = entityBehaviour.navMeshMoveSpeed;
+			navMeshAgent.speed = behaviourRef.navMeshMoveSpeed;
 		else 
 			navMeshAgent.speed *= speedModifier;
 	}
@@ -424,35 +449,10 @@ public class EntityBehaviour : Tree
 		if (hit.point == null || hit.collider.GetComponent<PlayerController>() == null) //check LoS
 			return false;
 
-		if (Vector2.Distance(transform.position, player.transform.position) > entityBehaviour.aggroRange) //check aggro range
+		if (Vector2.Distance(transform.position, player.transform.position) > behaviourRef.aggroRange) //check aggro range
 			return false;
 		
 		return true;
-	}
-	private bool PlayerInLoS(PlayerController player)
-	{
-		if (player == null) return false;
-		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
-
-		if (hit.point != null && hit.collider.GetComponent<PlayerController>() != null)
-			return true;
-		else return false;
-	}
-	private bool PlayerWithinRange(PlayerController player)
-	{
-		if (player == null) return false;
-		if (currentState == idleState || currentState == wanderState)
-		{
-			if (Vector2.Distance(transform.position, player.transform.position) < entityBehaviour.aggroRange)
-				return true;
-			else return false;
-		}
-		else
-		{
-			if (Vector2.Distance(transform.position, player.transform.position) < entityBehaviour.maxChaseRange)
-				return true;
-			else return false;
-		}
 	}
 
 	//playerTarget checks and pos tracking
@@ -486,15 +486,20 @@ public class EntityBehaviour : Tree
 	}
 
 	//ATTACKING
+	private void GlobalAttackTimer()
+	{
+		if (globalAttackTimer <= 0)
+			globalAttackTimer -= Time.deltaTime;
+	}
 	public void TryAttackWithMainWeapon()
 	{
 		if (equipmentHandler.equippedWeapon == null) return;
 
-		float distanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange;
-		if (entityStats.entityBaseStats.isBossVersion)
-			distanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange * 2;
+		float maxDistanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange;
+		if (!equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon && entityStats.statsRef.isBossVersion)
+			maxDistanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange * 2;
 
-		if (distanceToPlayerTarget > distanceToCheck) return;
+		if (distanceToPlayerTarget > maxDistanceToCheck) return;
 
 		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
 			equipmentHandler.equippedWeapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
@@ -611,7 +616,7 @@ public class EntityBehaviour : Tree
 	//casting of each ability
 	public void TryCastHealingAbility(int maxHealth, int currentHealth)
 	{
-		if (entityStats.entityBaseStats.isBossVersion) return;
+		if (entityStats.statsRef.isBossVersion) return;
 
 		if (healingAbility == null || !canCastHealingAbility) return;
 		if (maxHealth == 0) return;

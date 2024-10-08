@@ -28,8 +28,8 @@ public class EntityClassHandler : MonoBehaviour
 	//set classes + abilities of non players
 	public void SetEntityClass()
 	{
-		int num = Utilities.GetRandomNumber(entityStats.entityBaseStats.possibleClassesList.Count - 1);
-		currentEntityClass = entityStats.entityBaseStats.possibleClassesList[num];
+		int num = Utilities.GetRandomNumber(entityStats.statsRef.possibleClassesList.Count - 1);
+		currentEntityClass = entityStats.statsRef.possibleClassesList[num];
 
 		foreach (ClassStatUnlocks statBonuses in currentEntityClass.classStatBonusList)
 		{

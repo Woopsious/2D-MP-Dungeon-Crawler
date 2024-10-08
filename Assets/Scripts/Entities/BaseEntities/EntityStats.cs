@@ -8,11 +8,11 @@ using UnityEngine.SceneManagement;
 public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
-	public SOEntityStats entityBaseStats;
-	[HideInInspector] public EntityBehaviour entityBehaviour;
-	[HideInInspector] public EntityClassHandler classHandler;
-	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
-	[HideInInspector] public LootSpawnHandler lootSpawnHandler;
+	public SOEntityStats statsRef;
+	public EntityBehaviour entityBehaviour;
+	public EntityClassHandler classHandler;
+	public EntityEquipmentHandler equipmentHandler;
+	public LootSpawnHandler lootSpawnHandler;
 	private BoxCollider2D boxCollider2D;
 	private Animator animator;
 	public SpriteRenderer spriteRenderer {get; private set; }
@@ -120,16 +120,16 @@ public class EntityStats : MonoBehaviour
 	//set entity data
 	public void Initilize()
 	{
-		spriteRenderer.sprite = entityBaseStats.sprite;
-		name = entityBaseStats.entityName;
+		spriteRenderer.sprite = statsRef.sprite;
+		name = statsRef.entityName;
 		CalculateBaseStats();
 
 		if (GetComponent<PlayerController>() == null)
 		{
 			classHandler.SetEntityClass();
 			equipmentHandler.SpawnEntityEquipment();
-			lootSpawnHandler.Initilize(entityBaseStats.maxDroppedGoldAmount, entityBaseStats.minDroppedGoldAmount, 
-				entityBaseStats.lootPool, entityBaseStats.itemRarityChanceModifier);
+			lootSpawnHandler.Initilize(statsRef.maxDroppedGoldAmount, statsRef.minDroppedGoldAmount,
+				statsRef.lootPool, statsRef.itemRarityChanceModifier);
 		}
 
 		if (GameManager.Instance == null) return; //for now leave this line in
@@ -159,7 +159,7 @@ public class EntityStats : MonoBehaviour
 		{
 			idleSoundTimer = idleSoundCooldown;
 			if (chanceOfIdleSound < Utilities.GetRandomNumber(100))
-				audioHandler.PlayAudio(entityBaseStats.idleSfx);
+				audioHandler.PlayAudio(statsRef.idleSfx);
 		}
 	}
 
@@ -240,7 +240,7 @@ public class EntityStats : MonoBehaviour
 		//Debug.Log("FinalDmg: " + damage);
 		currentHealth = (int)(currentHealth - damage);
 		RedFlashOnRecieveDamage();
-		audioHandler.PlayAudio(entityBaseStats.hurtSfx);
+		audioHandler.PlayAudio(statsRef.hurtSfx);
 		if (!IsPlayerEntity() && player != null)
 			entityBehaviour.AddToAggroRating(player, (int)damage);
 
@@ -255,7 +255,7 @@ public class EntityStats : MonoBehaviour
 	}
 	private void OnDeath()
 	{
-		audioHandler.PlayAudio(entityBaseStats.deathSfx);
+		audioHandler.PlayAudio(statsRef.deathSfx);
 		entityBehaviour.navMeshAgent.isStopped = true;
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
@@ -419,16 +419,16 @@ public class EntityStats : MonoBehaviour
 		else
 			levelModifier = 1 + (entityLevel / 10f);
 
-		maxHealth.SetBaseValue((int)(entityBaseStats.maxHealth * levelModifier));
-		maxMana.SetBaseValue((int)(entityBaseStats.maxMana * levelModifier));
-		manaRegenPercentage.SetBaseValue(entityBaseStats.manaRegenPercentage);
-		manaRegenCooldown = entityBaseStats.manaRegenCooldown;
-		physicalResistance.SetBaseValue((int)(entityBaseStats.physicalDamageResistance * levelModifier));
-		poisonResistance.SetBaseValue((int)(entityBaseStats.poisonDamageResistance * levelModifier));
-		fireResistance.SetBaseValue((int)(entityBaseStats.fireDamageResistance * levelModifier));
-		iceResistance.SetBaseValue((int)(entityBaseStats.iceDamageResistance * levelModifier));
+		maxHealth.SetBaseValue((int)(statsRef.maxHealth * levelModifier));
+		maxMana.SetBaseValue((int)(statsRef.maxMana * levelModifier));
+		manaRegenPercentage.SetBaseValue(statsRef.manaRegenPercentage);
+		manaRegenCooldown = statsRef.manaRegenCooldown;
+		physicalResistance.SetBaseValue((int)(statsRef.physicalDamageResistance * levelModifier));
+		poisonResistance.SetBaseValue((int)(statsRef.poisonDamageResistance * levelModifier));
+		fireResistance.SetBaseValue((int)(statsRef.fireDamageResistance * levelModifier));
+		iceResistance.SetBaseValue((int)(statsRef.iceDamageResistance * levelModifier));
 
-		damageDealtModifier.SetBaseValue(entityBaseStats.damageDealtBaseModifier);
+		damageDealtModifier.SetBaseValue(statsRef.damageDealtBaseModifier);
 
 		healingPercentageModifier.SetBaseValue(1);
 		physicalDamagePercentageModifier.SetBaseValue(1);
@@ -614,7 +614,7 @@ public class EntityStats : MonoBehaviour
 	}
 	public bool IsPlayerEntity()
 	{
-		if (entityBaseStats.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
+		if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
 			return true;
 		else return false;
 	}
