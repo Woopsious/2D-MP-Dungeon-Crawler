@@ -43,6 +43,53 @@ public class BossEntityBehaviour : EntityBehaviour
 		abilityThree = behaviour.abilityThree;
 	}
 
+	//build Boss Behaviour Tree (atm just a copy of smae func in EntityBehaviour)
+	protected override BTNode SetupTree()
+	{
+		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
+		{
+			new Sequence(new List<BTNode> //attack behaviour
+			{
+				new CheckPlayerInFOV(entityStats),
+				new TaskTrackPlayer(entityStats),
+
+				new Sequence(new List<BTNode> //attack actions
+				{
+					new CheckGlobalAttackCooldown(entityStats),
+					new Selector(new List<BTNode> //attack actions
+					{
+						new Sequence(new List<BTNode> //use ability
+						{
+							new TaskUseAbility(entityStats),
+						}),
+						new Sequence(new List<BTNode> //weapon attack
+						{
+							new CheckPlayerInAttackRange(entityStats),
+							new TaskWeaponAttack(entityStats),
+						}),
+					}),
+				}),
+			}),
+
+			new Sequence(new List<BTNode> //investigate behaviour
+			{
+				new CheckPlayersLastKnownPos(entityStats),
+				new Sequence(new List<BTNode>
+				{
+					new TaskInvestigate(entityStats),
+				}),
+			}),
+
+			new Selector(new List<BTNode> //wander behaviour
+			{
+				new TaskIdle(entityStats),
+				new TaskWander(entityStats),
+			}),
+		});
+
+		return root;
+	}
+
 	//additional abilities
 	public void CastBossAbilityOne()
 	{

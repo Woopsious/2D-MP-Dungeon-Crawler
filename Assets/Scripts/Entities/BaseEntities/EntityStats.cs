@@ -9,10 +9,10 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats statsRef;
-	public EntityBehaviour entityBehaviour;
-	public EntityClassHandler classHandler;
-	public EntityEquipmentHandler equipmentHandler;
-	public LootSpawnHandler lootSpawnHandler;
+	[HideInInspector] public EntityBehaviour entityBehaviour;
+	[HideInInspector] public EntityClassHandler classHandler;
+	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
+	private LootSpawnHandler lootSpawnHandler;
 	private BoxCollider2D boxCollider2D;
 	private Animator animator;
 	public SpriteRenderer spriteRenderer {get; private set; }

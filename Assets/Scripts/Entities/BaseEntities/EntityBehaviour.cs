@@ -76,12 +76,12 @@ public class EntityBehaviour : Tree
 	[Header("Healing Ability Cooldown")]
 	public SOClassAbilities healingAbility;
 	public bool canCastHealingAbility;
-	private float healingAbilityTimer;
+	public float healingAbilityTimer;
 
 	[Header("Offensive Ability Cooldown")]
 	public SOClassAbilities offensiveAbility;
 	public bool canCastOffensiveAbility;
-	private float offensiveAbilityTimer;
+	public float offensiveAbilityTimer;
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -174,7 +174,7 @@ public class EntityBehaviour : Tree
 	}
 
 	//BehaviourTree related functions
-	//set entity GOAPS
+	//build Behaviour Tree
 	protected override BTNode SetupTree()
 	{
 		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
@@ -184,10 +184,10 @@ public class EntityBehaviour : Tree
 				new CheckPlayerInFOV(entityStats), 
 				new TaskTrackPlayer(entityStats),
 
-				new Sequence(new List<BTNode> //attack options
+				new Sequence(new List<BTNode> //attack actions
 				{
 					new CheckGlobalAttackCooldown(entityStats),
-					new Selector(new List<BTNode> //weapon attack
+					new Selector(new List<BTNode> //attack actions
 					{
 						new Sequence(new List<BTNode> //use ability
 						{
@@ -617,9 +617,7 @@ public class EntityBehaviour : Tree
 	public void TryCastHealingAbility(int maxHealth, int currentHealth)
 	{
 		if (entityStats.statsRef.isBossVersion) return;
-
-		if (healingAbility == null || !canCastHealingAbility) return;
-		if (maxHealth == 0) return;
+		if (healingAbility == null || !canCastHealingAbility || maxHealth == 0) return;
 
 		int healthPercentage = (int)((float)currentHealth / maxHealth * 100);
 		if (healthPercentage > 50) return;

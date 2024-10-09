@@ -224,20 +224,20 @@ public class Weapons : Items
 	}
 	private IEnumerator WeaponCooldown()
 	{
-		float secondsForCooldown;
+		float secondsForAttackCooldown;
 
 		if (weaponBaseRef.isRangedWeapon)
-			secondsForCooldown = 0.5f;
+			secondsForAttackCooldown = 0.5f;
 		else
-			secondsForCooldown = 0.1f;
+			secondsForAttackCooldown = 0.1f;
 
-		yield return new WaitForSeconds(secondsForCooldown);
+		yield return new WaitForSeconds(secondsForAttackCooldown);
 
 		OnWeaponCooldown();
 		if (isEquippedByPlayer)
-			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForCooldown);
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForAttackCooldown);
 		else
-			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - (secondsForCooldown + 0.25f));
+			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed + 0.25f - secondsForAttackCooldown);
 		canAttackAgain = true;
 	}
 

@@ -36,12 +36,12 @@ public class TaskTrackPlayer : BTNode
 	{
 		if (entity.entityStats.statsRef.isBossVersion)
 		{
-			if (CheckDistanceToPlayerIsBigger(entity, equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange + 0.5f))
+			if (CheckDistanceToPlayerIsBigger(entity, equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange + 0.75f))
 				entity.SetNewDestination(entity.playersLastKnownPosition);
 		}
 		else
 		{
-			if (CheckDistanceToPlayerIsBigger(entity, equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange - 0.5f))
+			if (CheckDistanceToPlayerIsBigger(entity, equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange - 0.25f))
 				entity.SetNewDestination(entity.playersLastKnownPosition);
 		}
 	}
@@ -49,10 +49,6 @@ public class TaskTrackPlayer : BTNode
 	//ranged weapon logic
 	protected void KeepDistanceFromPlayer(EntityBehaviour entity)
 	{
-		//if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)) &&
-		//!CheckDistanceToPlayerIsBigger(entity, equippedWeapon.weaponBaseRef.minAttackRange + 2)) //stop within ranges
-		//return;
-
 		//with ranged weapons idle within max range of weapon. (bow example: (10 - 2 = 8)	(2 + 2 = 4))
 		if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity)))//move closer
 			entity.SetNewDestination(MoveCloserToPlayer(entity.transform.position, entity.playersLastKnownPosition, 0.3f));

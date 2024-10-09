@@ -23,17 +23,17 @@ public class TaskWeaponAttack : BTNode
 	{
 		Debug.Log(stats.name + " weapon attack task");
 
-		if (behaviour.globalAttackTimer > 0) return NodeState.RUNNING; //always needs to be running
+		if (WeaponAttackOnCooldown(equipmentHandler.equippedWeapon)) return NodeState.RUNNING; //always needs to be running
 
 		Debug.LogError(stats.name + " attacking with weapon");
-		TryAttackWithMainWeapon(equipmentHandler.equippedWeapon);
+		AttackWithMainWeapon(equipmentHandler.equippedWeapon);
 
 		//add weapon animation length here if needed, include a bool if animation should block movement
 		behaviour.globalAttackTimer = 1f;
 		return NodeState.SUCCESS;
 	}
 
-	public void TryAttackWithMainWeapon(Weapons weapon)
+	public void AttackWithMainWeapon(Weapons weapon)
 	{
 		if (weapon == null) return;
 
@@ -41,5 +41,12 @@ public class TaskWeaponAttack : BTNode
 			weapon.RangedAttack(behaviour.playerTarget.transform.position, behaviour.projectilePrefab);
 		else
 			weapon.MeleeAttack(behaviour.playerTarget.transform.position);
+	}
+	public bool WeaponAttackOnCooldown(Weapons weapon)
+	{
+		if (behaviour.globalAttackTimer > 0 || !weapon.canAttackAgain)
+			return true;
+		else
+			return false;
 	}
 }
