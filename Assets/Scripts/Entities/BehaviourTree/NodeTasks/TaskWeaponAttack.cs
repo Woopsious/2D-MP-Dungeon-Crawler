@@ -21,8 +21,6 @@ public class TaskWeaponAttack : BTNode
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(stats.name + " weapon attack task");
-
 		if (WeaponAttackOnCooldown(equipmentHandler.equippedWeapon)) return NodeState.RUNNING; //always needs to be running
 
 		//Debug.LogError(stats.name + " attacking with weapon");

@@ -22,8 +22,6 @@ public class TaskUseAbility : BTNode
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(stats.name + " use ability task");
-
 		//return failure to force switch back to attack with main weapon
 		if (behaviour.globalAttackTimer > 0) return NodeState.FAILURE;
 		else

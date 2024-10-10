@@ -18,6 +18,7 @@ public class TaskWander : BTNode
 
 	public override NodeState Evaluate()
 	{
+		if (entityBehaviour.playerTarget != null) return NodeState.FAILURE;
 		Debug.Log(entity.name + " wander task");
 
 		if (navMesh.remainingDistance < navMesh.stoppingDistance && entityBehaviour.idleTimer <= 0)

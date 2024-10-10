@@ -77,10 +77,7 @@ public class BossEntityBehaviour : EntityBehaviour
 			new Sequence(new List<BTNode> //investigate behaviour
 			{
 				new CheckPlayersLastKnownPos(entityStats),
-				new Sequence(new List<BTNode>
-				{
-					new TaskInvestigate(entityStats),
-				}),
+				new TaskInvestigate(entityStats),
 			}),
 
 			new Selector(new List<BTNode> //wander behaviour

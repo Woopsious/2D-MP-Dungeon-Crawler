@@ -13,7 +13,7 @@ public class CheckPlayersLastKnownPos : BTNode
 
 	public override NodeState Evaluate()
 	{
-		if (behaviour.playersLastKnownPosition == new Vector2 (0, 0))
+		if (behaviour.playerTarget != null && behaviour.playersLastKnownPosition == new Vector2 (0, 0))
 			return NodeState.FAILURE;
 		else
 			return NodeState.SUCCESS;
