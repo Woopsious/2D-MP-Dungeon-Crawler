@@ -18,8 +18,6 @@ public class CheckGlobalAttackCooldown : BTNode
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(stats.name + " global attack timer: " + behaviour.globalAttackTimer);
-
 		if (behaviour.globalAttackTimer >= 0)
 			behaviour.globalAttackTimer -= Time.deltaTime;
 

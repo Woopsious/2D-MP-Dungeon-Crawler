@@ -9,6 +9,7 @@ public class BossEntityStats : EntityStats
 	public Damageable damageable;
 	public SpawnHandler spawner;
 	public float lastBossHealthPercentage;
+	public bool inPhaseTransition;
 
 	public BossPhase bossPhase;
 	public enum BossPhase
@@ -24,6 +25,7 @@ public class BossEntityStats : EntityStats
 	protected override void Start()
 	{
 		base.Start();
+		inPhaseTransition = true;
 	}
 	protected override void OnEnable()
 	{
@@ -45,8 +47,13 @@ public class BossEntityStats : EntityStats
 			bossPhase++;
 			spawner.ForceSpawnEntitiesForBosses();
 
-			if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
-				bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
+			if (bossBehaviour.behaviourTypeToUse == EntityBehaviour.BehaviourType.useStateMachine)
+			{
+				if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
+					bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
+			}
+			else if (bossBehaviour.behaviourTypeToUse == EntityBehaviour.BehaviourType.useBehaviourTree)
+				inPhaseTransition = true;
 		}
 		lastBossHealthPercentage = newPercentage;
 	}

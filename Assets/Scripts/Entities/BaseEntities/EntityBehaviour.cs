@@ -118,11 +118,13 @@ public class EntityBehaviour : Tree
 
 	private void OnEnable()
 	{
-		entityStats.OnHealthChangeEvent += TryCastHealingAbility;
+		if (behaviourTypeToUse != BehaviourType.useBehaviourTree)
+			entityStats.OnHealthChangeEvent += TryCastHealingAbility;
 	}
 	private void OnDisable()
 	{
-		entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
+		if (behaviourTypeToUse != BehaviourType.useBehaviourTree)
+			entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
 	}
 
 	protected override void Update()

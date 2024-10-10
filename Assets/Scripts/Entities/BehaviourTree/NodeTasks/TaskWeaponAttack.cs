@@ -25,7 +25,7 @@ public class TaskWeaponAttack : BTNode
 
 		if (WeaponAttackOnCooldown(equipmentHandler.equippedWeapon)) return NodeState.RUNNING; //always needs to be running
 
-		Debug.LogError(stats.name + " attacking with weapon");
+		//Debug.LogError(stats.name + " attacking with weapon");
 		AttackWithMainWeapon(equipmentHandler.equippedWeapon);
 
 		//add weapon animation length here if needed, include a bool if animation should block movement

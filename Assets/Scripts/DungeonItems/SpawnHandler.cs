@@ -192,18 +192,20 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void TrySpawnEntities()
 	{
+		if (isBossSpawner)
+			SpawnBossEntity();
+
 		if (listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn) return;
 		if (listOfPlayersInRange.Count == 0) return;
 		if (spawningDisabled) return;
-
-		if (isBossSpawner)
-			SpawnBossEntity();
 
 		SpawnEntity();
 	}
 	//boss entity spawning
 	private void SpawnBossEntity()
 	{
+		if (bossEntity != null) return; //disable spawning multiple
+
 		SOEntityStats bossToSpawn = null;
 
 		if (GameManager.Instance != null) //get ref from dungeonData in regular build
@@ -217,7 +219,7 @@ public class SpawnHandler : MonoBehaviour
 			Debug.LogError("bossEntityToSpawn reference null, add reference if testing");
 
 
-		if (bossEntity != null || bossToSpawn == null) return;
+		if (bossToSpawn == null) return;
 		InstantiateNewBossEntity(bossToSpawn);
 	}
 	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn)

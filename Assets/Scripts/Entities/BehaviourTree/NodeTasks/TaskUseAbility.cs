@@ -34,7 +34,7 @@ public class TaskUseAbility : BTNode
 				behaviour.TryCastOffensiveAbility();
 			else return NodeState.FAILURE;
 
-			Debug.LogError(stats.name + " using an ability");
+			//Debug.LogError(stats.name + " using an ability");
 
 			//add ability animation length here if needed, include a bool if animation should block movement
 			behaviour.globalAttackTimer = 1f;

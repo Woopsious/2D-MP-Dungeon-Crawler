@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -8,15 +9,12 @@ public class TaskTrackPlayer : BTNode
 	EntityStats stats;
 	EntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;
-	NavMeshAgent navMesh;
-	
 
 	public TaskTrackPlayer(EntityStats entity)
 	{
 		stats = entity;
 		behaviour = entity.entityBehaviour;
 		equipmentHandler = entity.equipmentHandler;
-		navMesh = entity.entityBehaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()

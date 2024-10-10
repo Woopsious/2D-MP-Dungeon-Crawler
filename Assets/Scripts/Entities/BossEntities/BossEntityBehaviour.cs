@@ -50,17 +50,20 @@ public class BossEntityBehaviour : EntityBehaviour
 		{
 			new Sequence(new List<BTNode> //attack behaviour
 			{
-				new CheckPlayerInFOV(entityStats),
-				new TaskTrackPlayer(entityStats),
+				new Selector(new List<BTNode> //check if in phase transition
+				{
+					new TaskGoblinBossTransitionPhase((BossEntityStats)entityStats),
+					new TaskGoblinBossPhase((BossEntityStats)entityStats),
+				}),
 
 				new Sequence(new List<BTNode> //attack actions
 				{
 					new CheckGlobalAttackCooldown(entityStats),
-					new Selector(new List<BTNode> //attack actions
+					new Sequence(new List<BTNode> //attack actions (CHANGE TO SELECTOR NODE WHEN BOSS ABILITIES DONE)
 					{
 						new Sequence(new List<BTNode> //use ability
 						{
-							new TaskUseAbility(entityStats),
+							//new TaskUseAbility(entityStats),
 						}),
 						new Sequence(new List<BTNode> //weapon attack
 						{
