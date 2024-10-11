@@ -2,31 +2,29 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class TaskIdle : BTNode
 {
-	EntityStats entity;
-	EntityBehaviour entityBehaviour;
+	EntityStats stats;
+	EntityBehaviour behaviour;
 	NavMeshAgent navMesh;
 
 	public TaskIdle(EntityStats entity)
 	{
-		this.entity = entity;
-		entityBehaviour = entity.entityBehaviour;
+		stats = entity;
+		behaviour = entity.entityBehaviour;
 		navMesh = entity.entityBehaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()
 	{
-		if (entityBehaviour.playerTarget != null) return NodeState.FAILURE;
-		Debug.Log(entity.name + " idle task");
-
-		if (navMesh.remainingDistance < navMesh.stoppingDistance && entityBehaviour.idleTimer >= 0)
+		if (navMesh.remainingDistance < navMesh.stoppingDistance && behaviour.idleTimer >= 0)
 		{
-			Debug.Log(entity.name + " timer ticking");
-			entityBehaviour.idleTimer -= Time.deltaTime;
-			return state = NodeState.RUNNING;
+			Debug.Log(stats.name + " idle task");
+			behaviour.idleTimer -= Time.deltaTime;
+			return NodeState.RUNNING;
 		}
-		else return state = NodeState.FAILURE;
+		else return NodeState.FAILURE;
 	}
 }

@@ -1,46 +1,50 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class TaskWander : BTNode
 {
-	EntityStats entity;
-	EntityBehaviour entityBehaviour;
+	EntityStats stats;
+	EntityBehaviour behaviour;
 	NavMeshAgent navMesh;
 
 	public TaskWander(EntityStats entity)
 	{
-		this.entity = entity;
-		entityBehaviour = entity.entityBehaviour;
+		stats = entity;
+		behaviour = entity.entityBehaviour;
 		navMesh = entity.entityBehaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()
 	{
-		if (entityBehaviour.playerTarget != null) return NodeState.FAILURE;
-		Debug.Log(entity.name + " wander task");
+		if (behaviour.playerTarget != null && behaviour.playersLastKnownPosition != new Vector2(0, 0))
+			return NodeState.FAILURE;
 
-		if (navMesh.remainingDistance < navMesh.stoppingDistance && entityBehaviour.idleTimer <= 0)
+		if (navMesh.remainingDistance < navMesh.stoppingDistance && behaviour.idleTimer < 0)
 		{
-			entityBehaviour.idleTimer = entityBehaviour.behaviourRef.idleWaitTime;
-			FindNewIdlePosition(entityBehaviour);
+			behaviour.idleTimer = behaviour.behaviourRef.idleWaitTime;
+			FindNewIdlePosition();
 		}
 
 		if (navMesh.remainingDistance > navMesh.stoppingDistance)
+		{
+			Debug.Log(stats.name + " wander task");
 			return NodeState.RUNNING;
+		}
 		else return NodeState.FAILURE;
 	}
 
 	//Wander behaviour
-	private void FindNewIdlePosition(EntityBehaviour entity)
+	private void FindNewIdlePosition()
 	{
-		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(entity.idleBounds);
+		Vector2 randomMovePosition = Utilities.GetRandomPointInBounds(behaviour.idleBounds);
 		NavMeshPath path = new NavMeshPath();
 
-		if (entity.navMeshAgent.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
-			entity.navMeshAgent.SetPath(path);
+		if (navMesh.CalculatePath(randomMovePosition, path) && path.status == NavMeshPathStatus.PathComplete)
+			navMesh.SetPath(path);
 		else
-			FindNewIdlePosition(entity);
+			FindNewIdlePosition();
 	}
 }

@@ -5,6 +5,11 @@ using UnityEngine.AI;
 
 public class TaskGoblinBossPhase : TaskBossPhase
 {
+	/// <summary>
+	/// Goblin boss behaviour for phase 1-3: 
+	/// PHASE 1-3: basic chase and attack player
+	/// </summary>
+
 	BossEntityStats stats;
 	BossEntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;

@@ -19,8 +19,7 @@ public class CheckGlobalAttackCooldown : BTNode
 	public override NodeState Evaluate()
 	{
 		if (behaviour.globalAttackTimer >= 0)
-			behaviour.globalAttackTimer -= Time.deltaTime;
-
-		return NodeState.RUNNING;
+			return NodeState.RUNNING;
+		else return NodeState.SUCCESS;
 	}
 }

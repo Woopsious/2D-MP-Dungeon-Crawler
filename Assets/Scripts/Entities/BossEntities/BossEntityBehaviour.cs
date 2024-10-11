@@ -43,7 +43,7 @@ public class BossEntityBehaviour : EntityBehaviour
 		abilityThree = behaviour.abilityThree;
 	}
 
-	//build Boss Behaviour Tree (atm just a copy of smae func in EntityBehaviour)
+	//build Boss Behaviour Tree
 	protected override BTNode SetupTree()
 	{
 		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
@@ -61,12 +61,14 @@ public class BossEntityBehaviour : EntityBehaviour
 					new CheckGlobalAttackCooldown(entityStats),
 					new Sequence(new List<BTNode> //attack actions (CHANGE TO SELECTOR NODE WHEN BOSS ABILITIES DONE)
 					{
-						new Sequence(new List<BTNode> //use ability
-						{
+						//new Sequence(new List<BTNode> //use ability
+						//{
+							//check if can use an ability during trans phase
 							//new TaskUseAbility(entityStats),
-						}),
+						//}),
 						new Sequence(new List<BTNode> //weapon attack
 						{
+							//check if can attack during trans phase
 							new CheckPlayerInAttackRange(entityStats),
 							new TaskWeaponAttack(entityStats),
 						}),

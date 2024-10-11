@@ -176,7 +176,7 @@ public class EntityBehaviour : Tree
 	}
 
 	//BehaviourTree related functions
-	//build Behaviour Tree
+	//build Basic Behaviour Tree
 	protected override BTNode SetupTree()
 	{
 		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
@@ -487,7 +487,7 @@ public class EntityBehaviour : Tree
 	//ATTACKING
 	private void GlobalAttackTimer()
 	{
-		if (globalAttackTimer <= 0)
+		if (globalAttackTimer >= 0)
 			globalAttackTimer -= Time.deltaTime;
 	}
 	public void TryAttackWithMainWeapon()

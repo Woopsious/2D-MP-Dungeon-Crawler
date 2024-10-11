@@ -10,7 +10,7 @@ public class BossGoblinAttack : EnemyAttackState
 	/// PHASE 1-2 transition: become invulnerable. return to center piece, slowly heal (limited to current health(max 66%) to 80% of health)
 	/// only become vulnerable once player(s) kill the 2 enemies that spawn in (boss stays idle till enemies killed)
 	/// PHASE 2: same as phase one but has access to 2nd ability
-	/// PHASE 2-3 transition: enter "enrage" state, healing 15% oh health and increasing move speed.
+	/// PHASE 2-3 transition: enter "enrage" state, healing 15% of health and increasing move speed.
 	/// PHASE 3: stay in "enrage" state and gain access to 3rd ability
 	/// </summary>
 
