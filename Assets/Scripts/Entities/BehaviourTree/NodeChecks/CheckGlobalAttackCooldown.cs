@@ -5,15 +5,11 @@ using UnityEngine.AI;
 
 public class CheckGlobalAttackCooldown : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
-	EntityEquipmentHandler equipmentHandler;
 
-	public CheckGlobalAttackCooldown(EntityStats entity)
+	public CheckGlobalAttackCooldown(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
+		this.behaviour = behaviour;
 	}
 
 	public override NodeState Evaluate()

@@ -6,18 +6,13 @@ using UnityEngine.AI;
 
 public class TaskUseAbility : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
-	EntityEquipmentHandler equipmentHandler;
-	NavMeshAgent navMesh;
+	EntityStats stats;
 
-
-	public TaskUseAbility(EntityStats entity)
+	public TaskUseAbility(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
-		navMesh = entity.entityBehaviour.navMeshAgent;
+		this.behaviour = behaviour;
+		stats = behaviour.entityStats;
 	}
 
 	public override NodeState Evaluate()

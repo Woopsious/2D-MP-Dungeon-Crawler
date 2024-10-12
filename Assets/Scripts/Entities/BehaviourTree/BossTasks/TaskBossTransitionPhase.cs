@@ -6,27 +6,31 @@ using UnityEngine.AI;
 
 public class TaskBossTransitionPhase : BTNode
 {
-	protected virtual void RunPhaseTransition(BossEntityStats stats)
+	protected BossEntityBehaviour behaviour;
+	protected BossEntityStats stats;
+	protected EntityEquipmentHandler equipmentHandler;
+
+	protected virtual void RunPhaseTransition()
 	{
-		Debug.LogError(stats.name + " boss phase Transition task");
+		Debug.Log(stats.name + " boss phase Transition task");
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
-			PhaseOneTransition(stats);
+			PhaseOneTransition();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.secondPhase)
-			PhaseTwoTransition(stats);
+			PhaseTwoTransition();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
-			PhaseThreeTransition(stats);
+			PhaseThreeTransition();
 	}
 
-	protected virtual void PhaseOneTransition(BossEntityStats stats)
+	protected virtual void PhaseOneTransition()
 	{
 		stats.inPhaseTransition = false;
 	}
-	protected virtual void PhaseTwoTransition(BossEntityStats stats)
+	protected virtual void PhaseTwoTransition()
 	{
 		stats.inPhaseTransition = false;
 	}
-	protected virtual void PhaseThreeTransition(BossEntityStats stats)
+	protected virtual void PhaseThreeTransition()
 	{
 		stats.inPhaseTransition = false;
 	}

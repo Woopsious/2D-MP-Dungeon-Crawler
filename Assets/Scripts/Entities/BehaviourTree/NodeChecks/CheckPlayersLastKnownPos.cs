@@ -6,9 +6,9 @@ public class CheckPlayersLastKnownPos : BTNode
 {
 	EntityBehaviour behaviour;
 
-	public CheckPlayersLastKnownPos(EntityStats entity)
+	public CheckPlayersLastKnownPos(EntityBehaviour behaviour)
 	{
-		behaviour = entity.entityBehaviour;
+		this.behaviour = behaviour;
 	}
 
 	public override NodeState Evaluate()

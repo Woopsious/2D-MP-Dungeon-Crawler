@@ -6,20 +6,18 @@ using UnityEngine.AI;
 
 public class TaskTrackPlayer : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;
 
-	public TaskTrackPlayer(EntityStats entity)
+	public TaskTrackPlayer(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
+		this.behaviour = behaviour;
+		equipmentHandler = behaviour.equipmentHandler;
 	}
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(stats.name + " track player task");
+		Debug.Log(behaviour.name + " track player task");
 
 		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
 			KeepDistanceFromPlayer(behaviour);

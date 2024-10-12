@@ -10,39 +10,35 @@ public class TaskGoblinBossPhase : TaskBossPhase
 	/// PHASE 1-3: basic chase and attack player
 	/// </summary>
 
-	BossEntityStats stats;
-	BossEntityBehaviour behaviour;
-	EntityEquipmentHandler equipmentHandler;
-
-	public TaskGoblinBossPhase(BossEntityStats entity)
+	public TaskGoblinBossPhase(BossEntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = (BossEntityBehaviour)entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
+		this.behaviour = behaviour;
+		stats = (BossEntityStats)behaviour.entityStats;
+		equipmentHandler = behaviour.equipmentHandler;
 	}
 
 	public override NodeState Evaluate()
 	{
 		if (stats.inPhaseTransition == false)
-			RunPhases(stats);
+			RunPhases();
 
 		return NodeState.RUNNING;
 	}
 
-	protected override void RunPhases(BossEntityStats stats)
+	protected override void RunPhases()
 	{
-		base.RunPhases(stats);
+		base.RunPhases();
 	}
 
-	protected override void PhaseOne(BossEntityStats stats)
+	protected override void PhaseOne()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}
-	protected override void PhaseTwo(BossEntityStats stats)
+	protected override void PhaseTwo()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}
-	protected override void PhaseThree(BossEntityStats stats)
+	protected override void PhaseThree()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}

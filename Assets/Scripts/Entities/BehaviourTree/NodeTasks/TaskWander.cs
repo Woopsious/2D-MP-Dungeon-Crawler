@@ -6,15 +6,13 @@ using UnityEngine.AI;
 
 public class TaskWander : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	NavMeshAgent navMesh;
 
-	public TaskWander(EntityStats entity)
+	public TaskWander(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		navMesh = entity.entityBehaviour.navMeshAgent;
+		this.behaviour = behaviour;
+		navMesh = behaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()
@@ -30,7 +28,7 @@ public class TaskWander : BTNode
 
 		if (navMesh.remainingDistance > navMesh.stoppingDistance)
 		{
-			Debug.Log(stats.name + " wander task");
+			Debug.Log(behaviour.name + " wander task");
 			return NodeState.RUNNING;
 		}
 		else return NodeState.FAILURE;

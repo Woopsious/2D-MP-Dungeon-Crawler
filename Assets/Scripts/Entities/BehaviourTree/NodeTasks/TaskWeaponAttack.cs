@@ -6,17 +6,13 @@ using UnityEngine.AI;
 
 public class TaskWeaponAttack : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;
-	NavMeshAgent navMesh;
 
-	public TaskWeaponAttack(EntityStats entity)
+	public TaskWeaponAttack(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
-		navMesh = entity.entityBehaviour.navMeshAgent;
+		this.behaviour = behaviour;
+		equipmentHandler = behaviour.equipmentHandler;
 	}
 
 	public override NodeState Evaluate()

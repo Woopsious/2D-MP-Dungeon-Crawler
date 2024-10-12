@@ -4,15 +4,13 @@ using UnityEngine;
 
 public class CheckPlayerInFOV : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	float playerDetectionTimer;
 	float playerDetectionCooldown;
 
-	public CheckPlayerInFOV(EntityStats entity)
+	public CheckPlayerInFOV(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
+		this.behaviour = behaviour;
 	}
 
 	public override NodeState Evaluate()

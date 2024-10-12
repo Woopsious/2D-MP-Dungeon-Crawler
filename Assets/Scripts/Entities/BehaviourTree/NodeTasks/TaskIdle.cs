@@ -6,22 +6,20 @@ using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class TaskIdle : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	NavMeshAgent navMesh;
 
-	public TaskIdle(EntityStats entity)
+	public TaskIdle(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		navMesh = entity.entityBehaviour.navMeshAgent;
+		this.behaviour = behaviour;
+		navMesh = behaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()
 	{
 		if (navMesh.remainingDistance < navMesh.stoppingDistance && behaviour.idleTimer >= 0)
 		{
-			Debug.Log(stats.name + " idle task");
+			Debug.Log(behaviour.name + " idle task");
 			behaviour.idleTimer -= Time.deltaTime;
 			return NodeState.RUNNING;
 		}

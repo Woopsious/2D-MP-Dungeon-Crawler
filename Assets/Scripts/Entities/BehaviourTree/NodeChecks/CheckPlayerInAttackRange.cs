@@ -5,15 +5,13 @@ using UnityEngine.AI;
 
 public class CheckPlayerInAttackRange : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;
 
-	public CheckPlayerInAttackRange(EntityStats entity)
+	public CheckPlayerInAttackRange(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		equipmentHandler = entity.equipmentHandler;
+		this.behaviour = behaviour;
+		equipmentHandler = behaviour.equipmentHandler;
 	}
 
 	public override NodeState Evaluate()
@@ -27,7 +25,7 @@ public class CheckPlayerInAttackRange : BTNode
 	private bool WithinWeaponAttackRange(SOWeapons weaponBaseRef)
 	{
 		float maxDistanceToCheck = weaponBaseRef.maxAttackRange;
-		if (!weaponBaseRef.isRangedWeapon && stats.statsRef.isBossVersion)
+		if (!weaponBaseRef.isRangedWeapon && behaviour.entityStats.statsRef.isBossVersion)
 				maxDistanceToCheck = weaponBaseRef.maxAttackRange * 2;
 
 		if (behaviour.distanceToPlayerTarget <= maxDistanceToCheck)

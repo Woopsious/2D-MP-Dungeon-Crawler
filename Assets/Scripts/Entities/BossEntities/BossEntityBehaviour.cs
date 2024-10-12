@@ -52,25 +52,25 @@ public class BossEntityBehaviour : EntityBehaviour
 			{
 				new Selector(new List<BTNode> //check if in phase transition
 				{
-					new TaskGoblinBossTransitionPhase((BossEntityStats)entityStats),
-					new TaskGoblinBossPhase((BossEntityStats)entityStats),
+					new TaskGoblinBossTransitionPhase(this),
+					new TaskGoblinBossPhase(this),
 				}),
 
 				new Sequence(new List<BTNode> //attack actions
 				{
-					new CheckGlobalAttackCooldown(entityStats),
-					new Sequence(new List<BTNode> //attack actions (CHANGE TO SELECTOR NODE WHEN BOSS ABILITIES DONE)
+					new CheckGlobalAttackCooldown(this),
+					new Selector(new List<BTNode> //attack actions (CHANGE TO SELECTOR NODE WHEN BOSS ABILITIES DONE)
 					{
-						//new Sequence(new List<BTNode> //use ability
-						//{
+						new Sequence(new List<BTNode> //use ability
+						{
 							//check if can use an ability during trans phase
-							//new TaskUseAbility(entityStats),
-						//}),
+							new TaskGoblinBossUseAbilities(this),
+						}),
 						new Sequence(new List<BTNode> //weapon attack
 						{
 							//check if can attack during trans phase
-							new CheckPlayerInAttackRange(entityStats),
-							new TaskWeaponAttack(entityStats),
+							new CheckPlayerInAttackRange(this),
+							new TaskWeaponAttack(this),
 						}),
 					}),
 				}),
@@ -78,14 +78,14 @@ public class BossEntityBehaviour : EntityBehaviour
 
 			new Sequence(new List<BTNode> //investigate behaviour
 			{
-				new CheckPlayersLastKnownPos(entityStats),
-				new TaskInvestigate(entityStats),
+				new CheckPlayersLastKnownPos(this),
+				new TaskInvestigate(this),
 			}),
 
 			new Selector(new List<BTNode> //wander behaviour
 			{
-				new TaskIdle(entityStats),
-				new TaskWander(entityStats),
+				new TaskIdle(this),
+				new TaskWander(this),
 			}),
 		});
 

@@ -74,6 +74,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWeaponAttack.cs" />
     <Compile Include="Assets\Scripts\Entities\BaseEntityStates\EnemyIdleState.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossUseAbilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Entities\GOAP\Actions.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryHandler.cs" />
@@ -124,7 +125,6 @@
     <Compile Include="Assets\Scripts\DungeonItems\PortalHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskBossPhase.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
-    <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\GlobalAbilityOffCooldown.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossChecks\CheckInPhaseTransition.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskTrackPlayer.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
@@ -164,6 +164,7 @@
     <Compile Include="Assets\Scripts\Entities\Damageable.cs" />
     <Compile Include="Assets\Scripts\Entities\GOAP\Strategies.cs" />
     <Compile Include="Assets\Scripts\Entities\BossEntityStates\BossGoblinTransitions.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskBossUseAbilities.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Entities\GOAP\Goals.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />

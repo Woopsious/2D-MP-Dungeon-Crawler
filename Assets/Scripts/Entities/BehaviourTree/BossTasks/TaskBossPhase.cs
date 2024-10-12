@@ -4,27 +4,31 @@ using UnityEngine;
 
 public class TaskBossPhase : BTNode
 {
-	protected virtual void RunPhases(BossEntityStats stats)
+	protected BossEntityBehaviour behaviour;
+	protected BossEntityStats stats;
+	protected EntityEquipmentHandler equipmentHandler;
+
+	protected virtual void RunPhases()
 	{
-		Debug.LogWarning(stats.name + " boss phases task");
+		Debug.Log(stats.name + " boss phases task");
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
-			PhaseOne(stats);
+			PhaseOne();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.secondPhase)
-			PhaseTwo(stats);
+			PhaseTwo();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
-			PhaseThree(stats);
+			PhaseThree();
 	}
 
-	protected virtual void PhaseOne(BossEntityStats stats)
+	protected virtual void PhaseOne()
 	{
 
 	}
-	protected virtual void PhaseTwo(BossEntityStats stats)
+	protected virtual void PhaseTwo()
 	{
 
 	}
-	protected virtual void PhaseThree(BossEntityStats stats)
+	protected virtual void PhaseThree()
 	{
 
 	}

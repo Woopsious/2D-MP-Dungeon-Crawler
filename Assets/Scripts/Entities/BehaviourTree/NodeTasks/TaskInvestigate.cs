@@ -7,15 +7,13 @@ using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class TaskInvestigate : BTNode
 {
-	EntityStats stats;
 	EntityBehaviour behaviour;
 	NavMeshAgent navMesh;
 
-	public TaskInvestigate(EntityStats entity)
+	public TaskInvestigate(EntityBehaviour behaviour)
 	{
-		stats = entity;
-		behaviour = entity.entityBehaviour;
-		navMesh = entity.entityBehaviour.navMeshAgent;
+		this.behaviour = behaviour;
+		navMesh = behaviour.navMeshAgent;
 	}
 
 	public override NodeState Evaluate()
@@ -24,13 +22,13 @@ public class TaskInvestigate : BTNode
 		{
 			if (!navMesh.hasPath && navMesh.remainingDistance > navMesh.stoppingDistance)
 			{
-				Debug.LogError(stats.name + " investigating player pos");
+				Debug.LogError(behaviour.name + " investigating player pos");
 				behaviour.SetNewDestination(behaviour.playersLastKnownPosition); //move to last know player target pos
 			}
 
 			if (behaviour.playerTarget == null && navMesh.remainingDistance > navMesh.stoppingDistance)
 			{
-				Debug.Log(stats.name + " investigate task");
+				Debug.Log(behaviour.name + " investigate task");
 				return NodeState.RUNNING;
 			}
 			else
