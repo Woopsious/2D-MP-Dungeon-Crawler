@@ -217,20 +217,59 @@ public class Abilities : MonoBehaviour
 	{
 		if (abilityBaseRef.canOnlyTargetSelf)
 			return true;
-		if (abilityBaseRef.isAOE)
+		if (abilityBaseRef.isProjectile)
 		{
-			if (PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget && selectedEnemy != null)
+			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget)
 				return true;
 			else return false;
 		}
-		if (abilityBaseRef.isProjectile)
+		if (abilityBaseRef.isAOE)
+		{
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget)
+				return true;
+			else return false;
+		}
+
+		if (abilityBaseRef.requiresTarget)
+		{
+			if (abilityBaseRef.isOffensiveAbility)
+			{
+				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget)
+					return true;
+				else return false;
+			}
+			else return true; //always possible to insta cast positive buffs on self
+		}
+		else
+		{
+			Debug.LogError("failed to figure out if ability can be insta casted");
+			return false;
+		}
+	}
+
+	/*
+	public bool CanInstantCastAbility(EntityStats selectedEnemy)
+	{
+		if (abilityBaseRef.canOnlyTargetSelf)
 			return true;
+		if (abilityBaseRef.isProjectile)
+		{
+			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemy != null)
+				return true;
+			else return false;
+		}
+		if (abilityBaseRef.isAOE)
+		{
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemy != null)
+				return true;
+			else return false;
+		}
 
 		if (abilityBaseRef.requiresTarget)
 		{
 			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //add support for healing other players in MP
 				return true;
-			else if (!abilityBaseRef.isOffensiveAbility)
+			else if (!abilityBaseRef.isOffensiveAbility) //add support for buffing other players in MP
 				return true;
 			else if (abilityBaseRef.isOffensiveAbility && selectedEnemy != null)
 				return true;
@@ -248,4 +287,5 @@ public class Abilities : MonoBehaviour
 			return false;
 		}
 	}
+	*/
 }

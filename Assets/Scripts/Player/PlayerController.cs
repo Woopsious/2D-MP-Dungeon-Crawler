@@ -374,7 +374,7 @@ public class PlayerController : MonoBehaviour
 		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
 		{
 			EntityStats newEnemyEntity;
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities || selectedEnemyTarget == null)
+			if (selectedEnemyTarget == null)
 			{
 				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
 				if (newEnemyEntity == null)
@@ -439,43 +439,6 @@ public class PlayerController : MonoBehaviour
 	}
 
 	//casting
-	private void CastEffect(Abilities ability, EntityStats enemyTarget)
-	{
-		if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing)	//healing
-		{
-			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
-				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
-			else
-			{
-				CancelQueuedAbility(queuedAbility);		//add support/option to heal other players for MP
-				return;
-			}
-		}
-
-		if (ability.abilityBaseRef.damageValue != 0)	//apply damage for insta damage abilities
-		{
-			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
-				* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
-		}
-
-		if (ability.abilityBaseRef.hasStatusEffects)	//apply effects (if has any) based on what type it is.
-		{
-			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (!ability.abilityBaseRef.isOffensiveAbility)         //add support/option to buff other players for MP
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else
-			{
-				Debug.LogError("failed to cast status effect");
-				CancelQueuedAbility(queuedAbility);
-				return;
-			}
-		}
-
-		OnSuccessfulCast(ability);
-	}
 	private void CastDirectionalAbility(Abilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
@@ -486,7 +449,7 @@ public class PlayerController : MonoBehaviour
 		}
 
 		projectile.transform.SetParent(null);
-		if (PlayerSettingsManager.Instance.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget && selectedEnemyTarget != null)
+		if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
 			projectile.SetPositionAndAttackDirection(transform.position, selectedEnemyTarget.transform.position);
 		else
 			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
@@ -503,8 +466,10 @@ public class PlayerController : MonoBehaviour
 			abilityAOE = go.GetComponent<AbilityAOE>();
 		}
 
+		//will need additional code here to handle supportive and offensive aoe abilities
+
 		Vector3 movePosition;
-		if (PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget)
+		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget)
 			movePosition = selectedEnemyTarget.transform.position;
 		else
 			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -513,6 +478,43 @@ public class PlayerController : MonoBehaviour
 		abilityAOE.transform.position = (Vector2)movePosition;
 		abilityAOE.Initilize(ability.abilityBaseRef, playerStats);
 		abilityAOE.AddPlayerRef(this);
+
+		OnSuccessfulCast(ability);
+	}
+	private void CastEffect(Abilities ability, EntityStats enemyTarget)
+	{
+		if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //healing
+		{
+			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
+				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
+			else
+			{
+				CancelQueuedAbility(queuedAbility);     //add support/option to heal other players for MP
+				return;
+			}
+		}
+
+		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
+		{
+			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
+				* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
+		}
+
+		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects (if has any) based on what type it is.
+		{
+			if (ability.abilityBaseRef.canOnlyTargetSelf)
+				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
+				enemyTarget.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+			else if (!ability.abilityBaseRef.isOffensiveAbility)         //add support/option to buff other players for MP
+				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+			else
+			{
+				Debug.LogError("failed to cast status effect");
+				CancelQueuedAbility(queuedAbility);
+				return;
+			}
+		}
 
 		OnSuccessfulCast(ability);
 	}
@@ -672,12 +674,9 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		AddNewQueuedAbility(newQueuedAbility);
 
-		//capture all non aoe/directional abilities to check for player manual cast settings
-		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities) return;
-		//add support for manual casting of defensive/support abilities here
+		TryReacquireNewTarget();
+		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			UseQueuedAbility(queuedAbility);
@@ -689,12 +688,9 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		AddNewQueuedAbility(newQueuedAbility);
 
-		//capture all non aoe/directional abilities to check for player manual cast settings
-		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities) return;
-		//add support for manual casting of defensive/support abilities here
+		TryReacquireNewTarget();
+		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			UseQueuedAbility(queuedAbility);
@@ -706,12 +702,9 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		AddNewQueuedAbility(newQueuedAbility);
 
-		//capture all non aoe/directional abilities to check for player manual cast settings
-		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities) return;
-		//add support for manual casting of defensive/support abilities here
+		TryReacquireNewTarget();
+		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			UseQueuedAbility(queuedAbility);
@@ -723,12 +716,9 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		AddNewQueuedAbility(newQueuedAbility);
 
-		//capture all non aoe/directional abilities to check for player manual cast settings
-		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities) return;
-		//add support for manual casting of defensive/support abilities here
+		TryReacquireNewTarget();
+		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			UseQueuedAbility(queuedAbility);
@@ -740,15 +730,18 @@ public class PlayerController : MonoBehaviour
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
-		AddNewQueuedAbility(newQueuedAbility);
 
-		//capture all non aoe/directional abilities to check for player manual cast settings
-		if (newQueuedAbility.abilityBaseRef.requiresTarget && newQueuedAbility.abilityBaseRef.isOffensiveAbility)
-			if (PlayerSettingsManager.Instance.manualCastOffensiveAbilities) return;
-		//add support for manual casting of defensive/support abilities here
+		TryReacquireNewTarget();
+		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
 			UseQueuedAbility(queuedAbility);
+	}
+	private void TryReacquireNewTarget()
+	{
+		if (PlayerSettingsManager.Instance.autoSelectNewTarget)
+			CycleTargetsForwards(0);
+		else return;
 	}
 
 	//ui actions

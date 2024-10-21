@@ -116,11 +116,10 @@ public class SaveManager : MonoBehaviour
 		PlayerData playerData = new PlayerData
 		{
 			mainAttackIsAutomatic = PlayerSettingsManager.Instance.mainAttackIsAutomatic,
-			manualCastOffensiveAbilities = PlayerSettingsManager.Instance.manualCastOffensiveAbilities,
-			autoCastOffensiveAoeAbilitiesOnSelectedTarget 
-			= PlayerSettingsManager.Instance.autoCastOffensiveAoeAbilitiesOnSelectedTarget,
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTarget 
-			= PlayerSettingsManager.Instance.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget,
+			autoSelectNewTarget = PlayerSettingsManager.Instance.autoSelectNewTarget,
+			autoCastDirectionalAbilitiesAtTarget = PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget,
+			autoCastAoeAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget,
+			autoCastEffectAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget,
 			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
 			musicVolume = AudioManager.Instance.musicVolume,
 			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
@@ -145,8 +144,9 @@ public class SaveManager : MonoBehaviour
 		if (!string.IsNullOrEmpty(playerData.keybindsData))
 			PlayerInputHandler.Instance.playerControls.LoadBindingOverridesFromJson(playerData.keybindsData);
 
-		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.mainAttackIsAutomatic, playerData.manualCastOffensiveAbilities,
-			playerData.autoCastOffensiveAoeAbilitiesOnSelectedTarget, playerData.autoCastOffensiveDirectionalAbilitiesAtSelectedTarget);
+		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.mainAttackIsAutomatic, playerData.autoSelectNewTarget,
+			playerData.autoCastDirectionalAbilitiesAtTarget, playerData.autoCastAoeAbilitiesOnTarget, 
+			playerData.autoCastEffectAbilitiesOnTarget);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -444,9 +444,10 @@ public class SaveManager : MonoBehaviour
 public class PlayerData
 {
 	public bool mainAttackIsAutomatic;
-	public bool manualCastOffensiveAbilities;
-	public bool autoCastOffensiveAoeAbilitiesOnSelectedTarget;
-	public bool autoCastOffensiveDirectionalAbilitiesAtSelectedTarget;
+	public bool autoSelectNewTarget;
+	public bool autoCastDirectionalAbilitiesAtTarget;
+	public bool autoCastAoeAbilitiesOnTarget;
+	public bool autoCastEffectAbilitiesOnTarget;
 
 	public string keybindsData;
 

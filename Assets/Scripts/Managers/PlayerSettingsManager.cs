@@ -16,14 +16,17 @@ public class PlayerSettingsManager : MonoBehaviour
 	public bool mainAttackIsAutomatic;
 	public TMP_Text mainAttackIsAutomaticText;
 
-	public bool manualCastOffensiveAbilities;
-	public TMP_Text manualCastOffensiveAbilitiesText;
+	public bool autoSelectNewTarget;
+	public TMP_Text autoSelectNewTargetText;
 
-	public bool autoCastOffensiveAoeAbilitiesOnSelectedTarget;
-	public TMP_Text autoCastOffensiveAoeAbilitiesOnSelectedTargetText;
+	public bool autoCastDirectionalAbilitiesAtTarget;
+	public TMP_Text autoCastDirectionalAbilitiesAtTargetText;
 
-	public bool autoCastOffensiveDirectionalAbilitiesAtSelectedTarget;
-	public TMP_Text autoCastOffensiveDirectionalAbilitiesAtSelectedTargetText;
+	public bool autoCastAoeAbilitiesOnTarget;
+	public TMP_Text autoCastAoeAbilitiesOnTargetText;
+
+	public bool autoCastEffectAbilitiesOnTarget;
+	public TMP_Text autoCastEffectAbilitiesOnTargetText;
 
 	private void Awake()
 	{
@@ -31,8 +34,8 @@ public class PlayerSettingsManager : MonoBehaviour
 	}
 
 	//restore data
-	public void RestorePlayerSettingsData(bool mainAttackIsAutomatic, bool manualCastOffensiveAbilities,
-		bool autoCastOffensiveAoeAbilitiesOnSelectedTarget, bool autoCastOffensiveDirectionalAbilitiesAtSelectedTarget)
+	public void RestorePlayerSettingsData(bool mainAttackIsAutomatic, bool autoSelectNewTarget,
+		bool autoCastDirectionalAbilitiesAtTarget, bool autoCastAoeAbilitiesOnTarget, bool autoCastEffectsOnTarget)
 	{
 		if (mainAttackIsAutomatic)
 			mainAttackIsAutomaticText.text = "Main Attack is Automatic: False";
@@ -42,28 +45,36 @@ public class PlayerSettingsManager : MonoBehaviour
 		this.mainAttackIsAutomatic = mainAttackIsAutomatic;
 
 
-		if (manualCastOffensiveAbilities)
-			manualCastOffensiveAbilitiesText.text = "Manual Cast Offensive Abilities: False";
+		if (autoSelectNewTarget)
+			mainAttackIsAutomaticText.text = "Auto select closest target when no target already selected: False";
 		else
-			manualCastOffensiveAbilitiesText.text = "Manual Cast Offensive Abilities: True";
+			mainAttackIsAutomaticText.text = "Auto select closest target when no target already selected: True";
 
-		this.manualCastOffensiveAbilities = manualCastOffensiveAbilities;
+		this.autoSelectNewTarget = autoSelectNewTarget;
 
 
-		if (autoCastOffensiveAoeAbilitiesOnSelectedTarget)
-			autoCastOffensiveAoeAbilitiesOnSelectedTargetText.text = "Auto cast offensive aoe abilities on selected targets: False";
+		if (autoCastDirectionalAbilitiesAtTarget)
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: False";
 		else
-			autoCastOffensiveAoeAbilitiesOnSelectedTargetText.text = "Auto cast offensive aoe abilities on selected targets: True";
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: True";
 
-		this.mainAttackIsAutomatic = autoCastOffensiveAoeAbilitiesOnSelectedTarget;
+		this.autoCastDirectionalAbilitiesAtTarget = autoCastDirectionalAbilitiesAtTarget;
 
 
-		if (autoCastOffensiveDirectionalAbilitiesAtSelectedTarget)
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTargetText.text = "Auto cast offensive Directional Abilities at selected targets: False";
+		if (autoCastAoeAbilitiesOnTarget)
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: False";
 		else
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTargetText.text = "Auto cast offensive Directional Abilities at selected targets: True";
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: True";
 
-		this.mainAttackIsAutomatic = autoCastOffensiveDirectionalAbilitiesAtSelectedTarget;
+		this.autoCastAoeAbilitiesOnTarget = autoCastAoeAbilitiesOnTarget;
+
+
+		if (autoCastEffectsOnTarget)
+			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: False";
+		else
+			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: True";
+
+		this.autoCastEffectAbilitiesOnTarget = autoCastEffectsOnTarget;
 	}
 
 	//button actions
@@ -80,43 +91,56 @@ public class PlayerSettingsManager : MonoBehaviour
 			mainAttackIsAutomatic = true;
 		}
 	}
-	public void ToggleManualCastOffensiveAbilities()
+	public void ToggleAutoSelectNewTarget()
 	{
-		if (manualCastOffensiveAbilities)
+		if (autoSelectNewTarget)
 		{
-			manualCastOffensiveAbilitiesText.text = "Manual cast offensive abilities: False";
-			manualCastOffensiveAbilities = false;
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: False";
+			autoSelectNewTarget = false;
 		}
 		else
 		{
-			manualCastOffensiveAbilitiesText.text = "Manual cast offensive abilities: True";
-			manualCastOffensiveAbilities = true;
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: True";
+			autoSelectNewTarget = true;
 		}
 	}
-	public void ToggleAutoCastOffensiveAoeAbilitiesOnSelectedTarget()
+	public void ToggleAutoCastDirectionalAbilitiesAtTarget()
 	{
-		if (autoCastOffensiveAoeAbilitiesOnSelectedTarget)
+		if (autoCastDirectionalAbilitiesAtTarget)
 		{
-			autoCastOffensiveAoeAbilitiesOnSelectedTargetText.text = "Auto cast offensive aoe abilities on selected targets: False";
-			autoCastOffensiveAoeAbilitiesOnSelectedTarget = false;
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: False";
+			autoCastDirectionalAbilitiesAtTarget = false;
 		}
 		else
 		{
-			autoCastOffensiveAoeAbilitiesOnSelectedTargetText.text = "Auto cast offensive aoe abilities on selected targets: True";
-			autoCastOffensiveAoeAbilitiesOnSelectedTarget = true;
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: True";
+			autoCastDirectionalAbilitiesAtTarget = true;
 		}
 	}
-	public void ToggleAutoCastOffensiveDirectionalAbilitiesAtSelectedTarget()
+	public void ToggleAutoCastAoeAbilitiesOnTarget()
 	{
-		if (autoCastOffensiveDirectionalAbilitiesAtSelectedTarget)
+		if (autoCastAoeAbilitiesOnTarget)
 		{
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTargetText.text = "Auto cast offensive Directional Abilities at selected targets: False";
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTarget = false;
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: False";
+			autoCastAoeAbilitiesOnTarget = false;
 		}
 		else
 		{
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTargetText.text = "Auto cast offensive Directional Abilities at selected targets: True";
-			autoCastOffensiveDirectionalAbilitiesAtSelectedTarget = true;
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: True";
+			autoCastAoeAbilitiesOnTarget = true;
+		}
+	}
+	public void ToggleAutoCastEffectAbilitiesOnTarget()
+	{
+		if (autoCastEffectAbilitiesOnTarget)
+		{
+			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: False";
+			autoCastEffectAbilitiesOnTarget = false;
+		}
+		else
+		{
+			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: True";
+			autoCastEffectAbilitiesOnTarget = true;
 		}
 	}
 }
