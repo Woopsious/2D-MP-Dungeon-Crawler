@@ -47,12 +47,12 @@ public class BossEntityStats : EntityStats
 			bossPhase++;
 			spawner.ForceSpawnEntitiesForBosses();
 
-			if (bossBehaviour.behaviourTypeToUse == EntityBehaviour.BehaviourType.useStateMachine)
+			if (bossBehaviour.useStateMachineBehaviour)
 			{
 				if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
 					bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
 			}
-			else if (bossBehaviour.behaviourTypeToUse == EntityBehaviour.BehaviourType.useBehaviourTree)
+			else
 				inPhaseTransition = true;
 		}
 		lastBossHealthPercentage = newPercentage;

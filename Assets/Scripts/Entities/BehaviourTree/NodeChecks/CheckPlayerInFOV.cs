@@ -8,9 +8,13 @@ public class CheckPlayerInFOV : BTNode
 	float playerDetectionTimer;
 	float playerDetectionCooldown;
 
+	bool playerVisible;
+
 	public CheckPlayerInFOV(EntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
+
+		SetData("PlayerVisible", playerVisible);
 	}
 
 	public override NodeState Evaluate()

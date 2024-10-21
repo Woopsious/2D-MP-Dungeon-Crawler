@@ -2,37 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskBossPhase : BTNode
+public abstract class EntityMovement : BTNode
 {
-	protected BossEntityBehaviour behaviour;
-	protected BossEntityStats stats;
-	protected EntityEquipmentHandler equipmentHandler;
-
-	protected virtual void RunPhases()
-	{
-		Debug.Log(stats.name + " boss phases task");
-
-		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
-			PhaseOne();
-		else if (stats.bossPhase == BossEntityStats.BossPhase.secondPhase)
-			PhaseTwo();
-		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
-			PhaseThree();
-	}
-
-	protected virtual void PhaseOne()
-	{
-
-	}
-	protected virtual void PhaseTwo()
-	{
-
-	}
-	protected virtual void PhaseThree()
-	{
-
-	}
-
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity, EntityEquipmentHandler equipment)
 	{

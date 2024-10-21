@@ -16,6 +16,8 @@ public class CheckPlayerInAttackRange : BTNode
 
 	public override NodeState Evaluate()
 	{
+		var T = parent.GetData("PlayerVisible");
+
 		if (WithinWeaponAttackRange(equipmentHandler.equippedWeapon.weaponBaseRef))
 			return NodeState.SUCCESS;
 		else

@@ -15,11 +15,7 @@ using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 public class EntityBehaviour : Tree
 {
 	[Header("Behaviour Info")]
-	public BehaviourType behaviourTypeToUse;
-	public enum BehaviourType
-	{
-		useStateMachine, useBehaviourTree, useGOAP
-	}
+	public bool useStateMachineBehaviour;
 	public SOEntityBehaviour behaviourRef;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
@@ -30,18 +26,6 @@ public class EntityBehaviour : Tree
 	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
 	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
-
-	[Header("Entity GOAP")]
-	IGoapPlanner goapPlanner;
-
-	public Dictionary<string, AgentBelief> beliefs;
-	public HashSet<AgentAction> actions;
-	public HashSet<AgentGoal> goals;
-
-	AgentGoal lastGoal;
-	public ActionPlan actionPlan;
-	public AgentGoal currentGoal;
-	public AgentAction currentAction;
 
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -99,31 +83,27 @@ public class EntityBehaviour : Tree
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
-
-		goapPlanner = new GoapPlanner();
 	}
 	protected override void Start()
 	{
-		behaviourTypeToUse = BehaviourType.useBehaviourTree;
+		useStateMachineBehaviour = false;
 
 		Initilize();
 
-		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+		if (useStateMachineBehaviour)
 			return;
-		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+		else if (!useStateMachineBehaviour)
 			base.Start();
-		else if (behaviourTypeToUse == BehaviourType.useGOAP)
-			InitilizeGOAP();
 	}
 
 	private void OnEnable()
 	{
-		if (behaviourTypeToUse != BehaviourType.useBehaviourTree)
+		if (useStateMachineBehaviour)
 			entityStats.OnHealthChangeEvent += TryCastHealingAbility;
 	}
 	private void OnDisable()
 	{
-		if (behaviourTypeToUse != BehaviourType.useBehaviourTree)
+		if (useStateMachineBehaviour)
 			entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
 	}
 
@@ -137,16 +117,14 @@ public class EntityBehaviour : Tree
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
 
-		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+		if (useStateMachineBehaviour)
 			currentState.UpdateLogic(this);
-		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
+		else
 		{
 			GlobalAttackTimer();
 			IsPlayerTargetVisibleTimer();
 			base.Update();
 		}
-		else if (behaviourTypeToUse == BehaviourType.useGOAP)
-			GOAPUpdate();
 	}
 	protected virtual void FixedUpdate()
 	{
@@ -167,11 +145,9 @@ public class EntityBehaviour : Tree
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 
-		if (behaviourTypeToUse == BehaviourType.useStateMachine)
+		if (useStateMachineBehaviour)
 			currentState.UpdateLogic(this);
-		else if (behaviourTypeToUse == BehaviourType.useBehaviourTree)
-			return;
-		else if (behaviourTypeToUse == BehaviourType.useGOAP)
+		else
 			return;
 	}
 
@@ -218,137 +194,6 @@ public class EntityBehaviour : Tree
 		});
 
 		return root;
-	}
-
-	// GOAP related functions
-	//set entity GOAPS
-	public void InitilizeGOAP()
-	{
-		SetupBeliefs();
-		SetupActions();
-		SetupGoals();
-	}
-	public void SetupBeliefs()
-	{
-		beliefs = new Dictionary<string, AgentBelief>();
-		BeliefFactory factory = new BeliefFactory(entityStats, beliefs);
-
-		factory.AddBelief("Nothing", () => false);
-
-		factory.AddBelief("Idling", () => !navMeshAgent.hasPath);
-		factory.AddBelief("Moving", () => navMeshAgent.hasPath);
-		factory.AddBelief("Wandering", () => !currentPlayerTargetInView && playersLastKnownPosition != new Vector2(0, 0));
-		factory.AddBelief("Attacking", () => currentPlayerTargetInView);
-	}
-	public void SetupActions()
-	{
-		actions = new HashSet<AgentAction>
-		{
-			new AgentAction.Builder("Idle")
-			.WithStrategy(new IdleStrategy(this))
-			.AddEffect(beliefs["Idling"])
-			.Build(),
-
-			new AgentAction.Builder("Wander")
-			.WithStrategy(new WanderStrategy(this))
-			.AddEffect(beliefs["Wandering"])
-			.Build(),
-
-			new AgentAction.Builder("Attack")
-			.WithStrategy(new AttackStrategy(this))
-			.AddEffect(beliefs["Attacking"])
-			.Build(),
-		};
-	}
-	public void SetupGoals()
-	{
-		goals = new HashSet<AgentGoal>
-		{
-			new AgentGoal.Builder("Idle")
-			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Idling"])
-			.Build(),
-
-			new AgentGoal.Builder("Wander")
-			.WithPriority(1)
-			.WithDesiredEffect(beliefs["Wandering"])
-			.Build(),
-
-			new AgentGoal.Builder("Attack")
-			.WithPriority(2)
-			.WithDesiredEffect(beliefs["Attacking"])
-			.Build(),
-		};
-	}
-
-	public void GOAPUpdate()
-	{
-		// Update the plan and current action if there is one
-		if (currentAction == null)
-		{
-			Debug.Log("Calculating any potential new plan");
-			CalculatePlan();
-
-			if (actionPlan != null && actionPlan.Actions.Count > 0)
-			{
-				navMeshAgent.ResetPath();
-
-				currentGoal = actionPlan.AgentGoal;
-				Debug.Log($"Goal: {currentGoal.Name} with {actionPlan.Actions.Count} actions in plan");
-				currentAction = actionPlan.Actions.Pop();
-				Debug.Log($"Popped action: {currentAction.Name}");
-				// Verify all precondition effects are true
-				if (currentAction.Preconditions.All(b => b.Evaluate()))
-				{
-					currentAction.Start();
-				}
-				else
-				{
-					Debug.Log("Preconditions not met, clearing current action and goal");
-					currentAction = null;
-					currentGoal = null;
-				}
-			}
-		}
-
-		// If we have a current action, execute it
-		if (actionPlan != null && currentAction != null)
-		{
-			currentAction.Update(Time.deltaTime);
-
-			if (currentAction.Complete)
-			{
-				Debug.Log($"{currentAction.Name} complete");
-				currentAction.Stop();
-				currentAction = null;
-
-				if (actionPlan.Actions.Count == 0)
-				{
-					Debug.Log("Plan complete");
-					lastGoal = currentGoal;
-					currentGoal = null;
-				}
-			}
-		}
-	}
-	void CalculatePlan()
-	{
-		var priorityLevel = currentGoal?.Priority ?? 0;
-
-		HashSet<AgentGoal> goalsToCheck = goals;
-
-		// If we have a current goal, we only want to check goals with higher priority
-		if (currentGoal != null)
-		{
-			Debug.Log("Current goal exists, checking goals with higher priority");
-			goalsToCheck = new HashSet<AgentGoal>(goals.Where(g => g.Priority > priorityLevel));
-		}
-
-		var potentialPlan = goapPlanner.Plan(entityStats, goalsToCheck, lastGoal);
-		if (potentialPlan != null)
-		{
-			actionPlan = potentialPlan;
-		}
 	}
 
 	//set behaviour data

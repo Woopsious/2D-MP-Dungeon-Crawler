@@ -52,7 +52,7 @@ public class BossEntityBehaviour : EntityBehaviour
 			{
 				new Selector(new List<BTNode> //check if in phase transition
 				{
-					new TaskGoblinBossTransitionPhase(this),
+					new TaskGoblinBossTransitions(this),
 					new TaskGoblinBossPhase(this),
 				}),
 
@@ -64,7 +64,7 @@ public class BossEntityBehaviour : EntityBehaviour
 						new Sequence(new List<BTNode> //use ability
 						{
 							//check if can use an ability during trans phase
-							new TaskGoblinBossUseAbilities(this),
+							new TaskGoblinBossAbilities(this),
 						}),
 						new Sequence(new List<BTNode> //weapon attack
 						{

@@ -1,14 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class TaskGoblinBossPhase : TaskBossPhase
+public class TaskGoblinBossPhase : EntityMovement, IBossPhases
 {
 	/// <summary>
 	/// Goblin boss behaviour for phase 1-3: 
 	/// PHASE 1-3: basic chase and attack player
 	/// </summary>
+
+	readonly BossEntityBehaviour behaviour;
+	readonly BossEntityStats stats;
+	readonly EntityEquipmentHandler equipmentHandler;
 
 	public TaskGoblinBossPhase(BossEntityBehaviour behaviour)
 	{
@@ -25,20 +26,29 @@ public class TaskGoblinBossPhase : TaskBossPhase
 		return NodeState.RUNNING;
 	}
 
-	protected override void RunPhases()
+	public void RunPhases()
 	{
-		base.RunPhases();
+		Debug.Log(stats.name + " boss phase task");
+
+		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
+			PhaseOne();
+		else if (stats.bossPhase == BossEntityStats.BossPhase.secondPhase)
+			PhaseTwo();
+		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
+			PhaseThree();
 	}
 
-	protected override void PhaseOne()
+	public void PhaseOne()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}
-	protected override void PhaseTwo()
+
+	public void PhaseTwo()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}
-	protected override void PhaseThree()
+
+	public void PhaseThree()
 	{
 		KeepPlayerInMeleeRange(behaviour, equipmentHandler);
 	}

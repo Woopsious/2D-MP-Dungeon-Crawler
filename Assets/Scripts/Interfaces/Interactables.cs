@@ -56,6 +56,6 @@ public class Interactables : MonoBehaviour
 
 public interface IInteractables
 {
-	public void Interact(PlayerController player);
-	public void UnInteract(PlayerController player);
+	void Interact(PlayerController player);
+	void UnInteract(PlayerController player);
 }

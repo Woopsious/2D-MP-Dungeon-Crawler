@@ -2,13 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskGoblinBossUseAbilities : TaskBossUseAbilities
+public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 {
-	public TaskGoblinBossUseAbilities(BossEntityBehaviour behaviour)
+	readonly BossEntityBehaviour behaviour;
+	readonly BossEntityStats stats;
+
+	public TaskGoblinBossAbilities(BossEntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
-		equipmentHandler = behaviour.equipmentHandler;
 	}
 
 	public override NodeState Evaluate()
@@ -39,19 +41,19 @@ public class TaskGoblinBossUseAbilities : TaskBossUseAbilities
 		}
 	}
 
-	protected override bool CanUseBossAbilityOne()
+	public bool CanUseBossAbilityOne()
 	{
 		if (stats.inPhaseTransition ||
 			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(behaviour.abilityOne)) return false;
 		else return true;
 	}
-	protected override bool CanUseBossAbilityTwo()
+	public bool CanUseBossAbilityTwo()
 	{
 		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
 			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(behaviour.abilityTwo)) return false;
 		else return true;
 	}
-	protected override bool CanUseBossAbilityThree()
+	public bool CanUseBossAbilityThree()
 	{
 		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
 			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(behaviour.abilityThree)) return false;

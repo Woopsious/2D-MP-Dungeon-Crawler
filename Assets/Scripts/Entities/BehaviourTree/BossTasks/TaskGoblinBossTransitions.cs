@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TaskGoblinBossTransitionPhase : TaskBossTransitionPhase
+public class TaskGoblinBossTransitions : BTNode, IBossTransitionPhases
 {
 	/// <summary>
 	/// Goblin boss behaviour for phase transitions 1-3:
@@ -15,12 +15,15 @@ public class TaskGoblinBossTransitionPhase : TaskBossTransitionPhase
 	/// TRANSITION PHASE 3: enter "enrage" state, increase damage done by 10% + increase move speed/acceleration.
 	/// </summary>
 
+	BossEntityBehaviour behaviour;
+	BossEntityStats stats;
+
 	float slowHealTimer;
 
 	readonly int selfHealLimit = 5;
 	int currentSelfHealCounter;
 
-	public TaskGoblinBossTransitionPhase(BossEntityBehaviour behaviour)
+	public TaskGoblinBossTransitions(BossEntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
@@ -30,23 +33,30 @@ public class TaskGoblinBossTransitionPhase : TaskBossTransitionPhase
 	{
 		if (stats.inPhaseTransition == false) return NodeState.FAILURE;
 
-		RunPhaseTransition();
+		RunTransitions();
 
 		return NodeState.SUCCESS;
 	}
 
 	//run boss phases
-	protected override void RunPhaseTransition()
+	public void RunTransitions()
 	{
-		base.RunPhaseTransition();
+		Debug.Log(stats.name + " boss phase Transition task");
+
+		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
+			PhaseOneTransition();
+		else if (stats.bossPhase == BossEntityStats.BossPhase.secondPhase)
+			PhaseTwoTransition();
+		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
+			PhaseThreeTransition();
 	}
 
 	//boss phases
-	protected override void PhaseOneTransition()
+	public void PhaseOneTransition()
 	{
-		base.PhaseOneTransition();
+		stats.inPhaseTransition = false;
 	}
-	protected override void PhaseTwoTransition()
+	public void PhaseTwoTransition()
 	{
 		slowHealTimer -= Time.deltaTime;
 
@@ -64,7 +74,7 @@ public class TaskGoblinBossTransitionPhase : TaskBossTransitionPhase
 			stats.OnHeal(0.025f, true, stats.healingPercentageModifier.finalPercentageValue);
 		}
 	}
-	protected override void PhaseThreeTransition()
+	public void PhaseThreeTransition()
 	{
 		stats.damageDealtModifier.AddPercentageValue(0.1f);
 		behaviour.navMeshAgent.speed += 2;
