@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Events;
 
 public static class PlayerEventManager
 {
@@ -64,7 +62,7 @@ public static class PlayerEventManager
 	public static event Action OnShowPlayerClassSelectionEvent;
 	public static void ShowPlayerClassSelection()
 	{
-		if (EditorApplication.isPlaying) //allow class swapping in all scenes when open in editor
+		if (Application.isEditor) //allow class swapping in all scenes when open in editor
 		{
 			OnShowPlayerClassSelectionEvent?.Invoke();
 

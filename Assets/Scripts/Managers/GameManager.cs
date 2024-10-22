@@ -34,6 +34,11 @@ public class GameManager : MonoBehaviour
 
 	private void Awake()
 	{
+		//if vSyncCount == 0, .targetFrameRate is enabled. (default setting)
+		//if vSyncCount == 1, .targetFrameRate is ignored and frame rate will try match monitor refresh rate.
+		//QualitySettings.vSyncCount = 1;
+		//Application.targetFrameRate = 144;
+
 		if (Instance != null && Instance != this)
 			Destroy(gameObject);
 		else
@@ -51,6 +56,11 @@ public class GameManager : MonoBehaviour
 	private void OnDisable()
 	{
 		SceneManager.sceneLoaded -= SceneChangeFinished;
+	}
+	private void Update()
+	{
+		//Debug.LogError("vsync: " + QualitySettings.vSyncCount);
+		//Debug.LogError("framerate: " + Application.targetFrameRate);
 	}
 
 	private void GetAllBossSceneNames()

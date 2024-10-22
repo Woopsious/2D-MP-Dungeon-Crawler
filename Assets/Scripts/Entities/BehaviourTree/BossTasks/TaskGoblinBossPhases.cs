@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class TaskGoblinBossPhase : EntityMovement, IBossPhases
+public class TaskGoblinBossPhases : EntityMovement, IBossPhases
 {
 	/// <summary>
 	/// Goblin boss behaviour for phase 1-3: 
@@ -11,7 +11,7 @@ public class TaskGoblinBossPhase : EntityMovement, IBossPhases
 	readonly BossEntityStats stats;
 	readonly EntityEquipmentHandler equipmentHandler;
 
-	public TaskGoblinBossPhase(BossEntityBehaviour behaviour)
+	public TaskGoblinBossPhases(BossEntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;

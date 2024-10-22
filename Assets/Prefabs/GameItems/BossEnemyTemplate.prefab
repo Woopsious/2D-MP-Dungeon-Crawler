@@ -737,7 +737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DebugInvincible: 0
+  invincible: 0
   isDestroyedInOneHit: 0
 --- !u!114 &-4535706557027757244
 MonoBehaviour:
@@ -751,11 +751,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 244305eb3b088d442a1a3db9da203e1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBaseStats: {fileID: 0}
+  statsRef: {fileID: 0}
   entityBehaviour: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
-  lootSpawnHandler: {fileID: 0}
   entityLevel: 0
   levelModifier: 0
   maxHealth:
@@ -907,9 +906,13 @@ MonoBehaviour:
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 4324401266549769224}
   currentStatusEffects: []
+  damageable: {fileID: 0}
   spawner: {fileID: 0}
   lastBossHealthPercentage: 0
+  inPhaseTransition: 0
   bossPhase: 0
+  BossRoomCenterPiecePrefab: {fileID: 3871581706630097176, guid: 1d44e4c4142b2a643853c726054f5a7d, type: 3}
+  BossRoomCenterPiece: {fileID: 0}
 --- !u!114 &3519794317990881909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -922,7 +925,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 219092ea3f95d88429d2bf05b2fa1652, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBehaviour: {fileID: 0}
+  useStateMachineBehaviour: 0
+  behaviourRef: {fileID: 0}
   entityStats: {fileID: 0}
   equipmentHandler: {fileID: 0}
   navMeshAgent: {fileID: 0}
@@ -942,10 +946,17 @@ MonoBehaviour:
     m_Bits: 320
   playerAggroList: []
   playerTarget: {fileID: 0}
+  distanceToPlayerTarget: 0
+  currentPlayerTargetInView: 0
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
+  globalAttackTimer: 0
   healingAbility: {fileID: 0}
+  canCastHealingAbility: 0
+  healingAbilityTimer: 0
   offensiveAbility: {fileID: 0}
+  canCastOffensiveAbility: 0
+  offensiveAbilityTimer: 0
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   abilityOne: {fileID: 0}

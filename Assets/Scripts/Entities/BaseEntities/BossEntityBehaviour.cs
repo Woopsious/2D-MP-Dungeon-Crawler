@@ -53,7 +53,7 @@ public class BossEntityBehaviour : EntityBehaviour
 				new Selector(new List<BTNode> //check if in phase transition
 				{
 					new TaskGoblinBossTransitions(this),
-					new TaskGoblinBossPhase(this),
+					new TaskGoblinBossPhases(this),
 				}),
 
 				new Sequence(new List<BTNode> //attack actions

@@ -68,6 +68,7 @@
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\DungeonHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWeaponAttack.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossPhases.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryHandler.cs" />
@@ -137,7 +138,6 @@
     <Compile Include="Assets\Scripts\DungeonItems\AudioHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\StateMachine\BossEntityStates\BossGoblinAttack.cs" />
     <Compile Include="Assets\Scripts\Managers\ToolTipManager.cs" />
-    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossPhase.cs" />
     <Compile Include="Assets\Scripts\Entities\BaseEntities\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Entities\StateMachine\BaseEntityStates\EnemyAttackState.cs" />
     <Compile Include="Assets\Scripts\NPC&apos;s\NpcHandler.cs" />

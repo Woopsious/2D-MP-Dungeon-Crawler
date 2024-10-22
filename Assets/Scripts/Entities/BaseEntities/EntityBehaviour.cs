@@ -1,16 +1,7 @@
-using NavMeshPlus.Extensions;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Diagnostics;
-using UnityEngine.UIElements;
-using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class EntityBehaviour : Tree
 {

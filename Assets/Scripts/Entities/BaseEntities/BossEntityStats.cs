@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BossEntityStats : EntityStats
 {
-
 	[Header("Additional Boss Variables")]
 	public Damageable damageable;
 	public SpawnHandler spawner;
@@ -17,10 +16,14 @@ public class BossEntityStats : EntityStats
 		firstPhase, secondPhase, thirdPhase
 	}
 
+	public GameObject BossRoomCenterPiecePrefab;
+	[HideInInspector] public GameObject roomCenterPiece;
+
 	protected override void Awake()
 	{
 		base.Awake();
 		damageable = GetComponent<Damageable>();
+		SpawnBossRoomCenterPiece();
 	}
 	protected override void Start()
 	{
@@ -36,6 +39,13 @@ public class BossEntityStats : EntityStats
 	{
 		base.OnDisable();
 		OnHealthChangeEvent -= UpdateBossHealthPercentage;
+	}
+
+	private void SpawnBossRoomCenterPiece()
+	{
+		GameObject go = Instantiate(BossRoomCenterPiecePrefab);
+		roomCenterPiece = go;
+		roomCenterPiece.transform.position = transform.position;
 	}
 	private void UpdateBossHealthPercentage(int maxHealth, int currentHealth)
 	{

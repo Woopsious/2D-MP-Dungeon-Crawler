@@ -1,9 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
+using UnityEngine.AI;
 
 public abstract class EntityMovement : BTNode
 {
+	//move to center piece logic
+	protected void MoveToCenterPiece(BossEntityBehaviour bossBehaviour)
+	{
+		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
+		bossBehaviour.SetNewDestination(bossStats.roomCenterPiece.transform.position);
+	}
+
+	protected bool BossReachedCenterPiece(BossEntityBehaviour bossBehaviour)
+	{
+		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
+		float distance = Vector2.Distance(bossBehaviour.transform.position, bossStats.roomCenterPiece.transform.position);
+
+		if (distance < bossBehaviour.navMeshAgent.stoppingDistance)
+			return true;
+		else
+			return false;
+	}
+
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity, EntityEquipmentHandler equipment)
 	{
@@ -23,13 +43,16 @@ public abstract class EntityMovement : BTNode
 	protected void KeepDistanceFromPlayer(EntityBehaviour entity, EntityEquipmentHandler equipment)
 	{
 		//with ranged weapons idle within max range of weapon. (bow example: (10 - 2 = 8)	(2 + 2 = 4))
-		if (CheckDistanceToPlayerIsBigger(entity, GetDistanceToKeepFromPlayer(entity, equipment)))//move closer
+
+		//move closer
+		if (CheckDistanceToPlayerIsBigger(entity, DistanceToKeepWithinFromPlayer(entity, equipment)))
 			entity.SetNewDestination(MoveCloserToPlayer(entity.transform.position, entity.playersLastKnownPosition, 0.3f));
 
-		else if (!CheckDistanceToPlayerIsBigger(entity, equipment.equippedWeapon.weaponBaseRef.minAttackRange + 2))//flee from player
+		//flee from player
+		else if (!CheckDistanceToPlayerIsBigger(entity, DistanceToKeepFromPlayer(equipment)))
 			entity.SetNewDestination(FleeFromPlayer(entity.transform.position, entity.playersLastKnownPosition));
 	}
-	protected int GetDistanceToKeepFromPlayer(EntityBehaviour entity, EntityEquipmentHandler equipment)
+	protected int DistanceToKeepWithinFromPlayer(EntityBehaviour entity, EntityEquipmentHandler equipment)
 	{
 		int distance;
 		if ((int)entity.behaviourRef.aggroRange < equipment.equippedWeapon.weaponBaseRef.maxAttackRange - 2)
@@ -37,6 +60,11 @@ public abstract class EntityMovement : BTNode
 		else
 			distance = (int)equipment.equippedWeapon.weaponBaseRef.maxAttackRange - 2;
 
+		return distance;
+	}
+	protected int DistanceToKeepFromPlayer(EntityEquipmentHandler equipment)
+	{
+		int distance = (int)(equipment.equippedWeapon.weaponBaseRef.minAttackRange + 2);
 		return distance;
 	}
 	protected Vector2 FleeFromPlayer(Vector2 start, Vector2 end)
