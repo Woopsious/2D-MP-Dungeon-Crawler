@@ -90,20 +90,22 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public void AddItemToSlot(InventoryItemUi item)
 	{
 		item.parentAfterDrag = transform;
+		item.inventorySlot = this;
 		item.inventorySlotIndex = slotIndex;
 
 		itemInSlot = item;
 		UpdateSlotSize();
 		CheckIfItemInEquipmentSlot(item);
-		CheckInItemInEnchantmentSlot(item);
+		CheckIfItemInEnchantmentSlot(item);
 		item.transform.SetParent(transform);
+		itemInSlot.GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
 	}
 	public void RemoveItemFromSlot()
 	{
 		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
-		CheckInItemInEnchantmentSlot(itemInSlot);
+		CheckIfItemInEnchantmentSlot(itemInSlot);
 	}
 
 	//unique enchant item
@@ -114,7 +116,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 
 		item.Initilize((Items.Rarity)itemInSlot.rarity, itemInSlot.itemLevel, item.itemEnchantmentLevel);
 		itemInSlot.Initilize();
-		item.SetToolTip(PlayerInfoUi.playerInstance.playerStats);
+		item.SetToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
 	}
 
 	//other checks
@@ -130,7 +132,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		else
 			OnItemEquip?.Invoke(item, this);
 	}
-	public void CheckInItemInEnchantmentSlot(InventoryItemUi item)
+	public void CheckIfItemInEnchantmentSlot(InventoryItemUi item)
 	{
 		if (slotType == SlotType.enchantItemSlot)
 			OnNewItemToEnchant?.Invoke(item);

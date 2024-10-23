@@ -19,6 +19,9 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public TMP_Text uiItemLevel;
 	public TMP_Text uiItemStackCount;
 	public TMP_Text uiCantUtilizeItemNotif;
+
+	[Header("Parent Slot")]
+	[HideInInspector] public InventorySlotDataUi inventorySlot;
 	[HideInInspector] public Transform parentAfterDrag;
 
 	[Header("Item Base Ref")]

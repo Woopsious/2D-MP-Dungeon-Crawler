@@ -780,8 +780,7 @@ public class PlayerClassesUi : MonoBehaviour
 		foreach (ClassTreeNodeUi node in nodeSlotUiList)
 		{
 			if (node.GetComponent<ToolTipUi>() == null) continue;
-			ToolTipUi tip = node.GetComponent<ToolTipUi>();
-			tip.UpdatePlayerToolTip();
+			node.SetToolTip(PlayerInfoUi.playerInstance.playerStats);
 		}
 	}
 }

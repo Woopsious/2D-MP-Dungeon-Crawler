@@ -1,7 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
-using Unity.Services.Analytics;
 using UnityEngine;
 
 public class Consumables : Items
@@ -18,13 +16,11 @@ public class Consumables : Items
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 		isStackable = consumableBaseRef.isStackable;
 	}
-	public override void SetToolTip(EntityStats playerStats)
+	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
-		string info = $"{itemName}\n{itemPrice} Price";
-
+		string info = $"{itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price";
 		string extraInfo;
 
 		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)

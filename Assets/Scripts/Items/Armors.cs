@@ -1,6 +1,5 @@
+using System;
 using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 
 public class Armors : Items
@@ -44,9 +43,8 @@ public class Armors : Items
 		bonusFireResistance = (int)(armorBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(armorBaseRef.bonusIceResistance * levelModifier);
 	}
-	public override void SetToolTip(EntityStats playerStats)
+	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
 		string rarity;
@@ -69,7 +67,7 @@ public class Armors : Items
 
 		string info;
 		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price \n{weightClass}";
+			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
 		else
 			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
 

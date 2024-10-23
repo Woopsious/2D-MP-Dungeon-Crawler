@@ -37,13 +37,4 @@ public class ToolTipUi : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
 		yield return new WaitForSeconds(timeToWait);
 		ShowMessage(eventData);
 	}
-	public void UpdatePlayerToolTip()
-	{
-		if (GetComponent<ClassTreeNodeUi>() != null)
-			GetComponent<ClassTreeNodeUi>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
-		if (GetComponent<Items>() != null)
-			GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
-		if (GetComponent<Abilities>() != null)
-			GetComponent<Abilities>().SetToolTip(PlayerInfoUi.playerInstance.GetComponent<EntityStats>());
-	}
 }

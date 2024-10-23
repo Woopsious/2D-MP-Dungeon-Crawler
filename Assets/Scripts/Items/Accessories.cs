@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -70,9 +71,8 @@ public class Accessories : Items
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
 	}
-	public override void SetToolTip(EntityStats playerStats)
+	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		base.SetToolTip(playerStats);
 		toolTip = GetComponent<ToolTipUi>();
 
 		string rarity;
@@ -87,7 +87,7 @@ public class Accessories : Items
 
 		string info;
 		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{itemPrice} Price";
+			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price";
 		else
 			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price";
 

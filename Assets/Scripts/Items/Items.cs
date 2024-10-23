@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -98,7 +99,7 @@ public class Items : MonoBehaviour
 		if (weaponBaseRef != null) return (int)(weaponBaseRef.itemPrice * levelModifier);
 		else if (armorBaseRef != null) return (int)(armorBaseRef.itemPrice * levelModifier);
 		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.itemPrice * levelModifier);
-		else return (int)(consumableBaseRef.itemPrice);
+		else return consumableBaseRef.itemPrice;
 	}
 	private ItemType GetItemType()
 	{
@@ -142,9 +143,16 @@ public class Items : MonoBehaviour
 	}
 
 	//tool tip
-	public virtual void SetToolTip(EntityStats playerStats)
+	public virtual void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
 
+	}
+	protected int AdjustItemPriceDisplay(bool itemInShopSlot)
+	{
+		if (itemInShopSlot) //items not sold at full price
+			return itemPrice;
+		else
+			return (int)Math.Round(itemPrice * 0.9f, 0);
 	}
 
 	//Debug functions

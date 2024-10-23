@@ -44,7 +44,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public TMP_Text transactionTrackerText;
 	public Button closeShopButton;
 
-	public int goldTransaction;
+	//public int goldTransaction;
 
 	[Header("Storage Chest Ui")]
 	public GameObject storageChestPanelUi;
@@ -237,12 +237,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	//buying/selling items
 	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
-		int goldFromItemSelling = 0;
-		goldFromItemSelling += item.itemPrice * item.currentStackCount;
-		UpdateGoldAmount(goldFromItemSelling);
+		float goldFromItemSelling = item.itemPrice * item.currentStackCount;
+		Math.Round(goldFromItemSelling *= 0.9f, 0);
+		UpdateGoldAmount((int)goldFromItemSelling);
 
-		goldTransaction = item.itemPrice * item.currentStackCount;
-		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		transactionTrackerText.text = $"Gold: {goldFromItemSelling}";
 		transactionInfoText.text = "Item Sold";
 		slot.AddItemToSlot(item);
 	}
@@ -254,23 +253,21 @@ public class PlayerInventoryUi : MonoBehaviour
 		{
 			OnItemConfirmBuy(item, newSlot);
 
-			int goldCostFromItemBuying = 0;
-			goldCostFromItemBuying -= item.itemPrice * item.currentStackCount;
-			UpdateGoldAmount(goldCostFromItemBuying);
+			int goldFromItemBuying = -item.itemPrice * item.currentStackCount;
+			UpdateGoldAmount(goldFromItemBuying);
 		}
 	}
 	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi newSlot)
 	{
-		goldTransaction = -item.itemPrice * item.currentStackCount;
-		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		int goldFromItemBuying = -item.itemPrice * item.currentStackCount;
+		transactionTrackerText.text = $"Gold: {goldFromItemBuying}";
 		transactionInfoText.text = "Item Brought";
 
 		newSlot.AddItemToSlot(item);
 	}
 	public void OnItemCancelBuy(InventoryItemUi item, InventorySlotDataUi oldSlot, string reason)
 	{
-		goldTransaction = 0;
-		transactionTrackerText.text = $"Gold: {goldTransaction}";
+		transactionTrackerText.text = $"Gold: {0}";
 		transactionInfoText.text = reason;
 
 		oldSlot.AddItemToSlot(item);
@@ -681,15 +678,11 @@ public class PlayerInventoryUi : MonoBehaviour
 	{
 		foreach (GameObject obj in objList)
 		{
-			if (obj.GetComponent<InventorySlotDataUi>().itemInSlot == null) continue;
+			if (!TryGetComponent<InventorySlotDataUi>(out var slotDataUi)) continue;
+
 			UpdateCanEquipItem(obj);
-			UpdateToolTip(obj);
+			slotDataUi.itemInSlot.GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.playerStats, slotDataUi.IsShopSlot());
 		}
-	}
-	private void UpdateToolTip(GameObject obj)
-	{
-		ToolTipUi tip = obj.GetComponent<InventorySlotDataUi>().itemInSlot.GetComponent<ToolTipUi>();
-		tip.UpdatePlayerToolTip();
 	}
 	private void UpdateCanEquipItem(GameObject obj)
 	{
