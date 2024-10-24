@@ -10,7 +10,6 @@ public class EntityBehaviour : Tree
 	public SOEntityBehaviour behaviourRef;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
-	private SpriteRenderer spriteRenderer;
 
 	[Header("Entity States")]
 	public EnemyBaseState currentState;
@@ -18,7 +17,6 @@ public class EntityBehaviour : Tree
 	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
 	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
 
-	private Rigidbody2D rb;
 	private Animator animator;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	public bool markedForCleanUp;
@@ -70,15 +68,12 @@ public class EntityBehaviour : Tree
 	{
 		entityStats = GetComponent<EntityStats>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
-		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
 	}
 	protected override void Start()
 	{
 		useStateMachineBehaviour = false;
-
 		Initilize();
 
 		if (useStateMachineBehaviour)
@@ -234,10 +229,20 @@ public class EntityBehaviour : Tree
 
 	private void UpdateSpriteDirection()
 	{
-		if (navMeshAgent.velocity.x > 0)
-			transform.eulerAngles = new Vector3(0, 180, 0);
+        if (playerTarget == null)
+        {
+			if (navMeshAgent.velocity.x > 0)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+			else
+				transform.eulerAngles = new Vector3(0, 0, 0);
+		}
 		else
-			transform.eulerAngles = new Vector3(0, 0, 0);
+		{
+			if (playerTarget.transform.position.x > transform.position.x)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+			else if (playerTarget.transform.position.x < transform.position.x)
+				transform.eulerAngles = new Vector3(0, 0, 0);
+		}
 	}
 	private void UpdateAnimationState()
 	{

@@ -15,8 +15,8 @@ public class EntityStats : MonoBehaviour
 	private LootSpawnHandler lootSpawnHandler;
 	private BoxCollider2D boxCollider2D;
 	private Animator animator;
-	public SpriteRenderer spriteRenderer {get; private set; }
-	public SpriteRenderer idleWeaponSprite { get; private set; }
+	public SpriteRenderer SpriteRenderer {get; private set; }
+	public SpriteRenderer IdleWeaponSprite { get; private set; }
 	private AudioHandler audioHandler;
 	public int entityLevel;
 	public float levelModifier;
@@ -80,8 +80,8 @@ public class EntityStats : MonoBehaviour
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 		boxCollider2D = GetComponent<BoxCollider2D>();
 		animator = GetComponent<Animator>();
-		spriteRenderer = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
-		idleWeaponSprite = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
+		SpriteRenderer = transform.GetChild(0).GetChild(0).GetComponent<SpriteRenderer>();
+		IdleWeaponSprite = transform.GetChild(0).GetChild(1).GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 	}
 	protected virtual void Start()
@@ -120,7 +120,7 @@ public class EntityStats : MonoBehaviour
 	//set entity data
 	public void Initilize()
 	{
-		spriteRenderer.sprite = statsRef.sprite;
+		SpriteRenderer.sprite = statsRef.sprite;
 		name = statsRef.entityName;
 		CalculateBaseStats();
 
@@ -141,7 +141,7 @@ public class EntityStats : MonoBehaviour
 		StopAllCoroutines();
 		boxCollider2D.enabled = true;
 		animator.ResetTrigger("DeathTrigger");
-		spriteRenderer.color = Color.white;
+		SpriteRenderer.color = Color.white;
 		CalculateBaseStats();
 		classHandler.RerollEquippedAbilities();
 	}
@@ -263,14 +263,14 @@ public class EntityStats : MonoBehaviour
 	}
 	private void RedFlashOnRecieveDamage()
 	{
-		spriteRenderer.color = Color.red;
+		SpriteRenderer.color = Color.red;
 		StartCoroutine(ResetRedFlashOnRecieveDamage());
 	}
 	IEnumerator ResetRedFlashOnRecieveDamage()
 	{
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
-		spriteRenderer.color = Color.white;
+		SpriteRenderer.color = Color.white;
 	}
 	IEnumerator WaitForDeathSound()
 	{
@@ -447,7 +447,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 
@@ -474,7 +474,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatUnlock(SOClassStatBonuses statBoost)
@@ -503,7 +503,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void OnStatRefund(SOClassStatBonuses statBoost)
@@ -532,7 +532,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 	public void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
@@ -580,7 +580,7 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 
 		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
-		equipmentHandler.equippedWeapon.UpdateWeaponDamage(idleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
 

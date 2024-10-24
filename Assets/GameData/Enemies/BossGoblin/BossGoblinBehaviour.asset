@@ -9,14 +9,17 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 32f597d358a120d4ab5ba32aa818bb3f, type: 3}
+  m_Script: {fileID: 11500000, guid: 5b7d5269192bf0f47ac736cc80f4de49, type: 3}
   m_Name: BossGoblinBehaviour
   m_EditorClassIdentifier: 
   idleWaitTime: 3
-  idleWanderRadius: 20
+  idleWanderRadius: 8
   aggroRange: 20
   maxChaseRange: 25
   navMeshMoveSpeed: 5
   navMeshTurnSpeed: 75
   navMeshAcceleration: 5
   navMeshStoppingDistance: 1.75
+  abilityOne: {fileID: 11400000, guid: 56319319c036b0c418884038f3b87eae, type: 2}
+  abilityTwo: {fileID: 11400000, guid: 55ff08dd5ce2d17469fb5c0ff3ae885e, type: 2}
+  abilityThree: {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}

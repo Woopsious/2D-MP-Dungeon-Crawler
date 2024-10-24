@@ -10,11 +10,11 @@ public class SOEntityBehaviour : ScriptableObject
 	public int idleWanderRadius;
 
 	[Header("Attack Behaviour")]
-	[Tooltip("max distance from player till enemy aggros, standard value is 8")]
-	[Range(8f, 20f)]
+	[Tooltip("max distance from player till enemy aggros, 12- = short | 15 = avg | 18+ long | bosses + 3-8")]
+	[Range(10f, 30f)]
 	public float aggroRange;
 	[Tooltip("max distance till player looses aggro while in view, cant be lower then aggroRange x1.1")]
-	[Range(10f, 25f)]
+	[Range(12f, 40f)]
 	public float maxChaseRange;
 
 	[Header("Movement Behaviour")]

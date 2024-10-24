@@ -58,10 +58,7 @@ public class BossEntityStats : EntityStats
 			spawner.ForceSpawnEntitiesForBosses();
 
 			if (bossBehaviour.useStateMachineBehaviour)
-			{
-				if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
-					bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
-			}
+				bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
 			else
 				inPhaseTransition = true;
 		}

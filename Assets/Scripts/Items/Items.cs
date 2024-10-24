@@ -15,7 +15,6 @@ public class Items : MonoBehaviour
 	public SOConsumables consumableBaseRef;
 
 	[Header("Item Info")]
-	private AudioHandler audioHandler;
 	protected ToolTipUi toolTip;
 	public string itemName;
 	public Sprite itemSprite;
@@ -46,7 +45,6 @@ public class Items : MonoBehaviour
 	//set item data
 	public virtual void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
-		audioHandler = GetComponent<AudioHandler>();
 		rarity = setRarity;
 		itemLevel = setLevel;
 		itemEnchantmentLevel = setEnchantmentLevel;

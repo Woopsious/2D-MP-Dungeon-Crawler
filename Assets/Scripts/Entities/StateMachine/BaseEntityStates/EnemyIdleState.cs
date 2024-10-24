@@ -19,9 +19,7 @@ public class EnemyIdleState : EnemyBaseState
 			if (entity.entityStats.statsRef.isBossVersion)
 			{
 				BossEntityBehaviour bossEntity = (BossEntityBehaviour)entity;
-
-				if (entity.entityStats.statsRef.humanoidType == SOEntityStats.HumanoidTypes.isGoblin)
-					bossEntity.ChangeState(bossEntity.goblinAttackState);
+				bossEntity.ChangeState(bossEntity.goblinAttackState);
 			}
 			else
 				entity.ChangeState(entity.attackState);

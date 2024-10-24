@@ -131,7 +131,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana -= weapon.bonusMana;
 
-		entityStats.idleWeaponSprite.sprite = null;
+		entityStats.IdleWeaponSprite.sprite = null;
 		Destroy(weapon);
 		OnEquipmentChanges?.Invoke(this);
 	}
@@ -148,7 +148,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana += weapon.bonusMana;
 
-		weapon.WeaponInitilization(entityStats.idleWeaponSprite);
+		weapon.WeaponInitilization(entityStats.IdleWeaponSprite);
 		AssignItemRefOnEquip(weapon, slotItemIsIn);
 		OnEquipmentChanges?.Invoke(this);
 	}

@@ -34,10 +34,6 @@ public class SOClassAbilities : SOClassUnlocks
 	public bool hasAoeDuration;
 	public float aoeDuration;
 
-	[Header("DoT Settings")]
-	[Tooltip("check to apply damage over time")]
-	public bool isDOT;
-
 	[Header("Projectile Settings")]
 	public bool isProjectile;
 	public Sprite projectileSprite;

@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
+  m_Name: BossEye
+  m_EditorClassIdentifier: 
+  entityName: Eye Goblin
+  sprite: {fileID: -1716744528, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 1
+  humanoidType: 2
+  enemySpawnChance: 0.25
+  canUseEquipment: 0
+  UniqueAttackWeapon: {fileID: 11400000, guid: c94ba793105b4324092539712fc977b7, type: 2}
+  expOnDeath: 100
+  maxDroppedGoldAmount: 30
+  minDroppedGoldAmount: 15
+  itemRarityChanceModifier: 0.05
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
+  entityBehaviour: {fileID: 11400000, guid: 832c2639d8227d644a99292ef0afea1a, type: 2}
+  maxHealth: 250
+  damageDealtBaseModifier: 0.5
+  physicalDamageResistance: 8
+  poisonDamageResistance: 8
+  fireDamageResistance: 8
+  iceDamageResistance: 8
+  maxMana: 150
+  manaRegenPercentage: 0.1
+  manaRegenCooldown: 2
+  possibleClassesList:
+  - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  deathSfx: {fileID: 8300000, guid: 4720698716e87f740aba4bc21013e5af, type: 3}
+  hurtSfx: {fileID: 8300000, guid: 9aae51ef36e6afc44b36e2197f175fb6, type: 3}
+  idleSfx: {fileID: 8300000, guid: 066ee69023e2b2a4da5039401f75b324, type: 3}

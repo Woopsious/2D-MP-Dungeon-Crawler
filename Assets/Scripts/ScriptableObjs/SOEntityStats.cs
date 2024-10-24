@@ -12,7 +12,7 @@ public class SOEntityStats : ScriptableObject
 	public HumanoidTypes humanoidType;
 	public enum HumanoidTypes
 	{
-		isPlayer, isGoblin, isSkeleton, isBat, isSlime, isZombie
+		isPlayer, isGoblinBoss, isEyeBoss, isGoblin, isSkeleton, isBat, isSlime, isZombie
 	}
 	[Range(0f, 1f)]
 	public float enemySpawnChance;
