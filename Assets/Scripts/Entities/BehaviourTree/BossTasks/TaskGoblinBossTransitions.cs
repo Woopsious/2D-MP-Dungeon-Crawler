@@ -6,10 +6,9 @@ using UnityEngine.AI;
 
 public class TaskGoblinBossTransitions : EntityMovement, IBossTransitionPhases
 {
-	/// <summary>
-	/// Goblin boss behaviour for phase transitions 1-3:
-	/// boss will spawn in along with a center piece.
-	/// TRANSITION PHASE 1: spawn with a center piece and enter phase 1.
+	/// <summary> Goblin boss behaviour for phase transitions 1-3:
+	/// spawn with a center piece
+	/// TRANSITION PHASE 1: enter phase 1.
 	/// TRANSITION PHASE 2: become invulnerable, disable attacking, disable ability use. return to center piece, then heal till all 
 	/// friendlies dead or healed 5x (each heal = 2.5%), become vulnerable enter phase 2.
 	/// TRANSITION PHASE 3: enter "enrage" state, increase damage done by 10% + increase move speed/acceleration.

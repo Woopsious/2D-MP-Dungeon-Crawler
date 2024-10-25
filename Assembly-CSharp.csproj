@@ -111,6 +111,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskIdle.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskUseAbility.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossPhases.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossAbilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
@@ -128,6 +129,7 @@
     <Compile Include="Assets\Scripts\DungeonItems\EnchantmentHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossTransitions.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\Entities\BaseEntities\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossAbilities.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\AudioHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\StateMachine\BossEntityStates\BossGoblinAttack.cs" />
     <Compile Include="Assets\Scripts\Managers\ToolTipManager.cs" />

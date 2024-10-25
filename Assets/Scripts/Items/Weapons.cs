@@ -184,11 +184,11 @@ public class Weapons : Items
 	//weapon attack
 	protected override void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!isEquippedByPlayer && !isEquippedByOther)
+		if (!isEquippedByPlayer && !isEquippedByOther) //disable picking up weapons that are equipped
 			base.OnTriggerEnter2D(other);
 
 		if (!isEquippedByPlayer && !isEquippedByOther) return;
-		if (other.gameObject.GetComponent<Damageable>() == null) return; //|| !isEquippedByPlayer == false && !isEquippedByOther == false)
+		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(player, boxCollider, damage, 
 			(IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false, isEquippedByPlayer, false);

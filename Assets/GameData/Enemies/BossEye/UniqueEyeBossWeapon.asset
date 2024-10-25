@@ -35,6 +35,6 @@ MonoBehaviour:
   maxAttackRange: 25
   minAttackRange: 0
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
-  projectileSpeed: 25
+  projectileSpeed: 40
   baseBonusMana: 0
   attackSfx: {fileID: 8300000, guid: a3290f218accccd4b9fe7b6c7c8e8e1d, type: 3}

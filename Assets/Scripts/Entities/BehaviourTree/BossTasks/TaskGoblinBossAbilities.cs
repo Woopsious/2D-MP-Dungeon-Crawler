@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 {
+	/// <summary>
+	/// Goblin boss abilities can be used as long as ability number >= boss phase (ability 2 usable in phase 2 & 3, not in 1)
+	/// </summary>
+
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
 
