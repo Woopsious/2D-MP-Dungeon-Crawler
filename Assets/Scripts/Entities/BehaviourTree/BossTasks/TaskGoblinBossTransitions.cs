@@ -32,14 +32,6 @@ public class TaskGoblinBossTransitions : EntityMovement, IBossTransitionPhases
 	{
 		if (stats.inPhaseTransition == false) return NodeState.FAILURE;
 
-		RunTransitions();
-
-		return NodeState.SUCCESS;
-	}
-
-	//run boss phases
-	public void RunTransitions()
-	{
 		Debug.Log(stats.name + " boss phase Transition task");
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
@@ -48,9 +40,11 @@ public class TaskGoblinBossTransitions : EntityMovement, IBossTransitionPhases
 			PhaseTwoTransition();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
 			PhaseThreeTransition();
+
+		return NodeState.SUCCESS;
 	}
 
-	//boss phases
+
 	public void PhaseOneTransition()
 	{
 		stats.inPhaseTransition = false;

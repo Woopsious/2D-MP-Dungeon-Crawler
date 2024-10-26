@@ -207,7 +207,7 @@ public class Abilities : MonoBehaviour
 			return false;
 		else return true;
 	}
-	public bool CanInstantCastAbility(EntityStats selectedEnemy)
+	public bool CanInstantCastAbility()
 	{
 		if (abilityBaseRef.canOnlyTargetSelf)
 			return true;
@@ -240,46 +240,4 @@ public class Abilities : MonoBehaviour
 			return false;
 		}
 	}
-
-	/*
-	public bool CanInstantCastAbility(EntityStats selectedEnemy)
-	{
-		if (abilityBaseRef.canOnlyTargetSelf)
-			return true;
-		if (abilityBaseRef.isProjectile)
-		{
-			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemy != null)
-				return true;
-			else return false;
-		}
-		if (abilityBaseRef.isAOE)
-		{
-			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemy != null)
-				return true;
-			else return false;
-		}
-
-		if (abilityBaseRef.requiresTarget)
-		{
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //add support for healing other players in MP
-				return true;
-			else if (!abilityBaseRef.isOffensiveAbility) //add support for buffing other players in MP
-				return true;
-			else if (abilityBaseRef.isOffensiveAbility && selectedEnemy != null)
-				return true;
-			else if (abilityBaseRef.isOffensiveAbility && selectedEnemy == null)
-				return false;
-			else
-			{
-				Debug.LogError("failed to figure out if ability can be insta casted while requiring a target");
-				return false;
-			}
-		}
-		else
-		{
-			Debug.LogError("failed to figure out if ability can be insta casted");
-			return false;
-		}
-	}
-	*/
 }

@@ -38807,7 +38807,7 @@ MonoBehaviour:
   consumableSlotTwo: {fileID: 1269957131305269457}
   equippedConsumableOne: {fileID: 0}
   equippedConsumableTwo: {fileID: 0}
-  queuedAbilityTextInfo: {fileID: 7913876648010356126}
+  queuedAbilityTextInfo: {fileID: 6716385031230419256}
   queuedAbilityAoe: {fileID: 7053027009310848954}
   queuedAbility: {fileID: 0}
   AbilitySlots:

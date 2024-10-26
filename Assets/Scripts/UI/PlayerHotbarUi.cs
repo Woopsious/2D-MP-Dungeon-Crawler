@@ -31,7 +31,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableTwo;
 
 	[Header("Hotbar Abilities")]
-	public GameObject queuedAbilityTextInfo;
+	public TMP_Text queuedAbilityTextInfo;
 	public GameObject queuedAbilityAoe;
 	public Abilities queuedAbility;
 	public List<GameObject> AbilitySlots = new List<GameObject>();
@@ -123,7 +123,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		selectedTargetUi.SetActive(false);
-		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
@@ -305,28 +305,40 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		queuedAbility = ability;
 
-		queuedAbilityTextInfo.SetActive(true);
-		if (ability.abilityBaseRef.isAOE)
+		queuedAbilityTextInfo.gameObject.SetActive(true);
+		if (ability.abilityBaseRef.isProjectile)
 		{
+			queuedAbilityTextInfo.text = "L Click to Fire\nR Click to Cancel";
+		}
+		else if (ability.abilityBaseRef.isAOE)
+		{
+			queuedAbilityTextInfo.text = "L Click Place\nR Click to Cancel";
 			queuedAbilityAoe.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
+		else
+		{
+			if (ability.abilityBaseRef.isOffensiveAbility)
+				queuedAbilityTextInfo.text = "L Click on Enemy\nR Click to Cancel";
+			else
+				queuedAbilityTextInfo.text = "L Click on Friendly\nR Click to Cancel";
+		}
 	}
-	public void OnUseQueuedAbility()
+	public void OnCastQueuedAbility()
 	{
-		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
 	}
 	public void OnCancelQueuedAbility()
 	{
-		queuedAbilityTextInfo.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
 	}
 	private void UpdateQueuedAbilityUiPosition()
 	{
-		if (queuedAbilityTextInfo.activeInHierarchy)
+		if (queuedAbilityTextInfo.gameObject.activeInHierarchy)
 			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
 
 		if (queuedAbilityAoe.activeInHierarchy)

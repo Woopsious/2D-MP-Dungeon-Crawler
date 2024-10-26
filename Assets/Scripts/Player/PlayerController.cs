@@ -42,12 +42,14 @@ public class PlayerController : MonoBehaviour
 
 	//abilities
 	public event Action<Abilities> OnAddNewQueuedAbility;
-	public event Action OnUseQueuedAbility;
+	public event Action OnCastQueuedAbility;
 	public event Action OnCancelQueuedAbility;
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
 
 	public Abilities queuedAbility;
+	public Abilities abilityBeingCasted;
+	public float abilityCastingTimer;
 
 	//interactions
 	[HideInInspector] public bool isInteractingWithInteractable;
@@ -73,7 +75,7 @@ public class PlayerController : MonoBehaviour
 		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		OnAddNewQueuedAbility += PlayerHotbarUi.Instance.AddNewQueuedAbility;
-		OnUseQueuedAbility += PlayerHotbarUi.Instance.OnUseQueuedAbility;
+		OnCastQueuedAbility += PlayerHotbarUi.Instance.OnCastQueuedAbility;
 		OnCancelQueuedAbility += PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 
 		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
@@ -93,7 +95,7 @@ public class PlayerController : MonoBehaviour
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 
 		OnAddNewQueuedAbility -= PlayerHotbarUi.Instance.AddNewQueuedAbility;
-		OnUseQueuedAbility -= PlayerHotbarUi.Instance.OnUseQueuedAbility;
+		OnCastQueuedAbility -= PlayerHotbarUi.Instance.OnCastQueuedAbility;
 		OnCancelQueuedAbility -= PlayerHotbarUi.Instance.OnCancelQueuedAbility;
 
 		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
@@ -107,6 +109,7 @@ public class PlayerController : MonoBehaviour
 		if (IsPlayerInteracting()) return;
 		UpdateTargetsInList();
 		AutoAttackTimer();
+		AbilityCastingTimer();
 	}
 	private void FixedUpdate()
 	{
@@ -363,39 +366,11 @@ public class PlayerController : MonoBehaviour
 		OnAddNewQueuedAbility?.Invoke(ability);
 		queuedAbility = ability;
 	}
-	private void UseQueuedAbility(Abilities ability)
+	private void CastQueuedAbility()
 	{
-		OnUseQueuedAbility?.Invoke();
-
-		if (ability.abilityBaseRef.isAOE)
-			CastAoeAbility(ability);
-		else if (ability.abilityBaseRef.isProjectile)
-			CastDirectionalAbility(ability);
-		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
-		{
-			EntityStats newEnemyEntity;
-			if (selectedEnemyTarget == null)
-			{
-				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
-				if (newEnemyEntity == null)
-				{
-					CancelQueuedAbility(queuedAbility);
-					return;
-				}
-				else
-					CastEffect(ability, newEnemyEntity);
-			}
-			else
-				CastEffect(ability, selectedEnemyTarget);
-		}
-		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)	//for MP add support for friendlies
-			CastEffect(ability, playerStats);
-		else
-		{
-			CancelQueuedAbility(queuedAbility);
-			Debug.LogError("failed to find ability type and cast, shouldnt happen");
-			return;
-		}
+		abilityBeingCasted = queuedAbility;
+		abilityCastingTimer = queuedAbility.abilityBaseRef.abilityCastingTimer;
+		OnCastQueuedAbility?.Invoke();
 	}
 	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
 	{
@@ -436,6 +411,50 @@ public class PlayerController : MonoBehaviour
 	{
 		OnCancelQueuedAbility?.Invoke();
 		queuedAbility = null;
+	}
+
+	//casting timer
+	private void AbilityCastingTimer()
+	{
+		if (abilityBeingCasted != null)
+		{
+			abilityCastingTimer -= Time.deltaTime;
+
+			if (abilityCastingTimer <= 0)
+				CastAbility(abilityBeingCasted);
+		}
+	}
+	private void CastAbility(Abilities ability)
+	{
+		if (ability.abilityBaseRef.isAOE)
+			CastAoeAbility(ability);
+		else if (ability.abilityBaseRef.isProjectile)
+			CastDirectionalAbility(ability);
+		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
+		{
+			EntityStats newEnemyEntity;
+			if (selectedEnemyTarget == null)
+			{
+				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
+				if (newEnemyEntity == null)
+				{
+					CancelQueuedAbility(queuedAbility);
+					return;
+				}
+				else
+					CastEffect(ability, newEnemyEntity);
+			}
+			else
+				CastEffect(ability, selectedEnemyTarget);
+		}
+		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)   //for MP add support for friendlies
+			CastEffect(ability, playerStats);
+		else
+		{
+			CancelQueuedAbility(queuedAbility);
+			Debug.LogError("failed to find ability type and cast, shouldnt happen");
+			return;
+		}
 	}
 
 	//casting
@@ -527,6 +546,7 @@ public class PlayerController : MonoBehaviour
 		}
 		ability.isOnCooldown = true;
 		queuedAbility = null;
+		abilityBeingCasted = null;
 	}
 
 	//bool checks
@@ -610,7 +630,7 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 		else
-			UseQueuedAbility(queuedAbility);
+			CastQueuedAbility();
 	}
 	private void OnRightClick()
 	{
@@ -678,8 +698,8 @@ public class PlayerController : MonoBehaviour
 		TryReacquireNewTarget();
 		AddNewQueuedAbility(newQueuedAbility);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			UseQueuedAbility(queuedAbility);
+		if (newQueuedAbility.CanInstantCastAbility())
+			CastQueuedAbility();
 	}
 	private void OnAbilityTwo()
 	{
@@ -692,8 +712,8 @@ public class PlayerController : MonoBehaviour
 		TryReacquireNewTarget();
 		AddNewQueuedAbility(newQueuedAbility);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			UseQueuedAbility(queuedAbility);
+		if (newQueuedAbility.CanInstantCastAbility())
+			CastQueuedAbility();
 	}
 	private void OnAbilityThree()
 	{
@@ -706,8 +726,8 @@ public class PlayerController : MonoBehaviour
 		TryReacquireNewTarget();
 		AddNewQueuedAbility(newQueuedAbility);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			UseQueuedAbility(queuedAbility);
+		if (newQueuedAbility.CanInstantCastAbility())
+			CastQueuedAbility();
 	}
 	private void OnAbilityFour()
 	{
@@ -720,8 +740,8 @@ public class PlayerController : MonoBehaviour
 		TryReacquireNewTarget();
 		AddNewQueuedAbility(newQueuedAbility);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			UseQueuedAbility(queuedAbility);
+		if (newQueuedAbility.CanInstantCastAbility())
+			CastQueuedAbility();
 	}
 	private void OnAbilityFive()
 	{
@@ -734,8 +754,8 @@ public class PlayerController : MonoBehaviour
 		TryReacquireNewTarget();
 		AddNewQueuedAbility(newQueuedAbility);
 
-		if (newQueuedAbility.CanInstantCastAbility(selectedEnemyTarget))
-			UseQueuedAbility(queuedAbility);
+		if (newQueuedAbility.CanInstantCastAbility())
+			CastQueuedAbility();
 	}
 	private void TryReacquireNewTarget()
 	{

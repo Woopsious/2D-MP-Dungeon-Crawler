@@ -494,7 +494,7 @@ public class EntityBehaviour : Tree
 	}
 
 	//casting of ability types
-	protected bool HasEnoughManaToCast(SOClassAbilities ability)
+	public bool HasEnoughManaToCast(SOClassAbilities ability)
 	{
 		if (ability.isSpell)
 		{

@@ -27,8 +27,6 @@ public class TaskUseAbility : BTNode
 				behaviour.TryCastOffensiveAbility();
 			else return NodeState.FAILURE;
 
-			//Debug.LogError(stats.name + " using an ability");
-
 			//add ability animation length here if needed, include a bool if animation should block movement
 			behaviour.globalAttackTimer = 1f;
 			return NodeState.SUCCESS;
@@ -37,7 +35,7 @@ public class TaskUseAbility : BTNode
 
 	public bool CanUseHealingAbility()
 	{
-		if (!behaviour.canCastHealingAbility || !HasEnoughManaToCast(behaviour.healingAbility)) return false;
+		if (!behaviour.canCastHealingAbility || !behaviour.HasEnoughManaToCast(behaviour.healingAbility)) return false;
 
 		int healthPercentage = (int)((float)stats.currentHealth / stats.maxHealth.finalValue * 100);
 		if (healthPercentage > 50) return false;
@@ -45,20 +43,7 @@ public class TaskUseAbility : BTNode
 	}
 	public bool CanUseOffensiveAbility()
 	{
-		if (!behaviour.canCastOffensiveAbility || !HasEnoughManaToCast(behaviour.offensiveAbility)) return false;
+		if (!behaviour.canCastOffensiveAbility || !behaviour.HasEnoughManaToCast(behaviour.offensiveAbility)) return false;
 		else return true;
-	}
-
-	private bool HasEnoughManaToCast(SOClassAbilities ability)
-	{
-		if (ability.isSpell)
-		{
-			int totalManaCost = (int)(ability.manaCost * stats.levelModifier);
-			if (stats.currentMana <= totalManaCost)
-				return false;
-			else return true;
-		}
-		else
-			return true;
 	}
 }

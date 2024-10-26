@@ -37,8 +37,6 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 			}
 			else return NodeState.FAILURE;
 
-			//Debug.LogError(stats.name + " using an ability");
-
 			//add ability animation length here if needed, include a bool if animation should block movement
 			behaviour.globalAttackTimer = 1f;
 			return NodeState.SUCCESS;
@@ -48,32 +46,19 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 	public bool CanUseBossAbilityOne()
 	{
 		if (stats.inPhaseTransition ||
-			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(behaviour.abilityOne)) return false;
+			!behaviour.canCastAbilityOne || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
 		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
-			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(behaviour.abilityTwo)) return false;
+			!behaviour.canCastAbilityTwo || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
 		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
-			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(behaviour.abilityThree)) return false;
+			!behaviour.canCastAbilityThree || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
 		else return true;
-	}
-
-	private bool HasEnoughManaToCast(SOClassAbilities ability)
-	{
-		if (ability.isSpell)
-		{
-			int totalManaCost = (int)(ability.manaCost * stats.levelModifier);
-			if (stats.currentMana <= totalManaCost)
-				return false;
-			else return true;
-		}
-		else
-			return true;
 	}
 }

@@ -15,6 +15,7 @@ public class SOClassAbilities : SOClassUnlocks
 	/// </summary>
 
 	[Header("Ability Info")]
+	public float abilityCastingTimer;
 	public float abilityCooldown;
 	public bool isOffensiveAbility;
 	[Tooltip("forces ability to need specific target to be applied to. EG: healing spells/skills")]

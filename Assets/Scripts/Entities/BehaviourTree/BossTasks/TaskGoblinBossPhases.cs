@@ -3,7 +3,9 @@ using UnityEngine;
 public class TaskGoblinBossPhases : EntityMovement, IBossPhases
 {
 	/// <summary> Goblin boss behaviour for phase 1-3: 
-	/// PHASE 1-3: basic chase and attack player
+	/// PHASE 1: basic chase and attack player + ability 1
+	/// PHASE 2: basic chase and attack player + ability 1 & 2
+	/// PHASE 3: basic chase and attack player + ability 1, 2 & 3
 	/// </summary>
 
 	readonly BossEntityBehaviour behaviour;
@@ -19,14 +21,8 @@ public class TaskGoblinBossPhases : EntityMovement, IBossPhases
 
 	public override NodeState Evaluate()
 	{
-		if (stats.inPhaseTransition == false)
-			RunPhases();
+		if (stats.inPhaseTransition != false) return NodeState.RUNNING;
 
-		return NodeState.RUNNING;
-	}
-
-	public void RunPhases()
-	{
 		Debug.Log(stats.name + " boss phase task");
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
@@ -35,6 +31,8 @@ public class TaskGoblinBossPhases : EntityMovement, IBossPhases
 			PhaseTwo();
 		else if (stats.bossPhase == BossEntityStats.BossPhase.thirdPhase)
 			PhaseThree();
+
+		return NodeState.RUNNING;
 	}
 
 	public void PhaseOne()
