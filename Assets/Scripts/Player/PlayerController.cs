@@ -360,13 +360,13 @@ public class PlayerController : MonoBehaviour
 	}
 
 	//PLAYER ABILITY CASTING
-	//events
+	//casting events
 	private void AddNewQueuedAbility(Abilities ability)
 	{
 		OnAddNewQueuedAbility?.Invoke(ability);
 		queuedAbility = ability;
 	}
-	private void CastQueuedAbility()
+	private void BeginCastingQueuedAbility()
 	{
 		abilityBeingCasted = queuedAbility;
 		abilityCastingTimer = queuedAbility.abilityBaseRef.abilityCastingTimer;
@@ -411,6 +411,7 @@ public class PlayerController : MonoBehaviour
 	{
 		OnCancelQueuedAbility?.Invoke();
 		queuedAbility = null;
+		abilityCastingTimer = 0;
 	}
 
 	//casting timer
@@ -457,7 +458,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	//casting
+	//types of casting
 	private void CastDirectionalAbility(Abilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
@@ -630,7 +631,7 @@ public class PlayerController : MonoBehaviour
 			}
 		}
 		else
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void OnRightClick()
 	{
@@ -699,7 +700,7 @@ public class PlayerController : MonoBehaviour
 		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility())
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void OnAbilityTwo()
 	{
@@ -713,7 +714,7 @@ public class PlayerController : MonoBehaviour
 		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility())
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void OnAbilityThree()
 	{
@@ -727,7 +728,7 @@ public class PlayerController : MonoBehaviour
 		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility())
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void OnAbilityFour()
 	{
@@ -741,7 +742,7 @@ public class PlayerController : MonoBehaviour
 		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility())
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void OnAbilityFive()
 	{
@@ -755,7 +756,7 @@ public class PlayerController : MonoBehaviour
 		AddNewQueuedAbility(newQueuedAbility);
 
 		if (newQueuedAbility.CanInstantCastAbility())
-			CastQueuedAbility();
+			BeginCastingQueuedAbility();
 	}
 	private void TryReacquireNewTarget()
 	{

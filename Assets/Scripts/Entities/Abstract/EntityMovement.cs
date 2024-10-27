@@ -1,29 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
-using UnityEngine.AI;
 
 public abstract class EntityMovement : BTNode
 {
-	//move to center piece logic
-	protected void MoveToCenterPiece(BossEntityBehaviour bossBehaviour)
-	{
-		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
-		bossBehaviour.SetNewDestination(bossStats.roomCenterPiece.transform.position);
-	}
-
-	protected bool BossReachedCenterPiece(BossEntityBehaviour bossBehaviour)
-	{
-		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
-		float distance = Vector2.Distance(bossBehaviour.transform.position, bossStats.roomCenterPiece.transform.position);
-
-		if (distance < bossBehaviour.navMeshAgent.stoppingDistance)
-			return true;
-		else
-			return false;
-	}
-
+	//entity movements
 	//melee weapon logic
 	protected void KeepPlayerInMeleeRange(EntityBehaviour entity, EntityEquipmentHandler equipment)
 	{
@@ -84,6 +65,25 @@ public abstract class EntityMovement : BTNode
 		float distance = Vector2.Distance(entity.transform.position, entity.playersLastKnownPosition);
 
 		if (distance > distanceToCheck)
+			return true;
+		else
+			return false;
+	}
+
+	//boss entity movements
+	//move to center piece logic
+	protected void MoveToCenterPiece(BossEntityBehaviour bossBehaviour)
+	{
+		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
+		bossBehaviour.SetNewDestination(bossStats.roomCenterPiece.transform.position);
+	}
+
+	protected bool BossReachedCenterPiece(BossEntityBehaviour bossBehaviour)
+	{
+		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
+		float distance = Vector2.Distance(bossBehaviour.transform.position, bossStats.roomCenterPiece.transform.position);
+
+		if (distance < bossBehaviour.navMeshAgent.stoppingDistance)
 			return true;
 		else
 			return false;

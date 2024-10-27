@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskGoblinBossAbilities : BTNode, IBossAbilities
+public class TaskGoblinBossAbilities : EntityAbilities, IBossAbilities
 {
 	/// <summary>
 	/// Goblin boss abilities can be used as long as ability number >= boss phase (ability 2 usable in phase 2 & 3, not in 1)
@@ -25,15 +25,15 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 		{
 			if (CanUseBossAbilityOne())
 			{
-				behaviour.CastBossAbilityOne();
+				CastAbilityOne(behaviour);
 			}
 			else if (CanUseBossAbilityTwo())
 			{
-				behaviour.CastBossAbilityTwo();
+				CastAbilityTwo(behaviour);
 			}
 			else if (CanUseBossAbilityThree())
 			{
-				behaviour.CastBossAbilityThree();
+				CastAbilityThree(behaviour);
 			}
 			else return NodeState.FAILURE;
 
@@ -45,20 +45,20 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 
 	public bool CanUseBossAbilityOne()
 	{
-		if (stats.inPhaseTransition ||
-			!behaviour.canCastAbilityOne || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition ||
+			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(stats, behaviour.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
-		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
-			!behaviour.canCastAbilityTwo || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(stats, behaviour.abilityTwo)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		if (stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
-			!behaviour.canCastAbilityThree || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(stats, behaviour.abilityThree)) return false;
 		else return true;
 	}
 }

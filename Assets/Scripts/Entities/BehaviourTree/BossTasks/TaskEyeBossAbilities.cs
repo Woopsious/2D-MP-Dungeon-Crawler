@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskEyeBossAbilities : BTNode, IBossAbilities
+public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 {
 	/// <summary>
 	/// when player marked by eye, show indicator ontop of player for player and all other players in game. once timer is up do aoe damage 
@@ -46,15 +46,15 @@ public class TaskEyeBossAbilities : BTNode, IBossAbilities
 		{
 			if (CanUseBossAbilityOne())
 			{
-				behaviour.CastBossAbilityOne();
+				CastAbilityOne(behaviour);
 			}
 			else if (CanUseBossAbilityTwo())
 			{
-				behaviour.CastBossAbilityTwo();
+				CastAbilityTwo(behaviour);
 			}
 			else if (CanUseBossAbilityThree())
 			{
-				behaviour.CastBossAbilityThree();
+				CastAbilityThree(behaviour);
 			}
 			else return NodeState.FAILURE;
 
@@ -67,7 +67,7 @@ public class TaskEyeBossAbilities : BTNode, IBossAbilities
 	public bool CanUseBossAbilityOne()
 	{
 		if (stats.inPhaseTransition ||
-			!behaviour.canCastAbilityOne || !behaviour.HasEnoughManaToCast(behaviour.abilityOne)) return false;
+			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(stats, behaviour.abilityOne)) return false;
 		else return true;
 	}
 

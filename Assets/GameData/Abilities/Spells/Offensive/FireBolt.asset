@@ -16,6 +16,7 @@ MonoBehaviour:
   Description: A simple bolt of fire to launch at enemies
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 5
   abilityCooldown: 3
   isOffensiveAbility: 1
   requiresTarget: 0

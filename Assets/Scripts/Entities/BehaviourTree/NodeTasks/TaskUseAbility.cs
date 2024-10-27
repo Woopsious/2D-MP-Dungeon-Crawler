@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TaskUseAbility : BTNode
+public class TaskUseAbility : EntityAbilities
 {
 	EntityBehaviour behaviour;
 	EntityStats stats;
@@ -22,9 +22,9 @@ public class TaskUseAbility : BTNode
 		else
 		{
 			if (CanUseHealingAbility())
-				behaviour.TryCastHealingAbility(stats.maxHealth.finalValue, stats.currentHealth);
+				CastHealingAbility(behaviour);
 			else if (CanUseOffensiveAbility())
-				behaviour.TryCastOffensiveAbility();
+				CastOffensiveAbility(behaviour);
 			else return NodeState.FAILURE;
 
 			//add ability animation length here if needed, include a bool if animation should block movement
@@ -35,15 +35,32 @@ public class TaskUseAbility : BTNode
 
 	public bool CanUseHealingAbility()
 	{
-		if (!behaviour.canCastHealingAbility || !behaviour.HasEnoughManaToCast(behaviour.healingAbility)) return false;
+		if (behaviour.abilityBeingCasted != null || stats.statsRef.isBossVersion || behaviour.healingAbility == null) return false;
 
 		int healthPercentage = (int)((float)stats.currentHealth / stats.maxHealth.finalValue * 100);
-		if (healthPercentage > 50) return false;
+		if (healthPercentage > 50) return false; //unique ability checks
+
+		if (!behaviour.canCastHealingAbility  || stats.maxHealth.finalValue == 0) return false;
+
+		if (!HasEnoughManaToCast(stats, behaviour.healingAbility)) //mana check
+		{
+			behaviour.healingAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
+			return false;
+		}
+
 		else return true;
 	}
 	public bool CanUseOffensiveAbility()
 	{
-		if (!behaviour.canCastOffensiveAbility || !behaviour.HasEnoughManaToCast(behaviour.offensiveAbility)) return false;
+		if (behaviour.abilityBeingCasted != null || behaviour.offensiveAbility == null || !behaviour.canCastOffensiveAbility) return false;
+
+		if (behaviour.playerTarget == null) return false; //unique ability checks
+
+		if (!HasEnoughManaToCast(stats, behaviour.offensiveAbility)) //mana check
+		{
+			behaviour.offensiveAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
+			return false;
+		}
 		else return true;
 	}
 }

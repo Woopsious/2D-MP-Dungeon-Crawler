@@ -53,14 +53,9 @@ public class BossEntityStats : EntityStats
 
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
-			BossEntityBehaviour bossBehaviour = (BossEntityBehaviour)entityBehaviour;
 			bossPhase++;
 			spawner.ForceSpawnEntitiesForBosses();
-
-			if (bossBehaviour.useStateMachineBehaviour)
-				bossBehaviour.ChangeState(bossBehaviour.goblinAttackState);
-			else
-				inPhaseTransition = true;
+			inPhaseTransition = true;
 		}
 		lastBossHealthPercentage = newPercentage;
 	}

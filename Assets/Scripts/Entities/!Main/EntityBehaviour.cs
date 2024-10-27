@@ -1,22 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Playables;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class EntityBehaviour : Tree
 {
 	[Header("Behaviour Info")]
-	public bool useStateMachineBehaviour;
 	public SOEntityBehaviour behaviourRef;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
-
-	[Header("Entity States")]
-	public EnemyBaseState currentState;
-	[HideInInspector] public EnemyIdleState idleState = new EnemyIdleState();
-	[HideInInspector] public EnemyWanderState wanderState = new EnemyWanderState();
-	[HideInInspector] public EnemyAttackState attackState = new EnemyAttackState();
-
 	private Animator animator;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
 	public bool markedForCleanUp;
@@ -46,6 +39,10 @@ public class EntityBehaviour : Tree
 	[Header("Global Attack Cooldown")]
 	public float globalAttackTimer;
 
+	[Header("Abilities")]
+	public SOClassAbilities abilityBeingCasted;
+	public float abilityCastingTimer;
+
 	[Header("Healing Ability Cooldown")]
 	public SOClassAbilities healingAbility;
 	public bool canCastHealingAbility;
@@ -73,24 +70,8 @@ public class EntityBehaviour : Tree
 	}
 	protected override void Start()
 	{
-		useStateMachineBehaviour = false;
 		Initilize();
-
-		if (useStateMachineBehaviour)
-			return;
-		else if (!useStateMachineBehaviour)
-			base.Start();
-	}
-
-	private void OnEnable()
-	{
-		if (useStateMachineBehaviour)
-			entityStats.OnHealthChangeEvent += TryCastHealingAbility;
-	}
-	private void OnDisable()
-	{
-		if (useStateMachineBehaviour)
-			entityStats.OnHealthChangeEvent -= TryCastHealingAbility;
+		base.Start();
 	}
 
 	protected override void Update()
@@ -102,15 +83,11 @@ public class EntityBehaviour : Tree
 
 		HealingAbilityTimer();
 		OffensiveAbilityTimer();
+		AbilityCastingTimer();
 
-		if (useStateMachineBehaviour)
-			currentState.UpdateLogic(this);
-		else
-		{
-			GlobalAttackTimer();
-			IsPlayerTargetVisibleTimer();
-			base.Update();
-		}
+		GlobalAttackTimer();
+		IsPlayerTargetVisibleTimer();
+		base.Update();
 	}
 	protected virtual void FixedUpdate()
 	{
@@ -130,11 +107,6 @@ public class EntityBehaviour : Tree
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
-
-		if (useStateMachineBehaviour)
-			currentState.UpdateLogic(this);
-		else
-			return;
 	}
 
 	//BehaviourTree related functions
@@ -204,7 +176,6 @@ public class EntityBehaviour : Tree
 		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
-		ChangeState(wanderState);
 	}
 	public void UpdateBounds(Vector3 position)
 	{
@@ -453,59 +424,48 @@ public class EntityBehaviour : Tree
 	}
 
 	//ABILITIES
-	//casting of each ability
-	public void TryCastHealingAbility(int maxHealth, int currentHealth)
+	//incase of errors.
+	public void CancelAbility()
 	{
-		if (entityStats.statsRef.isBossVersion) return;
-		if (healingAbility == null || !canCastHealingAbility || maxHealth == 0) return;
-
-		int healthPercentage = (int)((float)currentHealth / maxHealth * 100);
-		if (healthPercentage > 50) return;
-
-		canCastHealingAbility = false;
-		healingAbilityTimer = healingAbility.abilityCooldown;
-		CastEffect(healingAbility);
+		abilityBeingCasted = null;
+		abilityCastingTimer = 0;
 	}
-	public void TryCastOffensiveAbility()
-	{
-		if (offensiveAbility == null || !canCastOffensiveAbility) return;
-		if (playerTarget == null) return;
 
-		if (!HasEnoughManaToCast(offensiveAbility))
+	//casting timer
+	private void AbilityCastingTimer()
+	{
+		if (abilityBeingCasted != null)
 		{
-			canCastOffensiveAbility = false;
-			offensiveAbilityTimer = 2.5f;	//if low mana wait 2.5s then try again
+			abilityCastingTimer -= Time.deltaTime;
+
+			if (abilityCastingTimer <= 0)
+				CastAbility(abilityBeingCasted);
+		}
+	}
+	private void CastAbility(SOClassAbilities ability)
+	{
+		if (ability.isAOE)
+			CastAoeAbility(ability);
+		else if (ability.isProjectile)
+			CastDirectionalAbility(ability);
+		else if (ability.requiresTarget && ability.isOffensiveAbility)
+		{
+			if (playerTarget == null)
+				CancelAbility();
+			else
+				CastEffect(ability);
+		}
+		else if (ability.requiresTarget && !ability.isOffensiveAbility)   //for MP add support for friendlies
+			CastEffect(ability);
+		else
+		{
+			CancelAbility();
+			Debug.LogError("failed to find ability type and cast, shouldnt happen");
 			return;
 		}
-
-		if (offensiveAbility.hasStatusEffects)
-			CastEffect(offensiveAbility);
-		else
-		{
-			if (offensiveAbility.isProjectile)
-				CastDirectionalAbility(offensiveAbility);
-			else if (offensiveAbility.isAOE)
-				CastAoeAbility(offensiveAbility);
-		}
-
-		canCastOffensiveAbility = false;
-		offensiveAbilityTimer = offensiveAbility.abilityCooldown;
-		return;
 	}
 
-	//casting of ability types
-	public bool HasEnoughManaToCast(SOClassAbilities ability)
-	{
-		if (ability.isSpell)
-		{
-			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
-			if (entityStats.currentMana <= totalManaCost)
-				return false;
-            else return true;
-        }
-		else
-			return true;
-	}
+	//types of casting
 	protected void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
@@ -570,6 +530,7 @@ public class EntityBehaviour : Tree
 			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
 			entityStats.DecreaseMana(totalManaCost, false);
 		}
+		abilityBeingCasted = null;
 	}
 
 	//ability type cooldowns
@@ -590,14 +551,6 @@ public class EntityBehaviour : Tree
 
 		if (offensiveAbilityTimer <= 0)
 			canCastOffensiveAbility = true;
-	}
-
-	//STATE CHANGES
-	public virtual void ChangeState(EnemyBaseState newState)
-	{
-		currentState?.Exit(this);
-		currentState = newState;
-		currentState.Enter(this);
 	}
 
 	//utility
