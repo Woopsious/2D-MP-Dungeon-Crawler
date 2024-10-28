@@ -9,14 +9,16 @@ public abstract class EntityAbilities : BTNode
 	protected void CastHealingAbility(EntityBehaviour behaviour)
 	{
 		behaviour.canCastHealingAbility = false;
-		behaviour.healingAbilityTimer = behaviour.healingAbility.abilityCooldown;
+		behaviour.healingAbilityTimer = behaviour.healingAbility.abilityCooldown + behaviour.healingAbility.abilityCastingTimer;
+		behaviour.abilityCastingTimer = behaviour.healingAbility.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.healingAbility;
 	}
 
 	protected void CastOffensiveAbility(EntityBehaviour behaviour)
 	{
 		behaviour.canCastOffensiveAbility = false;
-		behaviour.offensiveAbilityTimer = behaviour.offensiveAbility.abilityCooldown;
+		behaviour.offensiveAbilityTimer = behaviour.offensiveAbility.abilityCooldown + behaviour.offensiveAbility.abilityCastingTimer;
+		behaviour.abilityCastingTimer = behaviour.offensiveAbility.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.offensiveAbility;
 	}
 
@@ -24,19 +26,22 @@ public abstract class EntityAbilities : BTNode
 	protected void CastAbilityOne(BossEntityBehaviour behaviour)
 	{
 		behaviour.canCastAbilityOne = false;
-		behaviour.abilityTimerOneCounter = behaviour.abilityOne.abilityCooldown;
+		behaviour.abilityTimerOneCounter = behaviour.abilityOne.abilityCooldown + behaviour.abilityOne.abilityCastingTimer;
+		behaviour.abilityCastingTimer = behaviour.abilityOne.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityOne;
 	}
 	protected void CastAbilityTwo(BossEntityBehaviour behaviour)
 	{
 		behaviour.canCastAbilityTwo = false;
-		behaviour.abilityTimerTwoCounter = behaviour.abilityTwo.abilityCooldown;
+		behaviour.abilityTimerTwoCounter = behaviour.abilityTwo.abilityCooldown + behaviour.abilityTwo.abilityCastingTimer;
+		behaviour.abilityCastingTimer = behaviour.abilityTwo.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityTwo;
 	}
 	protected void CastAbilityThree(BossEntityBehaviour behaviour)
 	{
 		behaviour.canCastAbilityThree = false;
-		behaviour.abilityTimerThreeCounter = behaviour.abilityThree.abilityCooldown;
+		behaviour.abilityTimerThreeCounter = behaviour.abilityThree.abilityCooldown + behaviour.abilityThree.abilityCastingTimer;
+		behaviour.abilityCastingTimer = behaviour.abilityThree.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityThree;
 	}
 

@@ -10,32 +10,34 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: FlameStrike
+  m_Name: EyeAoeLineAttack
   m_EditorClassIdentifier: 
-  Name: Flame Strike
-  Description: Call a flame of fire down from the sky
-  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
-  nonPlayerLevelRequirement: 1
-  abilityCastingTimer: 0
-  abilityCooldown: 10
+  Name: Eye Aoe Line Attack
+  Description: after marked by eye effect wears off. eye boss does aoe line attack
+    from eye pos to marked player pos.
+  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  nonPlayerLevelRequirement: 0
+  abilityCastingTimer: 10
+  abilityCooldown: 30
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  hasStatusEffects: 0
-  statusEffects: []
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: 7a78b1c6e3656f446959974723085901, type: 2}
   isAOE: 1
-  aoeSize: 30
+  aoeSize: 50
   hasAoeDuration: 0
   aoeDuration: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
-  damageType: 2
-  damageValue: 40
+  damageType: 0
+  damageValue: 30
   damageValuePercentage: 0
   isSpell: 1
-  manaCost: 15
-  minPercentCost: 12
+  manaCost: 50
+  minPercentCost: 40
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

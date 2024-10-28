@@ -30,7 +30,7 @@ public class SOClassAbilities : SOClassUnlocks
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
-	[Range(30, 60)]
+	[Range(20, 60)]
 	public float aoeSize;
 	public bool hasAoeDuration;
 	public float aoeDuration;

@@ -29,11 +29,13 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 	/// ability deals 20 damage. 4 players hit = 80 damage. 2 players hit = 60 damage. 1 player hit = 40 damage)
 	/// </summary>
 
+	readonly SOBossEntityBehaviour bossBehaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
 
 	public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
+		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
 	}
@@ -50,10 +52,12 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 			}
 			else if (CanUseBossAbilityTwo())
 			{
+				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityTwo(behaviour);
 			}
 			else if (CanUseBossAbilityThree())
 			{
+				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityThree(behaviour);
 			}
 			else return NodeState.FAILURE;
@@ -63,21 +67,25 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 			return NodeState.SUCCESS;
 		}
 	}
+	private void CastMarkedByEyeEffectOnPlayer()
+	{
+		behaviour.ForceCastSpecialBossAbilities(bossBehaviourRef.specialBossAbilities[0]);
+	}
 
 	public bool CanUseBossAbilityOne()
 	{
-		if (stats.inPhaseTransition ||
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition ||
 			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(stats, behaviour.abilityOne)) return false;
 		else return true;
 	}
-
-	public bool CanUseBossAbilityThree()
-	{
-		throw new System.NotImplementedException();
-	}
-
 	public bool CanUseBossAbilityTwo()
 	{
-		throw new System.NotImplementedException();
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(stats, behaviour.abilityTwo)) return false;
+		else return true;
+	}
+	public bool CanUseBossAbilityThree()
+	{
+		return false;
 	}
 }

@@ -144,6 +144,9 @@ public class EntityStats : MonoBehaviour
 		SpriteRenderer.color = Color.white;
 		CalculateBaseStats();
 		classHandler.RerollEquippedAbilities();
+
+		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
+			statusEffect.ClearEffect();
 	}
 	public void ResetEntityBehaviour(SpawnHandler spawner)
 	{
@@ -259,6 +262,7 @@ public class EntityStats : MonoBehaviour
 		entityBehaviour.navMeshAgent.isStopped = true;
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
+
 		StartCoroutine(WaitForDeathSound());
 	}
 	private void RedFlashOnRecieveDamage()

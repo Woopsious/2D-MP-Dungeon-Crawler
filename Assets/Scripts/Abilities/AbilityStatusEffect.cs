@@ -38,6 +38,11 @@ public class AbilityStatusEffect : MonoBehaviour
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
+	public void ClearEffect()
+	{
+		entityEffectIsAppliedTo.UnApplyStatusEffect(this);
+		Destroy(gameObject);
+	}
 
 	//timer
 	private void AbilityDurationTimer()

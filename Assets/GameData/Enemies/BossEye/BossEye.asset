@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
   m_Name: BossEye
   m_EditorClassIdentifier: 
-  entityName: Eye Goblin
+  entityName: Cthulhu
   sprite: {fileID: -1716744528, guid: 76686699748622a48b566623ca98afc6, type: 3}
   isBossVersion: 1
   humanoidType: 2

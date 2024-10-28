@@ -20,6 +20,8 @@ MonoBehaviour:
   navMeshTurnSpeed: 75
   navMeshAcceleration: 4
   navMeshStoppingDistance: 1.75
-  abilityOne: {fileID: 11400000, guid: b7d7195f6f75dc04da2bf0d851bc5e19, type: 2}
-  abilityTwo: {fileID: 11400000, guid: b7d7195f6f75dc04da2bf0d851bc5e19, type: 2}
+  abilityOne: {fileID: 11400000, guid: b09bd3e89efa274499968001d6355b1e, type: 2}
+  abilityTwo: {fileID: 11400000, guid: 43dfd25f63a06b647808572e8fd617b9, type: 2}
   abilityThree: {fileID: 11400000, guid: fdd13aa94d5aa7b428b41c0c44196497, type: 2}
+  specialBossAbilities:
+  - {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}

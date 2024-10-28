@@ -10,6 +10,7 @@ public class AbilityAOE : MonoBehaviour
 
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
+	private BoxCollider2D boxCollider;
 	private SpriteRenderer aoeSprite;
 	private bool isPlayerAoe;
 	public int aoeDamage;
@@ -73,6 +74,86 @@ public class AbilityAOE : MonoBehaviour
 		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
+
+	public void InitilizeCircleAoe(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	{
+		this.abilityBaseRef = abilityBaseRef;
+		gameObject.name = abilityBaseRef.Name + "Aoe";
+		circleCollider = GetComponent<CircleCollider2D>();
+		aoeSprite = GetComponent<SpriteRenderer>();
+		aoeSprite.sprite = abilityBaseRef.abilitySprite;
+		transform.localScale = new Vector3(abilityBaseRef.aoeSize, abilityBaseRef.aoeSize, 1);
+		circleCollider.radius = 0.1f;
+		circleCollider.offset = new Vector2(0, 0);
+
+		this.casterInfo = casterInfo;
+		abilityDurationTimer = abilityBaseRef.aoeDuration;
+		if (abilityBaseRef.aoeDuration == 0)
+			abilityDurationTimer = 0.1f;
+
+		isPlayerAoe = casterInfo.IsPlayerEntity();
+		damageType = (DamageType)abilityBaseRef.damageType;
+		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
+
+		if (damageType == DamageType.isPhysicalDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isPoisonDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isFireDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isIceDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
+
+		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+		gameObject.SetActive(true);
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+
+	///<summery>
+	/// boxAoes will need position of thing casting it (can grab via casterInfo) + direction to cast in or target its being casted at
+	/// then its position set equal distance between caster position + target its being casted at or direction its pointing
+	/// getting position = Lerp(casterPos, targetPos) or Lerp(casterPos, new Vector2(casterPos + directionPos))
+	/// 
+	/// handle adjustable box shapes
+	/// localScale x always set via abilityBaseRef.aoeSizeX, localScale y always set via abilityBaseRef.aoeSizeY
+	/// unless marked as Reach target localScale y will reach target + 3 and position will need to be updated.
+	///<summery>
+	public void InitilizeBoxAoe(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	{
+		this.abilityBaseRef = abilityBaseRef;
+		gameObject.name = abilityBaseRef.Name + "Aoe";
+		circleCollider = GetComponent<CircleCollider2D>();
+		aoeSprite = GetComponent<SpriteRenderer>();
+		aoeSprite.sprite = abilityBaseRef.abilitySprite;
+		transform.localScale = new Vector3(abilityBaseRef.aoeSize, abilityBaseRef.aoeSize, 1);
+
+		//add code here from summery
+
+		boxCollider.size = new Vector2(0.15f, 0.15f);
+		boxCollider.offset = new Vector2(0, 0);
+
+		this.casterInfo = casterInfo;
+		abilityDurationTimer = abilityBaseRef.aoeDuration;
+		if (abilityBaseRef.aoeDuration == 0)
+			abilityDurationTimer = 0.1f;
+
+		isPlayerAoe = casterInfo.IsPlayerEntity();
+		damageType = (DamageType)abilityBaseRef.damageType;
+		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
+
+		if (damageType == DamageType.isPhysicalDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isPoisonDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isFireDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
+		if (damageType == DamageType.isIceDamageType)
+			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
+
+		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+		gameObject.SetActive(true);
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
 	public void AddPlayerRef(PlayerController player)
 	{
 		this.player = player;
@@ -83,7 +164,7 @@ public class AbilityAOE : MonoBehaviour
 	{
 		abilityDurationTimer -= Time.deltaTime;
 
-		if (abilityDurationTimer <= 0)
-			DungeonHandler.AoeAbilitiesCleanUp(this);
+		//if (abilityDurationTimer <= 0)
+			//DungeonHandler.AoeAbilitiesCleanUp(this);
 	}
 }

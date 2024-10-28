@@ -109,8 +109,8 @@ public class BossEntityBehaviour : EntityBehaviour
 			{
 				new Selector(new List<BTNode> //check if in phase transition
 				{
-					new TaskGoblinBossTransitions(this),
-					new TaskGoblinBossPhases(this),
+					new TaskEyeBossTransitions(this),
+					new TaskEyeBossPhases(this),
 				}),
 
 				new Sequence(new List<BTNode> //attack actions
@@ -120,7 +120,7 @@ public class BossEntityBehaviour : EntityBehaviour
 					{
 						new Sequence(new List<BTNode> //use ability
 						{
-							new TaskGoblinBossAbilities(this),
+							new TaskEyeBossAbilities(this),
 						}),
 						new Sequence(new List<BTNode> //weapon attack
 						{
@@ -145,6 +145,11 @@ public class BossEntityBehaviour : EntityBehaviour
 		});
 
 		return root;
+	}
+
+	public void ForceCastSpecialBossAbilities(SOClassAbilities ability)
+	{
+		CastAbility(ability);
 	}
 
 	//timers

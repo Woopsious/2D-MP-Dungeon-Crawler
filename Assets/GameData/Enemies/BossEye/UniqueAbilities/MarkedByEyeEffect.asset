@@ -14,9 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Marked By Eye
   effectSprite: {fileID: 0}
-  statusEffectType: 4
+  statusEffectType: 0
   isDOT: 0
-  effectValue: 0.15
+  effectValue: 0
   damageType: 0
   hasDuration: 1
   abilityDuration: 10

@@ -267,7 +267,7 @@ public class EntityBehaviour : Tree
 	}
 
 	//playerTarget checks and pos tracking
-	public bool CurrentPlayerTargetVisible()
+	private bool CurrentPlayerTargetVisible()
 	{
 		if (playerTarget == null) return false;
 
@@ -287,13 +287,6 @@ public class EntityBehaviour : Tree
 	public void SetNewDestination(Vector2 destination)
 	{
 		navMeshAgent.SetDestination(destination);
-	}
-	public bool HasReachedDestination()
-	{
-		if (navMeshAgent.remainingDistance < navMeshAgent.stoppingDistance)
-			return true;
-		else
-			return false;
 	}
 
 	//ATTACKING
@@ -425,14 +418,14 @@ public class EntityBehaviour : Tree
 
 	//ABILITIES
 	//incase of errors.
-	public void CancelAbility()
+	protected void CancelAbility()
 	{
 		abilityBeingCasted = null;
 		abilityCastingTimer = 0;
 	}
 
 	//casting timer
-	private void AbilityCastingTimer()
+	protected void AbilityCastingTimer()
 	{
 		if (abilityBeingCasted != null)
 		{
@@ -442,8 +435,11 @@ public class EntityBehaviour : Tree
 				CastAbility(abilityBeingCasted);
 		}
 	}
-	private void CastAbility(SOClassAbilities ability)
+	protected void CastAbility(SOClassAbilities ability)
 	{
+		if (entityStats.statsRef.isBossVersion)
+			Debug.LogWarning("casting ability: " + ability.Name);
+
 		if (ability.isAOE)
 			CastAoeAbility(ability);
 		else if (ability.isProjectile)
@@ -530,6 +526,7 @@ public class EntityBehaviour : Tree
 			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
 			entityStats.DecreaseMana(totalManaCost, false);
 		}
+
 		abilityBeingCasted = null;
 	}
 
