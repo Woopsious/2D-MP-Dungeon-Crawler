@@ -109,8 +109,7 @@ public class EntityBehaviour : Tree
 		UpdateAnimationState();
 	}
 
-	//BehaviourTree related functions
-	//build Basic Behaviour Tree
+	//build Behaviour Tree
 	protected override BTNode SetupTree()
 	{
 		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree

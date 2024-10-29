@@ -14,25 +14,29 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Ice Spikes
   Description: Summon spikes of ice from the ground
-  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
+  abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 0
   abilityCooldown: 12
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
+  isCircleAOE: 0
   isAOE: 1
-  aoeSize: 40
-  isDOT: 0
-  abilityDuration: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 20
+  boxAoeSizeX: 20
+  boxAoeSizeY: 30
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
+  damageType: 3
   damageValue: 30
   damageValuePercentage: 0
-  damageType: 3
   isSpell: 1
   manaCost: 10
   minPercentCost: 8

@@ -31,8 +31,9 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableTwo;
 
 	[Header("Hotbar Abilities")]
-	public TMP_Text queuedAbilityTextInfo;
 	public GameObject queuedAbilityAoe;
+	public TMP_Text queuedAbilityTextInfo;
+	public Image queuedAbilityAoeImage;
 	public Abilities queuedAbility;
 	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
@@ -313,6 +314,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		else if (ability.abilityBaseRef.isAOE)
 		{
 			queuedAbilityTextInfo.text = "L Click Place\nR Click to Cancel";
+			queuedAbilityAoeImage.sprite = ability.abilityBaseRef.abilitySprite;
 			queuedAbilityAoe.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
@@ -342,11 +344,31 @@ public class PlayerHotbarUi : MonoBehaviour
 			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
 
 		if (queuedAbilityAoe.activeInHierarchy)
-			queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+		{
+			if (queuedAbility != null && queuedAbility.abilityBaseRef.isCircleAOE)
+				queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+			else
+			{
+				//get direction to aim in
+				SetAoePositionAndRotation(
+					Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position), Input.mousePosition);
+			}
+		}
+	}
+	public void SetAoePositionAndRotation(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - OriginPosition;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		queuedAbilityAoe.transform.position = OriginPosition;
+		queuedAbilityAoe.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 	}
 	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
 	{
-		Vector3 scale = new(abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f, abilityRef.aoeSize / 1.5f);
+		Vector3 scale;
+		if (abilityRef.isCircleAOE)
+			scale = new(abilityRef.circleAoeSize / 1.5f, abilityRef.circleAoeSize / 1.5f, 0);
+		else
+			scale = new(abilityRef.boxAoeSizeX / 1.5f, abilityRef.boxAoeSizeY / 1.5f, 0);
 		queuedAbilityAoe.transform.localScale = scale;
 	}
 

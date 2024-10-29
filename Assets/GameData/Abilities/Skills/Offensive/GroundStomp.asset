@@ -16,17 +16,20 @@ MonoBehaviour:
   Description: Stomp on the ground, damaging enemies around you
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 0
   abilityCooldown: 20
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   hasStatusEffects: 0
   statusEffects: []
+  isCircleAOE: 1
   isAOE: 1
-  aoeSize: 30
   hasAoeDuration: 0
   aoeDuration: 0
-  isDOT: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

@@ -17,6 +17,7 @@ MonoBehaviour:
     it
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 0
   abilityCooldown: 30
   isOffensiveAbility: 0
   requiresTarget: 0
@@ -24,11 +25,13 @@ MonoBehaviour:
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: c901b20874bc93d408a4cde899b3a70f, type: 2}
+  isCircleAOE: 1
   isAOE: 1
-  aoeSize: 40
   hasAoeDuration: 1
   aoeDuration: 10
-  isDOT: 0
+  circleAoeSize: 40
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 20

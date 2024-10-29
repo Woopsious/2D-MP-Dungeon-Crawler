@@ -1513,8 +1513,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 5419307030691392619}
   - {fileID: 8279261825868769797}
+  - {fileID: 5419307030691392619}
   m_Father: {fileID: 6994754436231198238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -38807,8 +38807,9 @@ MonoBehaviour:
   consumableSlotTwo: {fileID: 1269957131305269457}
   equippedConsumableOne: {fileID: 0}
   equippedConsumableTwo: {fileID: 0}
-  queuedAbilityTextInfo: {fileID: 6716385031230419256}
   queuedAbilityAoe: {fileID: 7053027009310848954}
+  queuedAbilityTextInfo: {fileID: 6716385031230419256}
+  queuedAbilityAoeImage: {fileID: 8644844926187377224}
   queuedAbility: {fileID: 0}
   AbilitySlots:
   - {fileID: 2731643021729698042}

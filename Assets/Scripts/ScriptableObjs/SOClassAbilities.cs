@@ -29,11 +29,18 @@ public class SOClassAbilities : SOClassUnlocks
 
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
+	public bool isCircleAOE;
 	public bool isAOE;
-	[Range(20, 60)]
-	public float aoeSize;
 	public bool hasAoeDuration;
 	public float aoeDuration;
+
+	[Header("Circle Size")]
+	[Range(20, 60)]
+	public float circleAoeSize;
+
+	[Header("Box Size")]
+	public float boxAoeSizeX;
+	public float boxAoeSizeY;
 
 	[Header("Projectile Settings")]
 	public bool isProjectile;

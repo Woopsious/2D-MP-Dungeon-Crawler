@@ -16,23 +16,27 @@ MonoBehaviour:
   Description: Heals Anyone in its radius
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 0
   abilityCooldown: 15
   isOffensiveAbility: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
+  isCircleAOE: 1
   isAOE: 1
-  aoeSize: 30
-  isDOT: 0
-  abilityDuration: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 30
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 1
+  damageType: 4
   damageValue: 0
   damageValuePercentage: 0.1
-  damageType: 4
   isSpell: 1
   manaCost: 15
   minPercentCost: 15

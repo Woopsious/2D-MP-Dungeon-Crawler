@@ -23,10 +23,13 @@ MonoBehaviour:
   canOnlyTargetSelf: 0
   hasStatusEffects: 0
   statusEffects: []
+  isCircleAOE: 1
   isAOE: 1
-  aoeSize: 30
   hasAoeDuration: 0
   aoeDuration: 0
+  circleAoeSize: 30
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

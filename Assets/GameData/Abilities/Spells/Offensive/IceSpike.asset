@@ -16,23 +16,27 @@ MonoBehaviour:
   Description: A spike of pericing ice to launch at enemies
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
+  abilityCastingTimer: 0
   abilityCooldown: 3
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
+  isCircleAOE: 0
   isAOE: 0
-  aoeSize: 0
-  isDOT: 0
-  abilityDuration: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 20
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
+  damageType: 3
   damageValue: 40
   damageValuePercentage: 0
-  damageType: 3
   isSpell: 1
   manaCost: 8
   minPercentCost: 5

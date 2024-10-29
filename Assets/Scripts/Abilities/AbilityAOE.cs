@@ -8,6 +8,9 @@ public class AbilityAOE : MonoBehaviour
 	public SOClassAbilities abilityBaseRef;
 	private EntityStats casterInfo;
 
+	public LayerMask includeLayer;
+	public LayerMask excludeLayer;
+
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
 	private BoxCollider2D boxCollider;
@@ -45,46 +48,10 @@ public class AbilityAOE : MonoBehaviour
 	{
 		this.abilityBaseRef = abilityBaseRef;
 		gameObject.name = abilityBaseRef.Name + "Aoe";
-		circleCollider = GetComponent<CircleCollider2D>();
 		aoeSprite = GetComponent<SpriteRenderer>();
 		aoeSprite.sprite = abilityBaseRef.abilitySprite;
-		transform.localScale = new Vector3 (abilityBaseRef.aoeSize, abilityBaseRef.aoeSize, 1);
-		circleCollider.radius = 0.1f;
-		circleCollider.offset = new Vector2(0, 0);
 
-		this.casterInfo = casterInfo;
-		abilityDurationTimer = abilityBaseRef.aoeDuration;
-		if (abilityBaseRef.aoeDuration == 0)
-			abilityDurationTimer = 0.1f;
-
-		isPlayerAoe = casterInfo.IsPlayerEntity();
-		damageType = (DamageType)abilityBaseRef.damageType;
-		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
-
-		if (damageType == DamageType.isPhysicalDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
-
-		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
-		gameObject.SetActive(true);
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
-	}
-
-	public void InitilizeCircleAoe(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
-	{
-		this.abilityBaseRef = abilityBaseRef;
-		gameObject.name = abilityBaseRef.Name + "Aoe";
-		circleCollider = GetComponent<CircleCollider2D>();
-		aoeSprite = GetComponent<SpriteRenderer>();
-		aoeSprite.sprite = abilityBaseRef.abilitySprite;
-		transform.localScale = new Vector3(abilityBaseRef.aoeSize, abilityBaseRef.aoeSize, 1);
-		circleCollider.radius = 0.1f;
-		circleCollider.offset = new Vector2(0, 0);
+		SetupCollider();
 
 		this.casterInfo = casterInfo;
 		abilityDurationTimer = abilityBaseRef.aoeDuration;
@@ -118,42 +85,32 @@ public class AbilityAOE : MonoBehaviour
 	/// localScale x always set via abilityBaseRef.aoeSizeX, localScale y always set via abilityBaseRef.aoeSizeY
 	/// unless marked as Reach target localScale y will reach target + 3 and position will need to be updated.
 	///<summery>
-	public void InitilizeBoxAoe(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+
+	//set up circle/box collider
+	private void SetupCollider()
 	{
-		this.abilityBaseRef = abilityBaseRef;
-		gameObject.name = abilityBaseRef.Name + "Aoe";
-		circleCollider = GetComponent<CircleCollider2D>();
-		aoeSprite = GetComponent<SpriteRenderer>();
-		aoeSprite.sprite = abilityBaseRef.abilitySprite;
-		transform.localScale = new Vector3(abilityBaseRef.aoeSize, abilityBaseRef.aoeSize, 1);
-
-		//add code here from summery
-
-		boxCollider.size = new Vector2(0.15f, 0.15f);
-		boxCollider.offset = new Vector2(0, 0);
-
-		this.casterInfo = casterInfo;
-		abilityDurationTimer = abilityBaseRef.aoeDuration;
-		if (abilityBaseRef.aoeDuration == 0)
-			abilityDurationTimer = 0.1f;
-
-		isPlayerAoe = casterInfo.IsPlayerEntity();
-		damageType = (DamageType)abilityBaseRef.damageType;
-		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
-
-		if (damageType == DamageType.isPhysicalDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
-
-		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
-		gameObject.SetActive(true);
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+		if (abilityBaseRef.isCircleAOE)
+		{
+			circleCollider = gameObject.AddComponent(typeof(CircleCollider2D)) as CircleCollider2D;
+			circleCollider.isTrigger = true;
+			circleCollider.includeLayers = includeLayer;
+			circleCollider.excludeLayers = excludeLayer;
+			circleCollider.radius = 0.1f;
+			circleCollider.offset = new Vector2(0, 0);
+			transform.localScale = new Vector3(abilityBaseRef.circleAoeSize, abilityBaseRef.circleAoeSize, 0);
+		}
+		else
+		{
+			boxCollider = gameObject.AddComponent(typeof(BoxCollider2D)) as BoxCollider2D;
+			boxCollider.isTrigger = true;
+			boxCollider.includeLayers = includeLayer;
+			boxCollider.excludeLayers = excludeLayer;
+			boxCollider.size = new Vector2(0.15f, 0.15f);
+			boxCollider.offset = new Vector2(0, 0);
+			transform.localScale = new Vector3(abilityBaseRef.boxAoeSizeX, abilityBaseRef.boxAoeSizeY, 0);
+		}
 	}
+
 	public void AddPlayerRef(PlayerController player)
 	{
 		this.player = player;
