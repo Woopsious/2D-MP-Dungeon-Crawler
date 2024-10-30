@@ -5,16 +5,17 @@ using UnityEngine;
 public class AbilityAOE : MonoBehaviour
 {
 	private PlayerController player;
-	public SOClassAbilities abilityBaseRef;
+	public SOClassAbilities abilityRef;
 	private EntityStats casterInfo;
 
+	public GameObject aoeIndicator;
+	public GameObject aoeCollider;
 	public LayerMask includeLayer;
 	public LayerMask excludeLayer;
 
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
 	private BoxCollider2D boxCollider;
-	private SpriteRenderer aoeSprite;
 	private bool isPlayerAoe;
 	public int aoeDamage;
 	private DamageType damageType;
@@ -23,44 +24,35 @@ public class AbilityAOE : MonoBehaviour
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
+	/// <summary>
+	///solution for ability:
+	///use this parent object to set the position ontop of player position
+	///adjust this parent objects rotation based on player position and mouse position relative to world position.
+	///use child object aoeIndicator and aoeCollider of this parent object to offset child objects based on boxAoeSizeY.
+	/// </summary>
+
 	private void Update()
 	{
 		AbilityDurationTimer();
 	}
-	private void OnTriggerEnter2D(Collider2D other)
-	{
-		if (other.gameObject.GetComponent<EntityStats>() == null) return;
-
-		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
-			return;
-
-		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
-			abilityBaseRef.isDamagePercentageBased, isPlayerAoe, false);
-
-		if (abilityBaseRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
-			other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, casterInfo);
-	}
 
 	//set data
-	public void Initilize(SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	public void Initilize(SOClassAbilities abilityRef, EntityStats casterInfo)
 	{
-		this.abilityBaseRef = abilityBaseRef;
-		gameObject.name = abilityBaseRef.Name + "Aoe";
-		aoeSprite = GetComponent<SpriteRenderer>();
-		aoeSprite.sprite = abilityBaseRef.abilitySprite;
+		this.abilityRef = abilityRef;
+		gameObject.name = abilityRef.Name + "Aoe";
+		aoeIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 
 		SetupCollider();
 
 		this.casterInfo = casterInfo;
-		abilityDurationTimer = abilityBaseRef.aoeDuration;
-		if (abilityBaseRef.aoeDuration == 0)
+		abilityDurationTimer = abilityRef.aoeDuration;
+		if (abilityRef.aoeDuration == 0)
 			abilityDurationTimer = 0.1f;
 
 		isPlayerAoe = casterInfo.IsPlayerEntity();
-		damageType = (DamageType)abilityBaseRef.damageType;
-		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
+		damageType = (DamageType)abilityRef.damageType;
+		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 
 		if (damageType == DamageType.isPhysicalDamageType)
 			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
@@ -89,31 +81,53 @@ public class AbilityAOE : MonoBehaviour
 	//set up circle/box collider
 	private void SetupCollider()
 	{
-		if (abilityBaseRef.isCircleAOE)
+		if (abilityRef.isCircleAOE)
 		{
-			circleCollider = gameObject.AddComponent(typeof(CircleCollider2D)) as CircleCollider2D;
+			aoeIndicator.transform.localScale = new Vector2(abilityRef.circleAoeSize, abilityRef.circleAoeSize);
+			aoeCollider.transform.localScale = new Vector2(abilityRef.circleAoeSize, abilityRef.circleAoeSize);
+
+			circleCollider = aoeCollider.AddComponent(typeof(CircleCollider2D)) as CircleCollider2D;
 			circleCollider.isTrigger = true;
 			circleCollider.includeLayers = includeLayer;
 			circleCollider.excludeLayers = excludeLayer;
 			circleCollider.radius = 0.1f;
 			circleCollider.offset = new Vector2(0, 0);
-			transform.localScale = new Vector3(abilityBaseRef.circleAoeSize, abilityBaseRef.circleAoeSize, 0);
 		}
 		else
 		{
-			boxCollider = gameObject.AddComponent(typeof(BoxCollider2D)) as BoxCollider2D;
+			aoeIndicator.transform.localScale = new Vector2(abilityRef.boxAoeSizeX, abilityRef.boxAoeSizeY);
+			aoeCollider.transform.localScale = new Vector2(abilityRef.boxAoeSizeX, abilityRef.boxAoeSizeY);
+
+			boxCollider = aoeCollider.AddComponent(typeof(BoxCollider2D)) as BoxCollider2D;
 			boxCollider.isTrigger = true;
 			boxCollider.includeLayers = includeLayer;
 			boxCollider.excludeLayers = excludeLayer;
 			boxCollider.size = new Vector2(0.15f, 0.15f);
 			boxCollider.offset = new Vector2(0, 0);
-			transform.localScale = new Vector3(abilityBaseRef.boxAoeSizeX, abilityBaseRef.boxAoeSizeY, 0);
 		}
 	}
 
+	//optional, helps with applying damage only to enemies
 	public void AddPlayerRef(PlayerController player)
 	{
 		this.player = player;
+	}
+
+	//apply damage/effects to all entities inside aoe, called from AoeCollisions script OnTriggerEnter2D
+	public void ApplyDamageToEntitiesInAoe(Collider2D other)
+	{
+		Debug.LogWarning("collision with: " + other.name);
+
+		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
+			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
+			return;
+
+		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
+			abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+
+		if (abilityRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
+			other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
 	}
 
 	//timer

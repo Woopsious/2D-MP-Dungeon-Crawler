@@ -510,11 +510,10 @@ public class PlayerController : MonoBehaviour
 
 			abilityAOE.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, rotz - 90));
 
-			float divideNum = Mathf.Log(ability.abilityBaseRef.boxAoeSizeY, 5);
 			float moveDistance = ability.abilityBaseRef.boxAoeSizeY / 10;
 
 			Vector3 startPos = transform.position;
-			Vector3 endPos = startPos + abilityAOE.transform.up * divideNum;
+			Vector3 endPos = startPos + abilityAOE.transform.up * moveDistance;
 
 			Debug.LogWarning("pos :" + startPos);
 			Debug.LogWarning("rot :" + abilityAOE.transform.rotation);
@@ -524,7 +523,7 @@ public class PlayerController : MonoBehaviour
 			Debug.LogWarning("pos :" + endPos);
 			Debug.LogWarning("rot :" + abilityAOE.transform.rotation);
 
-			Debug.LogWarning("distance moved :" + divideNum);
+			Debug.LogWarning("distance moved :" + moveDistance);
 		}
 
 		abilityAOE.transform.SetParent(null);

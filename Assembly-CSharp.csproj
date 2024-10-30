@@ -156,6 +156,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AoeCollisions.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IBossInterfaces.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />

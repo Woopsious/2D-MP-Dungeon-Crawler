@@ -1,4 +1,5 @@
 using System;
+using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
@@ -7,7 +8,12 @@ using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.GraphicsBuffer;
 
 public class PlayerHotbarUi : MonoBehaviour
 {
@@ -338,6 +344,14 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbilityAoe.SetActive(false);
 		queuedAbility = null;
 	}
+
+	/// <summary>
+	///solution for ui:
+	///use parent object queuedAbilityAoe to set the position ontop of player position
+	///adjust queuedAbilityAoe rotation based on player position and mouse position relative to world position.
+	///use child object queuedAbilityAoeImage of queuedAbilityAoe to offset from parent queuedAbilityAoe based on boxAoeSizeY.
+	/// <summary>
+
 	private void UpdateQueuedAbilityUiPosition()
 	{
 		if (queuedAbilityTextInfo.gameObject.activeInHierarchy)
@@ -349,12 +363,21 @@ public class PlayerHotbarUi : MonoBehaviour
 				queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
 			else
 			{
-				//get direction to aim in
-				SetAoePositionAndRotation(
-					Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position), Input.mousePosition);
+				//SetAoePositionAndRotation(
+					//Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position), Input.mousePosition);
+
+				Vector3 movePos = Camera.main.transform.position;
+				Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+				Vector3 direction = mousePos - PlayerInfoUi.playerInstance.transform.position;
+				float rotz = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+
+				movePos += Vector3.up * (queuedAbility.abilityBaseRef.boxAoeSizeY / 2);
+				queuedAbilityAoe.transform.position = Camera.main.WorldToScreenPoint(movePos);
+				queuedAbilityAoe.transform.rotation = Quaternion.AngleAxis(rotz - 90, Vector3.forward);
 			}
 		}
 	}
+
 	public void SetAoePositionAndRotation(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
 	{
 		Vector3 rotation = positionOfThingToAttack - OriginPosition;
