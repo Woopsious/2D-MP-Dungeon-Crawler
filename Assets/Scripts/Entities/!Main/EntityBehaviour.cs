@@ -512,8 +512,7 @@ public class EntityBehaviour : Tree
 		}
 
 		abilityAOE.transform.SetParent(null);
-		abilityAOE.transform.position = playerTarget.transform.position;
-		abilityAOE.Initilize(ability, entityStats);
+		abilityAOE.Initilize(ability, entityStats, playerTarget.transform.position);
 		abilityAOE.AddPlayerRef(null);
 
 		OnSuccessfulCast(ability);

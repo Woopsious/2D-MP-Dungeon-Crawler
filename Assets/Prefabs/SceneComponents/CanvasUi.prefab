@@ -1513,8 +1513,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 6285627208515248818}
   - {fileID: 8279261825868769797}
-  - {fileID: 5419307030691392619}
   m_Father: {fileID: 6994754436231198238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -30511,6 +30511,42 @@ MonoBehaviour:
     m_VerticalOverflow: 0
     m_LineSpacing: 1
   m_Text: Press key to rebind
+--- !u!1 &6002389559376604500
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6285627208515248818}
+  m_Layer: 5
+  m_Name: AoeIndicator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6285627208515248818
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6002389559376604500}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 5419307030691392619}
+  m_Father: {fileID: 5979120034462989633}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &6006760599554525108
 GameObject:
   m_ObjectHideFlags: 0
@@ -36800,7 +36836,7 @@ GameObject:
   - component: {fileID: 8592069358607865973}
   - component: {fileID: 8644844926187377224}
   m_Layer: 5
-  m_Name: AbilityQueuedAoe
+  m_Name: Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -36813,12 +36849,12 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7053027009310848954}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 20, y: 20, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 5979120034462989633}
+  m_Father: {fileID: 6285627208515248818}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -38807,7 +38843,8 @@ MonoBehaviour:
   consumableSlotTwo: {fileID: 1269957131305269457}
   equippedConsumableOne: {fileID: 0}
   equippedConsumableTwo: {fileID: 0}
-  queuedAbilityAoe: {fileID: 7053027009310848954}
+  queuedAbilityUi: {fileID: 241850729739197790}
+  queuedAbilityIndicatorUi: {fileID: 6002389559376604500}
   queuedAbilityTextInfo: {fileID: 6716385031230419256}
   queuedAbilityAoeImage: {fileID: 8644844926187377224}
   queuedAbility: {fileID: 0}
@@ -40511,7 +40548,7 @@ GameObject:
   - component: {fileID: 1556194862578702259}
   - component: {fileID: 6716385031230419256}
   m_Layer: 5
-  m_Name: AbilityQueuedText
+  m_Name: AbilityText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

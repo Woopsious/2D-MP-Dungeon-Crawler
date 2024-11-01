@@ -37,9 +37,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableTwo;
 
 	[Header("Hotbar Abilities")]
-	public GameObject queuedAbilityAoe;
-	public TMP_Text queuedAbilityTextInfo;
+	public GameObject queuedAbilityUi;
+	public GameObject queuedAbilityIndicatorUi;
 	public Image queuedAbilityAoeImage;
+	public TMP_Text queuedAbilityTextInfo;
 	public Abilities queuedAbility;
 	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
@@ -131,7 +132,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		selectedTargetUi.SetActive(false);
 		queuedAbilityTextInfo.gameObject.SetActive(false);
-		queuedAbilityAoe.SetActive(false);
+		queuedAbilityUi.SetActive(false);
 
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
@@ -140,7 +141,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Equipping/Unequipping Consumables/Abilities to hotbar Ui slots
+	//Equipping/Unequipping Consumables/Abilities to hotbar Ui slots events
 	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
@@ -245,7 +246,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Player ui updates
+	//PLAYER UI UPDATES
+	//events
 	private void UpdatePlayerLevelInfo(EntityStats playerStats)
 	{
 		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
@@ -307,10 +309,15 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//Player ui abilities updates
+	//PLAYER ABILITIES UI
+	//events
 	public void AddNewQueuedAbility(Abilities ability)
 	{
 		queuedAbility = ability;
+
+		//reset ui positions
+		queuedAbilityIndicatorUi.transform.localPosition = new Vector3(0, 0, 0);
+		queuedAbilityAoeImage.transform.localPosition = new Vector3(0, 0, 0);
 
 		queuedAbilityTextInfo.gameObject.SetActive(true);
 		if (ability.abilityBaseRef.isProjectile)
@@ -321,7 +328,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		{
 			queuedAbilityTextInfo.text = "L Click Place\nR Click to Cancel";
 			queuedAbilityAoeImage.sprite = ability.abilityBaseRef.abilitySprite;
-			queuedAbilityAoe.SetActive(true);
+			queuedAbilityUi.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
 		else
@@ -335,56 +342,16 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void OnCastQueuedAbility()
 	{
 		queuedAbilityTextInfo.gameObject.SetActive(false);
-		queuedAbilityAoe.SetActive(false);
+		queuedAbilityUi.SetActive(false);
 		queuedAbility = null;
 	}
 	public void OnCancelQueuedAbility()
 	{
 		queuedAbilityTextInfo.gameObject.SetActive(false);
-		queuedAbilityAoe.SetActive(false);
+		queuedAbilityUi.SetActive(false);
 		queuedAbility = null;
 	}
 
-	/// <summary>
-	///solution for ui:
-	///use parent object queuedAbilityAoe to set the position ontop of player position
-	///adjust queuedAbilityAoe rotation based on player position and mouse position relative to world position.
-	///use child object queuedAbilityAoeImage of queuedAbilityAoe to offset from parent queuedAbilityAoe based on boxAoeSizeY.
-	/// <summary>
-
-	private void UpdateQueuedAbilityUiPosition()
-	{
-		if (queuedAbilityTextInfo.gameObject.activeInHierarchy)
-			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 50);
-
-		if (queuedAbilityAoe.activeInHierarchy)
-		{
-			if (queuedAbility != null && queuedAbility.abilityBaseRef.isCircleAOE)
-				queuedAbilityAoe.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-			else
-			{
-				//SetAoePositionAndRotation(
-					//Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position), Input.mousePosition);
-
-				Vector3 movePos = Camera.main.transform.position;
-				Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-				Vector3 direction = mousePos - PlayerInfoUi.playerInstance.transform.position;
-				float rotz = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-
-				movePos += Vector3.up * (queuedAbility.abilityBaseRef.boxAoeSizeY / 2);
-				queuedAbilityAoe.transform.position = Camera.main.WorldToScreenPoint(movePos);
-				queuedAbilityAoe.transform.rotation = Quaternion.AngleAxis(rotz - 90, Vector3.forward);
-			}
-		}
-	}
-
-	public void SetAoePositionAndRotation(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
-	{
-		Vector3 rotation = positionOfThingToAttack - OriginPosition;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		queuedAbilityAoe.transform.position = OriginPosition;
-		queuedAbilityAoe.transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
-	}
 	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
 	{
 		Vector3 scale;
@@ -392,10 +359,36 @@ public class PlayerHotbarUi : MonoBehaviour
 			scale = new(abilityRef.circleAoeSize / 1.5f, abilityRef.circleAoeSize / 1.5f, 0);
 		else
 			scale = new(abilityRef.boxAoeSizeX / 1.5f, abilityRef.boxAoeSizeY / 1.5f, 0);
-		queuedAbilityAoe.transform.localScale = scale;
+		queuedAbilityAoeImage.transform.localScale = scale;
 	}
 
-	//Selected target ui updates
+	//updated ui position of indicators
+	private void UpdateQueuedAbilityUiPosition()
+	{
+		if (queuedAbilityTextInfo.gameObject.activeInHierarchy)
+			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 60);
+
+		if (queuedAbilityUi.activeInHierarchy)
+		{
+			if (queuedAbility != null && queuedAbility.abilityBaseRef.isCircleAOE)
+				queuedAbilityUi.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+			else
+			{
+				Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
+
+				Vector3 rotation = Input.mousePosition - playerScreenPosition;
+				float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+				queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
+
+				//adjustment ratio x 4 (not pixel perfect)
+				float adjustPos = (float)(queuedAbility.abilityBaseRef.boxAoeSizeY * 4);
+				queuedAbilityAoeImage.transform.localPosition = new Vector2(0, adjustPos);
+			}
+		}
+	}
+
+	//SELECTED TARGET UI
+	//events
 	public void OnNewTargetSelected(EntityStats entityStats)
 	{
 		if (!selectedTargetUi.activeInHierarchy)
@@ -455,6 +448,8 @@ public class PlayerHotbarUi : MonoBehaviour
 		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
 		entity.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
 	}
+
+	//ui updates
 	private void UpdateSelectedTargetTrackerUi()
 	{
 		if (selectedTarget == null || !selectedTargetTrackerUi.activeInHierarchy) return;
@@ -462,7 +457,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
 	}
 
-	//Selected target ui event updates
+	//ui event updates
 	private void OnTargetHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
@@ -506,7 +501,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		}
 	}
 
-	//UI CHANGES
+	//UI PANEL CHANGE EVENTS
 	public void OpenInventoryButton()
 	{
 		PlayerEventManager.ShowPlayerInventory();

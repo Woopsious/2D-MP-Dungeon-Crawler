@@ -491,43 +491,14 @@ public class PlayerController : MonoBehaviour
 
 		//will need additional code here to handle supportive and offensive aoe abilities
 
-		Vector3 movePosition;
+		Vector2 movePosition;
 		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget)
 			movePosition = selectedEnemyTarget.transform.position;
 		else
 			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-		if (ability.abilityBaseRef.isCircleAOE)
-		{
-			abilityAOE.transform.position = (Vector2)movePosition;
-		}
-		else
-		{
-			//get rotation from entity pos and target pos.
-			//get new pos based on boxAoeSizeY in direction 
-			Vector3 rotation = movePosition - transform.position;
-			float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-
-			abilityAOE.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0, 0, rotz - 90));
-
-			float moveDistance = ability.abilityBaseRef.boxAoeSizeY / 10;
-
-			Vector3 startPos = transform.position;
-			Vector3 endPos = startPos + abilityAOE.transform.up * moveDistance;
-
-			Debug.LogWarning("pos :" + startPos);
-			Debug.LogWarning("rot :" + abilityAOE.transform.rotation);
-
-			abilityAOE.transform.position = endPos;
-
-			Debug.LogWarning("pos :" + endPos);
-			Debug.LogWarning("rot :" + abilityAOE.transform.rotation);
-
-			Debug.LogWarning("distance moved :" + moveDistance);
-		}
-
 		abilityAOE.transform.SetParent(null);
-		abilityAOE.Initilize(ability.abilityBaseRef, playerStats);
+		abilityAOE.Initilize(ability.abilityBaseRef, playerStats, movePosition);
 		abilityAOE.AddPlayerRef(this);
 
 		OnSuccessfulCast(ability);
