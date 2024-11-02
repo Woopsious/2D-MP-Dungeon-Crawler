@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Name: Toxic Puddle
   Description: Summon a puddle of toxins at location, anyting to touch it gets poisoned
-  abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
   abilityCastingTimer: 0
   abilityCooldown: 12
@@ -24,13 +24,13 @@ MonoBehaviour:
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: 6301da40ed397c443a68f792454c7944, type: 2}
-  isCircleAOE: 0
+  isCircleAOE: 1
   isAOE: 1
   hasAoeDuration: 1
   aoeDuration: 3
   circleAoeSize: 50
-  boxAoeSizeX: 20
-  boxAoeSizeY: 80
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

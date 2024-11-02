@@ -1,19 +1,8 @@
-using System;
-using System.Buffers.Text;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using TMPro;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.InputSystem.HID;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
-using static UnityEngine.GraphicsBuffer;
 
 public class PlayerHotbarUi : MonoBehaviour
 {
@@ -131,8 +120,9 @@ public class PlayerHotbarUi : MonoBehaviour
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
 		selectedTargetUi.SetActive(false);
-		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityUi.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
+		queuedAbilityIndicatorUi.SetActive(false);
 
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
@@ -319,16 +309,18 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbilityIndicatorUi.transform.localPosition = new Vector3(0, 0, 0);
 		queuedAbilityAoeImage.transform.localPosition = new Vector3(0, 0, 0);
 
+		queuedAbilityUi.SetActive(true);
 		queuedAbilityTextInfo.gameObject.SetActive(true);
+
 		if (ability.abilityBaseRef.isProjectile)
 		{
 			queuedAbilityTextInfo.text = "L Click to Fire\nR Click to Cancel";
 		}
 		else if (ability.abilityBaseRef.isAOE)
 		{
+			queuedAbilityIndicatorUi.SetActive(true);
 			queuedAbilityTextInfo.text = "L Click Place\nR Click to Cancel";
 			queuedAbilityAoeImage.sprite = ability.abilityBaseRef.abilitySprite;
-			queuedAbilityUi.SetActive(true);
 			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
 		}
 		else
@@ -347,8 +339,9 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	public void OnCancelQueuedAbility()
 	{
-		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityUi.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
+		queuedAbilityIndicatorUi.SetActive(false);
 		queuedAbility = null;
 	}
 
@@ -435,18 +428,24 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
-		if (selectedTarget == null || selectedTarget.gameObject != obj) return;
+		ClearSelectedTarget();
+	}
+	public void ClearSelectedTarget() //called via event + button in ui
+	{
+		if (selectedTarget == null) return;
 
 		if (selectedTargetUi.activeInHierarchy)
 			selectedTargetUi.SetActive(false);
 		if (!unSelectedTargetUi.activeInHierarchy)
 			unSelectedTargetUi.SetActive(true);
 
-		EntityStats entity = obj.GetComponent<EntityStats>();
-		entity.OnHealthChangeEvent -= OnTargetHealthChange;
-		entity.OnManaChangeEvent -= OnTargetManaChange;
-		entity.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
-		entity.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
+		selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
+		selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
+		selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
+		selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
+
+		PlayerInfoUi.playerInstance.ClearSelectedTarget();
+		selectedTarget = null;
 	}
 
 	//ui updates

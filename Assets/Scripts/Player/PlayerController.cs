@@ -258,6 +258,10 @@ public class PlayerController : MonoBehaviour
 	{
 		if (selectedEnemyTarget == null) return;
 		if (selectedEnemyTarget.gameObject != obj) return;
+		ClearSelectedTarget();
+	}
+	public void ClearSelectedTarget()
+	{
 		selectedEnemyTarget = null;
 	}
 
@@ -379,34 +383,22 @@ public class PlayerController : MonoBehaviour
 	{
 		EntityStats newEntity;
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
-		//Debug.Log("hit position: " + hit.point);
 
-		if (hit.transform == null)
+		if (hit.transform == null || hit.transform.gameObject.GetComponent<EntityStats>() == null)
 		{
-			//Debug.Log("no obj found at location");
-			return null;
-		}
-		if (hit.transform.gameObject.GetComponent<EntityStats>() == null)
-		{
-			//Debug.Log("no entity found");
+			//Debug.Log("no obj or entity found at location");
 			return null;
 		}
 
 		newEntity = hit.transform.gameObject.GetComponent<EntityStats>();
 
 		if (newEntity.IsPlayerEntity() && lookingForFriendly)
-		{
-			//Debug.Log("entity found is player");
 			return newEntity;
-		}
 		else if (!newEntity.IsPlayerEntity() && !lookingForFriendly)
-		{
-			//Debug.Log("entity found is enemy");
 			return newEntity;
-		}
 		else
 		{
-			//Debug.Log("entity found is incorrect type");
+			//Debug.Log("entity found but is incorrect type");
 			return null;
 		}
 	}
@@ -430,27 +422,17 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastAbility(Abilities ability)
 	{
-		if (ability.abilityBaseRef.isAOE)
-			CastAoeAbility(ability);
-		else if (ability.abilityBaseRef.isProjectile)
+		EntityStats enemyTarget = selectedEnemyTarget;
+
+		if (enemyTarget == null)
+			enemyTarget = TryGrabNewEntityOnQueuedAbilityClick(false);
+
+		if (ability.abilityBaseRef.isProjectile)
 			CastDirectionalAbility(ability);
+		else if (ability.abilityBaseRef.isAOE)
+			CastAoeAbility(ability);
 		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
-		{
-			EntityStats newEnemyEntity;
-			if (selectedEnemyTarget == null)
-			{
-				newEnemyEntity = TryGrabNewEntityOnQueuedAbilityClick(false);
-				if (newEnemyEntity == null)
-				{
-					CancelQueuedAbility(queuedAbility);
-					return;
-				}
-				else
-					CastEffect(ability, newEnemyEntity);
-			}
-			else
-				CastEffect(ability, selectedEnemyTarget);
-		}
+			CastEffect(ability, enemyTarget);
 		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)   //for MP add support for friendlies
 			CastEffect(ability, playerStats);
 		else
@@ -492,7 +474,7 @@ public class PlayerController : MonoBehaviour
 		//will need additional code here to handle supportive and offensive aoe abilities
 
 		Vector2 movePosition;
-		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget)
+		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
 			movePosition = selectedEnemyTarget.transform.position;
 		else
 			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);

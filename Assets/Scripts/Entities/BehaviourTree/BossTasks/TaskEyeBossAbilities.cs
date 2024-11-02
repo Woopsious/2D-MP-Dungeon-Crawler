@@ -5,28 +5,35 @@ using UnityEngine;
 public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 {
 	/// <summary>
+	/// SPECIAL MARKED EYE ABILITY:
+	/// effect marked by eye casted just before casting ability 2 or 3 on a semi random player for 10 seconds
+	/// (TODO)
 	/// when player marked by eye, show indicator ontop of player for player and all other players in game. once timer is up do aoe damage 
 	/// in a line between boss and marked player. dealing x% damage to all players hit. 
 	/// 
-	/// MAKING MARKED BY EYE ABILITY WORK:
-	/// 50% of the time marked player will be player with highest aggro to boss, marking player done via abilities + status effects,
-	/// save marked player as variable, once player has marked by eye casted on them either:
-	/// have a second internal timer here that then calls another ability for aoe line attack (timer set to marked by eye effect duration)
-	/// or update status effects script supporting a call back event once effects timer is up. telling script that applied said effect to 
-	/// entity. the timer is up. do x now like calling bosses aoe line attack.
+	/// ABILITY 1:
+	/// simple directional ability
 	/// 
-	/// possibly have obstacals that spawn in that the marked player can hide behind thatll block only the aoe line abilities damage
-	/// especially when fighting the boss alone or with a small group. maybe make it so less people = more obstacles to hide behind
-	/// implementing it would require a line cast + new seethrough obstacles layer for these specific objects so they dont interfere
-	/// with line of sight casting for regular obstacles.
+	/// ABILITY 2:
+	/// directional aoe line attack from boss directed at player marked by eye (takes 10s to cast)
+	/// (TODO) 
+	/// add ui indicator above marked player indicating to siad marked player and any other players they are marked.
 	/// 
-	/// PHASE 3: either partially reuse marked by eye ability and instead of doing aoe line attack do aoe attack ontop of marked player
+	/// ABILITY 3:
+	/// (TODO) 
+	/// either partially reuse marked by eye ability and instead of doing aoe line attack do aoe attack ontop of marked player
 	/// this aoe attack spreads its damage between all players within aoe, basically players are encourage to stand by marked player
 	/// instead of avoiding them this time. can also lower damage delt based on how many players are so it can be solod.
 	/// 
 	/// or give it a more simple ability where itll attack all players it can currently see 
 	/// possibly adjust damage dealt based on amount of players damaged, atm going with less players seen = more damage it does eg:
 	/// ability deals 20 damage. 4 players hit = 80 damage. 2 players hit = 60 damage. 1 player hit = 40 damage)
+	/// 
+	/// SHIT TO DO:
+	/// possibly have obstacals that spawn in that the marked player can hide behind thatll block only the aoe line abilities damage
+	/// especially when fighting the boss alone or with a small group. maybe make it so less people = more obstacles to hide behind
+	/// implementing it would require a line cast + new seethrough obstacles layer for these specific objects so they dont interfere
+	/// with line of sight casting for regular obstacles.
 	/// </summary>
 
 	readonly SOBossEntityBehaviour bossBehaviourRef;

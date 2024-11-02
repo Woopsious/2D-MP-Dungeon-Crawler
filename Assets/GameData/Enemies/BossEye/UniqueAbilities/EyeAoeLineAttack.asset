@@ -15,7 +15,7 @@ MonoBehaviour:
   Name: Eye Aoe Line Attack
   Description: after marked by eye effect wears off. eye boss does aoe line attack
     from eye pos to marked player pos.
-  abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 0
   abilityCastingTimer: 10
   abilityCooldown: 30
@@ -25,10 +25,13 @@ MonoBehaviour:
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: 7a78b1c6e3656f446959974723085901, type: 2}
+  isCircleAOE: 0
   isAOE: 1
-  aoeSize: 50
   hasAoeDuration: 0
   aoeDuration: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 20
+  boxAoeSizeY: 200
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

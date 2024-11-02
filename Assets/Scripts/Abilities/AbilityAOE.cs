@@ -37,6 +37,7 @@ public class AbilityAOE : MonoBehaviour
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
+		isPlayerAoe = casterInfo.IsPlayerEntity();
 
 		if (abilityRef.isCircleAOE)
 		{
@@ -49,11 +50,17 @@ public class AbilityAOE : MonoBehaviour
 			SetupBoxCollider();
 		}
 
+		SetDamage();
+
 		abilityDurationTimer = abilityRef.aoeDuration;
 		if (abilityRef.aoeDuration == 0)
 			abilityDurationTimer = 0.1f;
 
-		isPlayerAoe = casterInfo.IsPlayerEntity();
+		gameObject.SetActive(true);
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+	private void SetDamage()
+	{
 		damageType = (DamageType)abilityRef.damageType;
 		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 
@@ -67,8 +74,6 @@ public class AbilityAOE : MonoBehaviour
 			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
 
 		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
-		gameObject.SetActive(true);
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
 	//set up colliders + transforms
@@ -118,8 +123,6 @@ public class AbilityAOE : MonoBehaviour
 	//apply damage/effects to all entities inside aoe, called from AoeCollisions script OnTriggerEnter2D
 	public void ApplyDamageToEntitiesInAoe(Collider2D other)
 	{
-		Debug.LogWarning("collision with: " + other.name);
-
 		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
 		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
 			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)

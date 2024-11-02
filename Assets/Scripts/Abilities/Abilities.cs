@@ -209,17 +209,11 @@ public class Abilities : MonoBehaviour
 	}
 	public bool CanInstantCastAbility()
 	{
-		if (abilityBaseRef.canOnlyTargetSelf)
+		if (abilityBaseRef.canOnlyTargetSelf || abilityBaseRef.isProjectile)
 			return true;
-		if (abilityBaseRef.isProjectile)
-		{
-			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget)
-				return true;
-			else return false;
-		}
 		if (abilityBaseRef.isAOE)
 		{
-			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget)
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && PlayerHasSelectedEnemy())
 				return true;
 			else return false;
 		}
@@ -228,16 +222,20 @@ public class Abilities : MonoBehaviour
 		{
 			if (abilityBaseRef.isOffensiveAbility)
 			{
-				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget)
+				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget && PlayerHasSelectedEnemy())
 					return true;
 				else return false;
 			}
 			else return true; //always possible to insta cast positive buffs on self
 		}
-		else
-		{
-			Debug.LogError("failed to figure out if ability can be insta casted");
-			return false;
-		}
+
+		Debug.LogError("failed to figure out if ability can be insta casted");
+		return false;
+	}
+	private bool PlayerHasSelectedEnemy()
+	{
+		if (PlayerInfoUi.playerInstance.selectedEnemyTarget != null)
+			return true;
+		else return false;
 	}
 }

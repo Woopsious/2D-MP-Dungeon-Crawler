@@ -39,6 +39,7 @@ public class SOClassAbilities : SOClassUnlocks
 	public float circleAoeSize;
 
 	[Header("Box Size")]
+	[Range(10, 50)]
 	public float boxAoeSizeX;
 	public float boxAoeSizeY;
 

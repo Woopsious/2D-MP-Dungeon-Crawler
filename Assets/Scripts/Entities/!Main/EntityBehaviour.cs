@@ -436,9 +436,6 @@ public class EntityBehaviour : Tree
 	}
 	protected void CastAbility(SOClassAbilities ability)
 	{
-		if (entityStats.statsRef.isBossVersion)
-			Debug.LogWarning("casting ability: " + ability.Name);
-
 		if (ability.isAOE)
 			CastAoeAbility(ability);
 		else if (ability.isProjectile)
@@ -461,7 +458,7 @@ public class EntityBehaviour : Tree
 	}
 
 	//types of casting
-	protected void CastEffect(SOClassAbilities ability)
+	protected virtual void CastEffect(SOClassAbilities ability)
 	{
 		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
 		{
@@ -488,7 +485,7 @@ public class EntityBehaviour : Tree
 
 		OnSuccessfulCast(ability);
 	}
-	protected void CastDirectionalAbility(SOClassAbilities ability)
+	protected virtual void CastDirectionalAbility(SOClassAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
@@ -502,7 +499,7 @@ public class EntityBehaviour : Tree
 		projectile.Initilize(null, ability, entityStats);
 		OnSuccessfulCast(ability);
 	}
-	protected void CastAoeAbility(SOClassAbilities ability)
+	protected virtual void CastAoeAbility(SOClassAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)

@@ -3,9 +3,14 @@ using UnityEngine;
 public class TaskGoblinBossPhases : EntityMovement, IBossPhases
 {
 	/// <summary> Goblin boss behaviour for phase 1-3: 
-	/// PHASE 1: basic chase and attack player + ability 1
-	/// PHASE 2: basic chase and attack player + ability 1 & 2
-	/// PHASE 3: basic chase and attack player + ability 1, 2 & 3
+	/// PHASE 1: 
+	/// basic chase and attack player + ability 1
+	/// 
+	/// PHASE 2: 
+	/// basic chase and attack player + ability 1 & 2
+	/// 
+	/// PHASE 3: 
+	/// basic chase and attack player + ability 1, 2 & 3
 	/// </summary>
 
 	readonly BossEntityBehaviour behaviour;

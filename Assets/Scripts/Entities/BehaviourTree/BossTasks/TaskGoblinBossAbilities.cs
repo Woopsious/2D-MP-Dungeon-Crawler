@@ -5,7 +5,14 @@ using UnityEngine;
 public class TaskGoblinBossAbilities : EntityAbilities, IBossAbilities
 {
 	/// <summary>
-	/// Goblin boss abilities can be used as long as ability number >= boss phase (ability 2 usable in phase 2 & 3, not in 1)
+	/// ABILITY 1: 
+	/// simple aoe ground stomp around boss
+	/// 
+	/// ABILITY 2: 
+	/// offensive stance self buff
+	/// 
+	/// ABILITY 3: 
+	/// last stand self buff
 	/// </summary>
 
 	readonly BossEntityBehaviour behaviour;

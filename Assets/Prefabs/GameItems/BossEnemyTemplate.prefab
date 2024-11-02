@@ -676,7 +676,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 25
+  m_Mass: 100
   m_LinearDrag: 50
   m_AngularDrag: 50
   m_GravityScale: 0
@@ -912,7 +912,7 @@ MonoBehaviour:
   inPhaseTransition: 0
   bossPhase: 0
   BossRoomCenterPiecePrefab: {fileID: 3871581706630097176, guid: 1d44e4c4142b2a643853c726054f5a7d, type: 3}
-  BossRoomCenterPiece: {fileID: 0}
+  roomCenterPiece: {fileID: 0}
 --- !u!114 &3519794317990881909
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -925,7 +925,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 219092ea3f95d88429d2bf05b2fa1652, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  useStateMachineBehaviour: 0
   behaviourRef: {fileID: 0}
   entityStats: {fileID: 0}
   equipmentHandler: {fileID: 0}
@@ -951,6 +950,8 @@ MonoBehaviour:
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
   globalAttackTimer: 0
+  abilityBeingCasted: {fileID: 0}
+  abilityCastingTimer: 0
   healingAbility: {fileID: 0}
   canCastHealingAbility: 0
   healingAbilityTimer: 0

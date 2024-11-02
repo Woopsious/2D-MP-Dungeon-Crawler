@@ -147,6 +147,20 @@ public class BossEntityBehaviour : EntityBehaviour
 		return root;
 	}
 
+
+	protected override void CastEffect(SOClassAbilities ability)
+	{
+		base.CastEffect(ability);
+	}
+	protected override void CastDirectionalAbility(SOClassAbilities ability)
+	{
+		base.CastDirectionalAbility(ability);
+	}
+	protected override void CastAoeAbility(SOClassAbilities ability)
+	{
+		base.CastAoeAbility(ability);
+	}
+
 	public void ForceCastSpecialBossAbilities(SOClassAbilities ability)
 	{
 		CastAbility(ability);
