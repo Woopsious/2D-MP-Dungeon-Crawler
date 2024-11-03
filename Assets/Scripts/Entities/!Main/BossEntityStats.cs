@@ -1,12 +1,14 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BossEntityStats : EntityStats
 {
+	private BossEntityBehaviour bossBehaviour;
+
 	[Header("Additional Boss Variables")]
 	public Damageable damageable;
-	public SpawnHandler spawner;
 	public float lastBossHealthPercentage;
 	public bool inPhaseTransition;
 
@@ -22,6 +24,7 @@ public class BossEntityStats : EntityStats
 	protected override void Awake()
 	{
 		base.Awake();
+		bossBehaviour = GetComponent<BossEntityBehaviour>();
 		damageable = GetComponent<Damageable>();
 		SpawnBossRoomCenterPiece();
 	}
@@ -29,6 +32,7 @@ public class BossEntityStats : EntityStats
 	{
 		base.Start();
 		inPhaseTransition = true;
+		bossBehaviour.EventSpawnBossAdds(2); //spawn adds at the start
 	}
 	protected override void OnEnable()
 	{
@@ -54,7 +58,7 @@ public class BossEntityStats : EntityStats
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
 			bossPhase++;
-			spawner.ForceSpawnEntitiesForBosses();
+			bossBehaviour.EventSpawnBossAdds(2); //spawn adds for evey new phase reached
 			inPhaseTransition = true;
 		}
 		lastBossHealthPercentage = newPercentage;

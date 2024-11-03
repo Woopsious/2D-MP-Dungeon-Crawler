@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -20,6 +21,11 @@ public class BossEntityBehaviour : EntityBehaviour
 	public SOClassAbilities abilityThree;
 	public bool canCastAbilityThree;
 	public float abilityTimerThreeCounter;
+
+	public static event Action<int> OnSpawnBossAdds;
+
+	public static event Action<List<Vector2>, Vector2, float> OnBossAbilityBeginCasting;
+	public static event Action OnBossAbilityCast;
 
 	protected override void Update()
 	{
@@ -147,6 +153,19 @@ public class BossEntityBehaviour : EntityBehaviour
 		return root;
 	}
 
+	//unique boss events
+	public void EventSpawnBossAdds(int numToSpawn)
+	{
+		OnSpawnBossAdds?.Invoke(numToSpawn);
+	}
+	public void EventBossAbilityBeginCasting(List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	{
+		OnBossAbilityBeginCasting?.Invoke(positionList, adjustPosition, radius);
+	}
+	public void EventBossCastedAbility()
+	{
+		OnBossAbilityCast?.Invoke();
+	}
 
 	protected override void CastEffect(SOClassAbilities ability)
 	{

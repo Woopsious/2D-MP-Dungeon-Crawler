@@ -25,7 +25,6 @@ public class SpawnHandler : MonoBehaviour
 	[Header("Boss Spawner Settings")]
 	public bool isBossRoomSpawner;
 	public bool isBossSpawner;
-	public int maxNumOfEntitiesToSpawnForBossFights;
 	public GameObject bossEntityTemplatePrefab;
 	public SOEntityStats bossEntityToSpawn;
 	public BossEntityStats bossEntity;
@@ -40,6 +39,10 @@ public class SpawnHandler : MonoBehaviour
 	private float closestPlayerDistance;
 	private bool spawningDisabled;
 
+	[Header("Boss Room Obstacles")]
+	public GameObject obstaclePrefab;
+	public List<GameObject> obstaclesList = new List<GameObject>();
+
 	[Header("Spawn Table")]
 	private float totalEnemySpawnChance;
 	private List<float> enemySpawnChanceTable = new List<float>();
@@ -53,12 +56,18 @@ public class SpawnHandler : MonoBehaviour
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntities;
+
+		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
+		BossEntityBehaviour.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
 	}
 	private void OnDisable()
 	{
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
+
+		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
+		BossEntityBehaviour.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
 
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;
@@ -110,9 +119,6 @@ public class SpawnHandler : MonoBehaviour
 
 		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
 			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
-
-		if (isBossSpawner)
-			maxNumOfEntitiesToSpawn = maxNumOfEntitiesToSpawnForBossFights;
 
 		CreateEnemySpawnTable();
 		TrySpawnEntities();
@@ -185,15 +191,20 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//SPAWNING OF ENTITIES AND BOSSES
-	public void ForceSpawnEntitiesForBosses() //called via health change event in bosses
+	public void ForceSpawnEntitiesForBosses(int numToSpawn) //called via health change event in bosses
 	{
-		for (int i = 0; i < maxNumOfEntitiesToSpawnForBossFights; i++)
+		if (!isBossSpawner) return;
+
+		for (int i = 0; i < numToSpawn; i++)
 			SpawnEntity();
 	}
 	private void TrySpawnEntities()
 	{
 		if (isBossSpawner)
+		{
 			SpawnBossEntity();
+			return;
+		}
 
 		if (listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn) return;
 		if (listOfPlayersInRange.Count == 0) return;
@@ -227,8 +238,6 @@ public class SpawnHandler : MonoBehaviour
 		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 		bossEntity.statsRef = bossToSpawn;
-		bossEntity.spawner = this;
-		bossEntity.GetComponent<BossEntityBehaviour>().behaviourRef = bossEntityToSpawn.entityBehaviour;
 		this.bossEntity = bossEntity;
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -287,6 +296,7 @@ public class SpawnHandler : MonoBehaviour
 		TrySpawnEntities();
 	}
 
+	//checks
 	private bool CheckIfSpawnerShouldRespawnEnemies()
 	{
 		if (!isBossRoomSpawner) return true;
@@ -295,11 +305,20 @@ public class SpawnHandler : MonoBehaviour
 		else return false;
 	}
 
-	public bool CheckIfSpawnedEntitiesListEmpty()
+	//SPAWNING OF BOSS ROOM OBSTACLES
+	public void SpawnBossDungeonObstacles(List<Vector2> positionList, Vector2 adjustPosition, float radius)
 	{
-		if (listOfSpawnedEntities.Count <= 0)
-			return true;
-		else return false;
+		if (!isBossSpawner) return;
+		SpawnObstacles(positionList, adjustPosition, radius);
+	}
+	private void SpawnObstacles(List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	{
+		for (int i = 0; i < positionList.Count; i++)
+		{
+			Vector2 spawnPosition = (positionList[i] * radius) + adjustPosition;
+			GameObject go = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+			obstaclesList.Add(go);
+		}
 	}
 
 	//track closest player

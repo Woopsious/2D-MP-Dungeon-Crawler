@@ -156,10 +156,8 @@ public class EntityBehaviour : Tree
 	//set behaviour data
 	protected virtual void Initilize()
 	{
+		behaviourRef = entityStats.statsRef.entityBehaviour;
 		UpdateBounds(transform.position);
-		ResetBehaviour();
-
-		markedForCleanUp = false;
 
 		viewRangeCollider.radius = playerDetectionRange;
 		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;

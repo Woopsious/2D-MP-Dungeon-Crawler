@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2346674039196739215}
   - component: {fileID: 978756309994241589}
   m_Layer: 0
-  m_Name: EnemySpawner
+  m_Name: SpawnerHandler
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -49,6 +49,7 @@ MonoBehaviour:
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
   maxNumOfEntitiesToSpawn: 5
+  listOfSpawnedEntities: []
   maxSpawningDistance: 30
   minSpawningDistance: 25
   spawnBounds:
@@ -59,6 +60,8 @@ MonoBehaviour:
   maxNumOfEntitiesToSpawnForBossFights: 2
   bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
   bossEntityToSpawn: {fileID: 0}
+  bossEntity: {fileID: 0}
+  lastBossHealthPercentage: 0
   entityTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
   possibleEntityTypesToSpawn:
   - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
@@ -66,6 +69,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
   - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
   - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
+  obstaclePrefab: {fileID: 6873319500750903154, guid: 4a06b34e38eec0f438dd4265a4a678b1, type: 3}
+  obstaclesList: []
 --- !u!58 &978756309994241589
 CircleCollider2D:
   m_ObjectHideFlags: 0

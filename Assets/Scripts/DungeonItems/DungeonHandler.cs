@@ -1,9 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 
 public class DungeonHandler : MonoBehaviour
 {
@@ -40,6 +39,7 @@ public class DungeonHandler : MonoBehaviour
 		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
+	//OBJECT POOLING
 	//entity obj pooling + death event
 	public void AddNewEntitiesToPool(EntityStats entity)
 	{
@@ -96,6 +96,7 @@ public class DungeonHandler : MonoBehaviour
 		Instance.inActiveAoeAbilitesPool.Add(abilityAOE);
 	}
 
+	//DUNGEON SETUP
 	private void ActivateRandomChests()
 	{
 		foreach (ChestHandler chest in dungeonLootChestsList)
@@ -165,6 +166,12 @@ public class DungeonHandler : MonoBehaviour
 
 		foreach (PlayerController player in players)
 			player.transform.position = portalSpawnPoint.transform.position;
+	}
+
+	private void OnDrawGizmos()
+	{
+		Gizmos.color = Color.green;
+		Gizmos.DrawWireSphere(transform.position, 20);
 	}
 }
 

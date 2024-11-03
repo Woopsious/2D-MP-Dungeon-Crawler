@@ -34,6 +34,16 @@ public class Abilities : MonoBehaviour
 			AbilityCooldownTimer();
 	}
 
+	private void OnEnable()
+	{
+		PlayerEventManager.OnPlayerStatChangeEvent += UpdateToolTip;
+	}
+
+	private void OnDisable()
+	{
+		PlayerEventManager.OnPlayerStatChangeEvent -= UpdateToolTip;
+	}
+
 	//set data types
 	public void Initilize()
 	{
@@ -47,6 +57,8 @@ public class Abilities : MonoBehaviour
 		isEquippedAbility = false;
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
+
+		UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
 	}
 	public void InitilizeStatusEffectUiTimer(SOStatusEffects effect, float currentTimer)
 	{
@@ -63,7 +75,7 @@ public class Abilities : MonoBehaviour
 	}
 
 	//tool tip
-	public void SetToolTip(EntityStats playerStats)
+	private void UpdateToolTip(EntityStats playerStats)
 	{
 		string info = $"{abilityBaseRef.Description}";
 
@@ -192,13 +204,9 @@ public class Abilities : MonoBehaviour
 	//bool checks
 	public bool CanUseAbility(EntityStats entityStats)
 	{
-		if (isOnCooldown)
+		if (isOnCooldown || !CanAffordManaCost(entityStats))
 			return false;
-
-		if (!CanAffordManaCost(entityStats))
-			return false;
-
-		return true;
+		else return true;
 	}
 	public bool CanAffordManaCost(EntityStats entityStats)
 	{

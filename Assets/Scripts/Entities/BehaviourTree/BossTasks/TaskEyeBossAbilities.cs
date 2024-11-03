@@ -39,12 +39,23 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 	readonly SOBossEntityBehaviour bossBehaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
+	List<Vector2> obstaclesPositionList = new List<Vector2>();
 
-	public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
+public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
 		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
+
+		obstaclesPositionList = new List<Vector2>
+		{
+			new Vector2(1, 0),
+			new Vector2(0.75f, 0.75f),
+			new Vector2(0.75f, -0.75f),
+			new Vector2(-1, 0),
+			new Vector2(-0.75f, 0.75f),
+			new Vector2(-0.75f, -0.75f)
+		};
 	}
 
 	public override NodeState Evaluate()
@@ -59,6 +70,7 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 			}
 			else if (CanUseBossAbilityTwo())
 			{
+				behaviour.EventBossAbilityBeginCasting(obstaclesPositionList, stats.roomCenterPiece.transform.position, 10f);
 				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityTwo(behaviour);
 			}

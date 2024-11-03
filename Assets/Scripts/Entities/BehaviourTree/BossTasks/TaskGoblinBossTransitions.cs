@@ -62,8 +62,7 @@ public class TaskGoblinBossTransitions : EntityMovement, IBossTransitionPhases
 
 		if (!BossReachedCenterPiece(behaviour)) return;
 
-		if (stats.lastBossHealthPercentage >= 0.8 || currentSelfHealCounter >= selfHealLimit ||
-			stats.spawner.CheckIfSpawnedEntitiesListEmpty()) //checks to exit
+		if (stats.lastBossHealthPercentage >= 0.8 || currentSelfHealCounter >= selfHealLimit) //checks to exit
 		{
 			stats.damageable.invincible = false;
 			stats.inPhaseTransition = false;
