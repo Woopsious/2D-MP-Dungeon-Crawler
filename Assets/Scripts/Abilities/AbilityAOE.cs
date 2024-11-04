@@ -24,6 +24,9 @@ public class AbilityAOE : MonoBehaviour
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
 
+	public List<EntityStats> entityStatsList = new List<EntityStats>();
+	public List<PlayerController> playerList = new List<PlayerController>();
+
 	private void Update()
 	{
 		AbilityDurationTimer();
@@ -123,6 +126,8 @@ public class AbilityAOE : MonoBehaviour
 	//apply damage/effects to all entities inside aoe, called from AoeCollisions script OnTriggerEnter2D
 	public void ApplyDamageToEntitiesInAoe(Collider2D other)
 	{
+		entityStatsList.Add(other.GetComponent<EntityStats>());
+
 		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
 		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
 			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
@@ -140,7 +145,7 @@ public class AbilityAOE : MonoBehaviour
 	{
 		abilityDurationTimer -= Time.deltaTime;
 
-		if (abilityDurationTimer <= 0)
-			DungeonHandler.AoeAbilitiesCleanUp(this);
+		//if (abilityDurationTimer <= 0)
+			//DungeonHandler.AoeAbilitiesCleanUp(this);
 	}
 }

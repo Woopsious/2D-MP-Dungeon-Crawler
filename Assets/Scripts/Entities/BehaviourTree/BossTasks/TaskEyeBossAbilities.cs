@@ -70,7 +70,9 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 			}
 			else if (CanUseBossAbilityTwo())
 			{
-				behaviour.EventBossAbilityBeginCasting(obstaclesPositionList, stats.roomCenterPiece.transform.position, 10f);
+				behaviour.EventBossAbilityBeginCasting(behaviour.abilityTwo,
+					obstaclesPositionList, stats.roomCenterPiece.transform.position, 10f);
+
 				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityTwo(behaviour);
 			}

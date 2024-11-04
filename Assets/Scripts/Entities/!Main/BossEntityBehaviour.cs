@@ -24,7 +24,7 @@ public class BossEntityBehaviour : EntityBehaviour
 
 	public static event Action<int> OnSpawnBossAdds;
 
-	public static event Action<List<Vector2>, Vector2, float> OnBossAbilityBeginCasting;
+	public static event Action<SOClassAbilities, List<Vector2>, Vector2, float> OnBossAbilityBeginCasting;
 	public static event Action OnBossAbilityCast;
 
 	protected override void Update()
@@ -158,26 +158,15 @@ public class BossEntityBehaviour : EntityBehaviour
 	{
 		OnSpawnBossAdds?.Invoke(numToSpawn);
 	}
-	public void EventBossAbilityBeginCasting(List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	public void EventBossAbilityBeginCasting(SOClassAbilities ability, List<Vector2> positionList, Vector2 adjustPosition, float radius)
 	{
-		OnBossAbilityBeginCasting?.Invoke(positionList, adjustPosition, radius);
-	}
-	public void EventBossCastedAbility()
-	{
-		OnBossAbilityCast?.Invoke();
+		OnBossAbilityBeginCasting?.Invoke(ability, positionList, adjustPosition, radius);
 	}
 
-	protected override void CastEffect(SOClassAbilities ability)
+	protected override void CastAbility(SOClassAbilities ability)
 	{
-		base.CastEffect(ability);
-	}
-	protected override void CastDirectionalAbility(SOClassAbilities ability)
-	{
-		base.CastDirectionalAbility(ability);
-	}
-	protected override void CastAoeAbility(SOClassAbilities ability)
-	{
-		base.CastAoeAbility(ability);
+		base.CastAbility(ability);
+		OnBossAbilityCast?.Invoke();
 	}
 
 	public void ForceCastSpecialBossAbilities(SOClassAbilities ability)

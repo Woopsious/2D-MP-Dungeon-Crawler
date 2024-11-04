@@ -52,9 +52,11 @@ MonoBehaviour:
     m_Bits: 768
   excludeLayer:
     serializedVersion: 2
-    m_Bits: 7671
+    m_Bits: 7415
   abilityDurationTimer: 0
   aoeDamage: 0
+  entityStatsList: []
+  playerList: []
 --- !u!1 &5959791223346737564
 GameObject:
   m_ObjectHideFlags: 0

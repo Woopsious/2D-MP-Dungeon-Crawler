@@ -15,29 +15,28 @@ public class SpawnHandler : MonoBehaviour
 
 	public int spawnerLevel;
 	public int maxNumOfEntitiesToSpawn;
-	public List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
+
+	private CircleCollider2D playerCollider;
+	private List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
+	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	private float closestPlayerDistance;
+	private bool spawningDisabled;
 
 	[Header("Spawner Range Settings")]
 	public int maxSpawningDistance;
 	public int minSpawningDistance;
 	[HideInInspector] public Bounds spawnBounds;
 
+	[Header("Spawner Settings")]
+	public GameObject entityTemplatePrefab;
+	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
+
 	[Header("Boss Spawner Settings")]
 	public bool isBossRoomSpawner;
 	public bool isBossSpawner;
 	public GameObject bossEntityTemplatePrefab;
 	public SOEntityStats bossEntityToSpawn;
-	public BossEntityStats bossEntity;
-	public float lastBossHealthPercentage;
-
-	[Header("Spawner Entity Types")]
-	public GameObject entityTemplatePrefab;
-	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
-
-	private CircleCollider2D playerCollider;
-	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
-	private float closestPlayerDistance;
-	private bool spawningDisabled;
+	private BossEntityStats bossEntity;
 
 	[Header("Boss Room Obstacles")]
 	public GameObject obstaclePrefab;
@@ -306,18 +305,15 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//SPAWNING OF BOSS ROOM OBSTACLES
-	public void SpawnBossDungeonObstacles(List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	private void SpawnBossDungeonObstacles(SOClassAbilities ability, List<Vector2> positionList, Vector2 adjustPosition, float radius)
 	{
 		if (!isBossSpawner) return;
-		SpawnObstacles(positionList, adjustPosition, radius);
-	}
-	private void SpawnObstacles(List<Vector2> positionList, Vector2 adjustPosition, float radius)
-	{
 		for (int i = 0; i < positionList.Count; i++)
 		{
 			Vector2 spawnPosition = (positionList[i] * radius) + adjustPosition;
 			GameObject go = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
-			obstaclesList.Add(go);
+			Obstacles bossRoomObstacle = go.GetComponent<Obstacles>();
+			bossRoomObstacle.InitilizeBossRoomObstacle(ability.abilityCastingTimer);
 		}
 	}
 
