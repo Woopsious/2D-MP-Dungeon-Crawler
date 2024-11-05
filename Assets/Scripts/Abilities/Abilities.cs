@@ -77,6 +77,7 @@ public class Abilities : MonoBehaviour
 	//tool tip
 	private void UpdateToolTip(EntityStats playerStats)
 	{
+		if (abilityBaseRef == null || abilityBaseRef.Description == null) return;
 		string info = $"{abilityBaseRef.Description}";
 
 		if (abilityBaseRef.canOnlyTargetSelf) //targeting info

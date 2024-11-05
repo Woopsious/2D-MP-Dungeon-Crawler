@@ -53,6 +53,9 @@ MonoBehaviour:
   excludeLayer:
     serializedVersion: 2
     m_Bits: 7415
+  lineOfSightLayer:
+    serializedVersion: 2
+    m_Bits: 8256
   abilityDurationTimer: 0
   aoeDamage: 0
   entityStatsList: []

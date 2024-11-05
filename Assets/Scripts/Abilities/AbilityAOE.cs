@@ -8,10 +8,13 @@ public class AbilityAOE : MonoBehaviour
 	private PlayerController player;
 	public SOClassAbilities abilityRef;
 	private EntityStats casterInfo;
+	private Vector2 casterPosition;
 
 	public GameObject aoeColliderIndicator;
 	public LayerMask includeLayer;
 	public LayerMask excludeLayer;
+
+	public LayerMask lineOfSightLayer;
 
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
@@ -37,6 +40,7 @@ public class AbilityAOE : MonoBehaviour
 	{
 		this.abilityRef = abilityRef;
 		this.casterInfo = casterInfo;
+		casterPosition = casterInfo.transform.position;
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
@@ -133,11 +137,26 @@ public class AbilityAOE : MonoBehaviour
 			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
 			return;
 
+		if (!abilityRef.isCircleAOE)
+			if (!CollidedTargetInLineOfSight(other.gameObject)) return;
+
 		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
 			abilityRef.isDamagePercentageBased, isPlayerAoe, false);
 
 		if (abilityRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
 			other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
+	}
+	private bool CollidedTargetInLineOfSight(GameObject collidedObject)
+	{
+		RaycastHit2D hit = Physics2D.Linecast(casterPosition, collidedObject.transform.position, lineOfSightLayer);
+		if (hit.collider == null)
+			return true;
+		else
+			return false;
+	}
+	private void SplitDamageBetweenCollidedTargets()
+	{
+		//noop
 	}
 
 	//timer
