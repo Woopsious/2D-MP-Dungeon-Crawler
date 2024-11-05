@@ -22,6 +22,7 @@ public class DungeonHandler : MonoBehaviour
 	public List<AbilityAOE> inActiveAoeAbilitesPool = new List<AbilityAOE>();
 
 	public static event Action<GameObject> OnEntityDeathEvent;
+	public static event Action OnEntitySpawnEvent;
 
 	private void Awake()
 	{

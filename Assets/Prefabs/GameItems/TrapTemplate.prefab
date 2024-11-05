@@ -146,6 +146,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ee30051fbfc3a6c4aa1789eeecae11d8, type: 2}
   - {fileID: 11400000, guid: 6a53cfc026932134ea60a2a3cf06a9be, type: 2}
   - {fileID: 11400000, guid: c5dbeead6ddcb1b42b795661605579ce, type: 2}
+  debugOverrideTrapType: 0
   trapBaseRef: {fileID: 0}
   layerMask:
     serializedVersion: 2
@@ -175,7 +176,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trapHandler: {fileID: 0}
 --- !u!114 &3466393648449890316
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -215,10 +215,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4970830818207596737}
-  - component: {fileID: 1795980223876356435}
+  - component: {fileID: 4273392319730394132}
   - component: {fileID: 1739533778758650124}
   m_Layer: 7
-  m_Name: PlayerDetection
+  m_Name: TrapActivationCollider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -239,7 +239,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 916404302911396077}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1795980223876356435
+--- !u!114 &4273392319730394132
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -248,12 +248,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2493863654089023824}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ed91e617b5c092429d74e2e7803ba80, type: 3}
+  m_Script: {fileID: 11500000, guid: 346f194381e2ce64d8b4ca644f6dfa49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   trapHandler: {fileID: 0}
-  entityBehaviour: {fileID: 0}
-  player: {fileID: 0}
 --- !u!58 &1739533778758650124
 CircleCollider2D:
   m_ObjectHideFlags: 0

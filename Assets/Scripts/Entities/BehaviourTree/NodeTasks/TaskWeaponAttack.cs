@@ -29,7 +29,7 @@ public class TaskWeaponAttack : BTNode
 
 	public void AttackWithMainWeapon(Weapons weapon)
 	{
-		if (weapon == null) return;
+		if (weapon == null || behaviour.playerTarget == null) return;
 
 		if (weapon.weaponBaseRef.isRangedWeapon)
 			weapon.RangedAttack(behaviour.playerTarget.transform.position, behaviour.projectilePrefab);

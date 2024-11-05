@@ -81,6 +81,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Selector.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassStatBonuses.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AbilityAoeCollider.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWander.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\BossRoomHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHotbarUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossAbilities.cs" />
@@ -144,6 +146,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckGlobalAttackCooldown.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\EntityStats.cs" />
+    <Compile Include="Assets\Scripts\DungeonItems\TrapActivationCollider.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
     <Compile Include="Assets\Scripts\Entities\Abstract\EntityAbilities.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossChecks\CanUseAbilitiesInTransition.cs" />
@@ -157,7 +160,6 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassAbilities.cs" />
-    <Compile Include="Assets\Scripts\Abilities\AoeCollisions.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IBossInterfaces.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />

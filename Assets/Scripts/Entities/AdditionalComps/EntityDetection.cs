@@ -6,7 +6,6 @@ using UnityEngine;
 public class EntityDetection : MonoBehaviour
 {
 	//refs set in respected scripts on Initilize()
-	[HideInInspector] public TrapHandler trapHandler;
 	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public PlayerController player;
 
@@ -14,12 +13,7 @@ public class EntityDetection : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (trapHandler != null)
-		{
-			if (other.GetComponent<PlayerController>() != null)
-				StartCoroutine(trapHandler.ActivateTrapDelay(other.GetComponent<PlayerController>(), other));
-		}
-		else if (entityBehaviour != null) //detect players
+		if (entityBehaviour != null) //detect players
 		{
 			if (other.GetComponent<PlayerController>() != null)
 				entityBehaviour.AddPlayerToAggroList(other.GetComponent<PlayerController>(), 0);
@@ -34,9 +28,7 @@ public class EntityDetection : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (trapHandler != null)
-			return;
-		else if (entityBehaviour != null) //detect players
+		if (entityBehaviour != null) //detect players
 		{
 			if (other.GetComponent<PlayerController>() != null)
 				entityBehaviour.RemovePlayerFromAggroList(other.GetComponent<PlayerController>());

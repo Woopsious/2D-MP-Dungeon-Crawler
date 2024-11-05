@@ -544,9 +544,9 @@ public class PlayerController : MonoBehaviour
 	
 	private void OnTriggerEnter2D(Collider2D other)
 	{
-		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
-			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null
-			|| other.GetComponent<TrapHandler>() != null)
+		if (other.GetComponent<BossRoomHandler>() != null|| other.GetComponent<PortalHandler>() != null || 
+			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null || 
+			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
 		{
 			currentInteractedObject = other.GetComponent<Interactables>();
 
@@ -573,9 +573,9 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnTriggerExit2D(Collider2D other)
 	{
-		if (other.GetComponent<PortalHandler>() != null || other.GetComponent<NpcHandler>() != null ||
-			other.GetComponent<ChestHandler>() != null || other.GetComponent<EnchantmentHandler>() != null
-			|| other.GetComponent<TrapHandler>() != null)
+		if (other.GetComponent<BossRoomHandler>() != null || other.GetComponent<PortalHandler>() != null ||
+			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null ||
+			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
 		{
 			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			currentInteractedObject = null;

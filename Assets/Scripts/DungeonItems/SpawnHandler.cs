@@ -38,6 +38,9 @@ public class SpawnHandler : MonoBehaviour
 	public SOEntityStats bossEntityToSpawn;
 	private BossEntityStats bossEntity;
 
+	[Header("Boss Room Center Piece")]
+	public GameObject BossRoomCenterPiecePrefab;
+
 	[Header("Boss Room Obstacles")]
 	public GameObject obstaclePrefab;
 	public List<GameObject> obstaclesList = new List<GameObject>();
@@ -52,6 +55,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntities;
@@ -61,6 +65,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnDisable()
 	{
+		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
@@ -199,22 +204,18 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void TrySpawnEntities()
 	{
-		if (isBossSpawner)
-		{
-			SpawnBossEntity();
-			return;
-		}
-
+		if (isBossRoomSpawner) return;
 		if (listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn) return;
 		if (listOfPlayersInRange.Count == 0) return;
 		if (spawningDisabled) return;
 
 		SpawnEntity();
 	}
+
 	//boss entity spawning
-	private void SpawnBossEntity()
+	private void SpawnBossEntity(GameObject roomCenterPiece)
 	{
-		if (bossEntity != null) return; //disable spawning multiple
+		if (!isBossSpawner || bossEntity != null) return; //disable spawning multiple
 
 		SOEntityStats bossToSpawn = null;
 
@@ -230,12 +231,13 @@ public class SpawnHandler : MonoBehaviour
 
 
 		if (bossToSpawn == null) return;
-		InstantiateNewBossEntity(bossToSpawn);
+		InstantiateNewBossEntity(bossToSpawn, roomCenterPiece);
 	}
-	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn)
+	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn, GameObject roomCenterPiece)
 	{
-		GameObject go = Instantiate(bossEntityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
+		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
+		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		bossEntity.statsRef = bossToSpawn;
 		this.bossEntity = bossEntity;
 
@@ -244,6 +246,7 @@ public class SpawnHandler : MonoBehaviour
 		else
 			bossEntity.entityLevel = spawnerLevel;
 	}
+
 	//entity spawning
 	private void SpawnEntity()
 	{

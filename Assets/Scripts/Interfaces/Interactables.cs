@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Interactables : MonoBehaviour
 {
+	private BossRoomHandler bossDungeonHandler;
 	private TrapHandler trapHandler;
 	private PortalHandler portalHandler;
 	private ChestHandler chestHandler;
@@ -12,6 +13,7 @@ public class Interactables : MonoBehaviour
 
 	private void Awake()
 	{
+		bossDungeonHandler = GetComponent<BossRoomHandler>();
 		trapHandler = GetComponent<TrapHandler>();
 		portalHandler = GetComponent<PortalHandler>();
 		chestHandler = GetComponent<ChestHandler>();
@@ -21,7 +23,9 @@ public class Interactables : MonoBehaviour
 
 	public void Interact(PlayerController player)
 	{
-        if (trapHandler != null)
+        if (bossDungeonHandler != null)
+			bossDungeonHandler.Interact(player);
+        else if (trapHandler != null)
 			trapHandler.Interact(player);
         else if (portalHandler != null)
 		{

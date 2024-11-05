@@ -27,7 +27,7 @@ public class PlayerInfoUi : MonoBehaviour
 		if (Debug.isDebugBuild)
 		{
 			playerInstance = FindObjectOfType<PlayerController>();
-			Debug.LogError("player ref:" + playerInstance.name);
+			//Debug.LogError("player ref:" + playerInstance.name);
 			return;
 		}
 

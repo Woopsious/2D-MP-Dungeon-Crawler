@@ -49,19 +49,11 @@ MonoBehaviour:
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
   maxNumOfEntitiesToSpawn: 5
-  listOfSpawnedEntities: []
   maxSpawningDistance: 30
   minSpawningDistance: 25
   spawnBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
-  isBossRoomSpawner: 0
-  isBossSpawner: 0
-  maxNumOfEntitiesToSpawnForBossFights: 2
-  bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
-  bossEntityToSpawn: {fileID: 0}
-  bossEntity: {fileID: 0}
-  lastBossHealthPercentage: 0
   entityTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
   possibleEntityTypesToSpawn:
   - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
@@ -69,6 +61,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
   - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
   - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
+  isBossRoomSpawner: 0
+  isBossSpawner: 0
+  bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
+  bossEntityToSpawn: {fileID: 0}
+  BossRoomCenterPiecePrefab: {fileID: 3871581706630097176, guid: 1d44e4c4142b2a643853c726054f5a7d, type: 3}
   obstaclePrefab: {fileID: 6873319500750903154, guid: 4a06b34e38eec0f438dd4265a4a678b1, type: 3}
   obstaclesList: []
 --- !u!58 &978756309994241589

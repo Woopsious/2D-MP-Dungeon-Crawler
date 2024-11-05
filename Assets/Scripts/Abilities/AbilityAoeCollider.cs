@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
-public class AoeCollisions : MonoBehaviour
+public class AbilityAoeCollider : MonoBehaviour
 {
 	AbilityAOE abilityAOE;
 

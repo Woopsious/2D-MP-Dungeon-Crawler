@@ -8,7 +8,7 @@ public class BossEntityStats : EntityStats
 	private BossEntityBehaviour bossBehaviour;
 
 	[Header("Additional Boss Variables")]
-	public Damageable damageable;
+	[HideInInspector] public Damageable damageable;
 	public float lastBossHealthPercentage;
 	public bool inPhaseTransition;
 
@@ -18,15 +18,15 @@ public class BossEntityStats : EntityStats
 		firstPhase, secondPhase, thirdPhase
 	}
 
-	public GameObject BossRoomCenterPiecePrefab;
 	[HideInInspector] public GameObject roomCenterPiece;
+
+	public static event Action OnBossDeath;
 
 	protected override void Awake()
 	{
 		base.Awake();
 		bossBehaviour = GetComponent<BossEntityBehaviour>();
 		damageable = GetComponent<Damageable>();
-		SpawnBossRoomCenterPiece();
 	}
 	protected override void Start()
 	{
@@ -45,11 +45,9 @@ public class BossEntityStats : EntityStats
 		OnHealthChangeEvent -= UpdateBossHealthPercentage;
 	}
 
-	private void SpawnBossRoomCenterPiece()
+	public void SetCenterPieceRef(GameObject roomCenterPiece)
 	{
-		GameObject go = Instantiate(BossRoomCenterPiecePrefab);
-		roomCenterPiece = go;
-		roomCenterPiece.transform.position = transform.position;
+		this.roomCenterPiece = roomCenterPiece;
 	}
 	private void UpdateBossHealthPercentage(int maxHealth, int currentHealth)
 	{
@@ -62,5 +60,8 @@ public class BossEntityStats : EntityStats
 			inPhaseTransition = true;
 		}
 		lastBossHealthPercentage = newPercentage;
+
+		if (newPercentage <= 0)
+			OnBossDeath?.Invoke();
 	}
 }

@@ -67,7 +67,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
-		playerDetectionCollider.GetComponent<EntityDetection>().trapHandler = this;
+		playerDetectionCollider.GetComponent<TrapActivationCollider>().trapHandler = this;
 
 		if (!debugOverrideTrapType)
 		{
@@ -118,12 +118,12 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	}
 
 	//trap actions
-	public IEnumerator ActivateTrapDelay(PlayerController player, Collider2D coll)
+	public IEnumerator ActivateTrapDelay(Collider2D coll)
 	{
 		yield return new WaitForSeconds(trapBaseRef.trapActivationDelay);
-		ActivateTrap(player, coll);
+		ActivateTrap(coll);
 	}
-	private void ActivateTrap(PlayerController player, Collider2D coll)
+	private void ActivateTrap(Collider2D coll)
 	{
 		if (trapDisabled || trapActivated) return;
 
