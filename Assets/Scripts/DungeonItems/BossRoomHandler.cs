@@ -67,7 +67,11 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 
 	private void ResetRoom()
 	{
-		//noop
-		//when all players dead, revive them at respawn portal, reset boss/adds, unlock room + anything else that comes up
+		bossFightStarted = false;
+		bossFightCompleted = false;
+		centerPieceCollider.enabled = true;
+		roomBarrier.SetActive(false);
+
+		//when all players dead, revive them at respawn portal, reset boss/adds + anything else that comes up
 	}
 }

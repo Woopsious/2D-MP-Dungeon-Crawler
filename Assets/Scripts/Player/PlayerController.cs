@@ -1,20 +1,16 @@
 using System;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.AI;
-using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public class PlayerController : MonoBehaviour
 {
+	[Header("Debug settings")]
 	public bool debugSetStartingItems;
 	public bool debugUseSelectedTargetForAttackDirection;
 	public bool debugSetPlayerLevelOnStart;
 	public int debugPlayerLevel;
+
+	[Header("Player Info")]
 	public Camera playerCamera;
 	public LayerMask includeMe;
 	[HideInInspector] public EntityStats playerStats;
@@ -33,30 +29,33 @@ public class PlayerController : MonoBehaviour
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
 	private float mainAttackAutoAttackTimer;
 
-	//target selection
-	public event Action<EntityStats> OnNewTargetSelected;
-	public List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+	[Header("Player Targeting")] // +info
 	public EntityStats selectedEnemyTarget;
-	public int selectedEnemyTargetIndex;
+	private int selectedEnemyTargetIndex;
+	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+	public event Action<EntityStats> OnNewTargetSelected;
 
-	//targetlist updates timer
+	//targetlist update timer
 	private readonly float updateTargetListCooldown = 0.5f;
 	private float updateTargetListTimer;
 
-	//abilities
+	[Header("Ability Prefabs")] // +info
+	public GameObject AbilityAoePrefab;
+	public GameObject projectilePrefab;
 	public event Action<Abilities> OnAddNewQueuedAbility;
 	public event Action OnCastQueuedAbility;
 	public event Action OnCancelQueuedAbility;
-	public GameObject AbilityAoePrefab;
-	public GameObject projectilePrefab;
 
-	public Abilities queuedAbility;
-	public Abilities abilityBeingCasted;
-	public float abilityCastingTimer;
+	private Abilities queuedAbility;
+	private Abilities abilityBeingCasted;
+	private float abilityCastingTimer;
+
+	[Header("Marked By Boss")]
+	public GameObject PlayerBossMarker;
 
 	//interactions
 	[HideInInspector] public bool isInteractingWithInteractable;
-	public Interactables currentInteractedObject;
+	[HideInInspector] public Interactables currentInteractedObject;
 
 	private void Awake()
 	{
@@ -127,6 +126,7 @@ public class PlayerController : MonoBehaviour
 			playerInputs = PlayerInputHandler.Instance;
 
 		playerCamera.transform.parent = null;
+		PlayerBossMarker.SetActive(false);
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
@@ -532,6 +532,16 @@ public class PlayerController : MonoBehaviour
 		ability.isOnCooldown = true;
 		queuedAbility = null;
 		abilityBeingCasted = null;
+	}
+
+	//PLAYER MARKING FOR BOSS ABILITIES
+	public void MarkPlayer()
+	{
+		PlayerBossMarker.SetActive(true);
+	}
+	public void UnMarkPlayer()
+	{
+		PlayerBossMarker.SetActive(false);
 	}
 
 	//bool checks

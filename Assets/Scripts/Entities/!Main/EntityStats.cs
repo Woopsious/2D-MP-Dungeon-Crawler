@@ -9,6 +9,7 @@ public class EntityStats : MonoBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats statsRef;
+	[HideInInspector] public PlayerController playerRef;
 	[HideInInspector] public EntityBehaviour entityBehaviour;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
@@ -74,6 +75,7 @@ public class EntityStats : MonoBehaviour
 
 	protected virtual void Awake()
 	{
+		playerRef = GetComponent<PlayerController>();
 		entityBehaviour = GetComponent<EntityBehaviour>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
@@ -124,7 +126,7 @@ public class EntityStats : MonoBehaviour
 		name = statsRef.entityName;
 		CalculateBaseStats();
 
-		if (GetComponent<PlayerController>() == null)
+		if (playerRef == null)
 		{
 			classHandler.SetEntityClass();
 			equipmentHandler.SpawnEntityEquipment();
@@ -363,13 +365,16 @@ public class EntityStats : MonoBehaviour
 			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
 			{
 				if (IsPlayerEntity())
-					GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, false);
+					playerRef.UpdateMovementSpeed(effect.effectValue, false);
 				else
 					entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
 			}
 
 			OnNewStatusEffect?.Invoke(statusEffect);
 			currentStatusEffects.Add(statusEffect);
+
+			if (effect.isMarkedByBossEffect && IsPlayerEntity())
+				playerRef.MarkPlayer();
 		}
 	}
 	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect)
@@ -396,7 +401,7 @@ public class EntityStats : MonoBehaviour
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
 		{
 			if (IsPlayerEntity())
-				GetComponent<PlayerController>().UpdateMovementSpeed(effect.effectValue, true);
+				playerRef.UpdateMovementSpeed(effect.effectValue, true);
 			else
 				entityBehaviour.UpdateMovementSpeed(effect.effectValue, true);
 		}
@@ -404,6 +409,9 @@ public class EntityStats : MonoBehaviour
 		currentStatusEffects.Remove(statusEffect);
 		OnRemoveStatusEffect?.Invoke(effect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
+
+		if (effect.isMarkedByBossEffect && IsPlayerEntity())
+			playerRef.UnMarkPlayer();
 	}
 	private AbilityStatusEffect CheckIfStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{
@@ -591,7 +599,7 @@ public class EntityStats : MonoBehaviour
 	//full heal entity if not player and at full health on stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
 	{
-		if (GetComponent<PlayerController>() == null && oldCurrentHealthEqualToOldMaxHealth)
+		if (playerRef == null && oldCurrentHealthEqualToOldMaxHealth)
 		{
 			currentHealth = maxHealth.finalValue;
 			currentMana = maxMana.finalValue;
@@ -618,7 +626,7 @@ public class EntityStats : MonoBehaviour
 	}
 	public bool IsPlayerEntity()
 	{
-		if (statsRef.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
+		if (playerRef != null && statsRef.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
 			return true;
 		else return false;
 	}

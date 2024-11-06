@@ -5,6 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "StatusEffectsScriptableObject", menuName = "StatusEffects")]
 public class SOStatusEffects : ScriptableObject
 {
+	[Header("Special Marked By Boss Setting")]
+	public bool isMarkedByBossEffect;
+
 	[Header("Status Effects Settings")]
 	public string Name;
 	public Sprite effectSprite;

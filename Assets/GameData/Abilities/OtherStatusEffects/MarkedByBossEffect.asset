@@ -10,9 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ee1e9bbec2a6a5b45ac9894189f68f5d, type: 3}
-  m_Name: MarkedByEyeEffect
+  m_Name: MarkedByBossEffect
   m_EditorClassIdentifier: 
-  Name: Marked By Eye
+  isMarkedByBossEffect: 1
+  Name: Marked By Boss
   effectSprite: {fileID: 0}
   statusEffectType: 0
   isDOT: 0
