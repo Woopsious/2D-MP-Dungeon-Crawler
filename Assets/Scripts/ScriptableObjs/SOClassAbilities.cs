@@ -15,6 +15,7 @@ public class SOClassAbilities : SOClassUnlocks
 	/// </summary>
 
 	[Header("Ability Info")]
+	public bool isBossAbility;
 	public float abilityCastingTimer;
 	public float abilityCooldown;
 	public bool isOffensiveAbility;
@@ -29,8 +30,9 @@ public class SOClassAbilities : SOClassUnlocks
 
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
-	public bool isCircleAOE;
 	public bool isAOE;
+	public bool isCircleAOE;
+	public bool isDamageSplitBetweenHits;
 	public bool hasAoeDuration;
 	public float aoeDuration;
 

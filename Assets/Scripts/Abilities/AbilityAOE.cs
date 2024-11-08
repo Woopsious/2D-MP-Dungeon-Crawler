@@ -127,24 +127,62 @@ public class AbilityAOE : MonoBehaviour
 		this.player = player;
 	}
 
-	//apply damage/effects to all entities inside aoe, called from AoeCollisions script OnTriggerEnter2D
-	public void ApplyDamageToEntitiesInAoe(Collider2D other)
+	public void OnEntityEnter2D(EntityStats entity, Collider2D other)
 	{
-		entityStatsList.Add(other.GetComponent<EntityStats>());
+		if (entity == null) return;
 
-		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
-			return;
+		if (abilityRef.isDamageSplitBetweenHits)
+			AddCollidedEntitiesToList(entity);
+		else
+			ApplyDamageToCollidedEntities(entity, other, aoeDamage);
+	}
 
+	//add collided entity to list. to later apply damage to them.
+	private void AddCollidedEntitiesToList(EntityStats entity)
+	{
+		if (entityStatsList.Contains(entity)) return;
+		entityStatsList.Add(entity);
+	}
+
+	//applying damage to collided things + status effects if it was an entity
+	private void ApplyDamageToCollidedEntities(EntityStats entity, Collider2D other, int damageToDeal)
+	{
 		if (!abilityRef.isCircleAOE)
 			if (!CollidedTargetInLineOfSight(other.gameObject)) return;
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, aoeDamage, (IDamagable.DamageType)damageType, 0,
+		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, damageToDeal, (IDamagable.DamageType)damageType, 0, 
 			abilityRef.isDamagePercentageBased, isPlayerAoe, false);
 
-		if (abilityRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
-			other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
+		if (!abilityRef.hasStatusEffects) return;
+		entity.ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
+	}
+
+	//split damage, called on duration timer end
+	private void SplitDamageBetweenCollidedTargets()
+	{
+		if (abilityRef.isBossAbility) //noop atm
+		{
+			///<Summery>
+			///adjust damage dealt to players further based on players in lobby, ensuring boss can still be beat with less then a full lobby
+			///4 players = aoeDamage * 1 | 3 players = aoeDamage * 0.75
+			///2 players = aoeDamage * 0.55 | players = aoeDamage * 0.4 (subject to change)
+			///</Summery>
+		}
+
+		int damageToDeal = aoeDamage / entityStatsList.Count; //split damage
+
+		foreach (EntityStats entity in  entityStatsList)
+			ApplyDamageToCollidedEntities(entity, entity.GetComponent<Collider2D>(), damageToDeal);
+	}
+
+	//checks
+	public bool IsCollidedObjEnemy(Collider2D other)
+	{
+		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
+		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
+			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
+			return false;
+		else return true;
 	}
 	private bool CollidedTargetInLineOfSight(GameObject collidedObject)
 	{
@@ -154,17 +192,18 @@ public class AbilityAOE : MonoBehaviour
 		else
 			return false;
 	}
-	private void SplitDamageBetweenCollidedTargets()
-	{
-		//noop
-	}
 
 	//timer
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer -= Time.deltaTime;
 
-		//if (abilityDurationTimer <= 0)
-			//DungeonHandler.AoeAbilitiesCleanUp(this);
+		if (abilityDurationTimer <= 0)
+		{
+			if (abilityRef.isDamageSplitBetweenHits)
+				SplitDamageBetweenCollidedTargets();
+
+			DungeonHandler.AoeAbilitiesCleanUp(this);
+		}
 	}
 }
