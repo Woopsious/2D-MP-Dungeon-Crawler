@@ -9,7 +9,7 @@ public class Abilities : MonoBehaviour
 
 	[Header("Ability Info")]
 	private ToolTipUi toolTip;
-	public SOClassAbilities abilityBaseRef;
+	public SOAbilities abilityBaseRef;
 	public SOStatusEffects effectBaseRef;
 
 	public string abilityName;
@@ -87,17 +87,17 @@ public class Abilities : MonoBehaviour
 		else if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityBaseRef.damageType != SOClassAbilities.DamageType.isHealing) //abilty info
+		if (abilityBaseRef.damageType != SOAbilities.DamageType.isHealing) //abilty info
 		{
 			int damage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
 
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isPhysicalDamageType)
+			if (abilityBaseRef.damageType == SOAbilities.DamageType.isPhysicalDamageType)
 				damage = (int)(damage * playerStats.physicalDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isPoisonDamageType)
+			if (abilityBaseRef.damageType == SOAbilities.DamageType.isPoisonDamageType)
 				damage = (int)(damage * playerStats.poisonDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isFireDamageType)
+			if (abilityBaseRef.damageType == SOAbilities.DamageType.isFireDamageType)
 				damage = (int)(damage * playerStats.fireDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isIceDamageType)
+			if (abilityBaseRef.damageType == SOAbilities.DamageType.isIceDamageType)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
 			if (damage != 0) //optional instant damage info
@@ -113,7 +113,7 @@ public class Abilities : MonoBehaviour
 			if (abilityBaseRef.hasStatusEffects) //optional effect info
 				info += SetStatusEffectToolTips(playerStats);
 		}
-		else if (abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //healing info
+		else if (abilityBaseRef.damageType == SOAbilities.DamageType.isHealing) //healing info
 		{
 			float healing = Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage);
 

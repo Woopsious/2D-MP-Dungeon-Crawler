@@ -39,23 +39,12 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 	readonly SOBossEntityBehaviour bossBehaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
-	List<Vector2> obstaclesPositionList = new List<Vector2>();
 
 public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
 		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
-
-		obstaclesPositionList = new List<Vector2>
-		{
-			new Vector2(1, 0),
-			new Vector2(0.75f, 0.75f),
-			new Vector2(0.75f, -0.75f),
-			new Vector2(-1, 0),
-			new Vector2(-0.75f, 0.75f),
-			new Vector2(-0.75f, -0.75f)
-		};
 	}
 
 	public override NodeState Evaluate()
@@ -70,15 +59,10 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 			}
 			else if (CanUseBossAbilityTwo())
 			{
-				behaviour.EventBossAbilityBeginCasting(behaviour.abilityTwo,
-					obstaclesPositionList, stats.roomCenterPiece.transform.position, 10f);
-
-				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityTwo(behaviour);
 			}
 			else if (CanUseBossAbilityThree())
 			{
-				CastMarkedByEyeEffectOnPlayer();
 				CastAbilityThree(behaviour);
 			}
 			else return NodeState.FAILURE;
@@ -87,10 +71,6 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 			behaviour.globalAttackTimer = 1f;
 			return NodeState.SUCCESS;
 		}
-	}
-	private void CastMarkedByEyeEffectOnPlayer()
-	{
-		behaviour.ForceCastSpecialBossAbilities(bossBehaviourRef.specialBossAbilities[0]);
 	}
 
 	public bool CanUseBossAbilityOne()
@@ -107,6 +87,8 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		return false;
+		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(stats, behaviour.abilityThree)) return false;
+		else return true;
 	}
 }

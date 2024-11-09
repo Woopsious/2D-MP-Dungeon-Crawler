@@ -9,30 +9,36 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Script: {fileID: 11500000, guid: 86cee7f0631d79d41a4464e82a3a2231, type: 3}
   m_Name: ScorchingRays
   m_EditorClassIdentifier: 
   Name: Scorching Rays
   Description: Launch 3 rays of fire at enemies
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
+  isBossAbility: 0
+  abilityCastingTimer: 0
   abilityCooldown: 8
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  statusEffectType: 0
-  statusEffectPercentageModifier: 0
+  hasStatusEffects: 0
+  statusEffects: []
   isAOE: 0
-  aoeSize: 0
-  isDOT: 0
-  abilityDuration: 0
+  isCircleAOE: 0
+  isDamageSplitBetweenHits: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
+  damageType: 2
   damageValue: 50
   damageValuePercentage: 0
-  damageType: 2
   isSpell: 1
   manaCost: 12
   minPercentCost: 10

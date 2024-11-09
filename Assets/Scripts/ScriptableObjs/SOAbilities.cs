@@ -4,7 +4,7 @@ using System.Numerics;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "ClassUnlocksScriptableObject", menuName = "ClassUnlocks/Abilities")]
-public class SOClassAbilities : SOClassUnlocks
+public class SOAbilities : SOClassUnlocks
 {
 	/// <summary>
 	///  check if status effect first, if true: apply said status effect to self/target

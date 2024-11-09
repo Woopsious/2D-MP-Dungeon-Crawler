@@ -487,7 +487,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastEffect(Abilities ability, EntityStats enemyTarget)
 	{
-		if (ability.abilityBaseRef.damageType == SOClassAbilities.DamageType.isHealing) //healing
+		if (ability.abilityBaseRef.damageType == SOAbilities.DamageType.isHealing) //healing
 		{
 			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
 				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);

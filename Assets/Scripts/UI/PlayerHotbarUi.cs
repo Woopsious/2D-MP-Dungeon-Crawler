@@ -151,7 +151,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		slotEquippedTo.itemInSlot.CheckIfCanUseConsumables(0, 0);
 	}
-	private void EquipAbility(SOClassAbilities newAbility, InventorySlotDataUi slotToEquipTo)
+	private void EquipAbility(SOAbilities newAbility, InventorySlotDataUi slotToEquipTo)
 	{
 		if (slotToEquipTo.itemInSlot != null)
 			Destroy(slotToEquipTo.itemInSlot.gameObject);
@@ -201,7 +201,7 @@ public class PlayerHotbarUi : MonoBehaviour
 				equippedAbilityFive = null;
 		}
 	}
-	public bool IsAbilityAlreadyEquipped(SOClassAbilities newAbility)
+	public bool IsAbilityAlreadyEquipped(SOAbilities newAbility)
 	{
 		if (equippedAbilityOne != null && equippedAbilityOne.abilityBaseRef == newAbility)
 			return true;
@@ -220,7 +220,7 @@ public class PlayerHotbarUi : MonoBehaviour
 
        return false;
     }
-	private void OnAbilityRefund(SOClassAbilities ability)
+	private void OnAbilityRefund(SOAbilities ability)
 	{
 		foreach (GameObject abilitySlot in AbilitySlots)
 		{
@@ -345,7 +345,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		queuedAbility = null;
 	}
 
-	private void SetSizeOfQueuedAbilityAoeUi(SOClassAbilities abilityRef)
+	private void SetSizeOfQueuedAbilityAoeUi(SOAbilities abilityRef)
 	{
 		Vector3 scale;
 		if (abilityRef.isCircleAOE)

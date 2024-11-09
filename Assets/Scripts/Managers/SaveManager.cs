@@ -508,7 +508,7 @@ public class InventoryItemData
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
-	public SOClassAbilities abilityBaseRef;
+	public SOAbilities abilityBaseRef;
 
 	[Header("Item Info")]
 	public int itemLevel;

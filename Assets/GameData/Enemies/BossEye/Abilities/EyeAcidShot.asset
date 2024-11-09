@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: EyeAcidShoot
+  m_Script: {fileID: 11500000, guid: de9dd8c10c488fc49b6a6497cd40b046, type: 3}
+  m_Name: EyeAcidShot
   m_EditorClassIdentifier: 
   Name: Eye Acid Shot
   Description: shoots acid
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 0
+  isBossAbility: 1
   abilityCastingTimer: 0
   abilityCooldown: 10
   isOffensiveAbility: 1
@@ -25,9 +26,13 @@ MonoBehaviour:
   statusEffects:
   - {fileID: 11400000, guid: 6301da40ed397c443a68f792454c7944, type: 2}
   isAOE: 0
-  aoeSize: 30
+  isCircleAOE: 0
+  isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 40
@@ -40,3 +45,8 @@ MonoBehaviour:
   minPercentCost: 10
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
+  marksPlayer: 0
+  markedPlayerIsRandom: 0
+  chanceMarkedPlayerIsAggroTarget: 0
+  spawnsObstacles: 0
+  obstaclePositions: []

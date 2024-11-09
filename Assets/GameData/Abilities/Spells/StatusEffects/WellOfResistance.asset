@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Script: {fileID: 11500000, guid: 86cee7f0631d79d41a4464e82a3a2231, type: 3}
   m_Name: WellOfResistance
   m_EditorClassIdentifier: 
   Name: Well of Resistance
@@ -17,6 +17,7 @@ MonoBehaviour:
     it
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 1
+  isBossAbility: 0
   abilityCastingTimer: 0
   abilityCooldown: 30
   isOffensiveAbility: 0
@@ -25,8 +26,9 @@ MonoBehaviour:
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: c901b20874bc93d408a4cde899b3a70f, type: 2}
-  isCircleAOE: 1
   isAOE: 1
+  isCircleAOE: 1
+  isDamageSplitBetweenHits: 0
   hasAoeDuration: 1
   aoeDuration: 10
   circleAoeSize: 40

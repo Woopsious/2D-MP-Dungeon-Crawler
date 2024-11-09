@@ -9,24 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
-  m_Name: EyeAoeLineAttack
+  m_Script: {fileID: 11500000, guid: de9dd8c10c488fc49b6a6497cd40b046, type: 3}
+  m_Name: EyeTentacleWhips
   m_EditorClassIdentifier: 
-  Name: Eye Aoe Line Attack
-  Description: after marked by eye effect wears off. eye boss does aoe line attack
-    from eye pos to marked player pos.
+  Name: Eye Tentacle Whip
+  Description: after marked by boss effect wears off. eye boss does aoe line attack
+    from eye pos in the direction of marked player pos.
   abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 0
+  isBossAbility: 1
   abilityCastingTimer: 10
   abilityCooldown: 30
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  hasStatusEffects: 1
-  statusEffects:
-  - {fileID: 11400000, guid: 7a78b1c6e3656f446959974723085901, type: 2}
-  isCircleAOE: 0
+  hasStatusEffects: 0
+  statusEffects: []
   isAOE: 1
+  isCircleAOE: 0
+  isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
   circleAoeSize: 0
@@ -34,7 +35,7 @@ MonoBehaviour:
   boxAoeSizeY: 200
   isProjectile: 0
   projectileSprite: {fileID: 0}
-  projectileSpeed: 0
+  projectileSpeed: 20
   isDamagePercentageBased: 0
   damageType: 0
   damageValue: 30
@@ -44,3 +45,15 @@ MonoBehaviour:
   minPercentCost: 40
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
+  marksPlayer: 1
+  spawnsObstacles: 1
+  markedPlayerIsRandom: 1
+  chanceMarkedPlayerIsAggroTarget: 0.2
+  obstaclesRadius: 10
+  obstaclePositions:
+  - {x: 1, y: 0}
+  - {x: 0.75, y: 0.75}
+  - {x: 0.75, y: -0.75}
+  - {x: -1, y: 0}
+  - {x: -0.75, y: 0.75}
+  - {x: -0.75, y: -0.75}

@@ -40,7 +40,7 @@ public class PlayerClassHandler : EntityClassHandler
 		base.UnlockStatBoost(statBoost);
 		UpdateClassTreeUi();
 	}
-	protected override void UnlockAbility(SOClassAbilities ability)
+	protected override void UnlockAbility(SOAbilities ability)
 	{
 		base.UnlockAbility(ability);
 		UpdateClassTreeUi();
@@ -50,7 +50,7 @@ public class PlayerClassHandler : EntityClassHandler
 		base.RefundStatBoost(statBoost);
 		UpdateClassTreeUi();
 	}
-	protected override void RefundAbility(SOClassAbilities ability)
+	protected override void RefundAbility(SOAbilities ability)
 	{
 		base.RefundAbility(ability);
 		UpdateClassTreeUi();

@@ -9,7 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Script: {fileID: 11500000, guid: 86cee7f0631d79d41a4464e82a3a2231, type: 3}
   m_Name: OffensiveStance
   m_EditorClassIdentifier: 
   Name: Offensive Stance
@@ -17,6 +17,8 @@ MonoBehaviour:
     boosting your own damage
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 1
+  isBossAbility: 0
+  abilityCastingTimer: 0
   abilityCooldown: 30
   isOffensiveAbility: 0
   requiresTarget: 1
@@ -25,17 +27,20 @@ MonoBehaviour:
   statusEffects:
   - {fileID: 11400000, guid: 5cf41c9a18f72dd40bc8b0b52785ba15, type: 2}
   isAOE: 0
-  aoeSize: 0
-  isDOT: 0
-  hasDuration: 1
-  abilityDuration: 10
+  isCircleAOE: 0
+  isDamageSplitBetweenHits: 0
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0
   isDamagePercentageBased: 0
+  damageType: 0
   damageValue: 0
   damageValuePercentage: 0
-  damageType: 0
   isSpell: 0
   manaCost: 0
   minPercentCost: 0

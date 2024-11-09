@@ -44,7 +44,6 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		return NodeState.SUCCESS;
 	}
 
-
 	public void PhaseOneTransition()
 	{
 		stats.inPhaseTransition = false;

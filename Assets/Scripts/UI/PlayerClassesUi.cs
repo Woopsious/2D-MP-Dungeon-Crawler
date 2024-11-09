@@ -69,10 +69,10 @@ public class PlayerClassesUi : MonoBehaviour
 	public static event Action<EntityStats> OnClassNodeUnlocks;
 
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
-	public static event Action<SOClassAbilities> OnNewAbilityUnlock;
+	public static event Action<SOAbilities> OnNewAbilityUnlock;
 
 	public static event Action<SOClassStatBonuses> OnRefundStatBonusUnlock;
-	public static event Action<SOClassAbilities> OnRefundAbilityUnlock;
+	public static event Action<SOAbilities> OnRefundAbilityUnlock;
 
 	public GameObject classNodeSlotsPrefab;
 	private List<ClassTreeNodeUi> nodeSlotUiList = new List<ClassTreeNodeUi>();
@@ -625,7 +625,7 @@ public class PlayerClassesUi : MonoBehaviour
 		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void UnlockAbility(ClassTreeNodeUi classTreeSlot, SOClassAbilities ability)
+	public void UnlockAbility(ClassTreeNodeUi classTreeSlot, SOAbilities ability)
 	{
 		if (!DoesPlayerHaveFreeAbilitySlot())
 		{
@@ -647,7 +647,7 @@ public class PlayerClassesUi : MonoBehaviour
 		currentUnlockedClassNodes.Remove(classTreeSlot);
 		OnRefundStatBonusUnlock?.Invoke(statBonus);
 	}
-	public void RefundAbility(ClassTreeNodeUi classTreeSlot, SOClassAbilities ability)
+	public void RefundAbility(ClassTreeNodeUi classTreeSlot, SOAbilities ability)
 	{
 		abilitySlotsUsed--;
 		classTreeSlot.isAlreadyUnlocked = false;

@@ -20,8 +20,18 @@ MonoBehaviour:
   navMeshTurnSpeed: 75
   navMeshAcceleration: 4
   navMeshStoppingDistance: 1.75
-  abilityOne: {fileID: 11400000, guid: b09bd3e89efa274499968001d6355b1e, type: 2}
-  abilityTwo: {fileID: 11400000, guid: 43dfd25f63a06b647808572e8fd617b9, type: 2}
-  abilityThree: {fileID: 11400000, guid: fdd13aa94d5aa7b428b41c0c44196497, type: 2}
+  abilityOne: {fileID: 11400000, guid: 0a90e8d491fe0194baf9d54b7feb6c31, type: 2}
+  abilityTwo: {fileID: 11400000, guid: 7045b5cc3698af7438408aa8ad7c9442, type: 2}
+  abilityThree: {fileID: 11400000, guid: 0a90e8d491fe0194baf9d54b7feb6c31, type: 2}
+  oneMarksPlayer: 0
+  oneMarkedPlayerIsRandom: 0
+  oneChanceMarkedPlayerIsAggroTarget: 0
+  twoMarksPlayer: 1
+  twoMarkedPlayerIsRandom: 1
+  twoChanceMarkedPlayerIsAggroTarget: 0
+  threeMarksPlayer: 1
+  threeMarkedPlayerIsRandom: 1
+  threeChanceMarkedPlayerIsAggroTarget: 0
+  markPlayerAbility: {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}
   specialBossAbilities:
   - {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}

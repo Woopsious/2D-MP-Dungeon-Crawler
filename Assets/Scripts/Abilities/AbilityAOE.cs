@@ -6,7 +6,7 @@ using UnityEngine;
 public class AbilityAOE : MonoBehaviour
 {
 	private PlayerController player;
-	public SOClassAbilities abilityRef;
+	public SOAbilities abilityRef;
 	private EntityStats casterInfo;
 	private Vector2 casterPosition;
 
@@ -36,7 +36,7 @@ public class AbilityAOE : MonoBehaviour
 	}
 
 	//set data
-	public void Initilize(SOClassAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
+	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
 	{
 		this.abilityRef = abilityRef;
 		this.casterInfo = casterInfo;
@@ -160,8 +160,12 @@ public class AbilityAOE : MonoBehaviour
 	//split damage, called on duration timer end
 	private void SplitDamageBetweenCollidedTargets()
 	{
+		int damageToDeal = aoeDamage;
+
 		if (abilityRef.isBossAbility) //noop atm
 		{
+			damageToDeal = (int)(damageToDeal * 0.4f); //whilst MP not implamented set to 40% damage
+
 			///<Summery>
 			///adjust damage dealt to players further based on players in lobby, ensuring boss can still be beat with less then a full lobby
 			///4 players = aoeDamage * 1 | 3 players = aoeDamage * 0.75
@@ -169,7 +173,7 @@ public class AbilityAOE : MonoBehaviour
 			///</Summery>
 		}
 
-		int damageToDeal = aoeDamage / entityStatsList.Count; //split damage
+		damageToDeal = aoeDamage / entityStatsList.Count; //split damage
 
 		foreach (EntityStats entity in  entityStatsList)
 			ApplyDamageToCollidedEntities(entity, entity.GetComponent<Collider2D>(), damageToDeal);

@@ -389,7 +389,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 	//ABILITIES
 	//Add/remove abilities to/from learnt abilities Ui
-	private void AddNewUnlockedAbility(SOClassAbilities newAbility)
+	private void AddNewUnlockedAbility(SOAbilities newAbility)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
 		InventoryItemUi item = go.GetComponent<InventoryItemUi>();
@@ -411,14 +411,14 @@ public class PlayerInventoryUi : MonoBehaviour
 			}
 		}
 	}
-	public void SetAbilityData(InventoryItemUi inventoryItem, SOClassAbilities newAbility)
+	public void SetAbilityData(InventoryItemUi inventoryItem, SOAbilities newAbility)
 	{
 		inventoryItem.abilityBaseRef = newAbility;
 		Abilities ability = inventoryItem.AddComponent<Abilities>();
 		ability.abilityBaseRef = newAbility;
 		ability.Initilize();
 	}
-	private void OnAbilityRefund(SOClassAbilities ability)
+	private void OnAbilityRefund(SOAbilities ability)
 	{
 		foreach (GameObject abilitySlot in LearntAbilitySlots)
 		{

@@ -8,23 +8,26 @@ public class BossEntityBehaviour : EntityBehaviour
 {
 	[Header("Boss Abilities")]
 	[Header("Ability One")]
-	public SOClassAbilities abilityOne;
+	public SOBossAbilities abilityOne;
 	public bool canCastAbilityOne;
 	public float abilityTimerOneCounter;
 
 	[Header("Ability Two")]
-	public SOClassAbilities abilityTwo;
+	public SOBossAbilities abilityTwo;
 	public bool canCastAbilityTwo;
 	public float abilityTimerTwoCounter;
 
 	[Header("Ability Three")]
-	public SOClassAbilities abilityThree;
+	public SOBossAbilities abilityThree;
 	public bool canCastAbilityThree;
 	public float abilityTimerThreeCounter;
 
+	[Header("Mark Player Ability")]
+	private SOAbilities markPlayerAbility;
+
 	public static event Action<int> OnSpawnBossAdds;
 
-	public static event Action<SOClassAbilities, List<Vector2>, Vector2, float> OnBossAbilityBeginCasting;
+	public static event Action<SOBossAbilities, Vector2> OnBossAbilityBeginCasting;
 	public static event Action OnBossAbilityCast;
 
 	protected override void Update()
@@ -44,6 +47,7 @@ public class BossEntityBehaviour : EntityBehaviour
 		abilityOne = behaviour.abilityOne;
 		abilityTwo = behaviour.abilityTwo;
 		abilityThree = behaviour.abilityThree;
+		markPlayerAbility = behaviour.markPlayerAbility;
 	}
 
 	//build Boss Behaviour Tree
@@ -158,18 +162,24 @@ public class BossEntityBehaviour : EntityBehaviour
 	{
 		OnSpawnBossAdds?.Invoke(numToSpawn);
 	}
-	public void EventBossAbilityBeginCasting(SOClassAbilities ability, List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	public void EventBossAbilityBeginCasting(SOBossAbilities ability)
 	{
-		OnBossAbilityBeginCasting?.Invoke(ability, positionList, adjustPosition, radius);
+		BossEntityStats bossStats = (BossEntityStats)entityStats;
+		OnBossAbilityBeginCasting?.Invoke(ability, bossStats.roomCenterPiece.transform.position);
 	}
 
-	protected override void CastAbility(SOClassAbilities ability)
+	protected override void CastAbility(SOAbilities ability)
 	{
 		base.CastAbility(ability);
 		OnBossAbilityCast?.Invoke();
 	}
 
-	public void ForceCastSpecialBossAbilities(SOClassAbilities ability)
+	public void ForceCastMarkPlayerBossAbility()
+	{
+		CastAbility(markPlayerAbility);
+	}
+
+	public void ForceCastSpecialBossAbilities(SOAbilities ability)
 	{
 		CastAbility(ability);
 	}

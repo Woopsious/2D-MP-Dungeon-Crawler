@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: de9dd8c10c488fc49b6a6497cd40b046, type: 3}
+  m_Name: EyeIntimidate
+  m_EditorClassIdentifier: 
+  Name: Eye Tentacle Whip
+  Description: after marked by boss  effect wears off. eye boss does aoe attack ontop
+    of marked player. damage is split between all players inside Aoe.
+  abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  nonPlayerLevelRequirement: 0
+  isBossAbility: 1
+  abilityCastingTimer: 10
+  abilityCooldown: 30
+  isOffensiveAbility: 1
+  requiresTarget: 0
+  canOnlyTargetSelf: 0
+  hasStatusEffects: 0
+  statusEffects: []
+  isAOE: 1
+  isCircleAOE: 1
+  isDamageSplitBetweenHits: 1
+  hasAoeDuration: 0
+  aoeDuration: 0
+  circleAoeSize: 40
+  boxAoeSizeX: 10
+  boxAoeSizeY: 0
+  isProjectile: 0
+  projectileSprite: {fileID: 0}
+  projectileSpeed: 20
+  isDamagePercentageBased: 0
+  damageType: 0
+  damageValue: 100
+  damageValuePercentage: 0
+  isSpell: 1
+  manaCost: 35
+  minPercentCost: 25
+  hasParticleEffect: 0
+  particleColour: {r: 0, g: 0, b: 0, a: 0}
+  marksPlayer: 1
+  spawnsObstacles: 0
+  markedPlayerIsRandom: 1
+  chanceMarkedPlayerIsAggroTarget: 0.5
+  obstaclesRadius: 5
+  obstaclePositions: []

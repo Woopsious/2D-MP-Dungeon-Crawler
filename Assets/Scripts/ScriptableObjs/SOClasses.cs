@@ -41,7 +41,7 @@ public class SOClasses : ScriptableObject
 	}
 
 	public List<SOClassStatBonuses> statBonusLists = new List<SOClassStatBonuses>();
-	public List<SOClassAbilities> abilityLists = new List<SOClassAbilities>();
+	public List<SOAbilities> abilityLists = new List<SOAbilities>();
 
 	[Header("Trap detection")]
 	[Range(0.2f, 0.5f)]
@@ -98,6 +98,6 @@ public class ClassStatUnlocks
 [System.Serializable]
 public class ClassAbilityUnlocks
 {
-	public SOClassAbilities unlock;
+	public SOAbilities unlock;
 	public int LevelRequirement;
 }

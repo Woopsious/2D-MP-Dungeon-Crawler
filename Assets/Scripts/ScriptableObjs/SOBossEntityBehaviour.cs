@@ -6,10 +6,13 @@ using UnityEngine;
 public class SOBossEntityBehaviour : SOEntityBehaviour
 {
 	[Header("Boss Abilities")]
-	public SOClassAbilities abilityOne;
-	public SOClassAbilities abilityTwo;
-	public SOClassAbilities abilityThree;
+	public SOBossAbilities abilityOne;
+	public SOBossAbilities abilityTwo;
+	public SOBossAbilities abilityThree;
+
+	[Header("Boss Mark Player")]
+	public SOAbilities markPlayerAbility;
 
 	[Tooltip("optional for bosses with more unique abilities")]
-	public List<SOClassAbilities> specialBossAbilities = new List<SOClassAbilities>();
+	public List<SOAbilities> specialBossAbilities = new List<SOAbilities>();
 }

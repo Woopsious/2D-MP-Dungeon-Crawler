@@ -239,6 +239,7 @@ public class SpawnHandler : MonoBehaviour
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		bossEntity.statsRef = bossToSpawn;
+		bossEntity.transform.SetParent(null);
 		this.bossEntity = bossEntity;
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -288,6 +289,7 @@ public class SpawnHandler : MonoBehaviour
 		EntityStats entity = go.GetComponent<EntityStats>();
 		entity.statsRef = possibleEntityTypesToSpawn[num];
 		entity.GetComponent<EntityBehaviour>().behaviourRef = possibleEntityTypesToSpawn[num].entityBehaviour;
+		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -308,12 +310,12 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//SPAWNING OF BOSS ROOM OBSTACLES
-	private void SpawnBossDungeonObstacles(SOClassAbilities ability, List<Vector2> positionList, Vector2 adjustPosition, float radius)
+	private void SpawnBossDungeonObstacles(SOBossAbilities ability, Vector2 adjustPosition)
 	{
-		if (!isBossSpawner) return;
-		for (int i = 0; i < positionList.Count; i++)
+		if (!isBossSpawner || !ability.spawnsObstacles) return;
+		for (int i = 0; i < ability.obstaclePositions.Count; i++)
 		{
-			Vector2 spawnPosition = (positionList[i] * radius) + adjustPosition;
+			Vector2 spawnPosition = (ability.obstaclePositions[i] * ability.obstaclesRadius) + adjustPosition;
 			GameObject go = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
 			Obstacles bossRoomObstacle = go.GetComponent<Obstacles>();
 			bossRoomObstacle.InitilizeBossRoomObstacle(ability.abilityCastingTimer);

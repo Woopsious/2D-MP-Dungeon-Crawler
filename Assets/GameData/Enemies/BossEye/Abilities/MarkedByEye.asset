@@ -9,13 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ce25c27efdf3451478a26c53b61de76e, type: 3}
+  m_Script: {fileID: 11500000, guid: 86cee7f0631d79d41a4464e82a3a2231, type: 3}
   m_Name: MarkedByEye
   m_EditorClassIdentifier: 
   Name: Marked by Eye
   Description: mark a player
   abilitySprite: {fileID: 1967516060, guid: 76686699748622a48b566623ca98afc6, type: 3}
   nonPlayerLevelRequirement: 0
+  isBossAbility: 0
   abilityCastingTimer: 0
   abilityCooldown: 0
   isOffensiveAbility: 1
@@ -25,9 +26,13 @@ MonoBehaviour:
   statusEffects:
   - {fileID: 11400000, guid: 568ee534df8810e4aa29f85b90965e05, type: 2}
   isAOE: 0
-  aoeSize: 0
+  isCircleAOE: 0
+  isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
+  circleAoeSize: 0
+  boxAoeSizeX: 0
+  boxAoeSizeY: 0
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 0

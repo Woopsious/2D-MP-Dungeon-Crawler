@@ -10,7 +10,7 @@ public class Projectiles : MonoBehaviour
 
 	public SOTraps trapBaseRef;
 	public SOWeapons weaponBaseRef;
-	public SOClassAbilities abilityBaseRef;
+	public SOAbilities abilityBaseRef;
 	public EntityStats casterInfo;	//only set for abilities
 
 	private BoxCollider2D boxCollider;
@@ -78,7 +78,7 @@ public class Projectiles : MonoBehaviour
 	}
 
 	//set ability projectile data
-	public void Initilize(PlayerController player, SOClassAbilities abilityBaseRef, EntityStats casterInfo)
+	public void Initilize(PlayerController player, SOAbilities abilityBaseRef, EntityStats casterInfo)
 	{
 		this.player = player;
 		this.trapBaseRef = null;

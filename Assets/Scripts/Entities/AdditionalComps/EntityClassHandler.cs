@@ -10,12 +10,12 @@ public class EntityClassHandler : MonoBehaviour
 	public SOClasses currentEntityClass;
 
 	public List<SOClassStatBonuses> unlockedStatBoostList = new List<SOClassStatBonuses>();
-	public List<SOClassAbilities> unlockedAbilitiesList = new List<SOClassAbilities>();
+	public List<SOAbilities> unlockedAbilitiesList = new List<SOAbilities>();
 
 	public event Action<SOClassStatBonuses> OnStatUnlock;
-	public event Action<SOClassAbilities> OnAbilityUnlock;
+	public event Action<SOAbilities> OnAbilityUnlock;
 	public event Action<SOClassStatBonuses> OnStatRefund;
-	public event Action<SOClassAbilities> OnAbilityRefund;
+	public event Action<SOAbilities> OnAbilityRefund;
 
 	private void Awake()
 	{
@@ -63,7 +63,7 @@ public class EntityClassHandler : MonoBehaviour
 	}
 	private void ChooseEntityAbilities()
 	{
-		SOClassAbilities pickedAbility = PickOffensiveAbility();
+		SOAbilities pickedAbility = PickOffensiveAbility();
 		if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
 			entityStats.entityBehaviour.offensiveAbility = pickedAbility;
 
@@ -71,12 +71,12 @@ public class EntityClassHandler : MonoBehaviour
         if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
 			entityStats.entityBehaviour.healingAbility = pickedAbility;
 	}
-	private SOClassAbilities PickOffensiveAbility()
+	private SOAbilities PickOffensiveAbility()
 	{
-		List<SOClassAbilities> offensiveAbilities = new List<SOClassAbilities>();
-		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
+		foreach (SOAbilities ability in unlockedAbilitiesList)
 		{
-			if (ability.damageType != SOClassAbilities.DamageType.isHealing)
+			if (ability.damageType != SOAbilities.DamageType.isHealing)
 				offensiveAbilities.Add(ability);
 		}
 
@@ -84,12 +84,12 @@ public class EntityClassHandler : MonoBehaviour
 			return null;
 		else return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
 	}
-	private SOClassAbilities PickHealingAbility()
+	private SOAbilities PickHealingAbility()
 	{
-		List<SOClassAbilities> healingAbilities = new List<SOClassAbilities>();
-		foreach (SOClassAbilities ability in unlockedAbilitiesList)
+		List<SOAbilities> healingAbilities = new List<SOAbilities>();
+		foreach (SOAbilities ability in unlockedAbilitiesList)
 		{
-			if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+			if (ability.damageType == SOAbilities.DamageType.isHealing)
 				healingAbilities.Add(ability);
 		}
 
@@ -99,7 +99,7 @@ public class EntityClassHandler : MonoBehaviour
 	}
 
 	//duplicate ability check
-	private bool IsAbilityAlreadyEquipped(SOClassAbilities abilityToCheck)
+	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
 	{
 		if (abilityToCheck == entityStats.entityBehaviour.offensiveAbility) return true;
 		if (abilityToCheck == entityStats.entityBehaviour.healingAbility) return true;
@@ -126,7 +126,7 @@ public class EntityClassHandler : MonoBehaviour
 		unlockedStatBoostList.Add(statBoost);
 		OnStatUnlock?.Invoke(statBoost);
 	}
-	protected virtual void UnlockAbility(SOClassAbilities ability)
+	protected virtual void UnlockAbility(SOAbilities ability)
 	{
 		unlockedAbilitiesList.Add(ability);
 		OnAbilityUnlock?.Invoke(ability);
@@ -136,7 +136,7 @@ public class EntityClassHandler : MonoBehaviour
 		unlockedStatBoostList.Remove(statBoost);
 		OnStatRefund?.Invoke(statBoost);
 	}
-	protected virtual void RefundAbility(SOClassAbilities ability)
+	protected virtual void RefundAbility(SOAbilities ability)
 	{
 		unlockedAbilitiesList.Remove(ability);
 		OnAbilityRefund?.Invoke(ability);

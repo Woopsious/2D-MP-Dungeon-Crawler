@@ -25,7 +25,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	[HideInInspector] public Transform parentAfterDrag;
 
 	[Header("Item Base Ref")]
-	public SOClassAbilities abilityBaseRef;
+	public SOAbilities abilityBaseRef;
 	public SOWeapons weaponBaseRef;
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;

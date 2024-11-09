@@ -40,16 +40,18 @@ public class EntityBehaviour : Tree
 	public float globalAttackTimer;
 
 	[Header("Abilities")]
-	public SOClassAbilities abilityBeingCasted;
+	public SOAbilities abilityBeingCasted;
 	public float abilityCastingTimer;
+	private bool overridePlayerTarget;
+	private PlayerController overriddenPlayerTarget;
 
 	[Header("Healing Ability Cooldown")]
-	public SOClassAbilities healingAbility;
+	public SOAbilities healingAbility;
 	public bool canCastHealingAbility;
 	public float healingAbilityTimer;
 
 	[Header("Offensive Ability Cooldown")]
-	public SOClassAbilities offensiveAbility;
+	public SOAbilities offensiveAbility;
 	public bool canCastOffensiveAbility;
 	public float offensiveAbilityTimer;
 
@@ -413,6 +415,18 @@ public class EntityBehaviour : Tree
 		}
 	}
 
+	//override current PlayerTarget, forcing abilities to be casted at this player instead
+	public void OverrideCurrentPlayerTarget(PlayerController player)
+	{
+		overriddenPlayerTarget = player;
+		overridePlayerTarget = true;
+	}
+	public void ResetOverridenPlayerTarget()
+	{
+		overridePlayerTarget = false;
+		overriddenPlayerTarget = null;
+	}
+
 	//ABILITIES
 	//incase of errors.
 	protected void CancelAbility()
@@ -432,7 +446,7 @@ public class EntityBehaviour : Tree
 				CastAbility(abilityBeingCasted);
 		}
 	}
-	protected virtual void CastAbility(SOClassAbilities ability)
+	protected virtual void CastAbility(SOAbilities ability)
 	{
 		if (ability.isAOE)
 			CastAoeAbility(ability);
@@ -456,9 +470,9 @@ public class EntityBehaviour : Tree
 	}
 
 	//types of casting
-	protected void CastEffect(SOClassAbilities ability)
+	protected void CastEffect(SOAbilities ability)
 	{
-		if (ability.damageType == SOClassAbilities.DamageType.isHealing)
+		if (ability.damageType == SOAbilities.DamageType.isHealing)
 		{
 			//eventually add support to heal friendlies
 			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
@@ -466,8 +480,16 @@ public class EntityBehaviour : Tree
 
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), ability.damageValue
-				* entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
+			if (overridePlayerTarget)
+			{
+				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), 
+					ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
+			}
+			else
+			{
+				playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), ability.damageValue
+					* entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
+			}
 		}
 
 		if (ability.hasStatusEffects)    //apply effects (if has any) based on what type it is.
@@ -476,43 +498,55 @@ public class EntityBehaviour : Tree
 			if (ability.canOnlyTargetSelf)
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
 			else if (ability.isOffensiveAbility && playerTarget != null)
-				playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			{
+				if (overridePlayerTarget)
+					overriddenPlayerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+				else
+					playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+			}
 			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
 		}
 
 		OnSuccessfulCast(ability);
 	}
-	protected void CastDirectionalAbility(SOClassAbilities ability)
+	protected void CastDirectionalAbility(SOAbilities ability)
 	{
 		Projectiles projectile = DungeonHandler.GetProjectile();
 		if (projectile == null)
 		{
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
+			projectile.transform.SetParent(null);
 		}
 
-		projectile.transform.SetParent(null);
-		projectile.SetPositionAndAttackDirection(transform.position, playerTarget.transform.position);
+		if (overridePlayerTarget)
+			projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
+		else
+			projectile.SetPositionAndAttackDirection(transform.position, playerTarget.transform.position);
+
 		projectile.Initilize(null, ability, entityStats);
 		OnSuccessfulCast(ability);
 	}
-	protected void CastAoeAbility(SOClassAbilities ability)
+	protected void CastAoeAbility(SOAbilities ability)
 	{
 		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
 		if (abilityAOE == null)
 		{
 			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
 			abilityAOE = go.GetComponent<AbilityAOE>();
+			abilityAOE.transform.SetParent(null);
 		}
 
-		abilityAOE.transform.SetParent(null);
-		abilityAOE.Initilize(ability, entityStats, playerTarget.transform.position);
-		abilityAOE.AddPlayerRef(null);
+		if (overridePlayerTarget)
+			abilityAOE.Initilize(ability, entityStats, overriddenPlayerTarget.transform.position);
+		else
+			abilityAOE.Initilize(ability, entityStats, playerTarget.transform.position);
 
+		abilityAOE.AddPlayerRef(null);
 		OnSuccessfulCast(ability);
 	}
-	protected void OnSuccessfulCast(SOClassAbilities ability)
+	protected void OnSuccessfulCast(SOAbilities ability)
 	{
 		if (ability.isSpell)
 		{
@@ -520,6 +554,7 @@ public class EntityBehaviour : Tree
 			entityStats.DecreaseMana(totalManaCost, false);
 		}
 
+		ResetOverridenPlayerTarget();
 		abilityBeingCasted = null;
 	}
 
