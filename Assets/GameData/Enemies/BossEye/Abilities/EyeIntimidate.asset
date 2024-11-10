@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de9dd8c10c488fc49b6a6497cd40b046, type: 3}
   m_Name: EyeIntimidate
   m_EditorClassIdentifier: 
-  Name: Eye Tentacle Whip
+  Name: Eye Intimidate
   Description: after marked by boss  effect wears off. eye boss does aoe attack ontop
     of marked player. damage is split between all players inside Aoe.
-  abilitySprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 0
   isBossAbility: 1
   abilityCastingTimer: 10

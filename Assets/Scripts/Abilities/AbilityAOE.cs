@@ -6,6 +6,7 @@ using UnityEngine;
 public class AbilityAOE : MonoBehaviour
 {
 	private PlayerController player;
+	public SOBossAbilities abilityBossRef;
 	public SOAbilities abilityRef;
 	private EntityStats casterInfo;
 	private Vector2 casterPosition;
@@ -38,7 +39,10 @@ public class AbilityAOE : MonoBehaviour
 	//set data
 	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
 	{
+				if (abilityRef is SOBossAbilities abilityBossRef)
+			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
+
 		this.casterInfo = casterInfo;
 		casterPosition = casterInfo.transform.position;
 		gameObject.name = abilityRef.Name + "Aoe";
@@ -173,7 +177,8 @@ public class AbilityAOE : MonoBehaviour
 			///</Summery>
 		}
 
-		damageToDeal = aoeDamage / entityStatsList.Count; //split damage
+		if (entityStatsList.Count > 1)
+			damageToDeal = aoeDamage / entityStatsList.Count; //split damage
 
 		foreach (EntityStats entity in  entityStatsList)
 			ApplyDamageToCollidedEntities(entity, entity.GetComponent<Collider2D>(), damageToDeal);

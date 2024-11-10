@@ -91,6 +91,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckPlayerInAttackRange.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckPlayerInFOV.cs" />
+    <Compile Include="Assets\Scripts\CustomMeshes\ConeMesh.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOStatusEffects.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />

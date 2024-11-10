@@ -13,6 +13,6 @@ public class SOBossEntityBehaviour : SOEntityBehaviour
 	[Header("Boss Mark Player")]
 	public SOAbilities markPlayerAbility;
 
-	[Tooltip("optional for bosses with more unique abilities")]
+	[Tooltip("optional for bosses with transition abilities")]
 	public List<SOAbilities> specialBossAbilities = new List<SOAbilities>();
 }
