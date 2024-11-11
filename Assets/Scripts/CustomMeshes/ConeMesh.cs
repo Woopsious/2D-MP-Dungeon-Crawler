@@ -9,6 +9,13 @@ public class ConeMesh : MonoBehaviour
 	public float angle;
 	public float radius;
 
+	CanvasRenderer canvasRenderer;
+
+	private void Awake()
+	{
+		canvasRenderer = GetComponent<CanvasRenderer>();
+	}
+
 	public void CreateConeMesh(float angle, float radius)
 	{
 		resolution = (int)(angle / 6); //scale resolutin with cone size
@@ -18,7 +25,8 @@ public class ConeMesh : MonoBehaviour
 		float adjustedAngle = angle + angleStep;
 		this.angle = adjustedAngle;
 
-		GetComponent<MeshFilter>().mesh = GenerateConeMesh();
+		//.SetMaterial(new, 0);
+		canvasRenderer.SetMesh(GenerateConeMesh());
 	}
 
 	private Mesh GenerateConeMesh()

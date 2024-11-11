@@ -100,7 +100,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void Update()
 	{
-		UpdateQueuedAbilityUiPosition();
+		UpdateAbilityIndicators();
 		UpdateSelectedTargetTrackerUi();
 	}
 	private void OnEnable()
@@ -337,8 +337,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	public void PlayerQueueAbility(Abilities ability)
 	{
 		queuedAbility = ability;
-
-		//reset ui positions
 		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
 		queuedAbilityUi.SetActive(true);
 		queuedAbilityTextInfo.gameObject.SetActive(true);
@@ -414,7 +412,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//updated ui position of indicators
-	private void UpdateQueuedAbilityUiPosition()
+	private void UpdateAbilityIndicators()
 	{
 		if (!queuedAbilityTextInfo.gameObject.activeInHierarchy) return;
 			
@@ -428,8 +426,6 @@ public class PlayerHotbarUi : MonoBehaviour
 			UpdateConeIndicator();
 		else if (indicatorType == AoeIndicatorType.isBoxAoe)
 			UpdateBoxIndicator();
-
-		//13.5 W/H
 	}
 	private void UpdateCircleIndicator()
 	{
@@ -442,9 +438,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		Vector3 rotation = Input.mousePosition - playerScreenPosition;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg - (coneMeshIndicator.angle / 2);
-		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
+		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz));
 
-		//adjustment ratio * 4 (not pixel perfect)
 		float adjustPos = (float)(coneIndicatorUi.transform.localScale.y / 2);
 		coneIndicatorUi.transform.localPosition = new Vector2(0, adjustPos);
 	}
@@ -456,7 +451,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
 
-		//adjustment ratio * 4 (not pixel perfect)
 		float adjustPos = (float)(boxIndicatorUi.transform.localScale.y / 2);
 		boxIndicatorUi.transform.localPosition = new Vector2(0, adjustPos);
 	}
