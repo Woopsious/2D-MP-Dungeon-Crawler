@@ -27,11 +27,13 @@ MonoBehaviour:
   statusEffects:
   - {fileID: 11400000, guid: c901b20874bc93d408a4cde899b3a70f, type: 2}
   isAOE: 1
-  isCircleAOE: 1
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 1
   aoeDuration: 10
-  circleAoeSize: 40
+  circleAoeRadius: 0
+  angle: 0
+  coneAoeRadius: 0
   boxAoeSizeX: 0
   boxAoeSizeY: 0
   isProjectile: 0

@@ -39,7 +39,7 @@ public class AbilityAOE : MonoBehaviour
 	//set data
 	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
 	{
-				if (abilityRef is SOBossAbilities abilityBossRef)
+		if (abilityRef is SOBossAbilities abilityBossRef)
 			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
 
@@ -50,7 +50,7 @@ public class AbilityAOE : MonoBehaviour
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
 		isPlayerAoe = casterInfo.IsPlayerEntity();
 
-		if (abilityRef.isCircleAOE)
+		if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
 		{
 			SetCircleColliderPosition(targetPosition);
 			SetupCircleCollider();
@@ -94,7 +94,7 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void SetupCircleCollider()
 	{
-		aoeColliderIndicator.transform.localScale = new Vector2(abilityRef.circleAoeSize, abilityRef.circleAoeSize);
+		aoeColliderIndicator.transform.localScale = new Vector2(abilityRef.circleAoeRadius * 2, abilityRef.circleAoeRadius * 2);
 
 		circleCollider = aoeColliderIndicator.AddComponent(typeof(CircleCollider2D)) as CircleCollider2D;
 		circleCollider.isTrigger = true;
@@ -110,7 +110,7 @@ public class AbilityAOE : MonoBehaviour
 		transform.SetPositionAndRotation(casterInfo.transform.position, Quaternion.Euler(0, 0, rotz - 90));
 
 		//adjustment ratio / 13.33333333
-		float adjustPos = (float)(abilityRef.boxAoeSizeY / 13.333333);
+		float adjustPos = (float)(abilityRef.boxAoeSizeY / 13.33333333);
 		aoeColliderIndicator.transform.localPosition = new Vector2(0, adjustPos);
 	}
 	private void SetupBoxCollider()
@@ -151,7 +151,7 @@ public class AbilityAOE : MonoBehaviour
 	//applying damage to collided things + status effects if it was an entity
 	private void ApplyDamageToCollidedEntities(EntityStats entity, Collider2D other, int damageToDeal)
 	{
-		if (!abilityRef.isCircleAOE)
+		if (abilityRef.aoeType != SOAbilities.AoeType.isCircleAoe)
 			if (!CollidedTargetInLineOfSight(other.gameObject)) return;
 
 		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, damageToDeal, (IDamagable.DamageType)damageType, 0, 
@@ -209,10 +209,10 @@ public class AbilityAOE : MonoBehaviour
 
 		if (abilityDurationTimer <= 0)
 		{
-			if (abilityRef.isDamageSplitBetweenHits)
-				SplitDamageBetweenCollidedTargets();
+			//if (abilityRef.isDamageSplitBetweenHits)
+			//	SplitDamageBetweenCollidedTargets();
 
-			DungeonHandler.AoeAbilitiesCleanUp(this);
+			//DungeonHandler.AoeAbilitiesCleanUp(this);
 		}
 	}
 }

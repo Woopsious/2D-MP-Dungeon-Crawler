@@ -25,11 +25,13 @@ MonoBehaviour:
   hasStatusEffects: 0
   statusEffects: []
   isAOE: 1
-  isCircleAOE: 1
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeSize: 30
+  circleAoeRadius: 25
+  angle: 0
+  coneAoeRadius: 0
   boxAoeSizeX: 0
   boxAoeSizeY: 0
   isProjectile: 0

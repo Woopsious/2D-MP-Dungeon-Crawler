@@ -31,16 +31,25 @@ public class SOAbilities : SOClassUnlocks
 	[Header("AoE Settings")]
 	[Tooltip("AOE's cannot also be a projectile")]
 	public bool isAOE;
-	public bool isCircleAOE;
+	public AoeType aoeType;
+	public enum AoeType
+	{
+		isCircleAoe, isConeAoe, isBoxAoe
+	}
 	public bool isDamageSplitBetweenHits;
 	public bool hasAoeDuration;
 	public float aoeDuration;
 
-	[Header("Circle Size")]
-	[Range(20, 60)]
-	public float circleAoeSize;
+	[Header("Circle Aoe Settings")]
+	[Range(20, 50)]
+	public float circleAoeRadius;
 
-	[Header("Box Size")]
+	[Header("Cone Aoe Settings")]
+	[Range(30, 150)]
+	public float angle;
+	public float coneAoeRadius;
+
+	[Header("Box Aoe Settings")]
 	[Range(10, 50)]
 	public float boxAoeSizeX;
 	public float boxAoeSizeY;

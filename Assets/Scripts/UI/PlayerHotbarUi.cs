@@ -25,12 +25,30 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableOne;
 	public Consumables equippedConsumableTwo;
 
-	[Header("Hotbar Abilities")]
+	[Header("Ability Indicators")]
 	public GameObject queuedAbilityUi;
 	public GameObject queuedAbilityIndicatorUi;
-	public Image queuedAbilityAoeImage;
 	public TMP_Text queuedAbilityTextInfo;
 	public Abilities queuedAbility;
+
+	private AoeIndicatorType indicatorType;
+	private enum AoeIndicatorType
+	{
+		isDirectional, isCircleAoe, isConeAoe, isBoxAoe
+	}
+	[Header("Circle Indicator")]
+	public GameObject circleIndicatorUi;
+	private Image circleIndicatorImage;
+
+	[Header("Cone Indicator")]
+	public GameObject coneIndicatorUi;
+	private ConeMesh coneMeshIndicator;
+
+	[Header("Box Indicator")]
+	public GameObject boxIndicatorUi;
+	private Image boxIndicatorImage;
+
+	[Header("Hotbar Abilities")]
 	public List<GameObject> AbilitySlots = new List<GameObject>();
 	public GameObject abilitySlotOne;
 	public GameObject abilitySlotTwo;
@@ -93,6 +111,10 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerEventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
 		PlayerEventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
 
+		PlayerController.OnPlayerUseAbility += PlayerQueueAbility;
+		PlayerController.OnPlayerCastAbility += PlayerCastAbility;
+		PlayerController.OnPlayerCancelAbility += PlayerCancelAbility;
+
 		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
@@ -105,6 +127,10 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerEventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
 		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
 		PlayerEventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
+
+		PlayerController.OnPlayerUseAbility += PlayerQueueAbility;
+		PlayerController.OnPlayerCastAbility += PlayerCastAbility;
+		PlayerController.OnPlayerCancelAbility += PlayerCancelAbility;
 
 		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
@@ -119,10 +145,17 @@ public class PlayerHotbarUi : MonoBehaviour
 		foreach (GameObject slot in AbilitySlots)
 			slot.GetComponent<InventorySlotDataUi>().SetSlotIndex();
 
+		circleIndicatorImage = circleIndicatorUi.GetComponent<Image>();
+		coneMeshIndicator = coneIndicatorUi.GetComponent<ConeMesh>();
+		boxIndicatorImage = boxIndicatorUi.GetComponent<Image>();
+
 		selectedTargetUi.SetActive(false);
 		queuedAbilityUi.SetActive(false);
 		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityIndicatorUi.SetActive(false);
+		circleIndicatorUi.SetActive(false);
+		coneIndicatorUi.SetActive(false);
+		boxIndicatorUi.SetActive(false);
 
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
@@ -301,14 +334,12 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	//PLAYER ABILITIES UI
 	//events
-	public void AddNewQueuedAbility(Abilities ability)
+	public void PlayerQueueAbility(Abilities ability)
 	{
 		queuedAbility = ability;
 
 		//reset ui positions
-		queuedAbilityIndicatorUi.transform.localPosition = new Vector3(0, 0, 0);
-		queuedAbilityAoeImage.transform.localPosition = new Vector3(0, 0, 0);
-
+		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
 		queuedAbilityUi.SetActive(true);
 		queuedAbilityTextInfo.gameObject.SetActive(true);
 
@@ -320,8 +351,13 @@ public class PlayerHotbarUi : MonoBehaviour
 		{
 			queuedAbilityIndicatorUi.SetActive(true);
 			queuedAbilityTextInfo.text = "L Click Place\nR Click to Cancel";
-			queuedAbilityAoeImage.sprite = ability.abilityBaseRef.abilitySprite;
-			SetSizeOfQueuedAbilityAoeUi(ability.abilityBaseRef);
+
+			if (ability.abilityBaseRef.aoeType == SOAbilities.AoeType.isCircleAoe)
+				SetUpCircleIndicator(ability.abilityBaseRef);
+			else if (ability.abilityBaseRef.aoeType == SOAbilities.AoeType.isConeAoe)
+				SetUpConeIndicator(ability.abilityBaseRef);
+			else if (ability.abilityBaseRef.aoeType == SOAbilities.AoeType.isBoxAoe)
+				SetUpBoxIndicator(ability.abilityBaseRef);
 		}
 		else
 		{
@@ -331,53 +367,98 @@ public class PlayerHotbarUi : MonoBehaviour
 				queuedAbilityTextInfo.text = "L Click on Friendly\nR Click to Cancel";
 		}
 	}
-	public void OnCastQueuedAbility()
-	{
-		queuedAbilityTextInfo.gameObject.SetActive(false);
-		queuedAbilityUi.SetActive(false);
-		queuedAbility = null;
-	}
-	public void OnCancelQueuedAbility()
+	public void PlayerCastAbility()
 	{
 		queuedAbilityUi.SetActive(false);
 		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityIndicatorUi.SetActive(false);
+		circleIndicatorUi.SetActive(false);
+		coneIndicatorUi.SetActive(false);
+		boxIndicatorUi.SetActive(false);
+		queuedAbility = null;
+	}
+	public void PlayerCancelAbility()
+	{
+		queuedAbilityUi.SetActive(false);
+		queuedAbilityTextInfo.gameObject.SetActive(false);
+		queuedAbilityIndicatorUi.SetActive(false);
+		circleIndicatorUi.SetActive(false);
+		coneIndicatorUi.SetActive(false);
+		boxIndicatorUi.SetActive(false);
 		queuedAbility = null;
 	}
 
-	private void SetSizeOfQueuedAbilityAoeUi(SOAbilities abilityRef)
+	private void SetUpCircleIndicator(SOAbilities abilityRef)
 	{
-		Vector3 scale;
-		if (abilityRef.isCircleAOE)
-			scale = new(abilityRef.circleAoeSize / 1.5f, abilityRef.circleAoeSize / 1.5f, 0);
-		else
-			scale = new(abilityRef.boxAoeSizeX / 1.5f, abilityRef.boxAoeSizeY / 1.5f, 0);
-		queuedAbilityAoeImage.transform.localScale = scale;
+		indicatorType = AoeIndicatorType.isCircleAoe;
+		circleIndicatorImage.sprite = abilityRef.abilitySprite;
+
+		Vector3 scale = new(abilityRef.circleAoeRadius * 18, abilityRef.circleAoeRadius * 18, 0);
+		circleIndicatorUi.transform.localScale = scale;
+		circleIndicatorUi.SetActive(true);
+	}
+	private void SetUpConeIndicator(SOAbilities abilityRef)
+	{
+		indicatorType = AoeIndicatorType.isConeAoe;
+		coneMeshIndicator.CreateConeMesh(abilityRef.angle, abilityRef.coneAoeRadius * 9);
+		coneIndicatorUi.SetActive(true);
+	}
+	private void SetUpBoxIndicator(SOAbilities abilityRef)
+	{
+		indicatorType = AoeIndicatorType.isBoxAoe;
+		boxIndicatorImage.sprite = abilityRef.abilitySprite;
+
+		Vector3 scale = new(abilityRef.boxAoeSizeX * 9, abilityRef.boxAoeSizeY * 9, 0);
+		boxIndicatorUi.transform.localScale = scale;
+		boxIndicatorUi.SetActive(true);
 	}
 
 	//updated ui position of indicators
 	private void UpdateQueuedAbilityUiPosition()
 	{
-		if (queuedAbilityTextInfo.gameObject.activeInHierarchy)
-			queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 60);
+		if (!queuedAbilityTextInfo.gameObject.activeInHierarchy) return;
+			
+		queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 60);
 
-		if (queuedAbilityUi.activeInHierarchy)
-		{
-			if (queuedAbility != null && queuedAbility.abilityBaseRef.isCircleAOE)
-				queuedAbilityUi.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-			else
-			{
-				Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
+		if (!queuedAbilityIndicatorUi.gameObject.activeInHierarchy) return;
 
-				Vector3 rotation = Input.mousePosition - playerScreenPosition;
-				float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-				queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
+		if (indicatorType == AoeIndicatorType.isCircleAoe)
+			UpdateCircleIndicator();
+		else if (indicatorType == AoeIndicatorType.isConeAoe)
+			UpdateConeIndicator();
+		else if (indicatorType == AoeIndicatorType.isBoxAoe)
+			UpdateBoxIndicator();
 
-				//adjustment ratio x 4 (not pixel perfect)
-				float adjustPos = (float)(queuedAbility.abilityBaseRef.boxAoeSizeY * 4);
-				queuedAbilityAoeImage.transform.localPosition = new Vector2(0, adjustPos);
-			}
-		}
+		//13.5 W/H
+	}
+	private void UpdateCircleIndicator()
+	{
+		Vector2 movePos = Input.mousePosition;
+		queuedAbilityIndicatorUi.transform.position = movePos;
+	}
+	private void UpdateConeIndicator()
+	{
+		Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
+
+		Vector3 rotation = Input.mousePosition - playerScreenPosition;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg - (coneMeshIndicator.angle / 2);
+		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
+
+		//adjustment ratio * 4 (not pixel perfect)
+		float adjustPos = (float)(coneIndicatorUi.transform.localScale.y / 2);
+		coneIndicatorUi.transform.localPosition = new Vector2(0, adjustPos);
+	}
+	private void UpdateBoxIndicator()
+	{
+		Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
+
+		Vector3 rotation = Input.mousePosition - playerScreenPosition;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));
+
+		//adjustment ratio * 4 (not pixel perfect)
+		float adjustPos = (float)(boxIndicatorUi.transform.localScale.y / 2);
+		boxIndicatorUi.transform.localPosition = new Vector2(0, adjustPos);
 	}
 
 	//SELECTED TARGET UI

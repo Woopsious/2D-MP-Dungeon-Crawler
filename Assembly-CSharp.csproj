@@ -75,6 +75,7 @@
     <Compile Include="Assets\Scripts\DungeonItems\SpawnHandler.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\Obstacles.cs" />
+    <Compile Include="Assets\Scripts\Abilities\AbilityIndicators.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskInvestigate.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Tree.cs" />
