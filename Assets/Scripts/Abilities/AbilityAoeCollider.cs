@@ -16,6 +16,6 @@ public class AbilityAoeCollider : MonoBehaviour
 	{
 		if (!abilityAOE.IsCollidedObjEnemy(other)) return;
 
-		abilityAOE.OnEntityEnter2D(other.GetComponent<EntityStats>(), other);
+		abilityAOE.OnEntityEnter2D(other.GetComponent<EntityStats>());
 	}
 }
