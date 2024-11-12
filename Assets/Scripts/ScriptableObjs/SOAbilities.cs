@@ -47,11 +47,14 @@ public class SOAbilities : SOClassUnlocks
 	[Header("Cone Aoe Settings")]
 	[Range(30, 150)]
 	public float angle;
+	[Range(20, 250)]
 	public float coneAoeRadius;
 
 	[Header("Box Aoe Settings")]
 	[Range(10, 50)]
 	public float boxAoeSizeX;
+	[Range(20, 250)]
+
 	public float boxAoeSizeY;
 
 	[Header("Projectile Settings")]

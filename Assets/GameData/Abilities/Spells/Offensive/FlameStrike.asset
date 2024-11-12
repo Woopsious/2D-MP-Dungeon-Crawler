@@ -31,7 +31,7 @@ MonoBehaviour:
   aoeDuration: 0
   circleAoeRadius: 25
   angle: 140
-  coneAoeRadius: 10
+  coneAoeRadius: 20
   boxAoeSizeX: 10
   boxAoeSizeY: 0
   isProjectile: 0

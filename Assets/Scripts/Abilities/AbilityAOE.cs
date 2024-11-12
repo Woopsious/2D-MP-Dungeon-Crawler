@@ -20,6 +20,7 @@ public class AbilityAOE : MonoBehaviour
 	public float abilityDurationTimer;
 	private CircleCollider2D circleCollider;
 	private BoxCollider2D boxCollider;
+	private bool aoeLingers;
 	private bool isPlayerAoe;
 	public int aoeDamage;
 	private DamageType damageType;
@@ -50,22 +51,30 @@ public class AbilityAOE : MonoBehaviour
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
 		isPlayerAoe = casterInfo.IsPlayerEntity();
 
-		if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
-		{
-			SetCircleColliderPosition(targetPosition);
-			SetupCircleCollider();
-		}
-		else
+		if (abilityRef.aoeType == SOAbilities.AoeType.isBoxAoe)
 		{
 			SetBoxColliderDirection(targetPosition);
 			SetupBoxCollider();
 		}
+		else
+		{
+			if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
+				SetCircleColliderPosition(targetPosition);
+			else
+				SetCircleColliderPosition(casterPosition);
+
+			SetupCircleCollider();
+		}
 
 		SetDamage();
 
+		aoeLingers = true;
 		abilityDurationTimer = abilityRef.aoeDuration;
 		if (abilityRef.aoeDuration == 0)
+		{
+			aoeLingers = false;
 			abilityDurationTimer = 0.1f;
+		}
 
 		gameObject.SetActive(true);
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
@@ -87,6 +96,12 @@ public class AbilityAOE : MonoBehaviour
 		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
 	}
 
+	//optional, helps with applying damage only to enemies
+	public void AddPlayerRef(PlayerController player)
+	{
+		this.player = player;
+	}
+
 	//set up colliders + transforms
 	private void SetCircleColliderPosition(Vector2 targetPosition)
 	{
@@ -94,7 +109,10 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void SetupCircleCollider()
 	{
-		aoeColliderIndicator.transform.localScale = new Vector2(abilityRef.circleAoeRadius * 2, abilityRef.circleAoeRadius * 2);
+		if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
+			aoeColliderIndicator.transform.localScale = new Vector2(abilityRef.circleAoeRadius * 2, abilityRef.circleAoeRadius * 2);
+		else
+			aoeColliderIndicator.transform.localScale = new Vector2(abilityRef.coneAoeRadius * 2, abilityRef.coneAoeRadius * 2);
 
 		circleCollider = aoeColliderIndicator.AddComponent(typeof(CircleCollider2D)) as CircleCollider2D;
 		circleCollider.isTrigger = true;
@@ -125,20 +143,16 @@ public class AbilityAOE : MonoBehaviour
 		boxCollider.offset = new Vector2(0, 0);
 	}
 
-	//optional, helps with applying damage only to enemies
-	public void AddPlayerRef(PlayerController player)
-	{
-		this.player = player;
-	}
-
-	public void OnEntityEnter2D(EntityStats entity, Collider2D other)
+	//OnTriggerEnter2D call
+	public void OnEntityEnter2D(EntityStats entity)
 	{
 		if (entity == null) return;
 
-		if (abilityRef.isDamageSplitBetweenHits)
-			AddCollidedEntitiesToList(entity);
+		//allows aoes that linger to still apply damage to new enemies (duration set to 0.1f for non lingering aoes)
+		if (aoeLingers)
+			ApplyDamageToCollidedEntities(entity, aoeDamage);
 		else
-			ApplyDamageToCollidedEntities(entity, other, aoeDamage);
+			AddCollidedEntitiesToList(entity);
 	}
 
 	//add collided entity to list. to later apply damage to them.
@@ -148,21 +162,33 @@ public class AbilityAOE : MonoBehaviour
 		entityStatsList.Add(entity);
 	}
 
-	//applying damage to collided things + status effects if it was an entity
-	private void ApplyDamageToCollidedEntities(EntityStats entity, Collider2D other, int damageToDeal)
+	//timer for aoe clean up + apply damage to entities in list
+	private void AbilityDurationTimer()
 	{
-		if (abilityRef.aoeType != SOAbilities.AoeType.isCircleAoe)
-			if (!CollidedTargetInLineOfSight(other.gameObject)) return;
+		abilityDurationTimer -= Time.deltaTime;
 
-		other.GetComponent<Damageable>().OnHitFromDamageSource(player, other, damageToDeal, (IDamagable.DamageType)damageType, 0, 
-			abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+		if (abilityDurationTimer <= 0)
+		{
+			if (!aoeLingers)
+			{
+				if (abilityRef.isDamageSplitBetweenHits)
+					SplitDamageBetweenCollidedEntities();
+				else
+					DamageAllCollidedEntities();
+			}
 
-		if (!abilityRef.hasStatusEffects) return;
-		entity.ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
+			//DungeonHandler.AoeAbilitiesCleanUp(this);
+		}
 	}
 
-	//split damage, called on duration timer end
-	private void SplitDamageBetweenCollidedTargets()
+	//damage all entites in list
+	private void DamageAllCollidedEntities()
+	{
+		foreach (EntityStats entity in entityStatsList)
+			ApplyDamageToCollidedEntities(entity, aoeDamage);
+	}
+	//split damage
+	private void SplitDamageBetweenCollidedEntities()
 	{
 		int damageToDeal = aoeDamage;
 
@@ -180,8 +206,21 @@ public class AbilityAOE : MonoBehaviour
 		if (entityStatsList.Count > 1)
 			damageToDeal = aoeDamage / entityStatsList.Count; //split damage
 
-		foreach (EntityStats entity in  entityStatsList)
-			ApplyDamageToCollidedEntities(entity, entity.GetComponent<Collider2D>(), damageToDeal);
+		foreach (EntityStats entity in entityStatsList)
+			ApplyDamageToCollidedEntities(entity, damageToDeal);
+	}
+
+	//apply damage + status effects to collided entities
+	private void ApplyDamageToCollidedEntities(EntityStats entity, float damageToDeal)
+	{
+		if (abilityRef.aoeType != SOAbilities.AoeType.isCircleAoe)
+			if (!CollidedTargetInLineOfSight(entity.gameObject)) return;
+
+		entity.GetComponent<Damageable>().OnHitFromDamageSource(player, entity.GetComponent<Collider2D>(), damageToDeal,
+			(IDamagable.DamageType)damageType, 0, abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+
+		if (!abilityRef.hasStatusEffects) return;
+		entity.ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
 	}
 
 	//checks
@@ -200,19 +239,5 @@ public class AbilityAOE : MonoBehaviour
 			return true;
 		else
 			return false;
-	}
-
-	//timer
-	private void AbilityDurationTimer()
-	{
-		abilityDurationTimer -= Time.deltaTime;
-
-		if (abilityDurationTimer <= 0)
-		{
-			//if (abilityRef.isDamageSplitBetweenHits)
-			//	SplitDamageBetweenCollidedTargets();
-
-			//DungeonHandler.AoeAbilitiesCleanUp(this);
-		}
 	}
 }

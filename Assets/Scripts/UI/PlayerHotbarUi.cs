@@ -26,6 +26,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Consumables equippedConsumableTwo;
 
 	[Header("Ability Indicators")]
+	private Vector3 playerScreenPosition;
 	public GameObject queuedAbilityUi;
 	public GameObject queuedAbilityIndicatorUi;
 	public TMP_Text queuedAbilityTextInfo;
@@ -156,6 +157,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		circleIndicatorUi.SetActive(false);
 		coneIndicatorUi.SetActive(false);
 		boxIndicatorUi.SetActive(false);
+		playerScreenPosition = new Vector3(Screen.width / 2, Screen.height / 2, 0);
 
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
@@ -418,7 +420,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			
 		queuedAbilityTextInfo.transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y - 60);
 
-		if (!queuedAbilityIndicatorUi.gameObject.activeInHierarchy) return;
+		if (!queuedAbilityIndicatorUi.activeInHierarchy) return;
 
 		if (indicatorType == AoeIndicatorType.isCircleAoe)
 			UpdateCircleIndicator();
@@ -434,8 +436,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void UpdateConeIndicator()
 	{
-		Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
-
 		Vector3 rotation = Input.mousePosition - playerScreenPosition;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg - (coneMeshIndicator.angle / 2);
 		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz));
@@ -445,8 +445,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void UpdateBoxIndicator()
 	{
-		Vector3 playerScreenPosition = Camera.main.WorldToScreenPoint(PlayerInfoUi.playerInstance.transform.position);
-
 		Vector3 rotation = Input.mousePosition - playerScreenPosition;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(playerScreenPosition, Quaternion.Euler(0, 0, rotz - 90));

@@ -22367,8 +22367,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5046914808247122369}
-  - component: {fileID: 1697529737145644601}
-  - component: {fileID: 5032071369302937397}
+  - component: {fileID: 6095778464997447178}
   - component: {fileID: 3668911629487092842}
   m_Layer: 0
   m_Name: ConeAoe
@@ -22396,56 +22395,14 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 1, y: 1}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!23 &1697529737145644601
-MeshRenderer:
+--- !u!222 &6095778464997447178
+CanvasRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4210040374614287318}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &5032071369302937397
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4210040374614287318}
-  m_Mesh: {fileID: 0}
+  m_CullTransparentMesh: 1
 --- !u!114 &3668911629487092842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -22461,6 +22418,7 @@ MonoBehaviour:
   resolution: 0
   angle: 0
   radius: 0
+  material: {fileID: 2100000, guid: 8f74d1392d17ce143a822020e1020228, type: 2}
 --- !u!1 &4243020986705978241
 GameObject:
   m_ObjectHideFlags: 0
@@ -39296,11 +39254,8 @@ MonoBehaviour:
   queuedAbilityTextInfo: {fileID: 6716385031230419256}
   queuedAbility: {fileID: 0}
   circleIndicatorUi: {fileID: 6822740543145830685}
-  circleIndicatorImage: {fileID: 0}
   coneIndicatorUi: {fileID: 4210040374614287318}
-  coneMeshIndicator: {fileID: 0}
   boxIndicatorUi: {fileID: 6542899387237432984}
-  boxIndicatorImage: {fileID: 0}
   AbilitySlots:
   - {fileID: 2731643021729698042}
   - {fileID: 3035138601043777169}
