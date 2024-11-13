@@ -4,7 +4,6 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
-//using UnityEngine.InputSystem.Samples.RebindUI;
 
 public class MainMenuManager : MonoBehaviour
 {

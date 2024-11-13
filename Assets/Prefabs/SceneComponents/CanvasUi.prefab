@@ -15488,7 +15488,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: -885, y: 465}
+  m_AnchoredPosition: {x: 10, y: -10}
   m_SizeDelta: {x: 350, y: 60}
   m_Pivot: {x: 0, y: 1}
 --- !u!222 &869955608343959047
@@ -18694,6 +18694,7 @@ MonoBehaviour:
   bossDungeonLists: []
   bossesInGame:
   - {fileID: 11400000, guid: ba9e0e514cd645d48a919eca75198f71, type: 2}
+  - {fileID: 11400000, guid: 8bd1f8d3151add04a83bb1c081de4b56, type: 2}
   dungeonListContent: {fileID: 1548163323073715722}
   hiddenDungeonsParentObj: {fileID: 1838769789357102534}
   dungeonListTypeToShow: 0
