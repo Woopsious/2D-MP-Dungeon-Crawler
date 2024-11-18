@@ -179,8 +179,13 @@ public class BossEntityBehaviour : EntityBehaviour
 		CastAbility(markPlayerAbility);
 	}
 
-	public void ForceCastSpecialBossAbilities(SOAbilities ability)
+	public void ForceCastBossAbilityAtLocation(SOAbilities ability, Vector3 position, bool isDirection)
 	{
+		Vector3 adjustedPosition = position;
+		if (isDirection)
+			adjustedPosition += transform.position;
+
+		OverrideCurrentPlayerTarget(adjustedPosition);
 		CastAbility(ability);
 	}
 

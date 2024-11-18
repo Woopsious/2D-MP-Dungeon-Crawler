@@ -43,6 +43,7 @@ public class EntityBehaviour : Tree
 	public float abilityCastingTimer;
 	private bool overridePlayerTarget;
 	private PlayerController overriddenPlayerTarget;
+	private Vector3 overriddenTargetPosition;
 
 	[Header("Healing Ability Cooldown")]
 	public SOAbilities healingAbility;
@@ -420,10 +421,16 @@ public class EntityBehaviour : Tree
 		overriddenPlayerTarget = player;
 		overridePlayerTarget = true;
 	}
+	public void OverrideCurrentPlayerTarget(Vector3 targetPosition)
+	{
+		overriddenTargetPosition = targetPosition;
+		overridePlayerTarget = true;
+	}
 	public void ResetOverridenPlayerTarget()
 	{
 		overridePlayerTarget = false;
 		overriddenPlayerTarget = null;
+		overriddenTargetPosition = Vector3.zero;
 	}
 
 	//ABILITIES
@@ -453,7 +460,7 @@ public class EntityBehaviour : Tree
 			CastDirectionalAbility(ability);
 		else if (ability.requiresTarget && ability.isOffensiveAbility)
 		{
-			if (playerTarget == null)
+			if (playerTarget == null && overriddenPlayerTarget == null)
 				CancelAbility();
 			else
 				CastEffect(ability);
@@ -520,7 +527,12 @@ public class EntityBehaviour : Tree
 		}
 
 		if (overridePlayerTarget)
-			projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
+		{
+			if (overriddenPlayerTarget != null)
+				projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
+			else
+				projectile.SetPositionAndAttackDirection(transform.position, overriddenTargetPosition);
+		}
 		else
 			projectile.SetPositionAndAttackDirection(transform.position, playerTarget.transform.position);
 
@@ -538,7 +550,12 @@ public class EntityBehaviour : Tree
 		}
 
 		if (overridePlayerTarget)
-			abilityAOE.Initilize(ability, entityStats, overriddenPlayerTarget.transform.position);
+		{
+			if (overriddenPlayerTarget != null)
+				abilityAOE.Initilize(ability, entityStats, overriddenPlayerTarget.transform.position);
+			else
+				abilityAOE.Initilize(ability, entityStats, overriddenTargetPosition);
+		}
 		else
 			abilityAOE.Initilize(ability, entityStats, playerTarget.transform.position);
 

@@ -9,6 +9,7 @@ public class AbilityAOE : MonoBehaviour
 	public SOAbilities abilityRef;
 	private EntityStats casterInfo;
 	private Vector2 casterPosition;
+	private bool debugLockDamage;
 
 	public GameObject aoeColliderIndicator;
 	public LayerMask includeLayer;
@@ -36,7 +37,7 @@ public class AbilityAOE : MonoBehaviour
 		AbilityDurationTimer();
 	}
 
-	//set data
+	//SET DATA
 	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
 	{
 		if (abilityRef is SOBossAbilities abilityBossRef)
@@ -57,11 +58,7 @@ public class AbilityAOE : MonoBehaviour
 		}
 		else
 		{
-			if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
-				SetCircleColliderPosition(targetPosition);
-			else
-				SetCircleColliderPosition(casterPosition);
-
+			SetCircleColliderPosition(targetPosition);
 			SetupCircleCollider();
 		}
 
@@ -102,9 +99,15 @@ public class AbilityAOE : MonoBehaviour
 	}
 
 	//set up colliders + transforms
-	private void SetCircleColliderPosition(Vector2 targetPosition)
+	private void SetCircleColliderPosition(Vector3 targetPosition)
 	{
-		transform.position = targetPosition;
+		Vector3 rotation = targetPosition - casterInfo.transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+
+		if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
+			transform.SetPositionAndRotation(targetPosition, Quaternion.Euler(0, 0, rotz - 90));
+		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
+			transform.SetPositionAndRotation(casterInfo.transform.position, Quaternion.Euler(0, 0, rotz - 90));
 	}
 	private void SetupCircleCollider()
 	{
@@ -149,25 +152,25 @@ public class AbilityAOE : MonoBehaviour
 
 		//allows aoes that linger to still apply damage to new enemies (duration set to 0.1f for non lingering aoes)
 		if (aoeLingers)
-			ApplyDamageToCollidedEntities(entity, aoeDamage);
+			ApplyDamageToCollidedEntity(entity, aoeDamage);
 		else
 			AddCollidedEntitiesToList(entity);
 	}
 
-	//add collided entity to list. to later apply damage to them.
 	private void AddCollidedEntitiesToList(EntityStats entity)
 	{
 		if (entityStatsList.Contains(entity)) return;
 		entityStatsList.Add(entity);
 	}
 
-	//timer for aoe clean up + apply damage to entities in list
+	//timer for aoe clean up + applying damage to entities in list
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer -= Time.deltaTime;
 
 		if (abilityDurationTimer <= 0)
 		{
+			if (debugLockDamage) return;
 			if (!aoeLingers)
 			{
 				if (abilityRef.isDamageSplitBetweenHits)
@@ -175,7 +178,7 @@ public class AbilityAOE : MonoBehaviour
 				else
 					DamageAllCollidedEntities();
 			}
-
+			debugLockDamage = true;
 			//DungeonHandler.AoeAbilitiesCleanUp(this);
 		}
 	}
@@ -184,9 +187,10 @@ public class AbilityAOE : MonoBehaviour
 	private void DamageAllCollidedEntities()
 	{
 		foreach (EntityStats entity in entityStatsList)
-			ApplyDamageToCollidedEntities(entity, aoeDamage);
+			ApplyDamageToCollidedEntity(entity, aoeDamage);
 	}
-	//split damage
+
+	//split damage between all entites in list
 	private void SplitDamageBetweenCollidedEntities()
 	{
 		int damageToDeal = aoeDamage;
@@ -206,14 +210,16 @@ public class AbilityAOE : MonoBehaviour
 			damageToDeal = aoeDamage / entityStatsList.Count; //split damage
 
 		foreach (EntityStats entity in entityStatsList)
-			ApplyDamageToCollidedEntities(entity, damageToDeal);
+			ApplyDamageToCollidedEntity(entity, damageToDeal);
 	}
 
-	//apply damage + status effects to collided entities
-	private void ApplyDamageToCollidedEntities(EntityStats entity, float damageToDeal)
+	//apply damage + status effects to entity
+	private void ApplyDamageToCollidedEntity(EntityStats entity, float damageToDeal)
 	{
 		if (abilityRef.aoeType != SOAbilities.AoeType.isCircleAoe)
 			if (!CollidedTargetInLineOfSight(entity.gameObject)) return;
+		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
+			if (!CollidedTargetInConeAngle(entity.gameObject)) return;
 
 		entity.GetComponent<Damageable>().OnHitFromDamageSource(player, entity.GetComponent<Collider2D>(), damageToDeal,
 			(IDamagable.DamageType)damageType, 0, abilityRef.isDamagePercentageBased, isPlayerAoe, false);
@@ -238,5 +244,21 @@ public class AbilityAOE : MonoBehaviour
 			return true;
 		else
 			return false;
+	}
+	private bool CollidedTargetInConeAngle(GameObject collidedObject)
+	{
+		Vector3 targetDir = collidedObject.transform.position - transform.position;
+		float angle = Vector3.Angle(targetDir, aoeColliderIndicator.transform.up);
+
+		if (angle <= abilityRef.angle / 2)
+		{
+			Debug.LogError("inside angle: " + angle);
+			return true;
+		}
+		else
+		{
+			Debug.LogError("outside angle: " + angle);
+			return false;
+		}
 	}
 }

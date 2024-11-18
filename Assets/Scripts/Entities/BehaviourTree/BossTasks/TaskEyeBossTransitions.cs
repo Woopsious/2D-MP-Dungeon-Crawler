@@ -19,13 +19,19 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	/// enter phase 3.
 	/// </summary>
 
-	BossEntityBehaviour behaviour;
-	BossEntityStats stats;
+	readonly SOBossEntityBehaviour bossBehaviourRef;
+	readonly BossEntityBehaviour behaviour;
+	readonly BossEntityStats stats;
+
+	private float actionDelayTimer;
+	private int phaseTwoStep;
 
 	public TaskEyeBossTransitions(BossEntityBehaviour behaviour)
 	{
+		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
+		phaseTwoStep = 0;
 	}
 
 	public override NodeState Evaluate()
@@ -33,6 +39,8 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		if (stats.inPhaseTransition == false) return NodeState.FAILURE;
 
 		Debug.Log(stats.name + " boss phase Transition task");
+
+		ActionDelayTimer();
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
 			PhaseOneTransition();
@@ -49,13 +57,66 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		stats.inPhaseTransition = false;
 	}
 
+	public void PhaseTwoTransition()
+	{
+		if (!CanStartNextPhaseTwoStep()) return;
+
+		switch (phaseTwoStep)
+		{
+			case 0:
+			stats.damageable.invincible = true;
+			SetActionDelayTimer(5);
+			NextPhaseTwoStep();
+			break;
+
+			case 1:
+			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.left * 10, true);
+			SetActionDelayTimer(5);
+			NextPhaseTwoStep();
+			break;
+
+			case 2:
+			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.right * 10, true);
+			SetActionDelayTimer(5);
+			NextPhaseTwoStep();
+			break;
+
+			case 3:
+			stats.damageable.invincible = false;
+			stats.inPhaseTransition = false;
+			break;
+
+			default:
+			Debug.LogError("no step found");
+			break;
+		}
+	}
+
 	public void PhaseThreeTransition()
 	{
 		stats.inPhaseTransition = false;
 	}
 
-	public void PhaseTwoTransition()
+	//update phase 2 steps
+	private void NextPhaseTwoStep()
 	{
-		stats.inPhaseTransition = false;
+		phaseTwoStep++;
+	}
+
+	//delay phase 2 steps
+	private void ActionDelayTimer()
+	{
+        if (actionDelayTimer >= 0)
+			actionDelayTimer -= Time.deltaTime;
+	}
+	private void SetActionDelayTimer(float delay)
+	{
+		actionDelayTimer = delay;
+	}
+	private bool CanStartNextPhaseTwoStep()
+	{
+		if (actionDelayTimer <= 0)
+			return true;
+		else return false;
 	}
 }

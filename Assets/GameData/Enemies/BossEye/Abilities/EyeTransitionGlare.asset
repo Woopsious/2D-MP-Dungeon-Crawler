@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: de9dd8c10c488fc49b6a6497cd40b046, type: 3}
-  m_Name: EyeIntimidate
+  m_Name: EyeTransitionGlare
   m_EditorClassIdentifier: 
-  Name: Eye Intimidate
-  Description: after marked by boss effect wears off. eye boss does aoe attack ontop
-    of marked player. damage is split between all players inside Aoe.
+  Name: Eye Glare
+  Description: ability used in boss transition phase 2. is not directed at anyone
+    but instead directed left and right from boss position
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 0
   isBossAbility: 1
@@ -24,15 +24,17 @@ MonoBehaviour:
   requiresTarget: 0
   canOnlyTargetSelf: 0
   hasStatusEffects: 0
-  statusEffects: []
+  statusEffects:
+  - {fileID: 11400000, guid: 7a78b1c6e3656f446959974723085901, type: 2}
+  - {fileID: 11400000, guid: 9977dbf1049661f48952bc52aca76c4e, type: 2}
   isAOE: 1
-  aoeType: 0
+  aoeType: 1
   isDamageSplitBetweenHits: 1
   hasAoeDuration: 0
   aoeDuration: 0
   circleAoeRadius: 0
-  angle: 0
-  coneAoeRadius: 0
+  angle: 120
+  coneAoeRadius: 200
   boxAoeSizeX: 10
   boxAoeSizeY: 0
   isProjectile: 0
@@ -40,16 +42,16 @@ MonoBehaviour:
   projectileSpeed: 20
   isDamagePercentageBased: 0
   damageType: 0
-  damageValue: 100
+  damageValue: 40
   damageValuePercentage: 0
-  isSpell: 1
-  manaCost: 35
-  minPercentCost: 25
+  isSpell: 0
+  manaCost: 0
+  minPercentCost: 0
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
-  marksPlayer: 1
+  marksPlayer: 0
   spawnsObstacles: 0
-  markedPlayerIsRandom: 1
-  chanceMarkedPlayerIsAggroTarget: 0.5
+  markedPlayerIsRandom: 0
+  chanceMarkedPlayerIsAggroTarget: 0
   obstaclesRadius: 5
   obstaclePositions: []

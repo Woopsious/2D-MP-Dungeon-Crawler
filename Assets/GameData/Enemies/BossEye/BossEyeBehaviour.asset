@@ -25,4 +25,4 @@ MonoBehaviour:
   abilityThree: {fileID: 11400000, guid: d763c5907bdb43442b24c2a9c10cda6c, type: 2}
   markPlayerAbility: {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}
   specialBossAbilities:
-  - {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}
+  - {fileID: 11400000, guid: 7c200819c157b47478418489be54b486, type: 2}
