@@ -170,7 +170,12 @@ public class AbilityAOE : MonoBehaviour
 
 		if (abilityDurationTimer <= 0)
 		{
-			if (debugLockDamage) return;
+			if (debugLockDamage)
+			{
+				DungeonHandler.AoeAbilitiesCleanUp(this);
+				return;
+			}
+
 			if (!aoeLingers)
 			{
 				if (abilityRef.isDamageSplitBetweenHits)
@@ -179,7 +184,7 @@ public class AbilityAOE : MonoBehaviour
 					DamageAllCollidedEntities();
 			}
 			debugLockDamage = true;
-			//DungeonHandler.AoeAbilitiesCleanUp(this);
+			DungeonHandler.AoeAbilitiesCleanUp(this);
 		}
 	}
 

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Playables;
 using UnityEngine;
 
 public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
@@ -70,14 +71,16 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 			break;
 
 			case 1:
+			QueueEyeGlareAbility(bossBehaviourRef.specialBossAbilities[0]);
 			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.left * 10, true);
-			SetActionDelayTimer(5);
+			SetActionDelayTimer(bossBehaviourRef.specialBossAbilities[0].abilityCastingTimer + 3);
 			NextPhaseTwoStep();
 			break;
 
 			case 2:
+			QueueEyeGlareAbility(bossBehaviourRef.specialBossAbilities[0]);
 			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.right * 10, true);
-			SetActionDelayTimer(5);
+			SetActionDelayTimer(bossBehaviourRef.specialBossAbilities[0].abilityCastingTimer + 3);
 			NextPhaseTwoStep();
 			break;
 
@@ -95,6 +98,12 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	public void PhaseThreeTransition()
 	{
 		stats.inPhaseTransition = false;
+	}
+
+	private void QueueEyeGlareAbility(SOAbilities ability)
+	{
+		behaviour.abilityCastingTimer = ability.abilityCastingTimer;
+		behaviour.abilityBeingCasted = ability;
 	}
 
 	//update phase 2 steps

@@ -168,17 +168,6 @@ public class BossEntityBehaviour : EntityBehaviour
 		OnBossAbilityBeginCasting?.Invoke(ability, bossStats.roomCenterPiece.transform.position);
 	}
 
-	protected override void CastAbility(SOAbilities ability)
-	{
-		base.CastAbility(ability);
-		OnBossAbilityCast?.Invoke();
-	}
-
-	public void ForceCastMarkPlayerBossAbility()
-	{
-		CastAbility(markPlayerAbility);
-	}
-
 	public void ForceCastBossAbilityAtLocation(SOAbilities ability, Vector3 position, bool isDirection)
 	{
 		Vector3 adjustedPosition = position;
@@ -187,6 +176,18 @@ public class BossEntityBehaviour : EntityBehaviour
 
 		OverrideCurrentPlayerTarget(adjustedPosition);
 		CastAbility(ability);
+		abilityIndicators.ShowAoeIndicators(ability, this, adjustedPosition);
+	}
+
+	public void ForceCastMarkPlayerBossAbility()
+	{
+		CastAbility(markPlayerAbility);
+	}
+
+	protected override void CastAbility(SOAbilities ability)
+	{
+		base.CastAbility(ability);
+		OnBossAbilityCast?.Invoke();
 	}
 
 	//timers

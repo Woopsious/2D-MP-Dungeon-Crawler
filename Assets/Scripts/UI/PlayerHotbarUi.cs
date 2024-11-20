@@ -400,7 +400,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void SetUpConeIndicator(SOAbilities abilityRef)
 	{
 		indicatorType = AoeIndicatorType.isConeAoe;
-		coneMeshIndicator.CreateConeMesh(abilityRef.angle, abilityRef.coneAoeRadius * 9);
+		coneMeshIndicator.CreateConeMesh(abilityRef.angle, abilityRef.coneAoeRadius * 9, true);
 		coneIndicatorUi.SetActive(true);
 	}
 	private void SetUpBoxIndicator(SOAbilities abilityRef)

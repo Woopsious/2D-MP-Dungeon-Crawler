@@ -33,6 +33,7 @@ public abstract class EntityAbilities : BTNode
 		behaviour.abilityCastingTimer = behaviour.abilityOne.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityOne;
 
+		behaviour.abilityIndicators.ShowAoeIndicators(behaviour.abilityOne, behaviour);
 		behaviour.EventBossAbilityBeginCasting(behaviour.abilityOne);
 	}
 	protected void CastAbilityTwo(BossEntityBehaviour behaviour)
@@ -44,6 +45,7 @@ public abstract class EntityAbilities : BTNode
 		behaviour.abilityCastingTimer = behaviour.abilityTwo.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityTwo;
 
+		behaviour.abilityIndicators.ShowAoeIndicators(behaviour.abilityTwo, behaviour);
 		behaviour.EventBossAbilityBeginCasting(behaviour.abilityTwo);
 	}
 	protected void CastAbilityThree(BossEntityBehaviour behaviour)
@@ -55,6 +57,7 @@ public abstract class EntityAbilities : BTNode
 		behaviour.abilityCastingTimer = behaviour.abilityThree.abilityCastingTimer;
 		behaviour.abilityBeingCasted = behaviour.abilityThree;
 
+		behaviour.abilityIndicators.ShowAoeIndicators(behaviour.abilityThree, behaviour);
 		behaviour.EventBossAbilityBeginCasting(behaviour.abilityThree);
 	}
 

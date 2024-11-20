@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -10,15 +11,19 @@ public class ConeMesh : MonoBehaviour
 	public float radius;
 
 	public Material material;
-	CanvasRenderer canvasRenderer;
+	private CanvasRenderer canvasRenderer;
+
+	private MeshRenderer meshRenderer;
+	private MeshFilter meshFilter;
 
 	private void Awake()
 	{
 		canvasRenderer = GetComponent<CanvasRenderer>();
-		canvasRenderer.SetMaterial(material, null);
+		meshRenderer = GetComponent<MeshRenderer>();
+		meshFilter = GetComponent<MeshFilter>();
 	}
 
-	public void CreateConeMesh(float angle, float radius)
+	public void CreateConeMesh(float angle, float radius, bool createUiConeMesh)
 	{
 		resolution = (int)(angle / 6); //scale resolution with cone size
 		this.radius = radius;
@@ -27,7 +32,16 @@ public class ConeMesh : MonoBehaviour
 		float adjustedAngle = angle + angleStep;
 		this.angle = adjustedAngle;
 
-		canvasRenderer.SetMesh(GenerateConeMesh());
+		if (createUiConeMesh)
+		{
+			canvasRenderer.SetMaterial(material, null);
+			canvasRenderer.SetMesh(GenerateConeMesh());
+		}
+		else
+		{
+			meshFilter.mesh = GenerateConeMesh();
+			meshRenderer.material.color = new UnityEngine.Color(1, 0, 0, 0.15f);
+		}
 	}
 
 	private Mesh GenerateConeMesh()

@@ -30,7 +30,7 @@ MonoBehaviour:
   isDamageSplitBetweenHits: 1
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeRadius: 0
+  circleAoeRadius: 30
   angle: 0
   coneAoeRadius: 0
   boxAoeSizeX: 10

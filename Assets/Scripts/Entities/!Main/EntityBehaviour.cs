@@ -11,6 +11,7 @@ public class EntityBehaviour : Tree
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private Animator animator;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
+	[HideInInspector] public AbilityIndicators abilityIndicators;
 	public bool markedForCleanUp;
 
 	[Header("Bounds Settings")]
@@ -25,9 +26,14 @@ public class EntityBehaviour : Tree
 	public LayerMask includeMe;
 	public List<PlayerAggroRating> playerAggroList = new List<PlayerAggroRating>();
 	public PlayerController playerTarget;
-	public float distanceToPlayerTarget;
-	public bool currentPlayerTargetInView;
-	public Vector2 playersLastKnownPosition;
+	[HideInInspector] public float distanceToPlayerTarget;
+	[HideInInspector] public bool currentPlayerTargetInView;
+	[HideInInspector] public Vector2 playersLastKnownPosition;
+
+	[Header("Overridden Player Target")]
+	public PlayerController overriddenPlayerTarget;
+	private bool overridePlayerTarget;
+	private Vector3 overriddenTargetPosition;
 
 	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
@@ -41,9 +47,6 @@ public class EntityBehaviour : Tree
 	[Header("Abilities")]
 	public SOAbilities abilityBeingCasted;
 	public float abilityCastingTimer;
-	private bool overridePlayerTarget;
-	private PlayerController overriddenPlayerTarget;
-	private Vector3 overriddenTargetPosition;
 
 	[Header("Healing Ability Cooldown")]
 	public SOAbilities healingAbility;
@@ -63,12 +66,13 @@ public class EntityBehaviour : Tree
 	private readonly float playerAggroRatingCooldown = 0.5f;
 	private float playerAggroRatingTimer;
 
-	private void Awake()
+	protected virtual void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
+		abilityIndicators = GetComponentInChildren<AbilityIndicators>();
 	}
 	protected override void Start()
 	{
@@ -439,6 +443,8 @@ public class EntityBehaviour : Tree
 	{
 		abilityBeingCasted = null;
 		abilityCastingTimer = 0;
+		if (entityStats.statsRef.isBossVersion)
+			abilityIndicators.HideAoeIndicators();
 	}
 
 	//casting timer
@@ -572,6 +578,9 @@ public class EntityBehaviour : Tree
 
 		ResetOverridenPlayerTarget();
 		abilityBeingCasted = null;
+
+		if (entityStats.statsRef.isBossVersion)
+			abilityIndicators.HideAoeIndicators();
 	}
 
 	//ability type cooldowns
