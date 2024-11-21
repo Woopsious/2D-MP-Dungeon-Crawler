@@ -25,14 +25,12 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	readonly BossEntityStats stats;
 
 	private float actionDelayTimer;
-	private int phaseTwoStep;
 
 	public TaskEyeBossTransitions(BossEntityBehaviour behaviour)
 	{
 		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
-		phaseTwoStep = 0;
 	}
 
 	public override NodeState Evaluate()
@@ -62,26 +60,24 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	{
 		if (!CanStartNextPhaseTwoStep()) return;
 
-		switch (phaseTwoStep)
+		switch (behaviour.stepInPhaseTransition)
 		{
 			case 0:
 			stats.damageable.invincible = true;
-			SetActionDelayTimer(5);
-			NextPhaseTwoStep();
+			behaviour.AllowCastingOfTransitionAbility();
+			SetActionDelayTimer(bossBehaviourRef.transitionAbilityTwo.abilityCastingTimer + 3);
+			behaviour.NextStepInPhase();
 			break;
 
 			case 1:
-			QueueEyeGlareAbility(bossBehaviourRef.specialBossAbilities[0]);
-			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.left * 10, true);
-			SetActionDelayTimer(bossBehaviourRef.specialBossAbilities[0].abilityCastingTimer + 3);
-			NextPhaseTwoStep();
+			behaviour.AllowCastingOfTransitionAbility();
+			SetActionDelayTimer(bossBehaviourRef.transitionAbilityTwo.abilityCastingTimer + 3);
+			behaviour.NextStepInPhase();
 			break;
 
 			case 2:
-			QueueEyeGlareAbility(bossBehaviourRef.specialBossAbilities[0]);
-			behaviour.ForceCastBossAbilityAtLocation(bossBehaviourRef.specialBossAbilities[0], Vector3.right * 10, true);
-			SetActionDelayTimer(bossBehaviourRef.specialBossAbilities[0].abilityCastingTimer + 3);
-			NextPhaseTwoStep();
+			SetActionDelayTimer(5);
+			behaviour.NextStepInPhase();
 			break;
 
 			case 3:
@@ -100,19 +96,7 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		stats.inPhaseTransition = false;
 	}
 
-	private void QueueEyeGlareAbility(SOAbilities ability)
-	{
-		behaviour.abilityCastingTimer = ability.abilityCastingTimer;
-		behaviour.abilityBeingCasted = ability;
-	}
-
-	//update phase 2 steps
-	private void NextPhaseTwoStep()
-	{
-		phaseTwoStep++;
-	}
-
-	//delay phase 2 steps
+	//delay phase steps
 	private void ActionDelayTimer()
 	{
         if (actionDelayTimer >= 0)

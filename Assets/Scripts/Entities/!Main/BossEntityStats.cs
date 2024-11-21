@@ -56,6 +56,7 @@ public class BossEntityStats : EntityStats
 		if (lastBossHealthPercentage >= 0.66 && newPercentage < 0.66 || lastBossHealthPercentage >= 0.33 && newPercentage < 0.33)
 		{
 			bossPhase++;
+			bossBehaviour.stepInPhaseTransition = 0;
 			bossBehaviour.EventSpawnBossAdds(2); //spawn adds for evey new phase reached
 			inPhaseTransition = true;
 		}

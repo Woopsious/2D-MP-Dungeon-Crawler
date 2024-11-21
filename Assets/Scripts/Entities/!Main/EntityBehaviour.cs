@@ -30,9 +30,9 @@ public class EntityBehaviour : Tree
 	[HideInInspector] public bool currentPlayerTargetInView;
 	[HideInInspector] public Vector2 playersLastKnownPosition;
 
-	[Header("Overridden Player Target")]
-	public PlayerController overriddenPlayerTarget;
+	[Header("Override Player Target")]
 	private bool overridePlayerTarget;
+	public PlayerController overriddenPlayerTarget;
 	private Vector3 overriddenTargetPosition;
 
 	[Header("Player Detection")]

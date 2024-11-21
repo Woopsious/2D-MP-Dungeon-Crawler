@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class BossEntityBehaviour : EntityBehaviour
 {
+	[Header("Bosses Step In Phase")]
+	[HideInInspector] public int stepInPhaseTransition;
+
 	[Header("Boss Abilities")]
 	[Header("Ability One")]
 	public SOBossAbilities abilityOne;
@@ -21,6 +25,9 @@ public class BossEntityBehaviour : EntityBehaviour
 	public SOBossAbilities abilityThree;
 	public bool canCastAbilityThree;
 	public float abilityTimerThreeCounter;
+
+	[Header("Transition Abilities")]
+	public bool canCastTransitionAbility;
 
 	[Header("Mark Player Ability")]
 	private SOAbilities markPlayerAbility;
@@ -157,6 +164,12 @@ public class BossEntityBehaviour : EntityBehaviour
 		return root;
 	}
 
+	//phase
+	public void NextStepInPhase()
+	{
+		stepInPhaseTransition++;
+	}
+
 	//unique boss events
 	public void EventSpawnBossAdds(int numToSpawn)
 	{
@@ -168,26 +181,36 @@ public class BossEntityBehaviour : EntityBehaviour
 		OnBossAbilityBeginCasting?.Invoke(ability, bossStats.roomCenterPiece.transform.position);
 	}
 
-	public void ForceCastBossAbilityAtLocation(SOAbilities ability, Vector3 position, bool isDirection)
+	//override target for abilities
+	public void OverrideTargetForAbilities(PlayerController player, Vector3 position, bool isDirection)
 	{
 		Vector3 adjustedPosition = position;
 		if (isDirection)
 			adjustedPosition += transform.position;
 
+		OverrideCurrentPlayerTarget(player);
 		OverrideCurrentPlayerTarget(adjustedPosition);
-		CastAbility(ability);
-		abilityIndicators.ShowAoeIndicators(ability, this, adjustedPosition);
 	}
 
+	//boos ability casting
 	public void ForceCastMarkPlayerBossAbility()
 	{
 		CastAbility(markPlayerAbility);
 	}
-
 	protected override void CastAbility(SOAbilities ability)
 	{
 		base.CastAbility(ability);
 		OnBossAbilityCast?.Invoke();
+	}
+
+	//transition abilities
+	public void AllowCastingOfTransitionAbility()
+	{
+		canCastTransitionAbility = true;
+	}
+	public void ForbidCastingOfTransitionAbility()
+	{
+		canCastTransitionAbility = false;
 	}
 
 	//timers

@@ -14,5 +14,7 @@ public class SOBossEntityBehaviour : SOEntityBehaviour
 	public SOAbilities markPlayerAbility;
 
 	[Tooltip("optional for bosses with transition abilities")]
-	public List<SOAbilities> specialBossAbilities = new List<SOAbilities>();
+	public SOBossAbilities transitionAbilityOne;
+	public SOBossAbilities transitionAbilityTwo;
+	public SOBossAbilities transitionAbilityThree;
 }

@@ -18,8 +18,8 @@ MonoBehaviour:
   abilitySprite: {fileID: 10913, guid: 0000000000000000f000000000000000, type: 0}
   nonPlayerLevelRequirement: 0
   isBossAbility: 1
-  abilityCastingTimer: 10
-  abilityCooldown: 30
+  abilityCastingTimer: 5
+  abilityCooldown: 0
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
@@ -29,7 +29,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9977dbf1049661f48952bc52aca76c4e, type: 2}
   isAOE: 1
   aoeType: 1
-  isDamageSplitBetweenHits: 1
+  isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
   circleAoeRadius: 0

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEditor;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public abstract class EntityAbilities : BTNode
 {
@@ -61,12 +62,36 @@ public abstract class EntityAbilities : BTNode
 		behaviour.EventBossAbilityBeginCasting(behaviour.abilityThree);
 	}
 
-	protected void TryMarkPlayer(BossEntityBehaviour behaviour, SOBossAbilities ability)
+	protected void CastTransitionAbility(BossEntityBehaviour behaviour, SOBossAbilities abilityToCast, Vector3 position, bool isDirection)
 	{
-		if (!ability.marksPlayer) return;
+		behaviour.ForbidCastingOfTransitionAbility(); //stop transition ability spam
+
+		TryMarkPlayer(behaviour, abilityToCast);
+
+		behaviour.abilityCastingTimer = abilityToCast.abilityCastingTimer;
+		behaviour.abilityBeingCasted = abilityToCast;
+
+		behaviour.abilityIndicators.ShowAoeIndicators(abilityToCast, behaviour);
+
+		if (position != Vector3.zero) //ability target isnt player but a position/direction
+		{
+			Vector3 adjustedPosition = position;
+			if (isDirection)
+				adjustedPosition += behaviour.transform.position;
+
+			behaviour.abilityIndicators.ShowAoeIndicators(abilityToCast, behaviour, adjustedPosition);
+			behaviour.OverrideCurrentPlayerTarget(adjustedPosition);
+		}
+
+		behaviour.EventBossAbilityBeginCasting(abilityToCast);
+	}
+
+	protected void TryMarkPlayer(BossEntityBehaviour behaviour, SOBossAbilities abilityToCast)
+	{
+		if (!abilityToCast.marksPlayer) return;
 
 		PlayerController newPlayerTarget = behaviour.playerTarget;
-		int chance = (int)(ability.chanceMarkedPlayerIsAggroTarget * 100);
+		int chance = (int)(abilityToCast.chanceMarkedPlayerIsAggroTarget * 100);
 
 		//mark random player that isnt current aggro player as long as aggro list count bigger then 1
 		if (behaviour.playerAggroList.Count > 1 && Utilities.GetRandomNumber(100) >= chance)

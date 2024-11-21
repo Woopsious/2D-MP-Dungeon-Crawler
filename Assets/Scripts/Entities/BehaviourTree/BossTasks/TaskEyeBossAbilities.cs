@@ -36,13 +36,13 @@ public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
 	/// with line of sight casting for regular obstacles.
 	/// </summary>
 
-	readonly SOBossEntityBehaviour bossBehaviourRef;
+	readonly SOBossEntityBehaviour behaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
 
 public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
-		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
+		behaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
 	}
@@ -51,6 +51,44 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
 		//return failure to force switch back to attack with main weapon
 		if (behaviour.globalAttackTimer > 0) return NodeState.FAILURE;
+
+		if (stats.inPhaseTransition)
+		{
+			if (CanUseTransitionAbilityOne())
+			{
+				//noop
+			}
+			else if (CanUseTransitionAbilityTwo())
+			{
+				switch (behaviour.stepInPhaseTransition)
+				{
+					case 0:
+					//noop
+					break;
+
+					case 1:
+					CastTransitionAbility(behaviour, behaviourRef.transitionAbilityTwo, Vector2.left * 10, true);
+					break;
+
+					case 2:
+					CastTransitionAbility(behaviour, behaviourRef.transitionAbilityTwo, Vector2.right * 10, true);
+					break;
+
+					case 3:
+					//noop
+					break;
+
+					default:
+					Debug.LogError("no step found");
+					break;
+				}
+			}
+			else if (CanUseTransitionAbilityThree())
+			{
+				//noop
+			}
+			else return NodeState.FAILURE;
+		}
 		else
 		{
 			if (CanUseBossAbilityOne())
@@ -68,27 +106,44 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 			else return NodeState.FAILURE;
 
 			//add ability animation length here if needed, include a bool if animation should block movement
-			behaviour.globalAttackTimer = 1f;
-			return NodeState.SUCCESS;
 		}
+
+		behaviour.globalAttackTimer = 1f;
+		return NodeState.SUCCESS;
 	}
 
 	public bool CanUseBossAbilityOne()
 	{
-		if (behaviour.abilityBeingCasted || stats.inPhaseTransition ||
+		if (behaviour.abilityBeingCasted ||
 			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(stats, behaviour.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
-		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+		if (behaviour.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
 			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(stats, behaviour.abilityTwo)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		if (behaviour.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+		if (behaviour.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
 			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(stats, behaviour.abilityThree)) return false;
+		else return true;
+	}
+
+	public bool CanUseTransitionAbilityOne()
+	{
+		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.firstPhase) return false;
+		else return true;
+	}
+	public bool CanUseTransitionAbilityTwo()
+	{
+		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.secondPhase) return false;
+		else return true;
+	}
+	public bool CanUseTransitionAbilityThree()
+	{
+		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.thirdPhase) return false;
 		else return true;
 	}
 }
