@@ -8,10 +8,10 @@ public class EntityBehaviour : Tree
 	[Header("Behaviour Info")]
 	public SOEntityBehaviour behaviourRef;
 	[HideInInspector] public EntityStats entityStats;
+	[HideInInspector] public EntityAbilityHandler abilityHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private Animator animator;
 	[HideInInspector] public NavMeshAgent navMeshAgent;
-	[HideInInspector] public AbilityIndicators abilityIndicators;
 	public bool markedForCleanUp;
 
 	[Header("Bounds Settings")]
@@ -30,11 +30,6 @@ public class EntityBehaviour : Tree
 	[HideInInspector] public bool currentPlayerTargetInView;
 	[HideInInspector] public Vector2 playersLastKnownPosition;
 
-	[Header("Override Player Target")]
-	private bool overridePlayerTarget;
-	public PlayerController overriddenPlayerTarget;
-	private Vector3 overriddenTargetPosition;
-
 	[Header("Player Detection")]
 	public CircleCollider2D viewRangeCollider;
 	private float playerDetectionRange = 30;
@@ -43,20 +38,6 @@ public class EntityBehaviour : Tree
 
 	[Header("Global Attack Cooldown")]
 	public float globalAttackTimer;
-
-	[Header("Abilities")]
-	public SOAbilities abilityBeingCasted;
-	public float abilityCastingTimer;
-
-	[Header("Healing Ability Cooldown")]
-	public SOAbilities healingAbility;
-	public bool canCastHealingAbility;
-	public float healingAbilityTimer;
-
-	[Header("Offensive Ability Cooldown")]
-	public SOAbilities offensiveAbility;
-	public bool canCastOffensiveAbility;
-	public float offensiveAbilityTimer;
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -69,10 +50,10 @@ public class EntityBehaviour : Tree
 	protected virtual void Awake()
 	{
 		entityStats = GetComponent<EntityStats>();
+		abilityHandler = GetComponent<EntityAbilityHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		animator = GetComponent<Animator>();
 		navMeshAgent = GetComponent<NavMeshAgent>();
-		abilityIndicators = GetComponentInChildren<AbilityIndicators>();
 	}
 	protected override void Start()
 	{
@@ -87,9 +68,9 @@ public class EntityBehaviour : Tree
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
 
-		HealingAbilityTimer();
-		OffensiveAbilityTimer();
-		AbilityCastingTimer();
+		abilityHandler.AbilityCastingTimer();
+		abilityHandler.HealingAbilityTimer();
+		abilityHandler.OffensiveAbilityTimer();
 
 		GlobalAttackTimer();
 		IsPlayerTargetVisibleTimer();
@@ -417,190 +398,6 @@ public class EntityBehaviour : Tree
 			if (playerAggroList[i].player == player)
 				playerAggroList.RemoveAt(i);
 		}
-	}
-
-	//override current PlayerTarget, forcing abilities to be casted at this player instead
-	public void OverrideCurrentPlayerTarget(PlayerController player)
-	{
-		overriddenPlayerTarget = player;
-		overridePlayerTarget = true;
-	}
-	public void OverrideCurrentPlayerTarget(Vector3 targetPosition)
-	{
-		overriddenTargetPosition = targetPosition;
-		overridePlayerTarget = true;
-	}
-	public void ResetOverridenPlayerTarget()
-	{
-		overridePlayerTarget = false;
-		overriddenPlayerTarget = null;
-		overriddenTargetPosition = Vector3.zero;
-	}
-
-	//ABILITIES
-	//incase of errors.
-	protected void CancelAbility()
-	{
-		abilityBeingCasted = null;
-		abilityCastingTimer = 0;
-		if (entityStats.statsRef.isBossVersion)
-			abilityIndicators.HideAoeIndicators();
-	}
-
-	//casting timer
-	protected void AbilityCastingTimer()
-	{
-		if (abilityBeingCasted != null)
-		{
-			abilityCastingTimer -= Time.deltaTime;
-
-			if (abilityCastingTimer <= 0)
-				CastAbility(abilityBeingCasted);
-		}
-	}
-	protected virtual void CastAbility(SOAbilities ability)
-	{
-		if (ability.isAOE)
-			CastAoeAbility(ability);
-		else if (ability.isProjectile)
-			CastDirectionalAbility(ability);
-		else if (ability.requiresTarget && ability.isOffensiveAbility)
-		{
-			if (playerTarget == null && overriddenPlayerTarget == null)
-				CancelAbility();
-			else
-				CastEffect(ability);
-		}
-		else if (ability.requiresTarget && !ability.isOffensiveAbility)   //for MP add support for friendlies
-			CastEffect(ability);
-		else
-		{
-			CancelAbility();
-			Debug.LogError("failed to find ability type and cast, shouldnt happen");
-			return;
-		}
-	}
-
-	//types of casting
-	protected void CastEffect(SOAbilities ability)
-	{
-		if (ability.damageType == SOAbilities.DamageType.isHealing)
-		{
-			//eventually add support to heal friendlies
-			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
-		}
-
-		if (ability.damageValue != 0)    //apply damage for insta damage abilities
-		{
-			if (overridePlayerTarget)
-			{
-				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), 
-					ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
-			}
-			else
-			{
-				playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), ability.damageValue
-					* entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
-			}
-		}
-
-		if (ability.hasStatusEffects)    //apply effects (if has any) based on what type it is.
-		{
-			//apply effects based on what type it is.
-			if (ability.canOnlyTargetSelf)
-				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			else if (ability.isOffensiveAbility && playerTarget != null)
-			{
-				if (overridePlayerTarget)
-					overriddenPlayerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-				else
-					playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			}
-			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
-				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-		}
-
-		OnSuccessfulCast(ability);
-	}
-	protected void CastDirectionalAbility(SOAbilities ability)
-	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
-		if (projectile == null)
-		{
-			GameObject go = Instantiate(projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-			projectile.transform.SetParent(null);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
-			else
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenTargetPosition);
-		}
-		else
-			projectile.SetPositionAndAttackDirection(transform.position, playerTarget.transform.position);
-
-		projectile.Initilize(null, ability, entityStats);
-		OnSuccessfulCast(ability);
-	}
-	protected void CastAoeAbility(SOAbilities ability)
-	{
-		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
-		if (abilityAOE == null)
-		{
-			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
-			abilityAOE = go.GetComponent<AbilityAOE>();
-			abilityAOE.transform.SetParent(null);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				abilityAOE.Initilize(ability, entityStats, overriddenPlayerTarget.transform.position);
-			else
-				abilityAOE.Initilize(ability, entityStats, overriddenTargetPosition);
-		}
-		else
-			abilityAOE.Initilize(ability, entityStats, playerTarget.transform.position);
-
-		abilityAOE.AddPlayerRef(null);
-		OnSuccessfulCast(ability);
-	}
-	protected void OnSuccessfulCast(SOAbilities ability)
-	{
-		if (ability.isSpell)
-		{
-			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
-			entityStats.DecreaseMana(totalManaCost, false);
-		}
-
-		ResetOverridenPlayerTarget();
-		abilityBeingCasted = null;
-
-		if (entityStats.statsRef.isBossVersion)
-			abilityIndicators.HideAoeIndicators();
-	}
-
-	//ability type cooldowns
-	private void HealingAbilityTimer()
-	{
-		if (canCastHealingAbility) return;
-
-		healingAbilityTimer -= Time.deltaTime;
-
-		if (healingAbilityTimer <= 0)
-			canCastHealingAbility = true;
-	}
-	private void OffensiveAbilityTimer()
-	{
-		if (canCastOffensiveAbility) return;
-
-		offensiveAbilityTimer -= Time.deltaTime;
-
-		if (offensiveAbilityTimer <= 0)
-			canCastOffensiveAbility = true;
 	}
 
 	//utility

@@ -12,9 +12,8 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	/// 
 	/// TRANSITION PHASE 2: 
 	/// become invulnerable, spawn x amount of adds. 
-	/// after x seconds do x degree cone attacks in certian directions with unique ability,
-	/// (represent cone visually before attack) till all directions hit with x delay between each use. enter phase 2 after another x seconds
-	/// if player is hit by this, do x% damage to health, freeze movement for x seconds and apply x% damage taken debuff.
+	/// after 5 seconds do x degree cone attacks in left and right directions with transition ability 2,
+	/// if player is hit by this, freeze movement for x seconds and apply x% damage taken debuff.
 	/// 
 	/// TRANSITION PHASE 3: 
 	/// enter phase 3.
@@ -23,6 +22,7 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	readonly SOBossEntityBehaviour bossBehaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
+	readonly EntityAbilityHandler abilityHandler;
 
 	private float actionDelayTimer;
 
@@ -31,6 +31,7 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		bossBehaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
+		abilityHandler = behaviour.abilityHandler;
 	}
 
 	public override NodeState Evaluate()
@@ -64,13 +65,13 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 		{
 			case 0:
 			stats.damageable.invincible = true;
-			behaviour.AllowCastingOfTransitionAbility();
+			abilityHandler.AllowCastingOfTransitionAbility();
 			SetActionDelayTimer(bossBehaviourRef.transitionAbilityTwo.abilityCastingTimer + 3);
 			behaviour.NextStepInPhase();
 			break;
 
 			case 1:
-			behaviour.AllowCastingOfTransitionAbility();
+			abilityHandler.AllowCastingOfTransitionAbility();
 			SetActionDelayTimer(bossBehaviourRef.transitionAbilityTwo.abilityCastingTimer + 3);
 			behaviour.NextStepInPhase();
 			break;

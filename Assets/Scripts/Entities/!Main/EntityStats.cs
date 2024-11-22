@@ -11,6 +11,7 @@ public class EntityStats : MonoBehaviour
 	public SOEntityStats statsRef;
 	[HideInInspector] public PlayerController playerRef;
 	[HideInInspector] public EntityBehaviour entityBehaviour;
+	[HideInInspector] public EntityAbilityHandler abilityHandler;
 	[HideInInspector] public EntityClassHandler classHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
 	private LootSpawnHandler lootSpawnHandler;
@@ -77,6 +78,7 @@ public class EntityStats : MonoBehaviour
 	{
 		playerRef = GetComponent<PlayerController>();
 		entityBehaviour = GetComponent<EntityBehaviour>();
+		abilityHandler = GetComponent<EntityAbilityHandler>();
 		classHandler = GetComponent<EntityClassHandler>();
 		equipmentHandler = GetComponent<EntityEquipmentHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
@@ -90,6 +92,7 @@ public class EntityStats : MonoBehaviour
 	{
 		Initilize();
 	}
+
 	protected virtual void OnEnable()
 	{
 		GetComponent<Damageable>().OnHit += OnHit;

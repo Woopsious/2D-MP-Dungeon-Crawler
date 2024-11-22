@@ -885,9 +885,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c0363ac907a3345bda49979af33f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  originObj: {fileID: 0}
-  targetPosition: {x: 0, y: 0, z: 0}
-  targetObj: {fileID: 0}
   directionalIndicator: {fileID: 0}
   circleAoeIndicator: {fileID: 562549951276114887}
   coneAoeIndicator: {fileID: 203677092670643291}
@@ -908,6 +905,7 @@ GameObject:
   - component: {fileID: 8699016188329775386}
   - component: {fileID: -4535706557027757244}
   - component: {fileID: 3519794317990881909}
+  - component: {fileID: 2245771883526148200}
   - component: {fileID: 5524032958697930596}
   - component: {fileID: 7819874737091508958}
   - component: {fileID: -3271526235124138567}
@@ -1076,6 +1074,7 @@ MonoBehaviour:
   statsRef: {fileID: 0}
   playerRef: {fileID: 0}
   entityBehaviour: {fileID: 0}
+  abilityHandler: {fileID: 0}
   classHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
   entityLevel: 0
@@ -1248,9 +1247,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   behaviourRef: {fileID: 0}
   entityStats: {fileID: 0}
+  abilityHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
   navMeshAgent: {fileID: 0}
-  abilityIndicators: {fileID: 0}
   markedForCleanUp: 0
   idleBounds:
     m_Center: {x: 0, y: 0, z: 0}
@@ -1272,16 +1271,9 @@ MonoBehaviour:
   playersLastKnownPosition: {x: 0, y: 0}
   viewRangeCollider: {fileID: 4560593915179300351}
   globalAttackTimer: 0
-  abilityBeingCasted: {fileID: 0}
-  abilityCastingTimer: 0
-  healingAbility: {fileID: 0}
-  canCastHealingAbility: 0
-  healingAbilityTimer: 0
-  offensiveAbility: {fileID: 0}
-  canCastOffensiveAbility: 0
-  offensiveAbilityTimer: 0
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
+  stepInPhaseTransition: 0
   abilityOne: {fileID: 0}
   canCastAbilityOne: 0
   abilityTimerOneCounter: 0
@@ -1291,6 +1283,42 @@ MonoBehaviour:
   abilityThree: {fileID: 0}
   canCastAbilityThree: 0
   abilityTimerThreeCounter: 0
+  canCastTransitionAbility: 0
+--- !u!114 &2245771883526148200
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8615628319028095835}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d17c23d62a903bf49bed908d51989782, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entityStats: {fileID: 0}
+  behaviour: {fileID: 0}
+  abilityIndicators: {fileID: 0}
+  overriddenPlayerTarget: {fileID: 0}
+  abilityBeingCasted: {fileID: 0}
+  abilityCastingTimer: 0
+  healingAbility: {fileID: 0}
+  canCastHealingAbility: 0
+  healingAbilityTimer: 0
+  offensiveAbility: {fileID: 0}
+  canCastOffensiveAbility: 0
+  offensiveAbilityTimer: 0
+  stepInPhaseTransition: 0
+  abilityOne: {fileID: 0}
+  canCastAbilityOne: 0
+  abilityTimerOneCounter: 0
+  abilityTwo: {fileID: 0}
+  canCastAbilityTwo: 0
+  abilityTimerTwoCounter: 0
+  abilityThree: {fileID: 0}
+  canCastAbilityThree: 0
+  abilityTimerThreeCounter: 0
+  canCastTransitionAbility: 0
 --- !u!114 &5524032958697930596
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,49 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TaskEyeBossAbilities : EntityAbilities, IBossAbilities
+public class TaskEyeBossAbilities : BTNode, IBossAbilities
 {
 	/// <summary>
-	/// SPECIAL MARKED EYE ABILITY:
-	/// effect marked by eye casted just before casting ability 2 or 3 on a semi random player for 10 seconds
-	/// (TODO)
-	/// when player marked by eye, show indicator ontop of player for player and all other players in game. once timer is up do aoe damage 
-	/// in a line between boss and marked player. dealing x% damage to all players hit. 
-	/// 
 	/// ABILITY 1:
 	/// simple directional ability
 	/// 
 	/// ABILITY 2:
-	/// directional aoe line attack from boss directed at player marked by eye (takes 10s to cast)
-	/// (TODO) 
-	/// add ui indicator above marked player indicating to siad marked player and any other players they are marked.
+	/// directional aoe line attack from boss directed at player marked by eye, spawns in obstacles around room center piece
+	/// marked player hides behind to avoid damage (takes 10s to cast)
 	/// 
 	/// ABILITY 3:
-	/// (TODO) 
-	/// either partially reuse marked by eye ability and instead of doing aoe line attack do aoe attack ontop of marked player
-	/// this aoe attack spreads its damage between all players within aoe, basically players are encourage to stand by marked player
-	/// instead of avoiding them this time. can also lower damage delt based on how many players are so it can be solod.
-	/// 
-	/// or give it a more simple ability where itll attack all players it can currently see 
-	/// possibly adjust damage dealt based on amount of players damaged, atm going with less players seen = more damage it does eg:
-	/// ability deals 20 damage. 4 players hit = 80 damage. 2 players hit = 60 damage. 1 player hit = 40 damage)
-	/// 
-	/// SHIT TO DO:
-	/// possibly have obstacals that spawn in that the marked player can hide behind thatll block only the aoe line abilities damage
-	/// especially when fighting the boss alone or with a small group. maybe make it so less people = more obstacles to hide behind
-	/// implementing it would require a line cast + new seethrough obstacles layer for these specific objects so they dont interfere
-	/// with line of sight casting for regular obstacles.
+	/// circle aoe ontop of marked player, damage split between all players hit by aoe, damage adjust further based on player lobby count
+	/// (players need to group up and share the damage, takes 10s to cast)
 	/// </summary>
 
 	readonly SOBossEntityBehaviour behaviourRef;
 	readonly BossEntityBehaviour behaviour;
 	readonly BossEntityStats stats;
+	readonly EntityAbilityHandler abilityHandler;
 
-public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
+	public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 	{
 		behaviourRef = (SOBossEntityBehaviour)behaviour.behaviourRef;
 		this.behaviour = behaviour;
 		stats = (BossEntityStats)behaviour.entityStats;
+		abilityHandler = behaviour.abilityHandler;
 	}
 
 	public override NodeState Evaluate()
@@ -52,98 +35,114 @@ public TaskEyeBossAbilities(BossEntityBehaviour behaviour)
 		//return failure to force switch back to attack with main weapon
 		if (behaviour.globalAttackTimer > 0) return NodeState.FAILURE;
 
-		if (stats.inPhaseTransition)
-		{
-			if (CanUseTransitionAbilityOne())
-			{
-				//noop
-			}
-			else if (CanUseTransitionAbilityTwo())
-			{
-				switch (behaviour.stepInPhaseTransition)
-				{
-					case 0:
-					//noop
-					break;
-
-					case 1:
-					CastTransitionAbility(behaviour, behaviourRef.transitionAbilityTwo, Vector2.left * 10, true);
-					break;
-
-					case 2:
-					CastTransitionAbility(behaviour, behaviourRef.transitionAbilityTwo, Vector2.right * 10, true);
-					break;
-
-					case 3:
-					//noop
-					break;
-
-					default:
-					Debug.LogError("no step found");
-					break;
-				}
-			}
-			else if (CanUseTransitionAbilityThree())
-			{
-				//noop
-			}
-			else return NodeState.FAILURE;
-		}
-		else
+		if (!stats.inPhaseTransition)
 		{
 			if (CanUseBossAbilityOne())
 			{
-				CastAbilityOne(behaviour);
+				abilityHandler.CastBossAbilityOne();
 			}
 			else if (CanUseBossAbilityTwo())
 			{
-				CastAbilityTwo(behaviour);
+				abilityHandler.CastBossAbilityTwo();
 			}
 			else if (CanUseBossAbilityThree())
 			{
-				CastAbilityThree(behaviour);
+				abilityHandler.CastBossAbilityThree();
 			}
 			else return NodeState.FAILURE;
 
 			//add ability animation length here if needed, include a bool if animation should block movement
+		}
+		else
+		{
+			if (CanUseTransitionAbilityOne())
+			{
+				PhaseTransitionOneSteps();
+			}
+			else if (CanUseTransitionAbilityTwo())
+			{
+				PhaseTransitionTwoSteps();
+			}
+			else if (CanUseTransitionAbilityThree())
+			{
+				PhaseTransitionThreeSteps();
+			}
+			else return NodeState.FAILURE;
 		}
 
 		behaviour.globalAttackTimer = 1f;
 		return NodeState.SUCCESS;
 	}
 
+	//ability checks
 	public bool CanUseBossAbilityOne()
 	{
-		if (behaviour.abilityBeingCasted ||
-			!behaviour.canCastAbilityOne || !HasEnoughManaToCast(stats, behaviour.abilityOne)) return false;
+		if (abilityHandler.abilityBeingCasted ||
+			!abilityHandler.canCastAbilityOne || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
-		if (behaviour.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
-			!behaviour.canCastAbilityTwo || !HasEnoughManaToCast(stats, behaviour.abilityTwo)) return false;
+		if (abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+			!abilityHandler.canCastAbilityTwo || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityTwo)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		if (behaviour.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
-			!behaviour.canCastAbilityThree || !HasEnoughManaToCast(stats, behaviour.abilityThree)) return false;
+		if (abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+			!abilityHandler.canCastAbilityThree || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityThree)) return false;
 		else return true;
 	}
 
+	//transition ability steps
+	public void PhaseTransitionOneSteps()
+	{
+		//noop
+	}
+	public void PhaseTransitionTwoSteps()
+	{
+		switch (behaviour.stepInPhaseTransition)
+		{
+			case 0:
+			//noop
+			break;
+
+			case 1:
+			abilityHandler.CastTransitionAbility(behaviourRef.transitionAbilityTwo, Vector2.left * 10, true);
+			break;
+
+			case 2:
+			abilityHandler.CastTransitionAbility(behaviourRef.transitionAbilityTwo, Vector2.right * 10, true);
+			break;
+
+			case 3:
+			//noop
+			break;
+
+			default:
+			Debug.LogError("no step found");
+			break;
+		}
+	}
+	public void PhaseTransitionThreeSteps()
+	{
+		//noop
+	}
+
+	//transition ability checks
 	public bool CanUseTransitionAbilityOne()
 	{
-		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.firstPhase) return false;
+		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.firstPhase) return false;
 		else return true;
 	}
 	public bool CanUseTransitionAbilityTwo()
 	{
-		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.secondPhase) return false;
+		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.secondPhase) return false;
 		else return true;
 	}
 	public bool CanUseTransitionAbilityThree()
 	{
-		if (!behaviour.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.thirdPhase) return false;
+		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.thirdPhase) return false;
 		else return true;
 	}
 }

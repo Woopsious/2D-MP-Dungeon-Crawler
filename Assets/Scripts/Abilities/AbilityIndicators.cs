@@ -157,8 +157,8 @@ public class AbilityIndicators : MonoBehaviour
 	{
 		if (lockTargetPosition) return;
 
-		if (caster.overriddenPlayerTarget != null)
-			targetPosition = caster.overriddenPlayerTarget.gameObject.transform.position;
+		if (caster.abilityHandler.overriddenPlayerTarget != null)
+			targetPosition = caster.abilityHandler.overriddenPlayerTarget.gameObject.transform.position;
 		else if (caster.playerTarget != null)
 			targetPosition = caster.playerTarget.gameObject.transform.position;
 	}

@@ -53,8 +53,8 @@ public class EntityClassHandler : MonoBehaviour
 	}
 	public void RerollEquippedAbilities()
 	{
-		entityStats.entityBehaviour.offensiveAbility = null;
-		entityStats.entityBehaviour.healingAbility = null;
+		entityStats.abilityHandler.offensiveAbility = null;
+		entityStats.abilityHandler.healingAbility = null;
 		SetUpEntityEquippedAbilities();
 	}
 	private void SetUpEntityEquippedAbilities()
@@ -65,11 +65,11 @@ public class EntityClassHandler : MonoBehaviour
 	{
 		SOAbilities pickedAbility = PickOffensiveAbility();
 		if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
-			entityStats.entityBehaviour.offensiveAbility = pickedAbility;
+			entityStats.abilityHandler.offensiveAbility = pickedAbility;
 
 		pickedAbility = PickHealingAbility();
         if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
-			entityStats.entityBehaviour.healingAbility = pickedAbility;
+			entityStats.abilityHandler.healingAbility = pickedAbility;
 	}
 	private SOAbilities PickOffensiveAbility()
 	{
@@ -101,8 +101,8 @@ public class EntityClassHandler : MonoBehaviour
 	//duplicate ability check
 	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
 	{
-		if (abilityToCheck == entityStats.entityBehaviour.offensiveAbility) return true;
-		if (abilityToCheck == entityStats.entityBehaviour.healingAbility) return true;
+		if (abilityToCheck == entityStats.abilityHandler.offensiveAbility) return true;
+		if (abilityToCheck == entityStats.abilityHandler.healingAbility) return true;
 		return false;
 	}
 

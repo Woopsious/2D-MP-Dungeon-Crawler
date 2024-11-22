@@ -65,12 +65,14 @@
     <Compile Include="Assets\Scripts\Managers\AudioManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOTraps.cs" />
+    <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityAbilityHandler.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\DungeonHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWeaponAttack.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossPhases.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOArmors.cs" />
+    <Compile Include="Assets\Scripts\Entities\!Main\EntityMovement.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryHandler.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\SpawnHandler.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
@@ -86,7 +88,6 @@
     <Compile Include="Assets\Scripts\Entities\!Main\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWander.cs" />
-    <Compile Include="Assets\Scripts\Entities\Abstract\EntityMovement.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityClassHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
@@ -151,7 +152,6 @@
     <Compile Include="Assets\Scripts\Entities\!Main\EntityStats.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\TrapActivationCollider.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
-    <Compile Include="Assets\Scripts\Entities\Abstract\EntityAbilities.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossChecks\CanUseAbilitiesInTransition.cs" />
     <Compile Include="Assets\Scripts\UI\InventorySlotDataUi.cs" />
     <Compile Include="Assets\Scripts\Interfaces\Interactables.cs" />

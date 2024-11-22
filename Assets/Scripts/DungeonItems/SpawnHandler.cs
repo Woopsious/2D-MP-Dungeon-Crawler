@@ -61,7 +61,7 @@ public class SpawnHandler : MonoBehaviour
 		GameManager.OnSceneChangeFinish += TrySpawnEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
-		BossEntityBehaviour.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
+		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
 	}
 	private void OnDisable()
 	{
@@ -71,7 +71,7 @@ public class SpawnHandler : MonoBehaviour
 		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
-		BossEntityBehaviour.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
+		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
 
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;

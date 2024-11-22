@@ -1,3 +1,5 @@
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
+
 public interface IBossPhases
 {
 	public void PhaseOne();
@@ -17,4 +19,12 @@ public interface IBossAbilities
 	public bool CanUseBossAbilityOne();
 	public bool CanUseBossAbilityTwo();
 	public bool CanUseBossAbilityThree();
+
+	public void PhaseTransitionOneSteps();
+	public void PhaseTransitionTwoSteps();
+	public void PhaseTransitionThreeSteps();
+
+	public bool CanUseTransitionAbilityOne();
+	public bool CanUseTransitionAbilityTwo();
+	public bool CanUseTransitionAbilityThree();
 }

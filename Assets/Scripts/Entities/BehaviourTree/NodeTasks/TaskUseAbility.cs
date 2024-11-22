@@ -4,15 +4,17 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class TaskUseAbility : EntityAbilities
+public class TaskUseAbility : BTNode
 {
-	EntityBehaviour behaviour;
-	EntityStats stats;
+	readonly EntityBehaviour behaviour;
+	readonly EntityStats stats;
+	readonly EntityAbilityHandler abilityHandler;
 
 	public TaskUseAbility(EntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
 		stats = behaviour.entityStats;
+		abilityHandler = behaviour.abilityHandler;
 	}
 
 	public override NodeState Evaluate()
@@ -22,9 +24,9 @@ public class TaskUseAbility : EntityAbilities
 		else
 		{
 			if (CanUseHealingAbility())
-				CastHealingAbility(behaviour);
+				abilityHandler.CastHealingAbility();
 			else if (CanUseOffensiveAbility())
-				CastOffensiveAbility(behaviour);
+				abilityHandler.CastOffensiveAbility();
 			else return NodeState.FAILURE;
 
 			//add ability animation length here if needed, include a bool if animation should block movement
@@ -35,16 +37,17 @@ public class TaskUseAbility : EntityAbilities
 
 	public bool CanUseHealingAbility()
 	{
-		if (behaviour.abilityBeingCasted != null || stats.statsRef.isBossVersion || behaviour.healingAbility == null) return false;
+		if (abilityHandler.abilityBeingCasted != null || stats.statsRef.isBossVersion || 
+			abilityHandler.healingAbility == null) return false;
 
 		int healthPercentage = (int)((float)stats.currentHealth / stats.maxHealth.finalValue * 100);
 		if (healthPercentage > 50) return false; //unique ability checks
 
-		if (!behaviour.canCastHealingAbility  || stats.maxHealth.finalValue == 0) return false;
+		if (!abilityHandler.canCastHealingAbility  || stats.maxHealth.finalValue == 0) return false;
 
-		if (!HasEnoughManaToCast(stats, behaviour.healingAbility)) //mana check
+		if (!abilityHandler.HasEnoughManaToCast(abilityHandler.healingAbility)) //mana check
 		{
-			behaviour.healingAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
+			abilityHandler.healingAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
 			return false;
 		}
 
@@ -52,13 +55,14 @@ public class TaskUseAbility : EntityAbilities
 	}
 	public bool CanUseOffensiveAbility()
 	{
-		if (behaviour.abilityBeingCasted != null || behaviour.offensiveAbility == null || !behaviour.canCastOffensiveAbility) return false;
+		if (abilityHandler.abilityBeingCasted != null || abilityHandler.offensiveAbility == null || 
+			!abilityHandler.canCastOffensiveAbility) return false;
 
 		if (behaviour.playerTarget == null) return false; //unique ability checks
 
-		if (!HasEnoughManaToCast(stats, behaviour.offensiveAbility)) //mana check
+		if (!abilityHandler.HasEnoughManaToCast(abilityHandler.offensiveAbility)) //mana check
 		{
-			behaviour.offensiveAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
+			abilityHandler.offensiveAbilityTimer = 2.5f;   //if low mana wait 2.5s then try again
 			return false;
 		}
 		else return true;
