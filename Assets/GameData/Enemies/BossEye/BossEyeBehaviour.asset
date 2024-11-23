@@ -20,7 +20,7 @@ MonoBehaviour:
   navMeshTurnSpeed: 75
   navMeshAcceleration: 4
   navMeshStoppingDistance: 1.75
-  abilityOne: {fileID: 11400000, guid: 0a90e8d491fe0194baf9d54b7feb6c31, type: 2}
+  abilityOne: {fileID: 11400000, guid: 7045b5cc3698af7438408aa8ad7c9442, type: 2}
   abilityTwo: {fileID: 11400000, guid: 7045b5cc3698af7438408aa8ad7c9442, type: 2}
   abilityThree: {fileID: 11400000, guid: d763c5907bdb43442b24c2a9c10cda6c, type: 2}
   markPlayerAbility: {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}

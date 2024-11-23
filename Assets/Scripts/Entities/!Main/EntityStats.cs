@@ -62,7 +62,6 @@ public class EntityStats : MonoBehaviour
 	public event Action<SOStatusEffects> OnResetStatusEffectTimer;
 	public event Action<SOStatusEffects> OnRemoveStatusEffect;
 
-
 	public event Action<float, bool, float> OnRecieveHealingEvent;
 	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
 
@@ -258,6 +257,8 @@ public class EntityStats : MonoBehaviour
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
 		if (!IsPlayerEntity()) return;
+
+		PlayerEventManager.PlayerDeath(gameObject);
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}

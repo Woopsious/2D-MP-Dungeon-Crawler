@@ -18,7 +18,6 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
-	//[HideInInspector] public AbilityIndicators abilityIndicators;
 	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private SpriteRenderer spriteRenderer;
@@ -34,6 +33,8 @@ public class PlayerController : MonoBehaviour
 	public EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
 	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+
+	//target selected event
 	public event Action<EntityStats> OnNewTargetSelected;
 
 	//targetlist update timer
@@ -43,10 +44,13 @@ public class PlayerController : MonoBehaviour
 	[Header("Ability Prefabs")] // +info
 	public GameObject AbilityAoePrefab;
 	public GameObject projectilePrefab;
+
+	//ability events
 	public static event Action<Abilities> OnPlayerUseAbility;
 	public static event Action OnPlayerCastAbility;
 	public static event Action OnPlayerCancelAbility;
 
+	//ability 
 	private Abilities queuedAbility;
 	private Abilities abilityBeingCasted;
 	private float abilityCastingTimer;
@@ -67,7 +71,6 @@ public class PlayerController : MonoBehaviour
 		playerEquipmentHandler.player = this;
 		enemyDetection = GetComponentInChildren<EntityDetection>();
 		enemyDetection.player = this;
-		//abilityIndicators = GetComponent<AbilityIndicators>();
 		rb = GetComponent<Rigidbody2D>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
@@ -102,14 +105,16 @@ public class PlayerController : MonoBehaviour
 	{
 		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
 
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
 		UpdateTargetsInList();
 		AutoAttackTimer();
 		AbilityCastingTimer();
 	}
 	private void FixedUpdate()
 	{
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
 		PlayerMovement();
 	}
 
@@ -252,11 +257,13 @@ public class PlayerController : MonoBehaviour
 	{
 		if (selectedEnemyTarget == null) return;
 		if (selectedEnemyTarget.gameObject != obj) return;
+
 		ClearSelectedTarget();
 	}
 	public void ClearSelectedTarget()
 	{
 		selectedEnemyTarget = null;
+		selectedEnemyTargetIndex = 0;
 	}
 
 	//tab targeting
@@ -594,7 +601,7 @@ public class PlayerController : MonoBehaviour
 	//in game actions
 	private void OnMainAttack()
 	{
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		if (queuedAbility == null)
 		{
@@ -623,7 +630,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnRightClick()
 	{
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		if (queuedAbility != null)
 			CancelAbility(queuedAbility);
@@ -632,6 +639,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnCameraZoom()
 	{
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
 		float value = playerInputs.CameraZoomInput;
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
@@ -639,26 +648,25 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInteract()
 	{
+		if (playerStats.IsEntityDead()) return;
 		if (currentInteractedObject == null) return;
 		currentInteractedObject.Interact(this);
 	}
 	private void OnTabTargetingForwards()
 	{
-		if (selectedEnemyTarget == null)
-			CycleTargetsForwards(0);
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
-		if (selectedEnemyTargetIndex == EnemyTargetList.Count - 1)
-			CycleTargetsBackwards(0);
+		if (selectedEnemyTarget == null || selectedEnemyTargetIndex == EnemyTargetList.Count - 1) //start at begining of list
+			CycleTargetsForwards(0);
 		else
 			CycleTargetsForwards(selectedEnemyTargetIndex + 1);
 	}
 	private void OnTabTargetingBackwards()
 	{
-		if (selectedEnemyTarget == null)
-			CycleTargetsForwards(EnemyTargetList.Count - 1);
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
-		if (selectedEnemyTargetIndex <= 0)
-			CycleTargetsForwards(EnemyTargetList.Count - 1);
+		if (selectedEnemyTarget == null || selectedEnemyTargetIndex == 0) //start at end of list
+			CycleTargetsBackwards(EnemyTargetList.Count - 1);
 		else
 			CycleTargetsBackwards(selectedEnemyTargetIndex - 1);
 	}
@@ -666,20 +674,22 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
-		if (IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
 	{
-		if (IsPlayerInteracting() || queuedAbility != null) return;
-		if (PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
@@ -692,8 +702,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityTwo()
 	{
-		if (IsPlayerInteracting() || queuedAbility != null) return;
-		if (PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
@@ -706,8 +716,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityThree()
 	{
-		if (IsPlayerInteracting() || queuedAbility != null) return;
-		if (PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
@@ -720,8 +730,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityFour()
 	{
-		if (IsPlayerInteracting() || queuedAbility != null) return;
-		if (PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
@@ -734,8 +744,8 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityFive()
 	{
-		if (IsPlayerInteracting() || queuedAbility != null) return;
-		if (PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;

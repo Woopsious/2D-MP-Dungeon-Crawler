@@ -129,9 +129,9 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
 		PlayerEventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
 
-		PlayerController.OnPlayerUseAbility += PlayerQueueAbility;
-		PlayerController.OnPlayerCastAbility += PlayerCastAbility;
-		PlayerController.OnPlayerCancelAbility += PlayerCancelAbility;
+		PlayerController.OnPlayerUseAbility -= PlayerQueueAbility;
+		PlayerController.OnPlayerCastAbility -= PlayerCastAbility;
+		PlayerController.OnPlayerCancelAbility -= PlayerCancelAbility;
 
 		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
@@ -574,6 +574,10 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI PANEL CHANGE EVENTS
+	public void OpenPlayerDeathScreen(PlayerController player)
+	{
+
+	}
 	public void OpenInventoryButton()
 	{
 		PlayerEventManager.ShowPlayerInventory();

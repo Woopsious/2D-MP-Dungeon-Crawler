@@ -48,6 +48,11 @@ public static class PlayerEventManager
 	}
 
 	//player ui
+	public static event Action<GameObject> OnPlayerDeathEvent;
+	public static void PlayerDeath(GameObject obj)
+	{
+		OnPlayerDeathEvent?.Invoke(obj);
+	}
 	public static event Action<GameObject, bool> OnDetectNewInteractedObject;
 	public static void DetectNewInteractedObject(GameObject obj, bool showText)
 	{
