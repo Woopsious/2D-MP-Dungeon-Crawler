@@ -30,7 +30,6 @@ public class AbilityAOE : MonoBehaviour
 	}
 
 	public List<EntityStats> entityStatsList = new List<EntityStats>();
-	public List<PlayerController> playerList = new List<PlayerController>();
 
 	private void Update()
 	{
@@ -50,6 +49,7 @@ public class AbilityAOE : MonoBehaviour
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
 		isPlayerAoe = casterInfo.IsPlayerEntity();
+		entityStatsList.Clear();
 
 		if (abilityRef.aoeType == SOAbilities.AoeType.isBoxAoe)
 		{
@@ -245,7 +245,7 @@ public class AbilityAOE : MonoBehaviour
 	private bool CollidedTargetInLineOfSight(GameObject collidedObject)
 	{
 		RaycastHit2D hit = Physics2D.Linecast(casterPosition, collidedObject.transform.position, lineOfSightLayer);
-		if (hit.collider == null)
+		if (hit.collider == null) //if null nothing blocking view
 			return true;
 		else
 			return false;
@@ -256,14 +256,8 @@ public class AbilityAOE : MonoBehaviour
 		float angle = Vector3.Angle(targetDir, aoeColliderIndicator.transform.up);
 
 		if (angle <= abilityRef.angle / 2)
-		{
-			Debug.LogError("inside angle: " + angle);
 			return true;
-		}
 		else
-		{
-			Debug.LogError("outside angle: " + angle);
 			return false;
-		}
 	}
 }
