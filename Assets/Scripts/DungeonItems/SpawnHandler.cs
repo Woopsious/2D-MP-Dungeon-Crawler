@@ -177,6 +177,17 @@ public class SpawnHandler : MonoBehaviour
 		}
 	}
 
+	//Entity clean up
+	public void ForceClearAllEntities()
+	{
+		if (bossEntity != null)
+		{
+			Destroy(bossEntity.gameObject);
+			bossEntity = null;
+		}
+
+		CleanUpEntities();
+	}
 	private void CleanUpEntities()
 	{
 		if (listOfPlayersInRange.Count != 0) return;
@@ -272,7 +283,7 @@ public class SpawnHandler : MonoBehaviour
 		entity.gameObject.transform.position = Utilities.GetRandomPointInBounds(spawnBounds);
 		entity.gameObject.SetActive(true);
 		entity.ResetEntityStats();
-		entity.ResetEntityBehaviour(this);
+		entity.entityBehaviour.ResetBehaviour(this);
 		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)

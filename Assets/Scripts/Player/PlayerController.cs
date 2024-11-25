@@ -134,6 +134,11 @@ public class PlayerController : MonoBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
+
+	public void ResetPlayerAfterDeath()
+	{
+		playerStats.CalculateBaseStats();
+	}
 	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;

@@ -144,18 +144,24 @@ public class EntityStats : MonoBehaviour
 	{
 		StopAllCoroutines();
 		boxCollider2D.enabled = true;
-		animator.ResetTrigger("DeathTrigger");
 		SpriteRenderer.color = Color.white;
 		CalculateBaseStats();
-		classHandler.RerollEquippedAbilities();
 
-		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
-			statusEffect.ClearEffect();
-	}
-	public void ResetEntityBehaviour(SpawnHandler spawner)
-	{
-		entityBehaviour.UpdateBounds(spawner.transform.position);
-		entityBehaviour.ResetBehaviour();
+		if (currentStatusEffects.Count != 0)
+		{
+			foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
+				statusEffect.ClearEffect();
+		}
+
+		if (IsPlayerEntity())
+		{
+			animator.SetTrigger("DeathTrigger"); //no idea why this works for player and not entities??
+		}
+		else
+		{
+			animator.ResetTrigger("DeathTrigger");//+ this vis versa??
+			classHandler.RerollEquippedAbilities();
+		}
 	}
 
 	private void PlayIdleSound()
@@ -258,18 +264,18 @@ public class EntityStats : MonoBehaviour
 
 		if (!IsPlayerEntity()) return;
 
-		PlayerEventManager.PlayerDeath(gameObject);
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
 	private void OnDeath()
 	{
 		audioHandler.PlayAudio(statsRef.deathSfx);
-		entityBehaviour.navMeshAgent.isStopped = true;
+		StartCoroutine(WaitForDeathSound());
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
 
-		StartCoroutine(WaitForDeathSound());
+		if (IsPlayerEntity()) return;
+		entityBehaviour.navMeshAgent.isStopped = true;
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -287,7 +293,10 @@ public class EntityStats : MonoBehaviour
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
-		DungeonHandler.EntityDeathEvent(gameObject);
+		if (IsPlayerEntity())
+			PlayerEventManager.PlayerDeath(gameObject);
+		else
+			DungeonHandler.EntityDeathEvent(gameObject);
 	}
 
 	//mana functions

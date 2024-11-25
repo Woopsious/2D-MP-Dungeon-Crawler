@@ -80,12 +80,14 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideInventory;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideInventory;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideInventory;
+		PlayerEventManager.OnShowPlayerDeathUiEvent += HideInventory;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += ShowLearntAbilities;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerDeathUiEvent += HideLearntAbilities;
 
 		PlayerEventManager.OnShowNpcShopInventory += ShowNpcShop;
 		PlayerEventManager.OnHideNpcShopInventory += HideNpcShop;
@@ -103,12 +105,14 @@ public class PlayerInventoryUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideInventory;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideInventory;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideInventory;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideInventory;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideLearntAbilities;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= ShowLearntAbilities;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideLearntAbilities;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideLearntAbilities;
 
 		PlayerEventManager.OnShowNpcShopInventory -= ShowNpcShop;
 		PlayerEventManager.OnHideNpcShopInventory -= HideNpcShop;

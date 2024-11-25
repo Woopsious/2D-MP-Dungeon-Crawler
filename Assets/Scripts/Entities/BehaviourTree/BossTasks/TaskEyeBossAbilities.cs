@@ -77,19 +77,21 @@ public class TaskEyeBossAbilities : BTNode, IBossAbilities
 	//ability checks
 	public bool CanUseBossAbilityOne()
 	{
-		if (abilityHandler.abilityBeingCasted ||
+		if (behaviour.playerTarget == null || abilityHandler.abilityBeingCasted ||
 			!abilityHandler.canCastAbilityOne || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
-		if (abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+		if (behaviour.playerTarget == null || 
+			abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
 			!abilityHandler.canCastAbilityTwo || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityTwo)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		if (abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+		if (behaviour.playerTarget == null || 
+			abilityHandler.abilityBeingCasted || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
 			!abilityHandler.canCastAbilityThree || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityThree)) return false;
 		else return true;
 	}
@@ -132,17 +134,18 @@ public class TaskEyeBossAbilities : BTNode, IBossAbilities
 	//transition ability checks
 	public bool CanUseTransitionAbilityOne()
 	{
-		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.firstPhase) return false;
-		else return true;
+		//noop
+		return false;
 	}
 	public bool CanUseTransitionAbilityTwo()
 	{
-		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.secondPhase) return false;
+		if (behaviour.playerTarget == null || 
+			!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.secondPhase) return false;
 		else return true;
 	}
 	public bool CanUseTransitionAbilityThree()
 	{
-		if (!abilityHandler.canCastTransitionAbility || stats.bossPhase != BossEntityStats.BossPhase.thirdPhase) return false;
-		else return true;
+		//noop
+		return false;
 	}
 }

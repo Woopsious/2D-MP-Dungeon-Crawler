@@ -7,6 +7,7 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 {
 	public static BossRoomHandler Instance;
 
+	private bool respawnPortalUnlocked;
 	private bool bossFightStarted;
 	private bool bossFightCompleted;
 
@@ -23,6 +24,7 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 	private void Awake()
 	{
 		Instance = this;
+		respawnPortalUnlocked = false;
 		bossFightStarted = false;
 		bossFightCompleted = false;
 		centerPieceCollider = GetComponent<CircleCollider2D>();
@@ -47,6 +49,7 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 
 		//lock room, enable respawn portal
 		centerPieceCollider.enabled = false;
+		respawnPortalUnlocked = true;
 		bossFightStarted = true;
 		roomBarrier.SetActive(true);
 		roomRespawnPortal.gameObject.SetActive(true);
@@ -57,6 +60,15 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		return; //noop
 	}
 
+	//respawn player at respawn portal
+	public void RespawnPlayerAtPortal(GameObject playerObj)
+	{
+		if (respawnPortalUnlocked)
+			playerObj.transform.position = roomRespawnPortal.transform.position;
+		else
+			DungeonHandler.Instance.RespawnPlayerAtClosestPortal(playerObj);
+	}
+
 	private void OnBossDeath()
 	{       
 		//unlock room, enable exit portal
@@ -65,12 +77,14 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		roomExitPortal.gameObject.SetActive(true);
 	}
 
-	private void ResetRoom()
+	public void ResetRoom()
 	{
 		bossFightStarted = false;
 		bossFightCompleted = false;
 		centerPieceCollider.enabled = true;
 		roomBarrier.SetActive(false);
+
+		roomSpawnHandler.ForceClearAllEntities();
 
 		//when all players dead, revive them at respawn portal, reset boss/adds + anything else that comes up
 	}

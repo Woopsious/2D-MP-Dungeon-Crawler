@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class PlayerHotbarUi : MonoBehaviour
 {
-	[SerializeField]
 	public static PlayerHotbarUi Instance;
 
 	public GameObject statusEffectUiPrefab;
@@ -15,8 +14,9 @@ public class PlayerHotbarUi : MonoBehaviour
 	public TMP_Text playerClassInfoText;
 	public TMP_Text goldAmountText;
 
-	[Header("Hotbar Consumables")]
 	public GameObject HotbarPanelUi;
+
+	[Header("Hotbar Consumables")]
 	public List<GameObject> ConsumableSlots = new List<GameObject>();
 	public GameObject consumableSlotOne;
 	public GameObject consumableSlotTwo;
@@ -24,6 +24,21 @@ public class PlayerHotbarUi : MonoBehaviour
 	[Header("Equipped Consumables")]
 	public Consumables equippedConsumableOne;
 	public Consumables equippedConsumableTwo;
+
+	[Header("Hotbar Abilities")]
+	public List<GameObject> AbilitySlots = new List<GameObject>();
+	public GameObject abilitySlotOne;
+	public GameObject abilitySlotTwo;
+	public GameObject abilitySlotThree;
+	public GameObject abilitySlotFour;
+	public GameObject abilitySlotFive;
+
+	[Header("Equipped Abilities")]
+	public Abilities equippedAbilityOne;
+	public Abilities equippedAbilityTwo;
+	public Abilities equippedAbilityThree;
+	public Abilities equippedAbilityFour;
+	public Abilities equippedAbilityFive;
 
 	[Header("Ability Indicators")]
 	private Vector3 playerScreenPosition;
@@ -48,21 +63,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	[Header("Box Indicator")]
 	public GameObject boxIndicatorUi;
 	private Image boxIndicatorImage;
-
-	[Header("Hotbar Abilities")]
-	public List<GameObject> AbilitySlots = new List<GameObject>();
-	public GameObject abilitySlotOne;
-	public GameObject abilitySlotTwo;
-	public GameObject abilitySlotThree;
-	public GameObject abilitySlotFour;
-	public GameObject abilitySlotFive;
-
-	[Header("Equipped Abilities")]
-	public Abilities equippedAbilityOne;
-	public Abilities equippedAbilityTwo;
-	public Abilities equippedAbilityThree;
-	public Abilities equippedAbilityFour;
-	public Abilities equippedAbilityFive;
 
 	[Header("Player Status Effects Ui")]
 	public GameObject playerStatusEffectsParentObj;

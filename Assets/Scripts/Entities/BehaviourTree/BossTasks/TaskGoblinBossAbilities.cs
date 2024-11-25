@@ -73,19 +73,21 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 	//ability checks
 	public bool CanUseBossAbilityOne()
 	{
-		if (abilityHandler.abilityBeingCasted || stats.inPhaseTransition ||
+		if (behaviour.playerTarget == null || abilityHandler.abilityBeingCasted || stats.inPhaseTransition ||
 			!abilityHandler.canCastAbilityOne || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityOne)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityTwo()
 	{
-		if (abilityHandler.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
+		if (behaviour.playerTarget == null || 
+			abilityHandler.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.secondPhase ||
 			!abilityHandler.canCastAbilityTwo || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityTwo)) return false;
 		else return true;
 	}
 	public bool CanUseBossAbilityThree()
 	{
-		if (abilityHandler.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
+		if (behaviour.playerTarget == null || 
+			abilityHandler.abilityBeingCasted || stats.inPhaseTransition || stats.bossPhase < BossEntityStats.BossPhase.thirdPhase ||
 			!abilityHandler.canCastAbilityThree || !abilityHandler.HasEnoughManaToCast(abilityHandler.abilityThree)) return false;
 		else return true;
 	}
@@ -107,14 +109,17 @@ public class TaskGoblinBossAbilities : BTNode, IBossAbilities
 	//transition ability checks
 	public bool CanUseTransitionAbilityOne()
 	{
-		throw new System.NotImplementedException();
+		//noop
+		return false;
 	}
 	public bool CanUseTransitionAbilityTwo()
 	{
-		throw new System.NotImplementedException();
+		//noop
+		return false;
 	}
 	public bool CanUseTransitionAbilityThree()
 	{
-		throw new System.NotImplementedException();
+		//noop
+		return false;
 	}
 }

@@ -154,14 +154,15 @@ public class EntityBehaviour : Tree
 		navMeshAgent.acceleration = behaviourRef.navMeshAcceleration;
 		navMeshAgent.stoppingDistance = behaviourRef.navMeshStoppingDistance;
 	}
-	public void ResetBehaviour()
+	public void ResetBehaviour(SpawnHandler spawner)
 	{
+		UpdateBounds(spawner.transform.position);
 		markedForCleanUp = false;
 		navMeshAgent.isStopped = false;
 		entityStats.equipmentHandler.equippedWeapon.canAttackAgain = true;
 		playerAggroList.Clear();
 	}
-	public void UpdateBounds(Vector3 position)
+	private void UpdateBounds(Vector3 position)
 	{
 		idleBounds.min = new Vector3(position.x - behaviourRef.idleWanderRadius,
 			position.y - behaviourRef.idleWanderRadius, position.z);

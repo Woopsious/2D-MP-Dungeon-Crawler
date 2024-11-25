@@ -98,12 +98,14 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerJournalEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerClassSelection;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerDeathUiEvent += HideClassSkillTree;
 
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateMaxAbilitySlots;
 	}
@@ -116,12 +118,14 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HidePlayerClassSelection;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideClassSkillTree;
 
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateMaxAbilitySlots;
 

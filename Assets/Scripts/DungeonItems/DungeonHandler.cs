@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -9,6 +10,7 @@ public class DungeonHandler : MonoBehaviour
 	public static DungeonHandler Instance;
 
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
+	public List<Vector2> dungeonPortalPositionsList = new List<Vector2>();
 
 	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
 	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
@@ -95,6 +97,27 @@ public class DungeonHandler : MonoBehaviour
 		abilityAOE.gameObject.SetActive(false);
 		abilityAOE.transform.position = Vector3.zero;
 		Instance.inActiveAoeAbilitesPool.Add(abilityAOE);
+	}
+
+	//GET CLOSEST RESPAWN PORTAL
+	public void RespawnPlayerAtClosestPortal(GameObject playerObj)
+	{
+		List<float> portalDistances = new();
+		Vector2 positionToRespawnAt = Vector2.zero;
+		float distance = 10000;
+
+		foreach (GameObject portal in dungeonPortalsList)
+		{
+			float newDistance = Vector2.Distance(playerObj.transform.position, portal.transform.position);
+			portalDistances.Add(distance);
+
+			if (newDistance < distance)
+			{
+				positionToRespawnAt = portal.transform.position;
+				distance = newDistance;
+			}
+		}
+		playerObj.transform.position = positionToRespawnAt;
 	}
 
 	//DUNGEON SETUP
