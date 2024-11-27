@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -506,8 +507,9 @@ public class PlayerController : MonoBehaviour
 
 		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue
-				* playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
+			DamageSourceInfo damageSourceInfo = new(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue * playerStats.levelModifier,
+				(IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
+			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 
 		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects (if has any) based on what type it is.

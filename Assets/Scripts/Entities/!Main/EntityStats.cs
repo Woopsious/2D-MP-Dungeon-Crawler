@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -63,7 +64,7 @@ public class EntityStats : MonoBehaviour
 	public event Action<SOStatusEffects> OnRemoveStatusEffect;
 
 	public event Action<float, bool, float> OnRecieveHealingEvent;
-	public event Action<PlayerController, float, IDamagable.DamageType, bool> OnRecieveDamageEvent;
+	public event Action<DamageSourceInfo> OnRecieveDamageEvent;
 
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
@@ -201,61 +202,61 @@ public class EntityStats : MonoBehaviour
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnHit(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue, bool isDestroyedInOneHit)
+	public void OnHit(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
 	{
         if (isDestroyedInOneHit)
         {
 			DungeonHandler.EntityDeathEvent(gameObject);
 			return;
-        }
+		}
 
-		OnRecieveDamageEvent?.Invoke(player, damage, damageType, isPercentageValue);
+		OnRecieveDamageEvent?.Invoke(damageSourceInfo);
 	}
-	private void RecieveDamage(PlayerController player, float damage, IDamagable.DamageType damageType, bool isPercentageValue)
+	private void RecieveDamage(DamageSourceInfo damageSourceInfo)
 	{
 		//Debug.Log(gameObject.name + " recieved: " + damage);
-		if (damageType == IDamagable.DamageType.isPoisonDamageType)
+		if (damageSourceInfo.damageType == IDamagable.DamageType.isPoisonDamageType)
 		{
 			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
-			if (isPercentageValue)
-				damage = (maxHealth.finalValue * damage) - poisonResistance.finalValue;
+			if (damageSourceInfo.isPercentage)
+				damageSourceInfo.damage = (maxHealth.finalValue * damageSourceInfo.damage) - poisonResistance.finalValue;
 			else
-				damage -= poisonResistance.finalValue;
+				damageSourceInfo.damage -= poisonResistance.finalValue;
 		}
-		else if (damageType == IDamagable.DamageType.isFireDamageType)
+		else if (damageSourceInfo.damageType == IDamagable.DamageType.isFireDamageType)
 		{
 			//Debug.Log("Fire Dmg res: " + fireResistance.finalValue);
-			if (isPercentageValue)
-				damage = (maxHealth.finalValue * damage) - fireResistance.finalValue;
+			if (damageSourceInfo.isPercentage)
+				damageSourceInfo.damage = (maxHealth.finalValue * damageSourceInfo.damage) - fireResistance.finalValue;
 			else
-				damage -= fireResistance.finalValue;
+				damageSourceInfo.damage -= fireResistance.finalValue;
 		}
-		else if (damageType == IDamagable.DamageType.isIceDamageType)
+		else if (damageSourceInfo.damageType == IDamagable.DamageType.isIceDamageType)
 		{
 			//Debug.Log("Ice Dmg res: " + iceResistance.finalValue);
-			if (isPercentageValue)
-				damage = (maxHealth.finalValue * damage) - iceResistance.finalValue;
+			if (damageSourceInfo.isPercentage)
+				damageSourceInfo.damage = (maxHealth.finalValue * damageSourceInfo.damage) - iceResistance.finalValue;
 			else
-				damage -= iceResistance.finalValue;
+				damageSourceInfo.damage -= iceResistance.finalValue;
 		}
 		else
 		{
 			//Debug.Log("Physical Dmg res: " + physicalResistance.finalValue);
-			if (isPercentageValue)
-				damage = (maxHealth.finalValue * damage) - physicalResistance.finalValue;
+			if (damageSourceInfo.isPercentage)
+				damageSourceInfo.damage = (maxHealth.finalValue * damageSourceInfo.damage) - physicalResistance.finalValue;
 			else
-				damage -= physicalResistance.finalValue;
+				damageSourceInfo.damage -= physicalResistance.finalValue;
 		}
 
-		if (damage < 3) //always deal 3 damage
-			damage = 3;
+		if (damageSourceInfo.damage < 3) //always deal 3 damage
+			damageSourceInfo.damage = 3;
 
 		//Debug.Log("FinalDmg: " + damage);
-		currentHealth = (int)(currentHealth - damage);
+		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(statsRef.hurtSfx);
-		if (!IsPlayerEntity() && player != null)
-			entityBehaviour.AddToAggroRating(player, (int)damage);
+		if (!IsPlayerEntity() && damageSourceInfo.player != null)
+			entityBehaviour.AddToAggroRating(damageSourceInfo.player, (int)damageSourceInfo.damage);
 
 		if (currentHealth <= 0)
 			OnDeath();

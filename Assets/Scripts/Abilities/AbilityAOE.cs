@@ -226,8 +226,9 @@ public class AbilityAOE : MonoBehaviour
 		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
 			if (!CollidedTargetInConeAngle(entity.gameObject)) return;
 
-		entity.GetComponent<Damageable>().OnHitFromDamageSource(player, entity.GetComponent<Collider2D>(), damageToDeal,
-			(IDamagable.DamageType)damageType, 0, abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+		DamageSourceInfo damageSourceInfo = new(player, entity.GetComponent<Collider2D>(), damageToDeal, (IDamagable.DamageType)damageType
+			, 0, abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+		entity.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 
 		if (!abilityRef.hasStatusEffects) return;
 		entity.ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);

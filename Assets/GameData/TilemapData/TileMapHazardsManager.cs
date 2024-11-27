@@ -43,8 +43,9 @@ public class TileMapHazardsManager : MonoBehaviour
 		if (collision.GetComponent<Damageable>() != null && dataFromTiles[tile].doesInstantDamage) //apply 1 time damage
 		{
 			int damageToDo = (int)(dataFromTiles[tile].baseDamageDealt * collision.GetComponent<EntityStats>().levelModifier);
-			collision.GetComponent<Damageable>().OnHitFromDamageSource(null, collision, damageToDo,
-				(IDamagable.DamageType)dataFromTiles[tile].baseDamageType, 0, false, false, true);
+
+			DamageSourceInfo damageSourceInfo = new(null, null, damageToDo, (IDamagable.DamageType)dataFromTiles[tile].baseDamageType, 0, false, false, true);
+			collision.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 
 		if (collision.GetComponent<EntityStats>() != null && dataFromTiles[tile].appliesEffect) //apply effects if any

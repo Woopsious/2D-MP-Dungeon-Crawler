@@ -95,7 +95,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedWeaponRef.weaponBaseRef = weaponToEquip;
 		equippedWeaponRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
 		equippedWeaponRef.AddPlayerRef(null);
-		equippedWeaponRef.isEquippedByOther = true;
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);

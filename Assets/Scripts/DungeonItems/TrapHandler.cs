@@ -144,8 +144,8 @@ public class TrapHandler : MonoBehaviour, IInteractables
 				ShootProjectiles(entityStats);
 			else
 			{
-				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(null, coll, trapDamage, 
-					(IDamagable.DamageType)trapBaseRef.baseDamageType, 0, false, false, true); //apply damage
+				DamageSourceInfo damageSourceInfo = new(null, coll, trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType, 0, false, false, true);
+				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo); //apply damage
 
 				if (trapBaseRef.hasEffects) //apply effects
 					entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);

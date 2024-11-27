@@ -9,9 +9,10 @@ public class Damageable : MonoBehaviour
 	public bool isDestroyedInOneHit;
 	private bool CanOtherEntitiesDamageThis;
 
-	public event Action<PlayerController, float, IDamagable.DamageType, bool, bool> OnHit;
+	//public event Action<PlayerController, float, IDamagable.DamageType, bool, bool> OnHit;
+	public event Action<DamageSourceInfo, bool> OnHit;
 
-	private void Start()
+	private void Awake()
 	{
 		if (GetComponent<PlayerController>() != null)
 			CanOtherEntitiesDamageThis = true;
@@ -19,21 +20,87 @@ public class Damageable : MonoBehaviour
 			CanOtherEntitiesDamageThis = false;
 	}
 
-	public void OnHitFromDamageSource(PlayerController player, Collider2D other, float damage, IDamagable.DamageType damageType, float knockBack,
-		bool isPercentageValue, bool wasHitByPlayer, bool wasEnviroment)
+	public void OnHitFromDamageSource(DamageSourceInfo damageSourceInfo)
 	{
-		if (invincible) return;
-		if (!wasHitByPlayer && !CanOtherEntitiesDamageThis && !wasEnviroment) return;
+		if (!DamageShouldBeApplied(damageSourceInfo)) return;
 
-		ApplyHitForce(other, knockBack);
-		OnHit?.Invoke(player, damage, damageType, isPercentageValue, isDestroyedInOneHit);
+		if (damageSourceInfo.collider != null)
+			ApplyHitForce(damageSourceInfo.collider, damageSourceInfo.knockBack);
+
+		OnHit?.Invoke(damageSourceInfo, isDestroyedInOneHit);
 		//Debug.Log(gameObject.name + " was hit");
 	}
-	public void ApplyHitForce(Collider2D other, float knockback)
+
+	private bool DamageShouldBeApplied(DamageSourceInfo damageSourceInfo)
+	{
+		if (invincible || damageSourceInfo.hitBye == DamageSourceInfo.HitBye.entity && !CanOtherEntitiesDamageThis) return false;
+		return true;
+	}
+	private void ApplyHitForce(Collider2D other, float knockback)
 	{
 		if (GetComponent<Rigidbody2D>() == null || other == null) return;
 
 		Vector2 direction = (transform.position - other.transform.position).normalized;
 		GetComponent<Rigidbody2D>().AddForce(100 * knockback * direction, ForceMode2D.Impulse);
+	}
+}
+
+public class DamageSourceInfo
+{
+	public PlayerController player;
+	public Collider2D collider;
+
+	public float damage;
+	public IDamagable.DamageType damageType;
+
+	public float knockBack;
+
+	public bool isPercentage;
+	public bool wasHitByPlayer;
+	public bool wasEnviroment;
+
+	public HitBye hitBye;
+	public enum HitBye
+	{
+		player, entity, enviroment
+	}
+
+	public DamageSourceInfo(PlayerController player, Collider2D collider, float damage, IDamagable.DamageType damageType, 
+		float knockBack, bool isPercentage, bool wasHitByPlayer, bool wasEnviroment)
+	{
+		this.player = player;
+		this.collider = collider;
+
+		this.damage = damage;
+		this.damageType = damageType;
+
+		this.knockBack = knockBack;
+
+		this.isPercentage = isPercentage;
+		this.wasHitByPlayer = wasHitByPlayer;
+		this.wasEnviroment = wasEnviroment;
+	}
+
+	//applies all
+	public DamageSourceInfo(HitBye hitBye, Collider2D collider, float damage, IDamagable.DamageType damageType,
+	float knockBack, bool isPercentage)
+	{
+		this.hitBye = hitBye;
+		this.collider = collider;
+
+		this.damage = damage;
+		this.damageType = damageType;
+		this.knockBack = knockBack;
+		this.isPercentage = isPercentage;
+	}
+
+	//no knockback
+	public DamageSourceInfo(HitBye hitBye, float damage, IDamagable.DamageType damageType, bool isPercentage)
+	{
+		this.hitBye = hitBye;
+
+		this.damage = damage;
+		this.damageType = damageType;
+		this.isPercentage = isPercentage;
 	}
 }

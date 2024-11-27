@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class EntityAbilityHandler : MonoBehaviour
@@ -184,16 +185,13 @@ public class EntityAbilityHandler : MonoBehaviour
 		}
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
+			DamageSourceInfo damageSourceInfo = new(null, GetComponent<Collider2D>(), ability.damageValue * entityStats.levelModifier, 
+				(IDamagable.DamageType)ability.damageType, 0, false, true, false);
+
 			if (overridePlayerTarget)
-			{
-				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(),
-					ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
-			}
+				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 			else
-			{
-				behaviour.playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(null, GetComponent<Collider2D>(), ability.damageValue
-					* entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, 0, false, true, false);
-			}
+				behaviour.playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 
 		if (ability.hasStatusEffects)    //apply effects (if has any) based on what type it is.
