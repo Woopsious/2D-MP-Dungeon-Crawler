@@ -64,8 +64,7 @@ public class AbilityStatusEffect : MonoBehaviour
 		timerTillNextDamage -= Time.deltaTime;
 		if (timerTillNextDamage < 0)
 		{
-			DamageSourceInfo damageSourceInfo = new(null, null, damage, (IDamagable.DamageType)damageType, 0
-				, false, false, true);
+			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, damage, (IDamagable.DamageType)damageType, false);
 			entityEffectIsAppliedTo.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 			timerTillNextDamage = damageOverTimeCooldown;
 		}

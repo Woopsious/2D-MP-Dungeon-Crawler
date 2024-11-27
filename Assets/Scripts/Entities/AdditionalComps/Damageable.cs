@@ -33,7 +33,7 @@ public class Damageable : MonoBehaviour
 
 	private bool DamageShouldBeApplied(DamageSourceInfo damageSourceInfo)
 	{
-		if (invincible || damageSourceInfo.hitBye == DamageSourceInfo.HitBye.entity && !CanOtherEntitiesDamageThis) return false;
+		if (invincible || damageSourceInfo.hitBye == IDamagable.HitBye.entity && !CanOtherEntitiesDamageThis) return false;
 		return true;
 	}
 	private void ApplyHitForce(Collider2D other, float knockback)
@@ -47,6 +47,15 @@ public class Damageable : MonoBehaviour
 
 public class DamageSourceInfo
 {
+	//killed by things
+	public TrapHandler trap;
+	public EntityStats entity;
+	public TileMapHazardsManager hazardsManager;
+
+	public SOStatusEffects effect;
+	public SOAbilities ability;
+	public Projectiles projectile;
+
 	public PlayerController player;
 	public Collider2D collider;
 
@@ -59,32 +68,13 @@ public class DamageSourceInfo
 	public bool wasHitByPlayer;
 	public bool wasEnviroment;
 
-	public HitBye hitBye;
-	public enum HitBye
-	{
-		player, entity, enviroment
-	}
-
-	public DamageSourceInfo(PlayerController player, Collider2D collider, float damage, IDamagable.DamageType damageType, 
-		float knockBack, bool isPercentage, bool wasHitByPlayer, bool wasEnviroment)
-	{
-		this.player = player;
-		this.collider = collider;
-
-		this.damage = damage;
-		this.damageType = damageType;
-
-		this.knockBack = knockBack;
-
-		this.isPercentage = isPercentage;
-		this.wasHitByPlayer = wasHitByPlayer;
-		this.wasEnviroment = wasEnviroment;
-	}
+	public IDamagable.HitBye hitBye;
 
 	//applies all
-	public DamageSourceInfo(HitBye hitBye, Collider2D collider, float damage, IDamagable.DamageType damageType,
-	float knockBack, bool isPercentage)
+	public DamageSourceInfo(PlayerController player, IDamagable.HitBye hitBye, Collider2D collider, 
+		float damage, IDamagable.DamageType damageType, float knockBack, bool isPercentage)
 	{
+		this.player = player;
 		this.hitBye = hitBye;
 		this.collider = collider;
 
@@ -95,8 +85,10 @@ public class DamageSourceInfo
 	}
 
 	//no knockback
-	public DamageSourceInfo(HitBye hitBye, float damage, IDamagable.DamageType damageType, bool isPercentage)
+	public DamageSourceInfo(PlayerController player, IDamagable.HitBye hitBye, 
+		float damage, IDamagable.DamageType damageType, bool isPercentage)
 	{
+		this.player = player;
 		this.hitBye = hitBye;
 
 		this.damage = damage;

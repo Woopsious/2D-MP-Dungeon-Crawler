@@ -466,6 +466,7 @@ public class PlayerController : MonoBehaviour
 		else
 			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
 		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
+		projectile.AddPlayerRef(this);
 
 		OnSuccessfulCast(ability);
 	}
@@ -507,8 +508,8 @@ public class PlayerController : MonoBehaviour
 
 		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			DamageSourceInfo damageSourceInfo = new(this, GetComponent<Collider2D>(), ability.abilityBaseRef.damageValue * playerStats.levelModifier,
-				(IDamagable.DamageType)ability.abilityBaseRef.damageType, 0, false, true, false);
+			DamageSourceInfo damageSourceInfo = new(this, IDamagable.HitBye.player, 
+				ability.abilityBaseRef.damageValue * playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, false);
 			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 

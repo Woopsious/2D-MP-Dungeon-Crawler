@@ -9,8 +9,8 @@ public class Weapons : Items
 	public bool isShield;
 	public int damage;
 	public int bonusMana;
-	public bool isEquippedByPlayer;
-	public bool isEquippedByOther;
+	private bool weaponEquipped;
+	public IDamagable.HitBye equippedBye;
 
 	public bool canAttackAgain;
 	public GameObject parentObj;
@@ -35,6 +35,7 @@ public class Weapons : Items
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
+		weaponEquipped = false;
 	}
 	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
@@ -127,6 +128,7 @@ public class Weapons : Items
 		boxCollider.enabled = false;
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
+		weaponEquipped = true;
 		animator.SetBool("isMeleeAttack", false);
 		animator.SetBool("isRangedAttack", false);
 
@@ -138,10 +140,18 @@ public class Weapons : Items
 		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 			idleWeaponSprite.enabled = true;
 	}
+
+	//optional, helps with applying damage only to enemies
 	public void AddPlayerRef(PlayerController player)
 	{
 		this.player = player;
+
+		if (player != null)
+			equippedBye = IDamagable.HitBye.player;
+		else
+			equippedBye = IDamagable.HitBye.entity;
 	}
+
 	public void UpdateWeaponDamage(SpriteRenderer idleWeaponSprite, EntityStats stats, Weapons offHandWeapon)
 	{
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier * stats.damageDealtModifier.finalPercentageValue);
@@ -184,14 +194,16 @@ public class Weapons : Items
 	//weapon attack
 	protected override void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!isEquippedByPlayer && !isEquippedByOther) //disable picking up weapons that are equipped
+		if (!weaponEquipped) //disable pick ups of equipped weapons
+		{
 			base.OnTriggerEnter2D(other);
+			return;
+		}
 
-		if (!isEquippedByPlayer && !isEquippedByOther) return;
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
-		DamageSourceInfo damageSourceInfo = new(player, boxCollider, damage,(IDamagable.DamageType)weaponBaseRef.baseDamageType, 
-			weaponBaseRef.baseKnockback, false, isEquippedByPlayer, false);
+		DamageSourceInfo damageSourceInfo = new(player, equippedBye, boxCollider, 
+			damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false);
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 	}
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
@@ -216,6 +228,7 @@ public class Weapons : Items
 		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
 		projectile.Initilize(player, this);
+		projectile.AddPlayerRef(player);
 
 		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
@@ -233,7 +246,7 @@ public class Weapons : Items
 		yield return new WaitForSeconds(secondsForAttackCooldown);
 
 		OnWeaponCooldown();
-		if (isEquippedByPlayer)
+		if (equippedBye == IDamagable.HitBye.player)
 			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForAttackCooldown);
 		else
 			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed + 0.25f - secondsForAttackCooldown);

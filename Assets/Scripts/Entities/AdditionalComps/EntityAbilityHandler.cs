@@ -68,6 +68,19 @@ public class EntityAbilityHandler : MonoBehaviour
 		SetBossAbilities();
 	}
 
+	public void ResetEntityAbilities()
+	{
+		abilityBeingCasted = null;
+		abilityCastingTimer = 0;
+
+		offensiveAbilityTimer = 0;
+		healingAbilityTimer = 0;
+
+		abilityTimerOneCounter = 0;
+		abilityTimerTwoCounter = 0;
+		abilityTimerThreeCounter = 0;
+	}
+
 	private void SetBossAbilities()
 	{
 		if (behaviour.behaviourRef is SOBossEntityBehaviour bossBehaviour)
@@ -185,8 +198,8 @@ public class EntityAbilityHandler : MonoBehaviour
 		}
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			DamageSourceInfo damageSourceInfo = new(null, GetComponent<Collider2D>(), ability.damageValue * entityStats.levelModifier, 
-				(IDamagable.DamageType)ability.damageType, 0, false, true, false);
+			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.entity, 
+				ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, false);
 
 			if (overridePlayerTarget)
 				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
@@ -233,6 +246,7 @@ public class EntityAbilityHandler : MonoBehaviour
 			projectile.SetPositionAndAttackDirection(transform.position, behaviour.playerTarget.transform.position);
 
 		projectile.Initilize(null, ability, entityStats);
+		projectile.AddPlayerRef(null);
 		OnSuccessfulCast(ability);
 	}
 	private void CastAoeAbility(SOAbilities ability)

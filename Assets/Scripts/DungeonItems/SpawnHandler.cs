@@ -284,6 +284,7 @@ public class SpawnHandler : MonoBehaviour
 		entity.gameObject.SetActive(true);
 		entity.ResetEntityStats();
 		entity.entityBehaviour.ResetBehaviour(this);
+		entity.abilityHandler.ResetEntityAbilities();
 		listOfSpawnedEntities.Add(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)

@@ -21,13 +21,13 @@ public class AbilityAOE : MonoBehaviour
 	private CircleCollider2D circleCollider;
 	private BoxCollider2D boxCollider;
 	private bool aoeLingers;
-	private bool isPlayerAoe;
 	public int aoeDamage;
 	private DamageType damageType;
 	enum DamageType
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
+	private IDamagable.HitBye ownedBye;
 
 	public List<EntityStats> entityStatsList = new List<EntityStats>();
 
@@ -39,6 +39,8 @@ public class AbilityAOE : MonoBehaviour
 	//SET DATA
 	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
 	{
+		debugLockDamage = false;
+
 		if (abilityRef is SOBossAbilities abilityBossRef)
 			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
@@ -48,7 +50,6 @@ public class AbilityAOE : MonoBehaviour
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
-		isPlayerAoe = casterInfo.IsPlayerEntity();
 		entityStatsList.Clear();
 
 		if (abilityRef.aoeType == SOAbilities.AoeType.isBoxAoe)
@@ -96,6 +97,14 @@ public class AbilityAOE : MonoBehaviour
 	public void AddPlayerRef(PlayerController player)
 	{
 		this.player = player;
+
+		if (player != null)
+			ownedBye = IDamagable.HitBye.player;
+		else
+			ownedBye = IDamagable.HitBye.entity;
+
+		if (aoeLingers) //lingering aoes damage everyone
+			ownedBye = IDamagable.HitBye.enviroment;
 	}
 
 	//set up colliders + transforms
@@ -226,8 +235,8 @@ public class AbilityAOE : MonoBehaviour
 		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
 			if (!CollidedTargetInConeAngle(entity.gameObject)) return;
 
-		DamageSourceInfo damageSourceInfo = new(player, entity.GetComponent<Collider2D>(), damageToDeal, (IDamagable.DamageType)damageType
-			, 0, abilityRef.isDamagePercentageBased, isPlayerAoe, false);
+		DamageSourceInfo damageSourceInfo = new(player, ownedBye, 
+			damageToDeal, (IDamagable.DamageType)damageType, abilityRef.isDamagePercentageBased);
 		entity.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 
 		if (!abilityRef.hasStatusEffects) return;
@@ -238,8 +247,8 @@ public class AbilityAOE : MonoBehaviour
 	public bool IsCollidedObjEnemy(Collider2D other)
 	{
 		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-		if (other.gameObject.layer == LayerMask.NameToLayer("Player") && isPlayerAoe ||
-			other.gameObject.layer == LayerMask.NameToLayer("Enemies") && !isPlayerAoe)
+		if (ownedBye == IDamagable.HitBye.player && other.gameObject.layer == LayerMask.NameToLayer("Player") ||
+			ownedBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
 			return false;
 		else return true;
 	}

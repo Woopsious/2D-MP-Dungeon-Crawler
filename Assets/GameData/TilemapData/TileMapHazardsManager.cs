@@ -44,7 +44,8 @@ public class TileMapHazardsManager : MonoBehaviour
 		{
 			int damageToDo = (int)(dataFromTiles[tile].baseDamageDealt * collision.GetComponent<EntityStats>().levelModifier);
 
-			DamageSourceInfo damageSourceInfo = new(null, null, damageToDo, (IDamagable.DamageType)dataFromTiles[tile].baseDamageType, 0, false, false, true);
+			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, 
+				damageToDo, (IDamagable.DamageType)dataFromTiles[tile].baseDamageType, false);
 			collision.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 

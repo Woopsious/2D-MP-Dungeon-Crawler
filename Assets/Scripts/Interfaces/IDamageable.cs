@@ -1,5 +1,9 @@
 public interface IDamagable
 {
+	public enum HitBye
+	{
+		player, entity, enviroment
+	}
 	enum DamageType
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType

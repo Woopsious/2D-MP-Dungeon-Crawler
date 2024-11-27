@@ -148,10 +148,10 @@ public class EntityStats : MonoBehaviour
 		SpriteRenderer.color = Color.white;
 		CalculateBaseStats();
 
-		if (currentStatusEffects.Count != 0)
+		if (currentStatusEffects.Count != 0)//clear all status effects after death
 		{
-			foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
-				statusEffect.ClearEffect();
+			for (int i = currentStatusEffects.Count - 1; i >= 0; i--)
+				currentStatusEffects[i].ClearEffect();
 		}
 
 		if (IsPlayerEntity())
@@ -271,7 +271,7 @@ public class EntityStats : MonoBehaviour
 	private void OnDeath()
 	{
 		audioHandler.PlayAudio(statsRef.deathSfx);
-		StartCoroutine(WaitForDeathSound());
+		StartCoroutine(OnDeathFinish());
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
 
@@ -283,13 +283,13 @@ public class EntityStats : MonoBehaviour
 		SpriteRenderer.color = Color.red;
 		StartCoroutine(ResetRedFlashOnRecieveDamage());
 	}
-	IEnumerator ResetRedFlashOnRecieveDamage()
+	private IEnumerator ResetRedFlashOnRecieveDamage()
 	{
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
-	IEnumerator WaitForDeathSound()
+	private IEnumerator OnDeathFinish()
 	{
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);

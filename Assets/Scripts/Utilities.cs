@@ -5,6 +5,26 @@ using UnityEngine.SceneManagement;
 
 public class Utilities
 {
+	//generate player death message
+	public static string GetPlayerDeathMessage(DamageSourceInfo damageSourceInfo)
+	{
+		string deathMessage = string.Empty;
+
+		///<Summery>
+		/// types of death messages
+		/// 
+		/// died from swing of (enemyType)s (melee weaponType) example: died from swing of zombies axe
+		/// died by arrow from (enemyType)s (ranged weaponType) example: died by arrow from skeletons bow
+		/// 
+		/// (stausEffectDamageType) example: you died of poisoning || you burned to death
+		/// 
+		/// died from (enemyType)s (ability name) example: died from goblins firebolt ability
+		/// 
+		///<Summery>
+
+		return deathMessage;
+	}
+
 	//return random number
 	public static int GetRandomNumber(int num) //returns num between 0 and num -1
 	{
