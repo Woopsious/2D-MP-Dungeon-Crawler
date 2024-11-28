@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static IDamagable;
 
 public class Damageable : MonoBehaviour
 {
@@ -47,52 +48,78 @@ public class Damageable : MonoBehaviour
 
 public class DamageSourceInfo
 {
-	//killed by things
-	public TrapHandler trap;
+	//death message + refs
+	public DeathMessageType deathMessageType;
+	public enum DeathMessageType
+	{
+		entityWeapon, entityAbility, trap, trapProjectile, statusEffect, enviromental
+	}
+
+	//damage source info
 	public EntityStats entity;
-	public TileMapHazardsManager hazardsManager;
+	public HitBye hitBye;
 
-	public SOStatusEffects effect;
+	//refs for death message
+	public SOTraps trap;
+	public SOWeapons weapon;
 	public SOAbilities ability;
-	public Projectiles projectile;
+	public SOStatusEffects statusEffect;
 
-	public PlayerController player;
-	public Collider2D collider;
-
+	//damage type
 	public float damage;
-	public IDamagable.DamageType damageType;
+	public DamageType damageType;
 
+	//optional knockback info
+	public Collider2D collider;
 	public float knockBack;
 
+	//percentage damage
 	public bool isPercentage;
-	public bool wasHitByPlayer;
-	public bool wasEnviroment;
 
-	public IDamagable.HitBye hitBye;
-
-	//applies all
-	public DamageSourceInfo(PlayerController player, IDamagable.HitBye hitBye, Collider2D collider, 
-		float damage, IDamagable.DamageType damageType, float knockBack, bool isPercentage)
+	//basic constructors
+	public DamageSourceInfo(EntityStats entity, HitBye hitBye, float damage, DamageType damageType, bool isPercentage)
 	{
-		this.player = player;
+		this.entity = entity;
 		this.hitBye = hitBye;
-		this.collider = collider;
 
 		this.damage = damage;
 		this.damageType = damageType;
-		this.knockBack = knockBack;
 		this.isPercentage = isPercentage;
 	}
 
-	//no knockback
-	public DamageSourceInfo(PlayerController player, IDamagable.HitBye hitBye, 
-		float damage, IDamagable.DamageType damageType, bool isPercentage)
+	public void AddKnockbackEffect(Collider2D collider, float knockBack)
 	{
-		this.player = player;
-		this.hitBye = hitBye;
+		this.collider = collider;
+		this.knockBack = knockBack;
+	}
 
-		this.damage = damage;
-		this.damageType = damageType;
-		this.isPercentage = isPercentage;
+	public void SetDeathMessage<A>(A thingDealingDamage)
+	{
+		if (entity != null)
+		{
+			if (typeof(A).Equals(typeof(SOWeapons)))
+			{
+				weapon = thingDealingDamage as SOWeapons;
+				deathMessageType = DeathMessageType.entityWeapon;
+			}
+			else if (typeof(A).Equals(typeof(SOAbilities)))
+			{
+				ability = thingDealingDamage as SOAbilities;
+				deathMessageType = DeathMessageType.entityAbility;
+			}
+		}
+		else
+		{
+			if (typeof(A).Equals(typeof(SOTraps)))
+			{
+				trap = thingDealingDamage as SOTraps;
+				deathMessageType = DeathMessageType.trap;
+			}
+			else if (typeof(A).Equals(typeof(SOStatusEffects)))
+			{
+				statusEffect = thingDealingDamage as SOStatusEffects;
+				deathMessageType = DeathMessageType.statusEffect;
+			}
+		}
 	}
 }

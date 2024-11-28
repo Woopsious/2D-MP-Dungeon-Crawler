@@ -71,7 +71,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
 		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, weaponToEquip.itemEnchantmentLevel);
-		equippedWeaponRef.AddPlayerRef(player);
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);

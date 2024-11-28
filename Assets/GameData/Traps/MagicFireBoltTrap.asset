@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97e679a778881f847afd4581ade12ee1, type: 3}
-  m_Name: MagicIceTrap
+  m_Name: MagicFireBoltTrap
   m_EditorClassIdentifier: 
-  trapName: Magic Ice Trap
+  trapName: Magic Firebolt Trap
   trapSpriteUnDetected: {fileID: 0}
   trapSpriteDetected: {fileID: -349561432, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapSpriteActivated: {fileID: -777619921, guid: 76686699748622a48b566623ca98afc6, type: 3}
@@ -20,11 +20,10 @@ MonoBehaviour:
   trapType: 3
   trapActivationDelay: 0.25
   baseDamage: 5
-  baseDamageType: 3
+  baseDamageType: 2
   hasEffects: 1
   statusEffects:
-  - {fileID: 11400000, guid: c9171ad05a10a1e4f94b873cbfbbbca2, type: 2}
-  - {fileID: 11400000, guid: 2e2d4405f73879441b8d4f4ccd8cc0f0, type: 2}
+  - {fileID: 11400000, guid: aa784849ba0abc746b68fab534e09b64, type: 2}
   aoeSize: 2
   hasProjectile: 0
   projectileSprite: {fileID: 0}

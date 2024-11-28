@@ -13,12 +13,17 @@ public static class PlayerEventManager
 	{
 		OnPlayerLevelUpEvent?.Invoke(playerStats);
 	}
+
+	//player death events
 	public static event Action<GameObject> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject obj)
+	public static void PlayerDeath(GameObject obj, DamageSourceInfo damageSourceInfo)
 	{
 		OnPlayerDeathEvent?.Invoke(obj);
+		GetPlayerDeathMessaage?.Invoke(Utilities.GetPlayerDeathMessage(damageSourceInfo));
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
+	public static event Action<string> GetPlayerDeathMessaage;
+	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath()
 
 	/// <summary>
 	/// UI EVENTS
@@ -54,8 +59,6 @@ public static class PlayerEventManager
 	}
 
 	//player ui
-	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath()
-
 	public static event Action<GameObject, bool> OnDetectNewInteractedObject;
 	public static void DetectNewInteractedObject(GameObject obj, bool showText)
 	{

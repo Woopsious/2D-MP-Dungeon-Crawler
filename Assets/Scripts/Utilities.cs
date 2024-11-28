@@ -10,17 +10,32 @@ public class Utilities
 	{
 		string deathMessage = string.Empty;
 
-		///<Summery>
-		/// types of death messages
-		/// 
-		/// died from swing of (enemyType)s (melee weaponType) example: died from swing of zombies axe
-		/// died by arrow from (enemyType)s (ranged weaponType) example: died by arrow from skeletons bow
-		/// 
-		/// (stausEffectDamageType) example: you died of poisoning || you burned to death
-		/// 
-		/// died from (enemyType)s (ability name) example: died from goblins firebolt ability
-		/// 
-		///<Summery>
+		if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityWeapon)
+		{
+			if (damageSourceInfo.weapon.isRangedWeapon)
+				deathMessage = $"Died by arrow from {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.weapon.itemName}";
+			else
+				deathMessage = $"Died from swing of {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.weapon.itemName}";
+		}
+		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityAbility)
+		{
+			deathMessage = $"Died from {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.ability.Name} ability";
+		}
+		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.trap)
+		{
+			deathMessage = $"Died from {damageSourceInfo.trap.trapName}";
+		}
+		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.statusEffect)
+		{
+			if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isPhysicalDamageType)
+				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} out";
+			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isPoisonDamageType)
+				deathMessage = $"Died from being {damageSourceInfo.statusEffect.Name}";
+			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isFireDamageType)
+				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} to death";
+			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isIceDamageType)
+				deathMessage = $"Died from Freezing internally";
+		}
 
 		return deathMessage;
 	}

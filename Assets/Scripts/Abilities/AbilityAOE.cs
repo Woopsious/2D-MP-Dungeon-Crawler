@@ -4,10 +4,9 @@ using UnityEngine;
 
 public class AbilityAOE : MonoBehaviour
 {
-	private PlayerController player;
 	public SOBossAbilities abilityBossRef;
 	public SOAbilities abilityRef;
-	private EntityStats casterInfo;
+	private EntityStats abilityOwner;
 	private Vector2 casterPosition;
 	private bool debugLockDamage;
 
@@ -27,7 +26,7 @@ public class AbilityAOE : MonoBehaviour
 	{
 		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
 	}
-	private IDamagable.HitBye ownedBye;
+	private IDamagable.HitBye hitBye;
 
 	public List<EntityStats> entityStatsList = new List<EntityStats>();
 
@@ -37,7 +36,7 @@ public class AbilityAOE : MonoBehaviour
 	}
 
 	//SET DATA
-	public void Initilize(SOAbilities abilityRef, EntityStats casterInfo, Vector2 targetPosition)
+	public void Initilize(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
 		debugLockDamage = false;
 
@@ -45,8 +44,8 @@ public class AbilityAOE : MonoBehaviour
 			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
 
-		this.casterInfo = casterInfo;
-		casterPosition = casterInfo.transform.position;
+		this.abilityOwner = abilityOwner;
+		casterPosition = abilityOwner.transform.position;
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
@@ -64,6 +63,7 @@ public class AbilityAOE : MonoBehaviour
 		}
 
 		SetDamage();
+		UpdateHitByeVariable(abilityOwner.playerRef);
 
 		aoeLingers = true;
 		abilityDurationTimer = abilityRef.aoeDuration;
@@ -79,44 +79,42 @@ public class AbilityAOE : MonoBehaviour
 	private void SetDamage()
 	{
 		damageType = (DamageType)abilityRef.damageType;
-		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
+		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(abilityOwner.entityLevel));
 
 		if (damageType == DamageType.isPhysicalDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.physicalDamagePercentageModifier.finalPercentageValue);
+			aoeDamage = (int)(newDamage * abilityOwner.physicalDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isPoisonDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.poisonDamagePercentageModifier.finalPercentageValue);
+			aoeDamage = (int)(newDamage * abilityOwner.poisonDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isFireDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.fireDamagePercentageModifier.finalPercentageValue);
+			aoeDamage = (int)(newDamage * abilityOwner.fireDamagePercentageModifier.finalPercentageValue);
 		if (damageType == DamageType.isIceDamageType)
-			aoeDamage = (int)(newDamage * casterInfo.iceDamagePercentageModifier.finalPercentageValue);
+			aoeDamage = (int)(newDamage * abilityOwner.iceDamagePercentageModifier.finalPercentageValue);
 
-		aoeDamage *= (int)casterInfo.damageDealtModifier.finalPercentageValue;
+		aoeDamage *= (int)abilityOwner.damageDealtModifier.finalPercentageValue;
 	}
 
-	//optional, helps with applying damage only to enemies
-	public void AddPlayerRef(PlayerController player)
+	//helps with applying damage only to enemies
+	private void UpdateHitByeVariable(PlayerController player)
 	{
-		this.player = player;
-
 		if (player != null)
-			ownedBye = IDamagable.HitBye.player;
+			hitBye = IDamagable.HitBye.player;
 		else
-			ownedBye = IDamagable.HitBye.entity;
+			hitBye = IDamagable.HitBye.entity;
 
 		if (aoeLingers) //lingering aoes damage everyone
-			ownedBye = IDamagable.HitBye.enviroment;
+			hitBye = IDamagable.HitBye.enviroment;
 	}
 
 	//set up colliders + transforms
 	private void SetCircleColliderPosition(Vector3 targetPosition)
 	{
-		Vector3 rotation = targetPosition - casterInfo.transform.position;
+		Vector3 rotation = targetPosition - abilityOwner.transform.position;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 
 		if (abilityRef.aoeType == SOAbilities.AoeType.isCircleAoe)
 			transform.SetPositionAndRotation(targetPosition, Quaternion.Euler(0, 0, rotz - 90));
 		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
-			transform.SetPositionAndRotation(casterInfo.transform.position, Quaternion.Euler(0, 0, rotz - 90));
+			transform.SetPositionAndRotation(abilityOwner.transform.position, Quaternion.Euler(0, 0, rotz - 90));
 	}
 	private void SetupCircleCollider()
 	{
@@ -134,9 +132,9 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void SetBoxColliderDirection(Vector3 targetPosition)
 	{
-		Vector3 rotation = targetPosition - casterInfo.transform.position;
+		Vector3 rotation = targetPosition - abilityOwner.transform.position;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		transform.SetPositionAndRotation(casterInfo.transform.position, Quaternion.Euler(0, 0, rotz - 90));
+		transform.SetPositionAndRotation(abilityOwner.transform.position, Quaternion.Euler(0, 0, rotz - 90));
 
 		//adjustment ratio / 13.33333333
 		float adjustPos = (float)(abilityRef.boxAoeSizeY / 13.33333333);
@@ -235,20 +233,22 @@ public class AbilityAOE : MonoBehaviour
 		else if (abilityRef.aoeType == SOAbilities.AoeType.isConeAoe)
 			if (!CollidedTargetInConeAngle(entity.gameObject)) return;
 
-		DamageSourceInfo damageSourceInfo = new(player, ownedBye, 
+		DamageSourceInfo damageSourceInfo = new(abilityOwner, hitBye, 
 			damageToDeal, (IDamagable.DamageType)damageType, abilityRef.isDamagePercentageBased);
+
+		damageSourceInfo.SetDeathMessage(abilityRef);
 		entity.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 
 		if (!abilityRef.hasStatusEffects) return;
-		entity.ApplyNewStatusEffects(abilityRef.statusEffects, casterInfo);
+		entity.ApplyNewStatusEffects(abilityRef.statusEffects, abilityOwner);
 	}
 
 	//checks
 	public bool IsCollidedObjEnemy(Collider2D other)
 	{
 		//status effects only apply to friendlies (add checks later to apply off effects only to enemies etc...)
-		if (ownedBye == IDamagable.HitBye.player && other.gameObject.layer == LayerMask.NameToLayer("Player") ||
-			ownedBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
+		if (hitBye == IDamagable.HitBye.player && other.gameObject.layer == LayerMask.NameToLayer("Player") ||
+			hitBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
 			return false;
 		else return true;
 	}

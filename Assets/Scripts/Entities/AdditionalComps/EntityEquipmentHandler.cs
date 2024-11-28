@@ -94,7 +94,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip;
 		equippedWeaponRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
-		equippedWeaponRef.AddPlayerRef(null);
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
@@ -147,7 +146,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else
 			equipmentMana += weapon.bonusMana;
 
-		weapon.WeaponInitilization(entityStats.IdleWeaponSprite);
+		weapon.WeaponInitilization(entityStats);
 		AssignItemRefOnEquip(weapon, slotItemIsIn);
 		OnEquipmentChanges?.Invoke(this);
 	}

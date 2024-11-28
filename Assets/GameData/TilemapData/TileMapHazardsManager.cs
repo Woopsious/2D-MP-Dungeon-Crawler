@@ -46,6 +46,9 @@ public class TileMapHazardsManager : MonoBehaviour
 
 			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, 
 				damageToDo, (IDamagable.DamageType)dataFromTiles[tile].baseDamageType, false);
+
+			//no death message atm
+
 			collision.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 

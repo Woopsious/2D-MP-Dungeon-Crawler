@@ -255,11 +255,11 @@ public class EntityStats : MonoBehaviour
 		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(statsRef.hurtSfx);
-		if (!IsPlayerEntity() && damageSourceInfo.player != null)
-			entityBehaviour.AddToAggroRating(damageSourceInfo.player, (int)damageSourceInfo.damage);
+		if (!IsPlayerEntity() && damageSourceInfo.entity.playerRef != null)
+			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
 
 		if (currentHealth <= 0)
-			OnDeath();
+			OnDeath(damageSourceInfo);
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
@@ -268,10 +268,10 @@ public class EntityStats : MonoBehaviour
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
-	private void OnDeath()
+	private void OnDeath(DamageSourceInfo damageSourceInfo)
 	{
 		audioHandler.PlayAudio(statsRef.deathSfx);
-		StartCoroutine(OnDeathFinish());
+		StartCoroutine(OnDeathFinish(damageSourceInfo));
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
 
@@ -289,13 +289,13 @@ public class EntityStats : MonoBehaviour
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
-	private IEnumerator OnDeathFinish()
+	private IEnumerator OnDeathFinish(DamageSourceInfo damageSourceInfo)
 	{
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
 		if (IsPlayerEntity())
-			PlayerEventManager.PlayerDeath(gameObject);
+			PlayerEventManager.PlayerDeath(gameObject,damageSourceInfo);
 		else
 			DungeonHandler.EntityDeathEvent(gameObject);
 	}
@@ -358,7 +358,7 @@ public class EntityStats : MonoBehaviour
 
 			GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
 			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-			statusEffect.Initilize(effect, casterInfo, this);
+			statusEffect.Initilize(casterInfo, effect, this);
 
 			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
 				damageDealtModifier.AddPercentageValue(effect.effectValue);

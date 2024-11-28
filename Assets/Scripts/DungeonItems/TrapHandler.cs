@@ -146,6 +146,8 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			{
 				DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, 
 					trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType, false);
+
+				damageSourceInfo.SetDeathMessage(trapBaseRef);
 				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo); //apply damage
 
 				if (trapBaseRef.hasEffects) //apply effects

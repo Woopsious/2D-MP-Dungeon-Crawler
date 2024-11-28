@@ -465,8 +465,7 @@ public class PlayerController : MonoBehaviour
 			projectile.SetPositionAndAttackDirection(transform.position, selectedEnemyTarget.transform.position);
 		else
 			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-		projectile.Initilize(this, ability.abilityBaseRef, playerStats);
-		projectile.AddPlayerRef(this);
+		projectile.Initilize(playerStats, ability.abilityBaseRef);
 
 		OnSuccessfulCast(ability);
 	}
@@ -488,8 +487,7 @@ public class PlayerController : MonoBehaviour
 			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
 		abilityAOE.transform.SetParent(null);
-		abilityAOE.Initilize(ability.abilityBaseRef, playerStats, movePosition);
-		abilityAOE.AddPlayerRef(this);
+		abilityAOE.Initilize(playerStats, ability.abilityBaseRef, movePosition);
 
 		OnSuccessfulCast(ability);
 	}
@@ -498,7 +496,10 @@ public class PlayerController : MonoBehaviour
 		if (ability.abilityBaseRef.damageType == SOAbilities.DamageType.isHealing) //healing
 		{
 			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
-				playerStats.OnHeal(ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
+			{
+				playerStats.OnHeal(
+					ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
+			}
 			else
 			{
 				CancelAbility(queuedAbility);     //add support/option to heal other players for MP
@@ -508,8 +509,10 @@ public class PlayerController : MonoBehaviour
 
 		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			DamageSourceInfo damageSourceInfo = new(this, IDamagable.HitBye.player, 
-				ability.abilityBaseRef.damageValue * playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, false);
+			DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue * 
+				playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, false);
+
+			damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
 			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
 
@@ -574,10 +577,8 @@ public class PlayerController : MonoBehaviour
 				TrapHandler trapHandler = other.GetComponent<TrapHandler>();
 				currentInteractedObject = other.GetComponent<Interactables>();
 
-				if (trapHandler.trapDetected)
-					PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-				else
-					PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+				if (!trapHandler.trapDetected) return;
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
 			}
 			if (other.GetComponent<ChestHandler>() != null)
 			{

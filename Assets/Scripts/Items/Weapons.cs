@@ -5,12 +5,11 @@ using UnityEngine;
 public class Weapons : Items
 {
 	[Header("Weapon Info")]
-	public PlayerController player;
+	public EntityStats weaponOwner;
 	public bool isShield;
 	public int damage;
 	public int bonusMana;
-	private bool weaponEquipped;
-	public IDamagable.HitBye equippedBye;
+	public IDamagable.HitBye hitBye;
 
 	public bool canAttackAgain;
 	public GameObject parentObj;
@@ -35,7 +34,6 @@ public class Weapons : Items
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
-		weaponEquipped = false;
 	}
 	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
@@ -112,23 +110,25 @@ public class Weapons : Items
 	}
 
 	//set equipped weapon data
-	public void WeaponInitilization(SpriteRenderer idleWeaponSprite)
+	public void WeaponInitilization(EntityStats weaponOwner)
 	{
 		if (GetComponent<InventoryItemUi>() != null) return;    //return as this is an item in inventory
 		if (transform.parent == null) return;                   //weapon is not equipped
 
+		this.weaponOwner = weaponOwner;
+		UpdateHitByeVariable(weaponOwner.playerRef);
+
 		parentObj = transform.parent.gameObject;
 		parentObj.transform.rotation = Quaternion.Euler(Vector3.zero);
 		attackWeaponSprite = GetComponent<SpriteRenderer>();
-		this.idleWeaponSprite = idleWeaponSprite;
-		this.idleWeaponSprite.sprite = attackWeaponSprite.sprite;
+		idleWeaponSprite = weaponOwner.IdleWeaponSprite;
+		idleWeaponSprite.sprite = attackWeaponSprite.sprite;
 		audioHandler = GetComponent<AudioHandler>();
 		animator = GetComponent<Animator>();
 		boxCollider = gameObject.AddComponent<BoxCollider2D>();
 		boxCollider.enabled = false;
 		boxCollider.isTrigger = true;
 		canAttackAgain = true;
-		weaponEquipped = true;
 		animator.SetBool("isMeleeAttack", false);
 		animator.SetBool("isRangedAttack", false);
 
@@ -141,15 +141,13 @@ public class Weapons : Items
 			idleWeaponSprite.enabled = true;
 	}
 
-	//optional, helps with applying damage only to enemies
-	public void AddPlayerRef(PlayerController player)
+	//helps with applying damage only to enemies
+	private void UpdateHitByeVariable(PlayerController player)
 	{
-		this.player = player;
-
 		if (player != null)
-			equippedBye = IDamagable.HitBye.player;
+			hitBye = IDamagable.HitBye.player;
 		else
-			equippedBye = IDamagable.HitBye.entity;
+			hitBye = IDamagable.HitBye.entity;
 	}
 
 	public void UpdateWeaponDamage(SpriteRenderer idleWeaponSprite, EntityStats stats, Weapons offHandWeapon)
@@ -194,7 +192,7 @@ public class Weapons : Items
 	//weapon attack
 	protected override void OnTriggerEnter2D(Collider2D other)
 	{
-		if (!weaponEquipped) //disable pick ups of equipped weapons
+		if (weaponOwner == null) //disable pick ups of equipped weapons
 		{
 			base.OnTriggerEnter2D(other);
 			return;
@@ -202,8 +200,11 @@ public class Weapons : Items
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
-		DamageSourceInfo damageSourceInfo = new(player, equippedBye, boxCollider, 
-			damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, weaponBaseRef.baseKnockback, false);
+		DamageSourceInfo damageSourceInfo = new(
+			weaponOwner, hitBye, damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, false);
+
+		damageSourceInfo.AddKnockbackEffect(boxCollider, weaponBaseRef.baseKnockback);
+		damageSourceInfo.SetDeathMessage(weaponBaseRef);
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 	}
 	public void MeleeAttack(Vector3 positionOfThingToAttack)
@@ -227,8 +228,7 @@ public class Weapons : Items
 
 		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
-		projectile.Initilize(player, this);
-		projectile.AddPlayerRef(player);
+		projectile.Initilize(weaponOwner, weaponBaseRef, damage);
 
 		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
@@ -246,7 +246,7 @@ public class Weapons : Items
 		yield return new WaitForSeconds(secondsForAttackCooldown);
 
 		OnWeaponCooldown();
-		if (equippedBye == IDamagable.HitBye.player)
+		if (weaponOwner.IsPlayerEntity())
 			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed - secondsForAttackCooldown);
 		else
 			yield return new WaitForSeconds(weaponBaseRef.baseAttackSpeed + 0.25f - secondsForAttackCooldown);

@@ -198,8 +198,9 @@ public class EntityAbilityHandler : MonoBehaviour
 		}
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.entity, 
+			DamageSourceInfo damageSourceInfo = new(entityStats, IDamagable.HitBye.entity, 
 				ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, false);
+			damageSourceInfo.SetDeathMessage(ability);
 
 			if (overridePlayerTarget)
 				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
@@ -245,8 +246,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		else
 			projectile.SetPositionAndAttackDirection(transform.position, behaviour.playerTarget.transform.position);
 
-		projectile.Initilize(null, ability, entityStats);
-		projectile.AddPlayerRef(null);
+		projectile.Initilize(entityStats, ability);
 		OnSuccessfulCast(ability);
 	}
 	private void CastAoeAbility(SOAbilities ability)
@@ -262,14 +262,13 @@ public class EntityAbilityHandler : MonoBehaviour
 		if (overridePlayerTarget)
 		{
 			if (overriddenPlayerTarget != null)
-				abilityAOE.Initilize(ability, entityStats, overriddenPlayerTarget.transform.position);
+				abilityAOE.Initilize(entityStats, ability, overriddenPlayerTarget.transform.position);
 			else
-				abilityAOE.Initilize(ability, entityStats, overriddenTargetPosition);
+				abilityAOE.Initilize(entityStats, ability, overriddenTargetPosition);
 		}
 		else
-			abilityAOE.Initilize(ability, entityStats, behaviour.playerTarget.transform.position);
+			abilityAOE.Initilize(entityStats, ability, behaviour.playerTarget.transform.position);
 
-		abilityAOE.AddPlayerRef(null);
 		OnSuccessfulCast(ability);
 	}
 	private void OnSuccessfulCast(SOAbilities ability)

@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 97e679a778881f847afd4581ade12ee1, type: 3}
-  m_Name: MagicPoisonTrap
+  m_Name: MagicPoisonSpikeTrap
   m_EditorClassIdentifier: 
-  trapName: Magic Poison Trap
+  trapName: Magic Poison Spike Trap
   trapSpriteUnDetected: {fileID: 0}
   trapSpriteDetected: {fileID: -349561432, guid: 76686699748622a48b566623ca98afc6, type: 3}
   trapSpriteActivated: {fileID: -777619921, guid: 76686699748622a48b566623ca98afc6, type: 3}

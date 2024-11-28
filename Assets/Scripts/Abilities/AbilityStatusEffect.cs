@@ -25,7 +25,7 @@ public class AbilityStatusEffect : MonoBehaviour
 	}
 
 	//set data
-	public void Initilize(SOStatusEffects statusEffect, EntityStats casterInfo, EntityStats entityToApplyEffectTo)
+	public void Initilize(EntityStats casterInfo, SOStatusEffects statusEffect, EntityStats entityToApplyEffectTo)
 	{
 		transform.localPosition = Vector3.zero;
 		this.statusEffect = statusEffect;
@@ -59,12 +59,14 @@ public class AbilityStatusEffect : MonoBehaviour
 	//dot effect if it has one
 	private void DamageOverTimeEffect()
 	{
-		if (!statusEffect.isDOT) return;
+		if (!statusEffect.isDOT || entityEffectIsAppliedTo.IsEntityDead()) return;
 
 		timerTillNextDamage -= Time.deltaTime;
 		if (timerTillNextDamage < 0)
 		{
 			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, damage, (IDamagable.DamageType)damageType, false);
+
+			damageSourceInfo.SetDeathMessage(statusEffect);
 			entityEffectIsAppliedTo.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 			timerTillNextDamage = damageOverTimeCooldown;
 		}

@@ -31,11 +31,13 @@ public class PlayerDeathUi : MonoBehaviour
 	private void OnEnable()
 	{
 		PlayerEventManager.OnShowPlayerDeathUiEvent += ShowPlayerDeathUi;
+		PlayerEventManager.GetPlayerDeathMessaage += SetPlayerDeathMessage;
 	}
 
 	private void OnDisable()
 	{
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= ShowPlayerDeathUi;
+		PlayerEventManager.GetPlayerDeathMessaage -= SetPlayerDeathMessage;
 	}
 
 	private void ShowPlayerDeathUi()
@@ -44,7 +46,6 @@ public class PlayerDeathUi : MonoBehaviour
 		//died while fighting x enemy / died from x trap / burned/poisoned to death in lava/posion pit etc...
 
 		PlayerDeathPanelUi.SetActive(true);
-		PlayerDeathText.text = "You Died";
 
 		if (Application.isEditor) //allow all respawning types whilst in editor
 		{
@@ -67,6 +68,10 @@ public class PlayerDeathUi : MonoBehaviour
 
 		if (BossRoomHandler.Instance != null)
 			respawnInDungeonButton.SetActive(true);
+	}
+	private void SetPlayerDeathMessage(string deathMessage)
+	{
+		PlayerDeathText.text = deathMessage;
 	}
 
 	private void HidePlayerDeathUi()
