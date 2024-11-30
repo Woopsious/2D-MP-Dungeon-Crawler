@@ -45,7 +45,7 @@ public class LootSpawnHandler : MonoBehaviour
 	}
 	private void UpdateLootSpawnTable(SOClasses playerClass)
 	{
-		if (playerClass == null) return;
+		if (lootPool == null || playerClass == null) return; //lootPool == null when called via OnClassChanges event when scene switching
 
 		itemSpawnChanceTable.Clear();
 		totalItemSpawnChance = 0;

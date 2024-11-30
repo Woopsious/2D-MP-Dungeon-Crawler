@@ -11,7 +11,6 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
-	public bool debugSpawnStartingItems;
 
 	public bool hasRecievedStartingItems;
 	public bool hasRecievedKnightItems;
@@ -21,7 +20,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	public bool hasRecievedMageItems;
 
 	[Header("Player Starting Gold")]
-	public int startingGold;
+	private readonly int startingGold = 500;
 
 	public void Awake()
 	{
@@ -37,12 +36,12 @@ public class PlayerInventoryHandler : MonoBehaviour
 	//spawn starting items based on starting class + if already receieved them
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
-		if (debugSpawnStartingItems)
+		if (Application.isEditor)
 		{
 			DebugSpawnStartingItems(playerClass);
 			return;
 		}
-		ReloadPlayerInventory();
+		RestorePlayerStartingItemsState();
 
 		if (SaveManager.Instance != null) //skip when in testing scene
 		{
@@ -81,6 +80,18 @@ public class PlayerInventoryHandler : MonoBehaviour
 			}
 		}
 	}
+	private void RestorePlayerStartingItemsState()
+	{
+		if (SaveManager.Instance == null) return;
+		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
+		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
+		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;
+		hasRecievedRogueItems = SaveManager.Instance.GameData.hasRecievedRogueItems;
+		hasRecievedRangerItems = SaveManager.Instance.GameData.hasRecievedRangerItems;
+		hasRecievedMageItems = SaveManager.Instance.GameData.hasRecievedMageItems;
+	}
+
+	//spawning starting items
 	private void SpawnClassStartingItems(SOClasses playerClass)
 	{
 		SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
@@ -100,7 +111,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	}
 	private void DebugSpawnStartingItems(SOClasses playerClass)
 	{
-		PlayerInventoryUi.Instance.UpdateGoldAmount(startingGold);
+		PlayerInventoryUi.Instance.UpdateGoldAmount(1000000);
 		SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
 
 		foreach (SOArmors SOarmor in playerClass.startingArmor)
@@ -148,16 +159,6 @@ public class PlayerInventoryHandler : MonoBehaviour
 		item.Initilize(Items.Rarity.isRare, GetComponent<EntityStats>().entityLevel, 0);
 		BoxCollider2D collider = go.AddComponent<BoxCollider2D>();
 		collider.isTrigger = true;
-	}
-	private void ReloadPlayerInventory()
-	{
-		if (SaveManager.Instance == null) return;
-		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
-		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
-		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;
-		hasRecievedRogueItems = SaveManager.Instance.GameData.hasRecievedRogueItems;
-		hasRecievedRangerItems = SaveManager.Instance.GameData.hasRecievedRangerItems;
-		hasRecievedMageItems = SaveManager.Instance.GameData.hasRecievedMageItems;
 	}
 
 	//on item pickup

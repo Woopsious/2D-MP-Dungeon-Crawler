@@ -80,12 +80,17 @@ public class GameManager : MonoBehaviour
 	private void SceneChangeFinished(Scene scene, LoadSceneMode mode)
 	{
 		OnSceneChangeFinish?.Invoke();
+
+		if (scene.name == mainMenuName) return;
+		MainMenuManager.Instance.HideMainMenu();
+		Instance.PauseGame(false);
 	}
 
 	//loading different scenes
 	public void LoadMainMenu(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
+		SaveManager.Instance.GameData = new GameData();
 		StartCoroutine(LoadNewSceneAsync(mainMenuName, isNewGame));
 	}
 	public void LoadHubArea(bool isNewGame)

@@ -31,7 +31,13 @@ public class SaveManager : MonoBehaviour
 
 	private void Awake()
 	{
-		Instance = this;
+		if (Instance != null && Instance != this)
+			Destroy(gameObject);
+		else
+		{
+			Instance = this;
+			DontDestroyOnLoad(this.gameObject);
+		}
 	}
 
 	private void OnEnable()
@@ -220,11 +226,11 @@ public class SaveManager : MonoBehaviour
 	private void SaveDataToJson(string directory, string fileName)
 	{
 		string filePath = directory + fileName;
-		string inventoryData = JsonUtility.ToJson(GameData);
+		string inventoryData = JsonUtility.ToJson(Instance.GameData);
         System.IO.File.WriteAllText(filePath, inventoryData);
 
 		string slotPath = directory + "/SlotData.json";
-		string slotData = JsonUtility.ToJson(SlotData);
+		string slotData = JsonUtility.ToJson(Instance.SlotData);
 		System.IO.File.WriteAllText(slotPath, slotData);
 
 		MainMenuManager.Instance.ReloadSaveSlots();
@@ -233,7 +239,7 @@ public class SaveManager : MonoBehaviour
 	{
 		string filePath = directory + fileName;
 		string inventoryData = System.IO.File.ReadAllText(filePath);
-		GameData = JsonUtility.FromJson<GameData>(inventoryData);
+		Instance.GameData = JsonUtility.FromJson<GameData>(inventoryData);
 	}
 	private void DeleteJsonFile(string directory, string fileName)
 	{
@@ -249,13 +255,13 @@ public class SaveManager : MonoBehaviour
 	{
 		string slotPath = directory + "/SlotData.json";
 		string slotData = System.IO.File.ReadAllText(slotPath);
-		SlotData = JsonUtility.FromJson<SlotData>(slotData);
+		Instance.SlotData = JsonUtility.FromJson<SlotData>(slotData);
 	}
 
 	//data to save to disk, loading data handled in scripts that sub to OnGameLoad event
 	private void SaveSavedDungeonData()
 	{
-		GameData.savedDungeonsList.Clear();
+		Instance.GameData.savedDungeonsList.Clear();
 		foreach (DungeonDataUi dungeon in DungeonPortalUi.instance.savedDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
@@ -267,10 +273,10 @@ public class SaveManager : MonoBehaviour
 				dungeonStatModifiers = dungeon.dungeonStatModifiers,
 				dungeonChestData = dungeon.dungeonChestData
 			};
-			GameData.savedDungeonsList.Add(dungeonData);
+			Instance.GameData.savedDungeonsList.Add(dungeonData);
 		}
 
-		GameData.activeDungeonsList.Clear();
+		Instance.GameData.activeDungeonsList.Clear();
 		foreach (DungeonDataUi dungeon in DungeonPortalUi.instance.activeDungeonLists)
 		{
 			DungeonData dungeonData = new DungeonData
@@ -282,7 +288,7 @@ public class SaveManager : MonoBehaviour
 				dungeonStatModifiers = dungeon.dungeonStatModifiers,
 				dungeonChestData = dungeon.dungeonChestData
 			};
-			GameData.activeDungeonsList.Add(dungeonData);
+			Instance.GameData.activeDungeonsList.Add(dungeonData);
 		}
 	}
 	private void SavePlayerInfoData()
@@ -290,27 +296,27 @@ public class SaveManager : MonoBehaviour
 		//need reworking for mp
 		EntityStats playerStats = PlayerInfoUi.playerInstance.playerStats;
 
-		SlotData.name = Utilities.GetRandomNumber(1000).ToString();
-		SlotData.level = playerStats.entityLevel.ToString();
-		SlotData.date = DateTime.Now.ToString();
+		Instance.SlotData.name = Utilities.GetRandomNumber(1000).ToString();
+		Instance.SlotData.level = playerStats.entityLevel.ToString();
+		Instance.SlotData.date = DateTime.Now.ToString();
 
-		GameData.playerLevel = playerStats.entityLevel;
-		GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
-		GameData.playerCurrenthealth = playerStats.currentHealth;
-		GameData.playerCurrentMana = playerStats.currentMana;
-		GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
-		GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
-		GameData.hasRecievedKnightItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedKnightItems;
-		GameData.hasRecievedWarriorItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedWarriorItems;
-		GameData.hasRecievedRogueItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRogueItems;
-		GameData.hasRecievedRangerItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRangerItems;
-		GameData.hasRecievedMageItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedMageItems;
+		Instance.GameData.playerLevel = playerStats.entityLevel;
+		Instance.GameData.playerCurrentExp = playerStats.GetComponent<PlayerExperienceHandler>().currentExp;
+		Instance.GameData.playerCurrenthealth = playerStats.currentHealth;
+		Instance.GameData.playerCurrentMana = playerStats.currentMana;
+		Instance.GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
+		Instance.GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
+		Instance.GameData.hasRecievedKnightItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedKnightItems;
+		Instance.GameData.hasRecievedWarriorItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedWarriorItems;
+		Instance.GameData.hasRecievedRogueItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRogueItems;
+		Instance.GameData.hasRecievedRangerItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRangerItems;
+		Instance.GameData.hasRecievedMageItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedMageItems;
 	}
 	private void SavePlayerClassData()
 	{
 		//need reworking for mp
-		GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
-		GameData.unlockedClassNodeIndexesList.Clear();
+		Instance.GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
+		Instance.GameData.unlockedClassNodeIndexesList.Clear();
 
 		bool isNodeStatBoost;
 		foreach (ClassTreeNodeUi node in PlayerClassesUi.Instance.currentUnlockedClassNodes)
@@ -326,14 +332,18 @@ public class SaveManager : MonoBehaviour
 				nodeVerticalParentIndex = node.nodeVerticalParentIndex,
 				nodeHorizontalIndex = node.nodeHorizontalIndex,
 			};
-			GameData.unlockedClassNodeIndexesList.Add(nodeData);
+			Instance.GameData.unlockedClassNodeIndexesList.Add(nodeData);
 		}
 	}
 	private void SavePlayerStorageChestData()
 	{
-		if (DungeonHandler.Instance.playerStorageChest == null) return;
+		if (DungeonHandler.Instance.playerStorageChest == null)
+		{
+			Debug.LogError("storage chest null");
+			return;
+		}
 
-		GameData.playerStorageChestItems.Clear();
+		Instance.GameData.playerStorageChestItems.Clear();
 		ChestHandler playerStorageChest = DungeonHandler.Instance.playerStorageChest;
 
 		foreach (InventoryItemUi item in playerStorageChest.itemList)
@@ -354,17 +364,17 @@ public class SaveManager : MonoBehaviour
 				maxStackCount = item.maxStackCount,
 				currentStackCount = item.currentStackCount
 			};
-			GameData.playerStorageChestItems.Add(itemData);
+			Instance.GameData.playerStorageChestItems.Add(itemData);
 		}
 	}
 	private void SavePlayerInventoryData()
 	{
 		//need reworking for mp
-		GrabInventoryItemsFromUi(GameData.playerInventoryItems, PlayerInventoryUi.Instance.InventorySlots);
-		GrabInventoryItemsFromUi(GameData.playerEquippedItems, PlayerInventoryUi.Instance.EquipmentSlots);
-		GrabInventoryItemsFromUi(GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
-		GrabInventoryItemsFromUi(GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
-		GrabQuestDataFromActiveOnes(GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
+		GrabInventoryItemsFromUi(Instance.GameData.playerInventoryItems, PlayerInventoryUi.Instance.InventorySlots);
+		GrabInventoryItemsFromUi(Instance.GameData.playerEquippedItems, PlayerInventoryUi.Instance.EquipmentSlots);
+		GrabInventoryItemsFromUi(Instance.GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
+		GrabInventoryItemsFromUi(Instance.GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
+		GrabQuestDataFromActiveOnes(Instance.GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
 	}
 	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
 	{

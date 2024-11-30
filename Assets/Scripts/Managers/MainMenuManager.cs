@@ -49,7 +49,6 @@ public class MainMenuManager : MonoBehaviour
 		EnableMainMenuButtons();
 	}
 
-
 	private void EnableMainMenuButtons()
 	{
 		//enable buttons unique to main menu scene

@@ -15,7 +15,7 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundStatBonusUnlock += RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock += RefundAbility;
 
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
+		//PlayerEventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
 	}
 	private void OnDisable()
 	{
@@ -25,14 +25,14 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundStatBonusUnlock -= RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
 
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
+		//PlayerEventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
 	//player class events
 	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
 		base.UpdateClass(newPlayerClass);
-		UpdateMaxAbilitySlots();
+		//UpdateMaxAbilitySlots();
 		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
 	}
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
@@ -55,6 +55,8 @@ public class PlayerClassHandler : EntityClassHandler
 		base.RefundAbility(ability);
 		UpdateClassTreeUi();
 	}
+
+	/*
 	private void UpdateAbilitySlotsOnLevelUp(EntityStats playerStats)
 	{
 		UpdateMaxAbilitySlots();
@@ -70,6 +72,8 @@ public class PlayerClassHandler : EntityClassHandler
 				abilitySlots += abilitySlot.AbilitySlotsPerLevel;
 		}
 	}
+	*/
+
 	private void UpdateClassTreeUi()
 	{
 		if (PlayerClassesUi.Instance == null)
