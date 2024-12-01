@@ -98,7 +98,20 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		CheckIfItemInEquipmentSlot(item);
 		CheckIfItemInEnchantmentSlot(item);
 		item.transform.SetParent(transform);
-		itemInSlot.GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
+
+		if (itemInSlot == null)
+		{
+			Debug.LogError("item in slot: " + itemInSlot);
+		}
+		else if (PlayerInfoUi.playerInstance.playerStats == null)
+		{
+			Debug.LogError("player stats: " + PlayerInfoUi.playerInstance.playerStats);
+		}
+
+		if (itemInSlot.abilityBaseRef != null)
+			itemInSlot.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+		else
+			itemInSlot.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
 	}
 	public void RemoveItemFromSlot()
 	{
@@ -116,7 +129,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 
 		item.Initilize((Items.Rarity)itemInSlot.rarity, itemInSlot.itemLevel, item.itemEnchantmentLevel);
 		itemInSlot.Initilize();
-		item.SetToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
+
+		if (itemInSlot.abilityBaseRef != null)
+			itemInSlot.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+		else
+			itemInSlot.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
 	}
 
 	//other checks

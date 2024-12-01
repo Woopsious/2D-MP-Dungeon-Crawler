@@ -48,6 +48,7 @@ public class Items : MonoBehaviour
 		rarity = setRarity;
 		itemLevel = setLevel;
 		itemEnchantmentLevel = setEnchantmentLevel;
+		toolTip = GetComponent<ToolTipUi>();
 		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity, setEnchantmentLevel);
 
 		itemName = GetItemName();
@@ -141,7 +142,7 @@ public class Items : MonoBehaviour
 	}
 
 	//tool tip
-	public virtual void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
+	public virtual void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
 
 	}

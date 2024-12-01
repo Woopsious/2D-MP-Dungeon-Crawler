@@ -35,10 +35,8 @@ public class Weapons : Items
 		bonusMana = (int)(weaponBaseRef.baseBonusMana * levelModifier);
 		isStackable = weaponBaseRef.isStackable;
 	}
-	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
+	public override void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		toolTip = GetComponent<ToolTipUi>();
-
 		damage = (int)(weaponBaseRef.baseDamage * levelModifier);
 
 		//apply offhand weapon dmg to main weapon (atm only useful for dagger)

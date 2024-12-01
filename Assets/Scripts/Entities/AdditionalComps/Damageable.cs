@@ -93,16 +93,16 @@ public class DamageSourceInfo
 		this.knockBack = knockBack;
 	}
 
-	public void SetDeathMessage<A>(A thingDealingDamage)
+	public void SetDeathMessage<T>(T thingDealingDamage)
 	{
 		if (entity != null)
 		{
-			if (typeof(A).Equals(typeof(SOWeapons)))
+			if (typeof(T).Equals(typeof(SOWeapons)))
 			{
 				weapon = thingDealingDamage as SOWeapons;
 				deathMessageType = DeathMessageType.entityWeapon;
 			}
-			else if (typeof(A).Equals(typeof(SOAbilities)))
+			else if (typeof(T).Equals(typeof(SOAbilities)))
 			{
 				ability = thingDealingDamage as SOAbilities;
 				deathMessageType = DeathMessageType.entityAbility;
@@ -110,12 +110,12 @@ public class DamageSourceInfo
 		}
 		else
 		{
-			if (typeof(A).Equals(typeof(SOTraps)))
+			if (typeof(T).Equals(typeof(SOTraps)))
 			{
 				trap = thingDealingDamage as SOTraps;
 				deathMessageType = DeathMessageType.trap;
 			}
-			else if (typeof(A).Equals(typeof(SOStatusEffects)))
+			else if (typeof(T).Equals(typeof(SOStatusEffects)))
 			{
 				statusEffect = thingDealingDamage as SOStatusEffects;
 				deathMessageType = DeathMessageType.statusEffect;

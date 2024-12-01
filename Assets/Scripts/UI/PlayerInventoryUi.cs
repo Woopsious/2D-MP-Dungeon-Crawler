@@ -175,7 +175,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
 			weapon.SetCurrentStackCount(itemData.currentStackCount);
 		}
-		if (itemData.armorBaseRef != null)
+		else if (itemData.armorBaseRef != null)
 		{
 			inventoryItem.armorBaseRef = itemData.armorBaseRef;
 			Armors armor = inventoryItem.AddComponent<Armors>();
@@ -186,7 +186,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
 			armor.SetCurrentStackCount(itemData.currentStackCount);
 		}
-		if (itemData.accessoryBaseRef != null)
+		else if (itemData.accessoryBaseRef != null)
 		{
 			inventoryItem.accessoryBaseRef = itemData.accessoryBaseRef;
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
@@ -197,7 +197,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
 			accessory.SetCurrentStackCount(itemData.currentStackCount);
 		}
-		if (itemData.consumableBaseRef != null)
+		else if (itemData.consumableBaseRef != null)
 		{
 			inventoryItem.consumableBaseRef = itemData.consumableBaseRef;
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
@@ -208,7 +208,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
 			consumable.SetCurrentStackCount(itemData.currentStackCount);
 		}
-		if (itemData.abilityBaseRef != null)
+		else if (itemData.abilityBaseRef != null)
 		{
 			inventoryItem.abilityBaseRef = itemData.abilityBaseRef;
 			Abilities ability = inventoryItem.AddComponent<Abilities>();
@@ -219,6 +219,8 @@ public class PlayerInventoryUi : MonoBehaviour
 			ability.isEquippedAbility = false;
 			ability.isOnCooldown = false;
 		}
+		else
+			Debug.LogError("itemData.Ref null this shouldnt happen");
 	}
 
 	//player gold updates
@@ -320,7 +322,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
 			weapon.SetCurrentStackCount(item.currentStackCount);
 		}
-		if (item.armorBaseRef != null)
+		else if (item.armorBaseRef != null)
 		{
 			inventoryItem.armorBaseRef = item.armorBaseRef;
 			Armors armor = inventoryItem.AddComponent<Armors>();
@@ -331,7 +333,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
 			armor.SetCurrentStackCount(item.currentStackCount);
 		}
-		if (item.accessoryBaseRef != null)
+		else if (item.accessoryBaseRef != null)
 		{
 			inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
@@ -342,7 +344,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
 			accessory.SetCurrentStackCount(item.currentStackCount);
 		}
-		if (item.consumableBaseRef != null)
+		else if (item.consumableBaseRef != null)
 		{
 			inventoryItem.consumableBaseRef = item.consumableBaseRef;
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
@@ -353,6 +355,8 @@ public class PlayerInventoryUi : MonoBehaviour
 			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
 		}
+		else
+			Debug.LogError("item.Ref null this shouldnt happen");
 	}
 
 	//item stacking
@@ -685,7 +689,12 @@ public class PlayerInventoryUi : MonoBehaviour
 			if (!TryGetComponent<InventorySlotDataUi>(out var slotDataUi)) continue;
 
 			UpdateCanEquipItem(obj);
-			slotDataUi.itemInSlot.GetComponent<Items>().SetToolTip(PlayerInfoUi.playerInstance.playerStats, slotDataUi.IsShopSlot());
+			InventoryItemUi itemUi = slotDataUi.itemInSlot;
+
+			if (itemUi.abilityBaseRef != null)
+				itemUi.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+			else
+				itemUi.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, slotDataUi.IsShopSlot());
 		}
 	}
 	private void UpdateCanEquipItem(GameObject obj)

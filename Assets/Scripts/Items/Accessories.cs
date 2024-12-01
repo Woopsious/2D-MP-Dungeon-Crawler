@@ -71,10 +71,8 @@ public class Accessories : Items
 		bonusFireResistance = (int)(accessoryBaseRef.bonusFireResistance * levelModifier);
 		bonusIceResistance = (int)(accessoryBaseRef.bonusIceResistance * levelModifier);
 	}
-	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
+	public override void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		toolTip = GetComponent<ToolTipUi>();
-
 		string rarity;
 		if (this.rarity == Rarity.isLegendary)
 			rarity = "<color=orange>Legendary</color>";

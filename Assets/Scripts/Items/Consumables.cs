@@ -16,10 +16,8 @@ public class Consumables : Items
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 		isStackable = consumableBaseRef.isStackable;
 	}
-	public override void SetToolTip(EntityStats playerStats, bool itemInShopSlot)
+	public override void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-		toolTip = GetComponent<ToolTipUi>();
-
 		string info = $"{itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price";
 		string extraInfo;
 

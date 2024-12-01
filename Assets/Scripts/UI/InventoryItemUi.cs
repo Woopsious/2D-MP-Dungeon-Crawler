@@ -69,6 +69,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	}
 	private void OnDisable()
 	{
+		//subbing to events happens when abilities/consumables are equipped
 		PlayerInfoUi.playerInstance.playerStats.OnHealthChangeEvent -= CheckIfCanUseConsumables;
 		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= CheckIfCanUseConsumables;
 		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= UpdateCanCastAbility;
@@ -185,6 +186,10 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		uiItemName.color = colour;
 		uiItemLevel.color = colour;
 		uiItemStackCount.color = colour;
+	}
+	public void UpdateToolTip(bool isShopSlot)
+	{
+
 	}
 
 	//functions for dragging
