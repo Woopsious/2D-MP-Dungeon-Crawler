@@ -20,6 +20,7 @@ public class PlayerJournalUi : MonoBehaviour
 	[Header("Interacted Npc Ui")]
 	public GameObject npcJournalPanalUi;
 	public GameObject avalableQuestContainer;
+	public Button closeQuestNpcButton;
 	private NpcHandler interactedQuestNpc;
 
 	public static event Action<QuestDataUi> OnNewQuestAccepted;
@@ -179,6 +180,8 @@ public class PlayerJournalUi : MonoBehaviour
 	//npc Journal ui
 	private void ShowAvailableNpcQuests(NpcHandler npc)
 	{
+		closeQuestNpcButton.onClick.AddListener(delegate { HideAvailableNpcQuests(npc); });
+
 		foreach (QuestDataUi quest in npc.avalableQuestList)
 			quest.transform.SetParent(avalableQuestContainer.transform);
 
@@ -192,6 +195,7 @@ public class PlayerJournalUi : MonoBehaviour
 			quest.transform.SetParent(npc.npcContainer.transform);
 
 		interactedQuestNpc = null;
+		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
 		npcJournalPanalUi.SetActive(false);
 		HidePlayerJournal();
 	}

@@ -187,10 +187,6 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		uiItemLevel.color = colour;
 		uiItemStackCount.color = colour;
 	}
-	public void UpdateToolTip(bool isShopSlot)
-	{
-
-	}
 
 	//functions for dragging
 	public void OnBeginDrag(PointerEventData eventData)

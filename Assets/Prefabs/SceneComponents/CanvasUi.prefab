@@ -14739,19 +14739,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2385340050518179220}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 540052012176181913}
-        m_TargetAssemblyTypeName: PlayerInventoryUi, Assembly-CSharp
-        m_MethodName: HideNpcShop
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: NpcHandler, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &2753716284938311557
 GameObject:
   m_ObjectHideFlags: 0
@@ -18937,6 +18925,7 @@ MonoBehaviour:
   activeQuests: []
   npcJournalPanalUi: {fileID: 691405802618299523}
   avalableQuestContainer: {fileID: 4827861846648095903}
+  closeQuestNpcButton: {fileID: 7979472822938900318}
 --- !u!114 &2412965915637776067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -28300,19 +28289,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 8655767157947619832}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 7406670237921438352}
-        m_TargetAssemblyTypeName: PlayerJournalUi, Assembly-CSharp
-        m_MethodName: HideAvailableNpcQuestsButton
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!1 &5387196812274845151
 GameObject:
   m_ObjectHideFlags: 0

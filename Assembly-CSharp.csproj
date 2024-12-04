@@ -97,6 +97,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOStatusEffects.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerMenuUi.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
     <Compile Include="Assets\Scripts\Items\Armors.cs" />

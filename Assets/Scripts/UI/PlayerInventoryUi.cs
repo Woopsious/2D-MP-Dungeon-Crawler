@@ -43,6 +43,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public TMP_Text transactionInfoText;
 	public TMP_Text transactionTrackerText;
 	public Button closeShopButton;
+	private NpcHandler shopNpc;
 
 	//public int goldTransaction;
 
@@ -478,6 +479,8 @@ public class PlayerInventoryUi : MonoBehaviour
 	//npc shop
 	public void ShowNpcShop(NpcHandler npc)
 	{
+		closeShopButton.onClick.AddListener(delegate { HideNpcShop(npc); });
+
 		if (npc.npc.shopType == SONpcs.ShopType.isWeaponSmith)
 			interactedInventorySlotsText.text = "Weapon Smith";
 		else if (npc.npc.shopType == SONpcs.ShopType.isArmorer)
@@ -519,6 +522,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.RemoveItemFromSlot();
 		}
 
+		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		npcShopPanalUi.SetActive(false);
 		HideInventory();
@@ -625,7 +629,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		for (int i = playerChest.itemContainer.transform.childCount - 1;  i >= 0; i--) //re-add all items + any new ones
 			playerChest.itemList.Add(playerChest.itemContainer.transform.GetChild(i).GetComponent<InventoryItemUi>());
 
-		PlayerEventManager.ShowPlayerInventory();
+		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		storageChestPanelUi.SetActive(false);
 		HideInventory();
@@ -642,6 +646,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void HideEnchanterUi()
 	{
 		EnchanterUi.SetActive(false);
+		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
 		HideInventory();
 	}
 	public void UpdateEnchantItemUiInfo(InventoryItemUi item)
