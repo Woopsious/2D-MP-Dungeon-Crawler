@@ -66,6 +66,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerExperienceHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOTraps.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityAbilityHandler.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerUi\MultiplayerMenuUi.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\DungeonHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWeaponAttack.cs" />
@@ -78,6 +79,7 @@
     <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\Obstacles.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityIndicators.cs" />
+    <Compile Include="Assets\Scripts\Multiplayer\LobbyManager.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskInvestigate.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Tree.cs" />
@@ -97,7 +99,6 @@
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOStatusEffects.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOWeapons.cs" />
-    <Compile Include="Assets\Scripts\UI\MultiplayerMenuUi.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossAbilities.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOItems.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityStats.cs" />
+    <Compile Include="Assets\Scripts\Multiplayer\HostManager.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossTransitions.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Sequence.cs" />
     <Compile Include="Assets\GameData\TilemapData\TileMapHazardsManager.cs" />
@@ -166,6 +168,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
+    <Compile Include="Assets\Scripts\Multiplayer\ClientManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IBossInterfaces.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputHandler.cs" />
