@@ -3,7 +3,9 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class MainMenuManager : MonoBehaviour
 {
@@ -29,6 +31,10 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject autoSaveContainer;
 	public GameObject saveSlotContainer;
 
+	[Header("Play MP Button")]
+	public Button playMpButton;
+	public TMP_Text playMpButtonText;
+
 	[Header("Keybinds Panel")]
 	public GameObject keybindsSettingsPanel;
 	public GameObject KeyboardKeybindsPanel;
@@ -47,6 +53,7 @@ public class MainMenuManager : MonoBehaviour
 	private void Start()
 	{
 		EnableMainMenuButtons();
+		OnlyShowButtonInHubArea();
 	}
 
 	private void EnableMainMenuButtons()
@@ -88,6 +95,38 @@ public class MainMenuManager : MonoBehaviour
 	public void StartNewGameButton()
 	{
 		GameManager.Instance.LoadHubArea(true);
+	}
+
+
+	//mp button actions + checks
+	private void OnlyShowButtonInHubArea()
+	{
+		if (GameManager.Instance == null)
+		{
+			Debug.LogWarning("GM not found, showing play Multiplayer button, ignore if testing");
+			playMpButton.interactable = true;
+			playMpButtonText.color = Color.black;
+			playMpButtonText.text = "Play Multiplayer";
+			return;
+		}
+
+		if (SceneManager.GetActiveScene().name == GameManager.Instance.hubAreaName)
+		{
+			playMpButton.interactable = true;
+			playMpButtonText.color = Color.black;
+			playMpButtonText.text = "Play Multiplayer";
+		}
+		else
+		{
+			playMpButton.interactable = false;
+			playMpButtonText.color = new Color(0.8f, 0, 0);
+			playMpButtonText.text = "Mp available in Hub";
+		}
+	}
+	public void PlayMultiplayer()
+	{
+		mainMenuPanel.SetActive(false);
+		MultiplayerMenuUi.Instance.ShowMpMenuUi();
 	}
 
 	//SHOW/HIDE PANELS

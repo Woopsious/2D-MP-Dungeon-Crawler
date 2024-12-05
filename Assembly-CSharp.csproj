@@ -90,6 +90,7 @@
     <Compile Include="Assets\Scripts\Entities\!Main\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWander.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerUi\LobbyListUi.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityClassHandler.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
@@ -163,6 +164,7 @@
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\ChestHandler.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
+    <Compile Include="Assets\Scripts\UI\MultiplayerUi\LobbyUi.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerSettingsManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />

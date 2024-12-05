@@ -34,8 +34,9 @@ public class HostManager : NetworkBehaviour
 	}
 
 	//start/stop host
-	public void StartHost()
+	public async Task StartHost()
 	{
+		await MultiplayerManager.Instance.AuthenticatePlayer();
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		ClearPlayers();
 		MultiplayerManager.Instance.SubToEvents();
@@ -70,7 +71,7 @@ public class HostManager : NetworkBehaviour
 
 		NetworkManager.Singleton.StartHost();
 		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
-		LobbyManager.Instance.CreateLobby();
+		//LobbyManager.Instance.CreateLobby();
 	}
 	public static async Task<RelayServerData> AllocateRelayServerAndGetJoinCode(int maxConnections, string region = null)
 	{

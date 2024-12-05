@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
@@ -11,17 +12,21 @@ public class LobbyManager : NetworkBehaviour
 	public static LobbyManager Instance;
 
 	public Lobby _Lobby;
+
+	public string lobbyName;
+	public bool lobbyPrivate;
+	public bool lobbyHasPassword;
+	public string lobbyPassword;
+
 	public string lobbyJoinCode;
 
-	public string lobbyName = "LobbyName";
-	private int maxConnections = 2;
-
+	private int maxConnections = 4;
 	private readonly float lobbyHeartbeatWaitTime = 25f;
-	public float lobbyHeartbeatTimer;
+	private float lobbyHeartbeatTimer;
 	private readonly float lobbyPollWaitTimer = 1.5f;
-	public float lobbyPollTimer;
+	private float lobbyPollTimer;
 
-	public float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
+	private float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
 
 	private void Awake()
 	{
@@ -35,6 +40,8 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public void Update()
 	{
+		if (_Lobby == null) return;
+
 		HandleLobbyPollForUpdates();
 		if (MultiplayerManager.Instance.IsPlayerHost())
 		{
@@ -43,14 +50,20 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
-	//create lobby
-	public async void CreateLobby()
+	//create lobby types
+	public async void CreateLobby(string lobbyName, bool lobbyPrivate)
 	{
+		this.lobbyName = lobbyName;
+		this.lobbyPrivate = lobbyPrivate;
+		lobbyHasPassword = false;
+		lobbyPassword = "";
+		await HostManager.Instance.StartHost();
+
 		try
 		{
 			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
 			{
-				IsPrivate = false,
+				IsPrivate = lobbyPrivate,
 				Player = GetPlayer(),
 				IsLocked = false,
 				Data = new Dictionary<string, DataObject>
@@ -60,7 +73,41 @@ public class LobbyManager : NetworkBehaviour
 			};
 
 			Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
-				Instance.lobbyName, Instance.maxConnections, createLobbyOptions);
+				lobbyName, Instance.maxConnections, createLobbyOptions);
+
+			Instance._Lobby = lobby;
+			Debug.LogWarning($"Created lobby with name: {lobby.Name} and Id: {lobby.Id}");
+			Debug.LogWarning($"lobby code: {lobby.Data["joinCode"].Value}");
+		}
+		catch (LobbyServiceException e)
+		{
+			Debug.LogError(e.Message);
+		}
+	}
+	public async void CreateLobbyWithPassword(string lobbyName, bool lobbyPrivate, string lobbyPassword)
+	{
+		this.lobbyName = lobbyName;
+		this.lobbyPrivate = lobbyPrivate;
+		lobbyHasPassword = true;
+		this.lobbyPassword = lobbyPassword;
+		await HostManager.Instance.StartHost();
+
+		try
+		{
+			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
+			{
+				IsPrivate = lobbyPrivate,
+				Player = GetPlayer(),
+				IsLocked = false,
+				Password = lobbyPassword,
+				Data = new Dictionary<string, DataObject>
+				{
+					{"joinCode", new DataObject(visibility: DataObject.VisibilityOptions.Public, lobbyJoinCode)}
+				}
+			};
+
+			Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
+				lobbyName, Instance.maxConnections, createLobbyOptions);
 
 			Instance._Lobby = lobby;
 			Debug.LogWarning($"Created lobby with name: {lobby.Name} and Id: {lobby.Id}");
@@ -155,7 +202,7 @@ public class LobbyManager : NetworkBehaviour
 					_Lobby = lobby;
 
 					if (SceneManager.GetActiveScene().buildIndex == 0)
-						MultiplayerMenuUi.Instance.SyncPlayerListforLobbyUi(_Lobby);
+						LobbyUi.Instance.SyncPlayerListforLobbyUi(_Lobby);
 
 					/*
 					if (MultiplayerManager.Instance.CheckIfHost())
