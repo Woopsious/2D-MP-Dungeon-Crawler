@@ -36,11 +36,15 @@ public class HostManager : NetworkBehaviour
 	//start/stop host
 	public async Task StartHost()
 	{
+		GameManager.Instance.PauseGame(false);
 		await MultiplayerManager.Instance.AuthenticatePlayer();
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		ClearPlayers();
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
+
+		Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
+		Instance.connectedClientsInfoList = new List<ClientDataInfo>();
 	}
 	public void StopHost()
 	{
@@ -54,7 +58,7 @@ public class HostManager : NetworkBehaviour
 	//create relay server
 	IEnumerator RelayConfigureTransportAsHostingPlayer()
 	{
-		var serverRelayUtilityTask = AllocateRelayServerAndGetJoinCode(2);
+		var serverRelayUtilityTask = AllocateRelayServerAndGetJoinCode(4);
 		while (!serverRelayUtilityTask.IsCompleted)
 		{
 			yield return null;
@@ -71,7 +75,6 @@ public class HostManager : NetworkBehaviour
 
 		NetworkManager.Singleton.StartHost();
 		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
-		//LobbyManager.Instance.CreateLobby();
 	}
 	public static async Task<RelayServerData> AllocateRelayServerAndGetJoinCode(int maxConnections, string region = null)
 	{
@@ -151,7 +154,8 @@ public class HostManager : NetworkBehaviour
 	{
 		try
 		{
-			connectedClientsList.Clear();
+			Instance.connectedClientsList.Clear();
+			Instance.connectedClientsInfoList.Clear();
 		}
 		catch
 		{

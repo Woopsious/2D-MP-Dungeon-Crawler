@@ -47,7 +47,7 @@ public class MultiplayerMenuUi : MonoBehaviour
 	{
 		if (!PlayerNameFilledIn()) return;
 
-		LobbyUi.Instance.ShowLobbySettingsUi();
+		LobbyUi.Instance.ShowLobbySettingsUiWithCreateLobbyButton();
 	}
 
 	//back button

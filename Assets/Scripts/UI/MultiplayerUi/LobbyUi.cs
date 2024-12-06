@@ -1,18 +1,21 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
+using UnityEngine.UI;
 
 public class LobbyUi : MonoBehaviour
 {
 	public static LobbyUi Instance;
 
-	[Header("Lobby")] //this needs to hide all other ui like player inv 
+	[Header("Panels")] //this needs to hide all other ui like player inv 
 	public GameObject LobbySettingsUiPanel;
 	public GameObject LobbyUiPanel;
 
-	[Header("Lobby Settings")]
+	[Header("Lobby Settings Ui")]
 	public TMP_InputField lobbyNameInput;
 	public TMP_Text lobbyNamePlaceholder;
 
@@ -25,9 +28,23 @@ public class LobbyUi : MonoBehaviour
 	public TMP_InputField lobbyPasswordInput;
 	public TMP_Text lobbyPasswordPlaceholder;
 
+	public Button createLobbyButton;
+	public Button cancelLobbyCreationButton;
+
+	[Header("Lobby Ui")]
+	public List<PlayerCardInfoHandler> playerCardInfoList = new List<PlayerCardInfoHandler>(); 
+
 	private void Awake()
 	{
 		Instance = this;
+	}
+	private void OnEnable()
+	{
+		MultiplayerManager.MarkLobbyUiAsDirty += MarkUiDirty;
+	}
+	private void OnDisable()
+	{
+		MultiplayerManager.MarkLobbyUiAsDirty -= MarkUiDirty;
 	}
 
 	/// <summary>
@@ -63,7 +80,7 @@ public class LobbyUi : MonoBehaviour
 		}
 	}
 
-	//create lobby button
+	//create/cancel lobby creation buttons
 	public void CreateLobby()
 	{
 		if (LobbyNameValid() && LobbyPasswordValid())
@@ -73,6 +90,12 @@ public class LobbyUi : MonoBehaviour
 			else
 				LobbyManager.Instance.CreateLobbyWithPassword(lobbyNameInput.text, lobbyPrivate, lobbyPasswordInput.text);
 		}
+
+		ShowLobbyUi();
+	}
+	public void CancelLobbyCreation()
+	{
+		MultiplayerMenuUi.Instance.ShowMainMenu();
 	}
 
 	//lobby settings checks
@@ -103,70 +126,40 @@ public class LobbyUi : MonoBehaviour
 		}
 	}
 
-	//back to lobby ui from lobby setting sui
-	public void BackToLobbyUi()
-	{
-		
-	}
-
 	//LOBBY PANEL
 	//Set up Player list
 	public void SyncPlayerListforLobbyUi(Lobby lobby)
 	{
-		/*
-		if (HostManager.Instance.connectedClientsList.Count < LobbyScreenParentTransform.childCount)
-		{
-			Transform childTransform = LobbyScreenParentTransform.GetChild(LobbyScreenParentTransform.childCount - 1);
-			Destroy(childTransform.gameObject);
-		}
-		else if (HostManager.Instance.connectedClientsList.Count > LobbyScreenParentTransform.childCount)
-		{
-			Instantiate(PlayerItemPrefab, LobbyScreenParentTransform);
-			UpdatePlayerList(lobby);
-		}
-		else
-			UpdatePlayerList(lobby);
-		*/
-	}
-	public void UpdatePlayerList(Lobby lobby)
-	{
-		/*
 		int index = 0;
-		foreach (Transform child in LobbyScreenParentTransform.transform)
+		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
 		{
-			PlayerItemManager playerItem = child.GetComponent<PlayerItemManager>();
-			playerItem.Initialize(
-				HostManager.Instance.connectedClientsList[index].clientName.ToString(),
-				HostManager.Instance.connectedClientsList[index].clientId.ToString(),
-				HostManager.Instance.connectedClientsList[index].clientNetworkedId.ToString()
-				);
-
-			if (!GameManager.Instance.isPlayerOne && playerItem.kickPlayerButton.activeInHierarchy)
-				playerItem.kickPlayerButton.SetActive(false);
-
-			else if (GameManager.Instance.isPlayerOne && !playerItem.kickPlayerButton.activeInHierarchy)
-			{
-				if (playerItem.localPlayerNetworkedId == "0")
-					playerItem.kickPlayerButton.SetActive(false);
-
-				else
-					playerItem.kickPlayerButton.SetActive(true);
-			}
+			playerCard.UpdateInfo(lobby, index);
 			index++;
 		}
-		*/
 	}
-	public void ClearPlayersList()
+	private void MarkUiDirty()
 	{
-		/*
-		foreach (Transform child in LobbyScreenParentTransform)
-			Destroy(child.gameObject);
-		*/
+		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
+			playerCard.uiDirty = true;
 	}
 
 	//UI PANEL CHANGES
+	//called when hosting game from MultiplayerManager
+	public void ShowLobbySettingsUiWithCreateLobbyButton()
+	{
+		createLobbyButton.gameObject.SetActive(true);
+		cancelLobbyCreationButton.gameObject.SetActive(true);
+
+		LobbySettingsUiPanel.SetActive(true);
+		MultiplayerMenuUi.Instance.HideMpMenuUi();
+		LobbyListUi.Instance.HideLobbyListUi();
+		HideLobbyUi();
+	}
 	public void ShowLobbySettingsUi()
 	{
+		createLobbyButton.gameObject.SetActive(false);
+		cancelLobbyCreationButton.gameObject.SetActive(false);
+
 		LobbySettingsUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
 		LobbyListUi.Instance.HideLobbyListUi();

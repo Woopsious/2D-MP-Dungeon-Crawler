@@ -34,6 +34,7 @@ public class ClientManager : NetworkBehaviour
 	//start/stop client
 	public async void StartClient(Lobby lobby)
 	{
+		GameManager.Instance.PauseGame(false);
 		await MultiplayerManager.Instance.AuthenticatePlayer();
 		//LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();

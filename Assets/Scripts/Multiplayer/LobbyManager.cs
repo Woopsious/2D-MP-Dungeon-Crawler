@@ -164,14 +164,18 @@ public class LobbyManager : NetworkBehaviour
 		return new Player
 		{
 			Data = new Dictionary<string, PlayerDataObject>
-				{
-					{ "PlayerName", new PlayerDataObject(
-						PlayerDataObject.VisibilityOptions.Member, ClientManager.Instance.clientUsername.ToString())},
-					{ "PlayerID", new PlayerDataObject(
-						PlayerDataObject.VisibilityOptions.Member, ClientManager.Instance.clientId.ToString())},
-					{ "PlayerNetworkID", new PlayerDataObject(
-						PlayerDataObject.VisibilityOptions.Member, ClientManager.Instance.clientNetworkedId.ToString())},
-				}
+			{
+				{ "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+					ClientManager.Instance.clientUsername.ToString())},
+				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+					ClientManager.Instance.clientId.ToString())},
+				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+					ClientManager.Instance.clientNetworkedId.ToString())},
+				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+					PlayerInfoUi.playerInstance.playerStats.entityLevel.ToString())},
+				{ "PlayerClass", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+					PlayerInfoUi.playerInstance.playerClassHandler.currentEntityClass.className.ToString())},
+			}
 		};
 	}
 
@@ -201,11 +205,11 @@ public class LobbyManager : NetworkBehaviour
 					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(_Lobby.Id);
 					_Lobby = lobby;
 
-					if (SceneManager.GetActiveScene().buildIndex == 0)
-						LobbyUi.Instance.SyncPlayerListforLobbyUi(_Lobby);
+					LobbyUi.Instance.SyncPlayerListforLobbyUi(lobby);
 
+					//debug logs for logging
 					/*
-					if (MultiplayerManager.Instance.CheckIfHost())
+					if (MultiplayerManager.Instance.IsPlayerHost())
 						Debug.LogWarning($"connected Networked clients: {NetworkManager.Singleton.ConnectedClientsList.Count}");
 
 					Debug.LogWarning($"connected clients count: {HostManager.Instance.connectedClientsList.Count}");

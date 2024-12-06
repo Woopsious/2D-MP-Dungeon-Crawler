@@ -13,6 +13,8 @@ public class MultiplayerManager : NetworkBehaviour
 
 	public bool isMultiplayer;
 
+	public static Action MarkLobbyUiAsDirty;
+
 	private void Awake()
 	{
 		if (Instance == null)
@@ -54,6 +56,8 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerConnectedCallback(ulong id)
 	{
+		MarkLobbyUiAsDirty?.Invoke();
+
 		if (IsPlayerHost())
 		{
 			if (id == 0) //grab host data locally as lobby is not yet made
@@ -80,6 +84,8 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
+		MarkLobbyUiAsDirty?.Invoke();
+
 		if (IsPlayerHost())
 			HostManager.Instance.HandlePlayerDisconnectsAsHost(id);
 		else
@@ -114,7 +120,7 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		if (NetworkManager.Singleton != null)
 		{
-			if (NetworkManager.Singleton.IsHost)
+			if (NetworkManager.Singleton.IsClient)
 			{
 				//Debug.LogError("CLIENT IS HOST");
 				return true;

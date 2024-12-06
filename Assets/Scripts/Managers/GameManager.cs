@@ -142,9 +142,7 @@ public class GameManager : MonoBehaviour
 	//pause game
 	public void PauseGame(bool pauseGame)
     {
-        if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsClient) return;
-
-        if (pauseGame)
+        if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
 			Time.timeScale = 0f;
 		else
 		 Time.timeScale = 1.0f;
