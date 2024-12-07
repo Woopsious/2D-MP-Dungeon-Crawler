@@ -132,6 +132,7 @@
     <Compile Include="Assets\Scripts\Entities\!Main\BossEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\Damageable.cs" />
     <Compile Include="Assets\Scripts\Items\Consumables.cs" />
+    <Compile Include="Assets\Scripts\Multiplayer\LobbyCardInfoHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossChecks\CheckInPhaseTransition.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskTrackPlayer.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />

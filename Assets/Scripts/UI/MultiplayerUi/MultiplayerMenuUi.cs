@@ -39,6 +39,7 @@ public class MultiplayerMenuUi : MonoBehaviour
 	{
 		if (!PlayerNameFilledIn()) return;
 
+		AuthPlayer();
 		LobbyListUi.Instance.ShowLobbyListUi();
 	}
 
@@ -47,7 +48,13 @@ public class MultiplayerMenuUi : MonoBehaviour
 	{
 		if (!PlayerNameFilledIn()) return;
 
+		AuthPlayer();
 		LobbyUi.Instance.ShowLobbySettingsUiWithCreateLobbyButton();
+	}
+
+	private async void AuthPlayer()
+	{
+		await MultiplayerManager.Instance.AuthenticatePlayer();
 	}
 
 	//back button

@@ -34,10 +34,9 @@ public class HostManager : NetworkBehaviour
 	}
 
 	//start/stop host
-	public async Task StartHost()
+	public void StartHost()
 	{
 		GameManager.Instance.PauseGame(false);
-		await MultiplayerManager.Instance.AuthenticatePlayer();
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		ClearPlayers();
 		MultiplayerManager.Instance.SubToEvents();

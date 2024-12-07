@@ -57,7 +57,7 @@ public class LobbyManager : NetworkBehaviour
 		this.lobbyPrivate = lobbyPrivate;
 		lobbyHasPassword = false;
 		lobbyPassword = "";
-		await HostManager.Instance.StartHost();
+		HostManager.Instance.StartHost();
 
 		try
 		{
@@ -90,7 +90,7 @@ public class LobbyManager : NetworkBehaviour
 		this.lobbyPrivate = lobbyPrivate;
 		lobbyHasPassword = true;
 		this.lobbyPassword = lobbyPassword;
-		await HostManager.Instance.StartHost();
+		HostManager.Instance.StartHost();
 
 		try
 		{
