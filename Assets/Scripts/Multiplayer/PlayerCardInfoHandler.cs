@@ -49,42 +49,24 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	}
 	private string GetPlayerName(Lobby lobby, int index)
 	{
-		if (lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
-		{
-			Debug.LogWarning("player Name Key found: " + playerName.Value);
-		}
-		else
-		{
+		if (!lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
 			Debug.LogError("player Name Key not found");
-		}
 
 		return playerName.Value.ToString();
 	}
 	private string GetPlayerLevel(Lobby lobby, int index)
 	{
-		if (lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject PlayerLevel))
-		{
-			Debug.LogWarning("player Name Key found: " + PlayerLevel.Value);
-		}
-		else
-		{
-			Debug.LogError("player Name Key not found");
-		}
+		if (!lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject playerLevel))
+			Debug.LogError("player level Key not found");
 
-		return PlayerLevel.Value.ToString();
+		return playerLevel.Value.ToString();
 	}
 	private string GetPlayerClass(Lobby lobby, int index)
 	{
-		if (lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject PlayerClass))
-		{
-			Debug.LogWarning("player Name Key found: " + PlayerClass.Value);
-		}
-		else
-		{
-			Debug.LogError("player Name Key not found");
-		}
+		if (!lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject playerClass))
+			Debug.LogError("player Class Key not found");
 
-		return PlayerClass.Value.ToString();
+		return playerClass.Value.ToString();
 	}
 
 	/// <summary>

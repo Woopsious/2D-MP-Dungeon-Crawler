@@ -21,6 +21,9 @@ public class LobbyListUi : MonoBehaviour
 	private string LobbySearchContinuationToken;
 	private int currentPageIndex;
 
+	[Header("Fetching Lobbies Panel")]
+	public GameObject fetchingLobbiesPanel;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -33,7 +36,9 @@ public class LobbyListUi : MonoBehaviour
 	}
 	private async void SearchForLobbies()
 	{
+		ShowFetchingLobbiesUi();
 		await NewSearchForLobbies(lobbyNameSearchInput.text);
+		HideFetchingLobbiesUi();
 	}
 
 	//search for lobbies via lobby name
@@ -132,5 +137,13 @@ public class LobbyListUi : MonoBehaviour
 	public void HideLobbyListUi()
 	{
 		LobbyListUiPanel.SetActive(false);
+	}
+	public void ShowFetchingLobbiesUi()
+	{
+		fetchingLobbiesPanel.SetActive(true);
+	}
+	public void HideFetchingLobbiesUi()
+	{
+		fetchingLobbiesPanel.SetActive(false);
 	}
 }

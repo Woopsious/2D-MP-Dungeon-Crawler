@@ -16,7 +16,6 @@ public class HostManager : NetworkBehaviour
 	public static HostManager Instance;
 
 	public NetworkList<ClientDataInfo> connectedClientsList;
-	public List<ClientDataInfo> connectedClientsInfoList;
 
 	public int connectedPlayers;
 	public string idOfKickedPlayer;
@@ -43,7 +42,6 @@ public class HostManager : NetworkBehaviour
 		MultiplayerManager.Instance.isMultiplayer = true;
 
 		Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
-		Instance.connectedClientsInfoList = new List<ClientDataInfo>();
 	}
 	public void StopHost()
 	{
@@ -154,7 +152,6 @@ public class HostManager : NetworkBehaviour
 		try
 		{
 			Instance.connectedClientsList.Clear();
-			Instance.connectedClientsInfoList.Clear();
 		}
 		catch
 		{

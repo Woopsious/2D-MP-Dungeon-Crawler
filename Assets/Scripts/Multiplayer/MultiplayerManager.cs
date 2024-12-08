@@ -62,6 +62,8 @@ public class MultiplayerManager : NetworkBehaviour
 		{
 			if (id == 0) //grab host data locally as lobby is not yet made
 			{
+				Debug.LogWarning("joining client is host");
+
 				ClientDataInfo data = new ClientDataInfo(ClientManager.Instance.clientUsername,
 					ClientManager.Instance.clientId, ClientManager.Instance.clientNetworkedId);
 
@@ -69,6 +71,8 @@ public class MultiplayerManager : NetworkBehaviour
 			}
 			else //grab other clients data through lobby
 			{
+				Debug.LogWarning("joining client is not host");
+
 				int i = HostManager.Instance.connectedClientsList.Count;
 
 				ClientDataInfo data = new ClientDataInfo(LobbyManager.Instance._Lobby.Players[i].Data["PlayerName"].Value,
@@ -77,6 +81,7 @@ public class MultiplayerManager : NetworkBehaviour
 				HostManager.Instance.connectedClientsList.Add(data);
 			}
 		}
+
 		/*
 		if (!MenuUIManager.Instance.MpLobbyPanel.activeInHierarchy) //enable lobby ui once connected to relay
 			MenuUIManager.Instance.ShowLobbyUi();
@@ -95,7 +100,7 @@ public class MultiplayerManager : NetworkBehaviour
 	[ServerRpc(RequireOwnership = false)]
 	public void SendClientDataToHostServerRPC(string clientUserName, string clientId, ulong clientNetworkId)
 	{
-		HostManager.Instance.connectedClientsInfoList.Add(new ClientDataInfo(clientUserName, clientId, clientNetworkId));
+		HostManager.Instance.connectedClientsList.Add(new ClientDataInfo(clientUserName, clientId, clientNetworkId));
 	}
 
 	//Shutdown NetworkManager
@@ -103,6 +108,16 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		if (NetworkManager.Singleton.isActiveAndEnabled)
 			NetworkManager.Singleton.Shutdown();
+	}
+
+	public static bool CheckIfMultiplayerMenusOpen()
+	{
+		if (MultiplayerMenuUi.Instance.MpMenuUiPanel.activeInHierarchy ||
+			LobbyListUi.Instance.LobbyListUiPanel.activeInHierarchy ||
+			LobbyUi.Instance.LobbySettingsUiPanel.activeInHierarchy ||
+			LobbyUi.Instance.LobbyUiPanel.activeInHierarchy)
+			return true;
+		else return false;
 	}
 
 	//bool checks

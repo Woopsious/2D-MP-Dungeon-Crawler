@@ -41,23 +41,18 @@ public class LobbyCardInfoHandler : MonoBehaviour
 	}
 	private string GetLobbyHostName(Lobby lobby)
 	{
-		if (lobby.Players[0].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
-		{
-			Debug.LogWarning("player Name Key found: " + playerName.Value);
-		}
-		else
-		{
+		if (!lobby.Players[0].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
 			Debug.LogError("player Name Key not found");
-		}
 
 		return playerName.Value.ToString();
 	}
 	private string GetLobbyPlayerCount(Lobby lobby)
 	{
-		return $"Players: {lobby.Players.Count - 1}/4";
+		return $"Players: {lobby.Players.Count}/4";
 	}
 	private void JoinLobbyButton(Lobby lobby)
 	{
+		LobbyUi.Instance.ShowJoiningLobbyUi();
 		ClientManager.Instance.StartClientAndJoinLobby(lobby);
 	}
 }

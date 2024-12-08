@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
+using Unity.Services.Authentication;
 using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
@@ -50,14 +51,16 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
-	//create lobby types
+	//LOBBY CREATION/UPDATES
+	//creating lobbies
 	public async void CreateLobby(string lobbyName, bool lobbyPrivate)
 	{
 		this.lobbyName = lobbyName;
 		this.lobbyPrivate = lobbyPrivate;
 		lobbyHasPassword = false;
 		lobbyPassword = "";
-		HostManager.Instance.StartHost();
+
+		while (string.IsNullOrWhiteSpace(Instance.lobbyJoinCode)) await Task.Delay(1);
 
 		try
 		{
@@ -90,7 +93,8 @@ public class LobbyManager : NetworkBehaviour
 		this.lobbyPrivate = lobbyPrivate;
 		lobbyHasPassword = true;
 		this.lobbyPassword = lobbyPassword;
-		HostManager.Instance.StartHost();
+
+		while (string.IsNullOrWhiteSpace(Instance.lobbyJoinCode)) await Task.Delay(1);
 
 		try
 		{
@@ -100,10 +104,7 @@ public class LobbyManager : NetworkBehaviour
 				Player = GetPlayer(),
 				IsLocked = false,
 				Password = lobbyPassword,
-				Data = new Dictionary<string, DataObject>
-				{
-					{"joinCode", new DataObject(visibility: DataObject.VisibilityOptions.Public, lobbyJoinCode)}
-				}
+				Data = new Dictionary<string, DataObject>{}
 			};
 
 			Lobby lobby = await LobbyService.Instance.CreateLobbyAsync(
@@ -119,7 +120,20 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
-	//join lobby
+	//updating lobby settings
+	public void UpdateLobbySettings(string lobbyName, bool lobbyPrivate, bool hasPassword, string lobbyPassword)
+	{
+		if (!hasPassword)
+		{
+			//update lobby settings including password
+		}
+		else
+		{
+			//update lobby settings excluding password
+		}
+	}
+
+	//JOINING LOBBIES
 	public async void JoinLobby(Lobby lobby)
 	{
 		try
@@ -128,8 +142,8 @@ public class LobbyManager : NetworkBehaviour
 			{
 				Player = GetPlayer()
 			};
-			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
 
+			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
 			_Lobby = lobby;
 			lobbyJoinCode = _Lobby.Data["joinCode"].Value;
 		}
@@ -148,7 +162,7 @@ public class LobbyManager : NetworkBehaviour
 		//GameManager.Instance.playerNotifsManager.DisplayNotifisMessage("Failed to join Lobby", 3f);
 	}
 
-	//delete lobby
+	//DELETING LOBBIES
 	public async void DeleteLobby()
 	{
 		if (_Lobby != null)
@@ -165,7 +179,7 @@ public class LobbyManager : NetworkBehaviour
 		{
 			Data = new Dictionary<string, PlayerDataObject>
 			{
-				{ "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+				{ "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, 
 					ClientManager.Instance.clientUsername.ToString())},
 				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					ClientManager.Instance.clientId.ToString())},

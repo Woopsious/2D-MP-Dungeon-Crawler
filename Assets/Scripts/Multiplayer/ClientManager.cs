@@ -39,6 +39,8 @@ public class ClientManager : NetworkBehaviour
 		//LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
+
+		HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 	}
 	public void StopClient()
 	{
@@ -46,6 +48,8 @@ public class ClientManager : NetworkBehaviour
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
+
+		HostManager.Instance.connectedClientsList.Clear();
 	}
 
 	//join relay server
@@ -113,6 +117,7 @@ public class ClientManager : NetworkBehaviour
 }
 
 //client data
+[Serializable]
 public struct ClientDataInfo : INetworkSerializable, IEquatable<ClientDataInfo>
 {
 	public FixedString64Bytes clientName;

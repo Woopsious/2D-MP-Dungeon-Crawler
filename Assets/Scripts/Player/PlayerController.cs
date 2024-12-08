@@ -610,7 +610,7 @@ public class PlayerController : MonoBehaviour
 	//in game actions
 	private void OnMainAttack()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (queuedAbility == null)
 		{
@@ -639,7 +639,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnRightClick()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (queuedAbility != null)
 			CancelAbility(queuedAbility);
@@ -648,7 +648,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnCameraZoom()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
 		float value = playerInputs.CameraZoomInput;
@@ -657,13 +657,13 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnInteract()
 	{
-		if (playerStats.IsEntityDead()) return;
+		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (currentInteractedObject == null) return;
 		currentInteractedObject.Interact(this);
 	}
 	private void OnTabTargetingForwards()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (selectedEnemyTarget == null || selectedEnemyTargetIndex == EnemyTargetList.Count - 1) //start at begining of list
 			CycleTargetsForwards(0);
@@ -672,7 +672,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnTabTargetingBackwards()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (selectedEnemyTarget == null || selectedEnemyTargetIndex == 0) //start at end of list
 			CycleTargetsBackwards(EnemyTargetList.Count - 1);
@@ -683,21 +683,21 @@ public class PlayerController : MonoBehaviour
 	//hotbar actions
 	private void OnConsumablesOne()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
@@ -711,7 +711,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityTwo()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
@@ -725,7 +725,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityThree()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
@@ -739,7 +739,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityFour()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
@@ -753,7 +753,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void OnAbilityFive()
 	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
 
 		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
@@ -775,26 +775,32 @@ public class PlayerController : MonoBehaviour
 	//ui actions
 	private void OnMainMenu()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		MainMenuManager.Instance.ShowHideMainMenuKeybind();
 	}
 	private void OnInventory()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerInventory();
 	}
 	private void OnJournal()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerJournal();
 	}
 	private void OnClassSelection()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerClassSelection();
 	}
 	private void OnClassSkillTree()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerSkillTree();
 	}
 	private void OnLearntAbilities()
 	{
+		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerLearntAbilities();
 	}
 
