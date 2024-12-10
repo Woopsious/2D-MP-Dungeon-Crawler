@@ -131,8 +131,12 @@ public class LobbyListUi : MonoBehaviour
 	{
 		LobbyListUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
+		MultiplayerMenuUi.Instance.HideDisconnectUiPanel();
 		LobbyUi.Instance.HideLobbyUi();
 		LobbyUi.Instance.HideLobbySettingsUi();
+
+		foreach (LobbyCardInfoHandler lobbyCardInfo in LobbyCardInfoList) //hide all lobby list ui
+			lobbyCardInfo.UpdateInfo(null);
 	}
 	public void HideLobbyListUi()
 	{

@@ -169,7 +169,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
   m_AnchoredPosition: {x: 25, y: 0}
-  m_SizeDelta: {x: 100, y: 75}
+  m_SizeDelta: {x: 125, y: 75}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!222 &8886107842646525679
 CanvasRenderer:
@@ -199,7 +199,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Host
+  m_text: 'Host
+
+    Player 1'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -723,6 +725,7 @@ MonoBehaviour:
   hostText: {fileID: 6846868691042586927}
   playerNameText: {fileID: 2271914390228015921}
   PlayerInfoText: {fileID: 8407774156962750638}
+  networkedPlayerId: 
   button: {fileID: 6773564957990952930}
 --- !u!114 &4730018934399617123
 MonoBehaviour:

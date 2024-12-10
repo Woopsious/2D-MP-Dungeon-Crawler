@@ -36,11 +36,12 @@ public class ClientManager : NetworkBehaviour
 	{
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
-		//LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
 
 		HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
+
+		Debug.LogError("client started");
 	}
 	public void StopClient()
 	{
@@ -49,7 +50,13 @@ public class ClientManager : NetworkBehaviour
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
 
-		HostManager.Instance.connectedClientsList.Clear();
+		Debug.LogError("client stopped");
+	}
+
+	//disconnect client from host
+	public void DisconnectFromHost()
+	{
+		NetworkManager.DisconnectClient(clientNetworkedId, "Player left");
 	}
 
 	//join relay server
@@ -75,7 +82,6 @@ public class ClientManager : NetworkBehaviour
 		yield return null;
 
 		NetworkManager.Singleton.StartClient();
-		Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
 	}
 	public static async Task<RelayServerData> JoinRelayServerFromJoinCode(string joinCode)
 	{
@@ -93,26 +99,18 @@ public class ClientManager : NetworkBehaviour
 	}
 
 	//handle disconnects
-	public void HandlePlayerDisconnectsAsClient()
+	public void HandlePlayerDisconnectsAsClient(ulong id)
 	{
+		if (id != Instance.clientNetworkedId) return;
+		///<summery>
+		/// if disconnected player is this player stop client
+		/// shut down all mp related stuff, probably send player back to hub world/reload hubworld
+		/// possibly save player inventory or not??
+		///<summery>
+
+		MultiplayerMenuUi.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
+		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
 		StopClient();
-
-		/*
-		GameManager.Instance.playerNotifsManager.DisplayNotifisMessage("Connection to Host Lost", 3f);
-
-		if (SceneManager.GetActiveScene().buildIndex == 0)
-			StartCoroutine(MenuUIManager.Instance.DelayLobbyListRefresh());
-		else
-		{
-			if (GameManager.Instance.hasGameEnded.Value == false)
-				GameManager.Instance.gameUIManager.ShowPlayerDisconnectedPanel();
-			else if (GameManager.Instance.hasGameEnded.Value == true)
-			{
-				GameManager.Instance.gameUIManager.playAgainButtonObj.SetActive(false);
-				GameManager.Instance.gameUIManager.playAgainUiText.text = "Other Player Left";
-			}
-		}
-		*/
 	}
 }
 

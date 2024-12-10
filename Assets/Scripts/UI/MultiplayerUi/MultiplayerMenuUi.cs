@@ -13,6 +13,10 @@ public class MultiplayerMenuUi : MonoBehaviour
 	public TMP_InputField playerNameInput;
 	public TMP_Text playerNamePlaceholder;
 
+	[Header("Disconnect Menu")]
+	public GameObject disconnectUiPanel;
+	public TMP_Text disconnectReasonText;
+
 	private void Awake()
 	{
 		Instance = this;
@@ -34,16 +38,7 @@ public class MultiplayerMenuUi : MonoBehaviour
 		}
     }
 
-	//joining lobby
-	public void JoinLobby()
-	{
-		if (!PlayerNameFilledIn()) return;
-
-		AuthPlayer();
-		LobbyListUi.Instance.ShowLobbyListUi();
-	}
-
-	//Hosting lobby
+	//hosting/joining lobby
 	public void HostLobby()
 	{
 		if (!PlayerNameFilledIn()) return;
@@ -51,7 +46,13 @@ public class MultiplayerMenuUi : MonoBehaviour
 		AuthPlayer();
 		LobbyUi.Instance.ShowLobbySettingsUiWithCreateLobbyButton();
 	}
+	public void JoinLobby()
+	{
+		if (!PlayerNameFilledIn()) return;
 
+		AuthPlayer();
+		LobbyListUi.Instance.ShowLobbyListUi();
+	}
 	private async void AuthPlayer()
 	{
 		await MultiplayerManager.Instance.AuthenticatePlayer();
@@ -63,7 +64,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 		HideMpMenuUi();
 		MainMenuManager.Instance.ShowMainMenu();
 	}
-
 	public void ShowMainMenu()
 	{
 		HideMpMenuUi();
@@ -72,10 +72,16 @@ public class MultiplayerMenuUi : MonoBehaviour
 		LobbyUi.Instance.HideLobbySettingsUi();
 	}
 
+	public void ConfirmDisconnectReason()
+	{
+		ShowMpMenuUi();
+	}
+
 	//UI PANEL CHANGES
 	public void ShowMpMenuUi()
 	{
 		MpMenuUiPanel.SetActive(true);
+		HideDisconnectUiPanel();
 		LobbyListUi.Instance.HideLobbyListUi();
 		LobbyUi.Instance.HideLobbyUi();
 		LobbyUi.Instance.HideLobbySettingsUi();
@@ -83,5 +89,22 @@ public class MultiplayerMenuUi : MonoBehaviour
 	public void HideMpMenuUi()
 	{
 		MpMenuUiPanel.SetActive(false);
+	}
+
+	public void SetDisconnectReason(string reason)
+	{
+		disconnectReasonText.text = "DISCONNECTED\n" + reason;
+	}
+	public void ShowDisconnectUiPanel()
+	{
+		disconnectUiPanel.SetActive(true);
+		HideMpMenuUi();
+		LobbyListUi.Instance.HideLobbyListUi();
+		LobbyUi.Instance.HideLobbyUi();
+		LobbyUi.Instance.HideLobbySettingsUi();
+	}
+	public void HideDisconnectUiPanel()
+	{
+		disconnectUiPanel.SetActive(false);
 	}
 }

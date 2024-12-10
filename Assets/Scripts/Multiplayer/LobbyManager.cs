@@ -27,7 +27,7 @@ public class LobbyManager : NetworkBehaviour
 	private readonly float lobbyPollWaitTimer = 1.5f;
 	private float lobbyPollTimer;
 
-	private float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
+	//private float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
 
 	private void Awake()
 	{
@@ -47,7 +47,8 @@ public class LobbyManager : NetworkBehaviour
 		if (MultiplayerManager.Instance.IsPlayerHost())
 		{
 			LobbyHeartBeat();
-			KickPlayerFromLobbyIfFailedToConnectToRelay();
+			//no longer valid with multiple joined players
+			//KickPlayerFromLobbyIfFailedToConnectToRelay();
 		}
 	}
 
@@ -192,6 +193,39 @@ public class LobbyManager : NetworkBehaviour
 			}
 		};
 	}
+	public async void UpdatePlayer(string clientUserName, string clientId, string clientNetworkId, string playerLevel, string playerClass)
+	{
+		UpdatePlayerOptions options = new UpdatePlayerOptions();
+		options.Data = new Dictionary<string, PlayerDataObject>()
+		{
+			{"PlayerName", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Public,
+				value: clientUserName)},
+			{"PlayerID", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: clientId)},
+			{"PlayerNetworkID", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: clientNetworkId)},
+			{"PlayerLevel", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: playerLevel)},
+			{"PlayerClass", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: playerClass)},
+		};
+
+		LogAllLobbyPlayerData();
+
+		Instance._Lobby = await LobbyService.Instance.UpdatePlayerAsync(Instance._Lobby.Id, clientId, options);
+	}
+
+	private void LogAllLobbyPlayerData()
+	{
+		foreach (Player player in _Lobby.Players)
+		{
+			Debug.LogError(player.Data["PlayerName"].Value);
+			Debug.LogError(player.Data["PlayerID"].Value);
+			Debug.LogError(player.Data["PlayerNetworkID"].Value);
+			Debug.LogError(player.Data["PlayerLevel"].Value);
+			Debug.LogError(player.Data["PlayerClass"].Value);
+		}
+	}
 
 	//lobby hearbeat and update poll
 	private async void LobbyHeartBeat()
@@ -242,6 +276,8 @@ public class LobbyManager : NetworkBehaviour
 	}
 
 	//if player fails to join relay after 10s unity timesout, this function will then auto kick player from lobby after 11s
+	//no longer valid with multiple joined players
+	/*
 	public void KickPlayerFromLobbyIfFailedToConnectToRelay()
 	{
 		if (_Lobby != null)
@@ -256,4 +292,5 @@ public class LobbyManager : NetworkBehaviour
 			}
 		}
 	}
+	*/
 }

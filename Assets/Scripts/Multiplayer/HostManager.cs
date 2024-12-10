@@ -10,6 +10,7 @@ using Unity.Services.Relay.Models;
 using Unity.Services.Relay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WebSocketSharp;
 
 public class HostManager : NetworkBehaviour
 {
@@ -30,6 +31,16 @@ public class HostManager : NetworkBehaviour
 		}
 		else
 			Destroy(gameObject);
+	}
+
+	private void Update()
+	{
+		Debug.LogWarning("connected clients count: " + connectedClientsList.Count);
+
+		foreach (var client in connectedClientsList)
+		{
+			Debug.LogWarning($"name: {client.clientName} | id: {client.clientId} | networkId: {client.clientNetworkedId}");
+		}
 	}
 
 	//start/stop host
@@ -71,7 +82,6 @@ public class HostManager : NetworkBehaviour
 		yield return null;
 
 		NetworkManager.Singleton.StartHost();
-		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
 	}
 	public static async Task<RelayServerData> AllocateRelayServerAndGetJoinCode(int maxConnections, string region = null)
 	{
@@ -99,19 +109,22 @@ public class HostManager : NetworkBehaviour
 	}
 
 	//remove clients from relay
-	public void RemoveClientFromRelay(string networkedId)
+	public void RemoveClientFromRelay(string networkedId, string disconnectReason)
 	{
 		networkIdOfKickedPlayer = networkedId;
 		ulong networkedIdulong = Convert.ToUInt64(networkedId);
 
-		NetworkManager.Singleton.DisconnectClient(networkedIdulong);
+		if (disconnectReason.IsNullOrEmpty())
+			NetworkManager.Singleton.DisconnectClient(networkedIdulong, "Network error"); //fall back reason
+		else
+			NetworkManager.Singleton.DisconnectClient(networkedIdulong, disconnectReason);
 	}
 	public async void RemoveClientFromLobby(string playerId)
 	{
 		try
 		{
 			await LobbyService.Instance.RemovePlayerAsync(LobbyManager.Instance._Lobby.Id, playerId);
-			Debug.Log($"player with Id: {playerId} kicked from lobby");
+			Debug.LogWarning($"player with Id: {playerId} kicked from lobby");
 		}
 		catch (LobbyServiceException e)
 		{
