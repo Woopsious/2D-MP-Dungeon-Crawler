@@ -58,77 +58,40 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerConnectedCallback(ulong id)
 	{
-		Debug.LogError("player connected");
-
-		if (id == NetworkManager.Singleton.LocalClientId)
-		{
-			int i = HostManager.Instance.connectedClientsList.Count;
-			ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
-
-			if (!Instance.IsPlayerHost())
-			{
-				Player player = LobbyManager.Instance._Lobby.Players[i];
-				LobbyManager.Instance.UpdatePlayer(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id.ToString(),
-					player.Data["PlayerLevel"].Value, player.Data["PlayerClass"].Value);
-			}
-
-			Debug.LogError("client networkid: " + NetworkManager.Singleton.LocalClientId);
-		}
-		else
-		{
-			Debug.LogError("client networkid doesnt match | id: " + id +" | local id: " + NetworkManager.Singleton.LocalClientId);
-		}
+		Debug.LogError("player connected, player count: " + HostManager.Instance.connectedClientsList.Count);
 
 		if (IsPlayerHost())
 		{
-			int i = HostManager.Instance.connectedClientsList.Count;
-			Debug.LogError("connected clients count: " + HostManager.Instance.connectedClientsList.Count);
-
 			if (id == 0) //grab host data locally as lobby is not yet made
 			{
-				Debug.LogWarning("joining client is host");
-
-				ClientDataInfo data = new(ClientManager.Instance.clientUsername,
-					ClientManager.Instance.clientId, ClientManager.Instance.clientNetworkedId);
+				ClientDataInfo data = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId, 
+					ClientManager.Instance.clientNetworkedId);
 
 				HostManager.Instance.connectedClientsList.Add(data);
 			}
 			else //grab other clients data through lobby
 			{
-				Debug.LogWarning("joining client is not host");
-
-				Player player = LobbyManager.Instance._Lobby.Players[i];
-
+				Player player = LobbyManager.Instance._Lobby.Players[HostManager.Instance.connectedClientsList.Count];
 				ClientDataInfo data = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
-
-				if (!LobbyManager.Instance._Lobby.Players[i].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-					Debug.LogError("player NetworkedId Key not found");
-                else
-                {
-					Debug.LogError("joining player NetworkedId in lobby: " + playerNetworkId.Value);
-				}
 
                 HostManager.Instance.connectedClientsList.Add(data);
 			}
 		}
 
 		MarkLobbyUiAsDirty?.Invoke();
-
-		/*
-		if (!MenuUIManager.Instance.MpLobbyPanel.activeInHierarchy) //enable lobby ui once connected to relay
-			MenuUIManager.Instance.ShowLobbyUi();
-		*/
+		if (NetworkManager.Singleton.LocalClientId == id)
+			LobbyUi.Instance.ShowLobbyUi();
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
 		Debug.LogError("player disconnected, id:" + id);
 
-		MarkLobbyUiAsDirty?.Invoke();
-
 		if (IsPlayerHost())
 			HostManager.Instance.HandlePlayerDisconnectsAsHost(id);
 		else
 			ClientManager.Instance.HandlePlayerDisconnectsAsClient(id);
+
+		MarkLobbyUiAsDirty?.Invoke();
 	}
 
 	//Shutdown NetworkManager

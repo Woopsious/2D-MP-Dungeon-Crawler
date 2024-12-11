@@ -23,9 +23,9 @@ public class LobbyManager : NetworkBehaviour
 
 	private int maxConnections = 4;
 	private readonly float lobbyHeartbeatWaitTime = 25f;
-	private float lobbyHeartbeatTimer;
+	public float lobbyHeartbeatTimer;
 	private readonly float lobbyPollWaitTimer = 1.5f;
-	private float lobbyPollTimer;
+	public float lobbyPollTimer;
 
 	//private float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
 
@@ -41,8 +41,6 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public void Update()
 	{
-		if (_Lobby == null) return;
-
 		HandleLobbyPollForUpdates();
 		if (MultiplayerManager.Instance.IsPlayerHost())
 		{
@@ -145,7 +143,7 @@ public class LobbyManager : NetworkBehaviour
 			};
 
 			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
-			_Lobby = lobby;
+			Instance._Lobby = lobby;
 			lobbyJoinCode = _Lobby.Data["joinCode"].Value;
 		}
 		catch (LobbyServiceException e)
@@ -166,10 +164,10 @@ public class LobbyManager : NetworkBehaviour
 	//DELETING LOBBIES
 	public async void DeleteLobby()
 	{
-		if (_Lobby != null)
+		if (Instance._Lobby != null)
 		{
-			await LobbyService.Instance.DeleteLobbyAsync(_Lobby.Id);
-			_Lobby = null;
+			await LobbyService.Instance.DeleteLobbyAsync(Instance._Lobby.Id);
+			Instance._Lobby = null;
 		}
 	}
 
@@ -184,7 +182,7 @@ public class LobbyManager : NetworkBehaviour
 					ClientManager.Instance.clientUsername.ToString())},
 				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					ClientManager.Instance.clientId.ToString())},
-				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					ClientManager.Instance.clientNetworkedId.ToString())},
 				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					PlayerInfoUi.playerInstance.playerStats.entityLevel.ToString())},
@@ -193,67 +191,34 @@ public class LobbyManager : NetworkBehaviour
 			}
 		};
 	}
-	public async void UpdatePlayer(string clientUserName, string clientId, string clientNetworkId, string playerLevel, string playerClass)
-	{
-		UpdatePlayerOptions options = new UpdatePlayerOptions();
-		options.Data = new Dictionary<string, PlayerDataObject>()
-		{
-			{"PlayerName", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Public,
-				value: clientUserName)},
-			{"PlayerID", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
-				value: clientId)},
-			{"PlayerNetworkID", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
-				value: clientNetworkId)},
-			{"PlayerLevel", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
-				value: playerLevel)},
-			{"PlayerClass", new PlayerDataObject(visibility: PlayerDataObject.VisibilityOptions.Member,
-				value: playerClass)},
-		};
-
-		LogAllLobbyPlayerData();
-
-		Instance._Lobby = await LobbyService.Instance.UpdatePlayerAsync(Instance._Lobby.Id, clientId, options);
-	}
-
-	private void LogAllLobbyPlayerData()
-	{
-		foreach (Player player in _Lobby.Players)
-		{
-			Debug.LogError(player.Data["PlayerName"].Value);
-			Debug.LogError(player.Data["PlayerID"].Value);
-			Debug.LogError(player.Data["PlayerNetworkID"].Value);
-			Debug.LogError(player.Data["PlayerLevel"].Value);
-			Debug.LogError(player.Data["PlayerClass"].Value);
-		}
-	}
 
 	//lobby hearbeat and update poll
 	private async void LobbyHeartBeat()
 	{
-		if (_Lobby != null && _Lobby.HostId == ClientManager.Instance.clientId)
+		if (Instance._Lobby != null && Instance._Lobby.HostId == ClientManager.Instance.clientId)
 		{
 			lobbyHeartbeatTimer -= Time.deltaTime;
 			if (lobbyHeartbeatTimer < 0)
 			{
 				lobbyHeartbeatTimer = lobbyHeartbeatWaitTime;
-				await LobbyService.Instance.SendHeartbeatPingAsync(_Lobby.Id);
+				await LobbyService.Instance.SendHeartbeatPingAsync(Instance._Lobby.Id);
 			}
 		}
 	}
 	private async void HandleLobbyPollForUpdates()
 	{
-		if (_Lobby != null)
+		if (Instance._Lobby != null)
 		{
 			lobbyPollTimer -= Time.deltaTime;
 			if (lobbyPollTimer < 0)
 			{
+				Debug.LogError("lobby polling");
+
 				lobbyPollTimer = lobbyPollWaitTimer;
 				try
 				{
-					Lobby lobby = await LobbyService.Instance.GetLobbyAsync(_Lobby.Id);
-					_Lobby = lobby;
-
-					LobbyUi.Instance.SyncPlayerListforLobbyUi(lobby);
+					Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._Lobby.Id);
+					LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
 
 					//debug logs for logging
 					/*
@@ -266,10 +231,10 @@ public class LobbyManager : NetworkBehaviour
 					Debug.LogWarning($"Lobby Join Code: {_Lobby.Data["joinCode"].Value}");
 					*/
 				}
-				catch
+				catch (LobbyServiceException e)
 				{
-					Debug.Log($"Lobby with id: {_Lobby.Id} no longer exists");
-					_Lobby = null;
+					Debug.LogError($"{e.Message}");
+					Instance._Lobby = null;
 				}
 			}
 		}

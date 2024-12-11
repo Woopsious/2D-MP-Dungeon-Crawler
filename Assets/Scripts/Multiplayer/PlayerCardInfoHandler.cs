@@ -15,7 +15,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	public TMP_Text playerNameText;
 	public TMP_Text PlayerInfoText;
 
-	public string networkedPlayerId;
+	public ulong clientNetworkId;
 	public Button button;
 
 	/// <summary>
@@ -27,6 +27,8 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	{
 		if (uiDirty)
 		{
+			Debug.LogError("ui dirty");
+			this.clientNetworkId = HostManager.Instance.connectedClientsList[index].clientNetworkedId;
 			UpdateUi(lobby, index);
 			uiDirty = false;
 		}
@@ -35,6 +37,8 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	//update ui text fields
 	private void UpdateUi(Lobby lobby, int index)
 	{
+		Debug.LogError("lobby player count: " + lobby.Players.Count);
+
 		if (lobby.Players.Count - 1 < index) //blank info if no player exists
 		{
 			hostText.text = "";
@@ -90,11 +94,6 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	//show kick player button for host
 	private void UpdatePlayerActionButton(Lobby lobby, int index)
 	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-			Debug.LogError("player NetworkedId Key not found");
-		else
-			networkedPlayerId = playerNetworkId.Value;
-
 		button.gameObject.SetActive(true);
 		button.onClick.RemoveAllListeners();
 
@@ -105,7 +104,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		}
 		else
 		{
-			if (networkedPlayerId == NetworkManager.Singleton.LocalClientId.ToString())
+			if (clientNetworkId == NetworkManager.Singleton.LocalClientId)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Leave Lobby";
 				button.onClick.AddListener(delegate { LeaveLobby(); });
@@ -118,30 +117,13 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	}
 	private void LeaveLobby()
 	{
-		int index = 0;
-		foreach (Player player in LobbyManager.Instance._Lobby.Players)
-		{
-			if (player.Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-				Debug.LogError($"player {index}'s id: {playerNetworkId.Value}");
-			index++;
-		}
-
-		ClientManager.Instance.DisconnectFromHost();
+		HostManager.Instance.LeaveLobbyServerRPC(clientNetworkId, "Player Left");
 	}
 
 	private void KickPlayer()
 	{
 		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
-
-		int index = 0;
-		foreach (Player player in LobbyManager.Instance._Lobby.Players)
-		{
-			if (player.Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-			Debug.LogError($"player {index}'s id: {playerNetworkId.Value}");
-			index++;
-		}
-
-		HostManager.Instance.RemoveClientFromRelay(networkedPlayerId, "Kicked from lobby by host");
+		HostManager.Instance.RemoveClientFromRelay(clientNetworkId, "Kicked from lobby by host");
 		//kick player shit
 	}
 }

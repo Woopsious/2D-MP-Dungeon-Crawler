@@ -11,6 +11,7 @@ using Unity.Services.Relay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
 
 public class ClientManager : NetworkBehaviour
 {
@@ -79,8 +80,6 @@ public class ClientManager : NetworkBehaviour
 		var relayServerData = clientRelayUtilityTask.Result;
 
 		NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
-		yield return null;
-
 		NetworkManager.Singleton.StartClient();
 	}
 	public static async Task<RelayServerData> JoinRelayServerFromJoinCode(string joinCode)

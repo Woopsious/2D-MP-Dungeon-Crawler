@@ -138,20 +138,10 @@ public class LobbyUi : MonoBehaviour
 	//Set up Player list
 	public void SyncPlayerListforLobbyUi(Lobby lobby)
 	{
-		if (creatingLobbyPanel.activeInHierarchy)
-		{
-			HideCreatingLobbyUi();
-			ShowLobbyUi();
-		}
-		else if (joiningLobbyPanel.activeInHierarchy)
-		{
-			HideJoiningLobbyUi();
-			ShowLobbyUi();
-		}
-
 		int index = 0;
 		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
 		{
+			Debug.LogError("looping");
 			playerCard.UpdateInfo(lobby, index);
 			index++;
 		}
@@ -192,6 +182,11 @@ public class LobbyUi : MonoBehaviour
 
 	public void ShowLobbyUi()
 	{
+		if (creatingLobbyPanel.activeInHierarchy)
+			HideCreatingLobbyUi();
+		else if (joiningLobbyPanel.activeInHierarchy)
+			HideJoiningLobbyUi();
+
 		LobbyUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
 		MultiplayerMenuUi.Instance.HideDisconnectUiPanel();

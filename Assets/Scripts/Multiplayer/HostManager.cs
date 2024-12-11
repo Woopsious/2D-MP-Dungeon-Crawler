@@ -33,16 +33,6 @@ public class HostManager : NetworkBehaviour
 			Destroy(gameObject);
 	}
 
-	private void Update()
-	{
-		Debug.LogWarning("connected clients count: " + connectedClientsList.Count);
-
-		foreach (var client in connectedClientsList)
-		{
-			Debug.LogWarning($"name: {client.clientName} | id: {client.clientId} | networkId: {client.clientNetworkedId}");
-		}
-	}
-
 	//start/stop host
 	public void StartHost()
 	{
@@ -109,22 +99,27 @@ public class HostManager : NetworkBehaviour
 	}
 
 	//remove clients from relay
-	public void RemoveClientFromRelay(string networkedId, string disconnectReason)
+	public void RemoveClientFromRelay(ulong networkedId, string disconnectReason)
 	{
-		networkIdOfKickedPlayer = networkedId;
-		ulong networkedIdulong = Convert.ToUInt64(networkedId);
+		networkIdOfKickedPlayer = networkedId.ToString();
 
 		if (disconnectReason.IsNullOrEmpty())
-			NetworkManager.Singleton.DisconnectClient(networkedIdulong, "Network error"); //fall back reason
+			NetworkManager.Singleton.DisconnectClient(networkedId, "Network error"); //fall back reason
 		else
-			NetworkManager.Singleton.DisconnectClient(networkedIdulong, disconnectReason);
+			NetworkManager.Singleton.DisconnectClient(networkedId, disconnectReason);
 	}
-	public async void RemoveClientFromLobby(string playerId)
+	[ServerRpc(RequireOwnership = false)]
+	public void LeaveLobbyServerRPC(ulong clientId, string disconnectReason)
+	{
+		RemoveClientFromRelay(clientId, disconnectReason);
+	}
+
+	public async void RemoveClientFromLobby(string clientId)
 	{
 		try
 		{
-			await LobbyService.Instance.RemovePlayerAsync(LobbyManager.Instance._Lobby.Id, playerId);
-			Debug.LogWarning($"player with Id: {playerId} kicked from lobby");
+			await LobbyService.Instance.RemovePlayerAsync(LobbyManager.Instance._Lobby.Id, clientId);
+			Debug.LogWarning($"player with Id: {clientId} kicked from lobby");
 		}
 		catch (LobbyServiceException e)
 		{
@@ -143,20 +138,6 @@ public class HostManager : NetworkBehaviour
 				RemoveClientFromLobby(clientData.clientId.ToString());
 			}
 		}
-
-		/*
-		if (SceneManager.GetActiveScene().buildIndex == 1)
-		{
-			if (GameManager.Instance.hasGameEnded.Value == false)
-				GameManager.Instance.gameUIManager.ShowPlayerDisconnectedPanel();
-			else if (GameManager.Instance.hasGameEnded.Value == true)
-			{
-				GameManager.Instance.gameUIManager.playAgainButtonObj.SetActive(false);
-				GameManager.Instance.gameUIManager.playAgainUiText.text = "Other Player Left";
-			}
-			StopHost();
-		}
-		*/
 	}
 
 	//reset connectedClientsList
