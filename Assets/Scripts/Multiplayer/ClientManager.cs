@@ -32,35 +32,24 @@ public class ClientManager : NetworkBehaviour
 			Destroy(gameObject);
 	}
 
-	//start/stop client
+	//START/STOP CLIENT
 	public void StartClientAndJoinLobby(Lobby lobby)
 	{
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
-
-		HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
-
-		Debug.LogError("client started");
 	}
 	public void StopClient()
 	{
 		LobbyManager.Instance._Lobby = null;
+		LobbyManager.Instance.lobbyJoinCode = null;
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
-
-		Debug.LogError("client stopped");
 	}
 
-	//disconnect client from host
-	public void DisconnectFromHost()
-	{
-		NetworkManager.DisconnectClient(clientNetworkedId, "Player left");
-	}
-
-	//join relay server
+	//JOINING HOST RELAY SERVER
 	public IEnumerator RelayConfigureTransportAsConnectingPlayer()
 	{
 		// Populate RelayJoinCode beforehand through the UI
@@ -97,8 +86,12 @@ public class ClientManager : NetworkBehaviour
 		return new RelayServerData(allocation, "dtls");
 	}
 
-	//handle disconnects
-	public void HandlePlayerDisconnectsAsClient(ulong id)
+	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
+	public void HandleClientConnectsAsClient(ulong id)
+	{
+		return;
+	}
+	public void HandleClientDisconnectsAsClient(ulong id)
 	{
 		if (id != Instance.clientNetworkedId) return;
 		///<summery>

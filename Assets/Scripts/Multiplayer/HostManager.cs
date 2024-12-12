@@ -11,6 +11,7 @@ using Unity.Services.Relay;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
+using Unity.Services.Lobbies.Models;
 
 public class HostManager : NetworkBehaviour
 {
@@ -26,6 +27,7 @@ public class HostManager : NetworkBehaviour
 	{
 		if (Instance == null)
 		{
+			Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			Instance = this;
 			DontDestroyOnLoad(Instance);
 		}
@@ -33,7 +35,7 @@ public class HostManager : NetworkBehaviour
 			Destroy(gameObject);
 	}
 
-	//start/stop host
+//START/STOP HOST
 	public void StartHost()
 	{
 		GameManager.Instance.PauseGame(false);
@@ -41,19 +43,18 @@ public class HostManager : NetworkBehaviour
 		ClearPlayers();
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
-
-		Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 	}
 	public void StopHost()
 	{
 		ClearPlayers();
 		LobbyManager.Instance.DeleteLobby();
+		LobbyManager.Instance.lobbyJoinCode = null;
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
 	}
 
-	//create relay server
+	//CREATE RELAY SERVER
 	IEnumerator RelayConfigureTransportAsHostingPlayer()
 	{
 		var serverRelayUtilityTask = AllocateRelayServerAndGetJoinCode(4);
@@ -98,6 +99,17 @@ public class HostManager : NetworkBehaviour
 		return new RelayServerData(allocation, "dtls");
 	}
 
+
+	//DISCONNECT OPTIONS
+	//close lobby
+	public void CloseLobby(string disconnectReason)
+	{
+		foreach (ClientDataInfo clientData in Instance.connectedClientsList)
+			RemoveClientFromRelay(clientData.clientNetworkedId, disconnectReason);
+
+		MultiplayerMenuUi.Instance.ShowMpMenuUi();
+		StopHost();
+	}
 	//remove clients from relay
 	public void RemoveClientFromRelay(ulong networkedId, string disconnectReason)
 	{
@@ -109,11 +121,47 @@ public class HostManager : NetworkBehaviour
 			NetworkManager.Singleton.DisconnectClient(networkedId, disconnectReason);
 	}
 	[ServerRpc(RequireOwnership = false)]
-	public void LeaveLobbyServerRPC(ulong clientId, string disconnectReason)
+	public void LeaveLobbyServerRPC(ulong clientId) //non Host players leave lobby this way
 	{
-		RemoveClientFromRelay(clientId, disconnectReason);
+		RemoveClientFromRelay(clientId, "player left lobby");
 	}
 
+	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
+	public void HandleClientConnectsAsHost(ulong id)
+	{
+		Debug.LogError("id of joining player: " + id);
+
+		if (id == 0) //grab host data locally as lobby is not yet made
+		{
+			if (Instance.connectedClientsList == null)
+				connectedClientsList = new NetworkList<ClientDataInfo>();
+
+			ClientDataInfo data = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId,
+				ClientManager.Instance.clientNetworkedId);
+
+			Instance.connectedClientsList.Add(data);
+		}
+		else //grab other clients data through lobby
+		{
+			Player player = LobbyManager.Instance._Lobby.Players[Instance.connectedClientsList.Count];
+			ClientDataInfo data = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
+
+			Instance.connectedClientsList.Add(data);
+		}
+	}
+	public void HandleClientDisconnectsAsHost(ulong id)
+	{
+		foreach (ClientDataInfo clientData in connectedClientsList)
+		{
+			if (clientData.clientNetworkedId == id)
+			{
+				connectedClientsList.Remove(clientData);
+				RemoveClientFromLobby(clientData.clientId.ToString());
+			}
+		}
+	}
+
+	//remove clients from lobby after disconnects
 	public async void RemoveClientFromLobby(string clientId)
 	{
 		try
@@ -124,19 +172,6 @@ public class HostManager : NetworkBehaviour
 		catch (LobbyServiceException e)
 		{
 			Debug.LogError(e.Message);
-		}
-	}
-
-	//handle client disconnects
-	public void HandlePlayerDisconnectsAsHost(ulong id)
-	{
-		foreach (ClientDataInfo clientData in connectedClientsList)
-		{
-			if (clientData.clientNetworkedId == id)
-			{
-				connectedClientsList.Remove(clientData);
-				RemoveClientFromLobby(clientData.clientId.ToString());
-			}
 		}
 	}
 

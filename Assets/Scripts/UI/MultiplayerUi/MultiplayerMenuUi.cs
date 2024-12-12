@@ -41,16 +41,28 @@ public class MultiplayerMenuUi : MonoBehaviour
 	//hosting/joining lobby
 	public void HostLobby()
 	{
+		if (HostManager.Instance != null)
+			HostManager.Instance.StopHost();
+
+		MultiplayerManager.Instance.SpawnHostClientManager();
+
 		if (!PlayerNameFilledIn()) return;
 
 		AuthPlayer();
+		LobbyUi.Instance.ClearPlayerListUi();
 		LobbyUi.Instance.ShowLobbySettingsUiWithCreateLobbyButton();
 	}
 	public void JoinLobby()
 	{
+		if (ClientManager.Instance != null)
+			ClientManager.Instance.StopClient();
+
+		MultiplayerManager.Instance.SpawnHostClientManager();
+
 		if (!PlayerNameFilledIn()) return;
 
 		AuthPlayer();
+		LobbyUi.Instance.ClearPlayerListUi();
 		LobbyListUi.Instance.ShowLobbyListUi();
 	}
 	private async void AuthPlayer()

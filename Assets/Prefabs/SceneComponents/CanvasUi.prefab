@@ -47646,6 +47646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ef60f0f862d6e534388da655f4d11751, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MultiplayerManagerObj: {fileID: 1146916916709666482, guid: 0a2629c36fa13cc42b2dfc6e255f6cc5, type: 3}
   MpMenuUiPanel: {fileID: 6892777386120476747}
   playerNameInput: {fileID: 540517866642210467}
   playerNamePlaceholder: {fileID: 8332385118217835006}

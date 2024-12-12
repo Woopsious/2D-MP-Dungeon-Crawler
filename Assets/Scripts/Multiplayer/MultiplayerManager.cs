@@ -8,11 +8,13 @@ using Unity.Services.Authentication;
 using System.Threading.Tasks;
 using Unity.Services.Lobbies.Models;
 using Unity.Services.Lobbies;
+using Unity.VisualScripting;
 
-public class MultiplayerManager : NetworkBehaviour
+public class MultiplayerManager : MonoBehaviour
 {
 	public static MultiplayerManager Instance;
 
+	public GameObject HostClientManagerObj;
 	public bool isMultiplayer;
 
 	public static Action MarkLobbyUiAsDirty;
@@ -58,38 +60,22 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerConnectedCallback(ulong id)
 	{
-		Debug.LogError("player connected, player count: " + HostManager.Instance.connectedClientsList.Count);
-
 		if (IsPlayerHost())
-		{
-			if (id == 0) //grab host data locally as lobby is not yet made
-			{
-				ClientDataInfo data = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId, 
-					ClientManager.Instance.clientNetworkedId);
+			HostManager.Instance.HandleClientConnectsAsHost(id);
+		else
+			ClientManager.Instance.HandleClientConnectsAsClient(id);
 
-				HostManager.Instance.connectedClientsList.Add(data);
-			}
-			else //grab other clients data through lobby
-			{
-				Player player = LobbyManager.Instance._Lobby.Players[HostManager.Instance.connectedClientsList.Count];
-				ClientDataInfo data = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
-
-                HostManager.Instance.connectedClientsList.Add(data);
-			}
-		}
-
-		MarkLobbyUiAsDirty?.Invoke();
 		if (NetworkManager.Singleton.LocalClientId == id)
 			LobbyUi.Instance.ShowLobbyUi();
+
+		MarkLobbyUiAsDirty?.Invoke();
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
-		Debug.LogError("player disconnected, id:" + id);
-
 		if (IsPlayerHost())
-			HostManager.Instance.HandlePlayerDisconnectsAsHost(id);
+			HostManager.Instance.HandleClientDisconnectsAsHost(id);
 		else
-			ClientManager.Instance.HandlePlayerDisconnectsAsClient(id);
+			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
 
 		MarkLobbyUiAsDirty?.Invoke();
 	}
@@ -99,6 +85,11 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		if (NetworkManager.Singleton.isActiveAndEnabled)
 			NetworkManager.Singleton.Shutdown();
+	}
+	public void SpawnHostClientManager()
+	{
+		GameObject go = Instantiate(HostClientManagerObj);
+		go.transform.SetParent(null);
 	}
 
 	public static bool CheckIfMultiplayerMenusOpen()

@@ -275,7 +275,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 124
+  controlID: 125
 --- !u!114 &12
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -492,9 +492,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 26ea0200
-      m_LastClickedID: 191014
-      m_ExpandedIDs: 92fbfcff9efbfcffdafbfcffbefcfcff0200fdff5201fdff0a9bfdff169bfdff529bfdff369cfdff7a9ffdff9c9ffdff683ffeff743ffeffb03ffeff9440feffd843feff2e44feffe84dfeff5c4efeffb276feff7a99feffe4c4feff16e9feff120cffff7ac4ffff86c4ffffc2c4ffffa6c5ffffeac8ffffb8c9ffff16fbfffff4ffffff
+      m_SelectedIDs: 
+      m_LastClickedID: 0
+      m_ExpandedIDs: 66e4f9ffd8e4f9ff2e0dfafff62ffaff605bfaff927ffaff8ea2faffd4c5feff46c6feff9ceefeff6411ffffce3cffff0061fffffc83ffff16fbfffff4ffffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -1230,7 +1230,7 @@ MonoBehaviour:
   m_ListAreaState:
     m_SelectedInstanceIDs: 
     m_LastClickedInstanceID: 0
-    m_HadKeyboardFocusLastEvent: 1
+    m_HadKeyboardFocusLastEvent: 0
     m_ExpandedInstanceIDs: c6230000b28400004686000000000000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -1329,7 +1329,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: 191014
+  m_LastSelectedObjectID: 140866
 --- !u!114 &23
 MonoBehaviour:
   m_ObjectHideFlags: 52

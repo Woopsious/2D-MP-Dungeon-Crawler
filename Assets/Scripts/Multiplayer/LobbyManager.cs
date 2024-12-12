@@ -41,6 +41,8 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public void Update()
 	{
+		if (_Lobby == null) return;
+
 		HandleLobbyPollForUpdates();
 		if (MultiplayerManager.Instance.IsPlayerHost())
 		{
@@ -66,7 +68,7 @@ public class LobbyManager : NetworkBehaviour
 			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
 			{
 				IsPrivate = lobbyPrivate,
-				Player = GetPlayer(),
+				Player = GetPlayerData(),
 				IsLocked = false,
 				Data = new Dictionary<string, DataObject>
 				{
@@ -100,7 +102,7 @@ public class LobbyManager : NetworkBehaviour
 			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
 			{
 				IsPrivate = lobbyPrivate,
-				Player = GetPlayer(),
+				Player = GetPlayerData(),
 				IsLocked = false,
 				Password = lobbyPassword,
 				Data = new Dictionary<string, DataObject>{}
@@ -139,7 +141,7 @@ public class LobbyManager : NetworkBehaviour
 		{
 			JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions
 			{
-				Player = GetPlayer()
+				Player = GetPlayerData()
 			};
 
 			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
@@ -172,7 +174,7 @@ public class LobbyManager : NetworkBehaviour
 	}
 
 	//set up player data when joining/creating lobby
-	public Player GetPlayer()
+	public Player GetPlayerData()
 	{
 		return new Player
 		{
@@ -182,8 +184,6 @@ public class LobbyManager : NetworkBehaviour
 					ClientManager.Instance.clientUsername.ToString())},
 				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					ClientManager.Instance.clientId.ToString())},
-				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
-					ClientManager.Instance.clientNetworkedId.ToString())},
 				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					PlayerInfoUi.playerInstance.playerStats.entityLevel.ToString())},
 				{ "PlayerClass", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
@@ -195,7 +195,7 @@ public class LobbyManager : NetworkBehaviour
 	//lobby hearbeat and update poll
 	private async void LobbyHeartBeat()
 	{
-		if (Instance._Lobby != null && Instance._Lobby.HostId == ClientManager.Instance.clientId)
+		if (Instance._Lobby.HostId == ClientManager.Instance.clientId)
 		{
 			lobbyHeartbeatTimer -= Time.deltaTime;
 			if (lobbyHeartbeatTimer < 0)
@@ -207,35 +207,30 @@ public class LobbyManager : NetworkBehaviour
 	}
 	private async void HandleLobbyPollForUpdates()
 	{
-		if (Instance._Lobby != null)
+		lobbyPollTimer -= Time.deltaTime;
+		if (lobbyPollTimer < 0)
 		{
-			lobbyPollTimer -= Time.deltaTime;
-			if (lobbyPollTimer < 0)
+			lobbyPollTimer = lobbyPollWaitTimer;
+			try
 			{
-				Debug.LogError("lobby polling");
+				Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._Lobby.Id);
+				LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
 
-				lobbyPollTimer = lobbyPollWaitTimer;
-				try
-				{
-					Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._Lobby.Id);
-					LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
+				//debug logs for logging
+				/*
+				if (MultiplayerManager.Instance.IsPlayerHost())
+					Debug.LogWarning($"connected Networked clients: {NetworkManager.Singleton.ConnectedClientsList.Count}");
 
-					//debug logs for logging
-					/*
-					if (MultiplayerManager.Instance.IsPlayerHost())
-						Debug.LogWarning($"connected Networked clients: {NetworkManager.Singleton.ConnectedClientsList.Count}");
-
-					Debug.LogWarning($"connected clients count: {HostManager.Instance.connectedClientsList.Count}");
-					Debug.LogWarning($"clients in lobby: {_Lobby.Players.Count}");
-					Debug.LogWarning($"Local Networked ID: {ClientManager.Instance.clientNetworkedId}");
-					Debug.LogWarning($"Lobby Join Code: {_Lobby.Data["joinCode"].Value}");
-					*/
-				}
-				catch (LobbyServiceException e)
-				{
-					Debug.LogError($"{e.Message}");
-					Instance._Lobby = null;
-				}
+				Debug.LogWarning($"connected clients count: {HostManager.Instance.connectedClientsList.Count}");
+				Debug.LogWarning($"clients in lobby: {_Lobby.Players.Count}");
+				Debug.LogWarning($"Local Networked ID: {ClientManager.Instance.clientNetworkedId}");
+				Debug.LogWarning($"Lobby Join Code: {_Lobby.Data["joinCode"].Value}");
+				*/
+			}
+			catch (LobbyServiceException e)
+			{
+				Debug.LogError($"{e.Message}");
+				Instance._Lobby = null;
 			}
 		}
 	}

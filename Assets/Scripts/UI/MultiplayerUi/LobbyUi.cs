@@ -141,10 +141,14 @@ public class LobbyUi : MonoBehaviour
 		int index = 0;
 		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
 		{
-			Debug.LogError("looping");
 			playerCard.UpdateInfo(lobby, index);
 			index++;
 		}
+	}
+	public void ClearPlayerListUi()
+	{
+		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
+			playerCard.ClearUiInfo();
 	}
 	private void MarkUiDirty()
 	{
