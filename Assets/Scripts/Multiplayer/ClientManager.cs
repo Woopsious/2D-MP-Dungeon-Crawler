@@ -26,6 +26,7 @@ public class ClientManager : NetworkBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
+			HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
@@ -42,8 +43,7 @@ public class ClientManager : NetworkBehaviour
 	}
 	public void StopClient()
 	{
-		LobbyManager.Instance._Lobby = null;
-		LobbyManager.Instance.lobbyJoinCode = null;
+		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;

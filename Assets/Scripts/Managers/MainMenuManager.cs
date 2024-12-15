@@ -52,7 +52,7 @@ public class MainMenuManager : MonoBehaviour
 	private void Start()
 	{
 		EnableMainMenuButtons();
-		OnlyShowButtonInHubArea();
+		SetActionForPlayMpButton();
 	}
 
 	private void EnableMainMenuButtons()
@@ -98,9 +98,11 @@ public class MainMenuManager : MonoBehaviour
 
 
 	//mp button actions + checks
-	private void OnlyShowButtonInHubArea()
+	private void SetActionForPlayMpButton()
 	{
-		if (GameManager.Instance == null)
+		playMpButton.onClick.RemoveAllListeners();
+
+		if (GameManager.Instance == null) //testing
 		{
 			Debug.LogWarning("GM not found, showing play Multiplayer button, ignore if testing");
 			playMpButton.interactable = true;
@@ -109,23 +111,44 @@ public class MainMenuManager : MonoBehaviour
 			return;
 		}
 
-		if (SceneManager.GetActiveScene().name == GameManager.Instance.hubAreaName)
+		if (LobbyManager.Instance != null && LobbyManager.Instance._Lobby != null) //player in lobby show lobby ui
 		{
+			playMpButton.onClick.AddListener(delegate { ShowLobbyUiWhenPlayerInLobby(); });
 			playMpButton.interactable = true;
 			playMpButtonText.color = Color.black;
-			playMpButtonText.text = "Play Multiplayer";
+			playMpButtonText.text = "Open Lobby Ui";
 		}
-		else
+		else //player not in lobby show play mp process
 		{
-			playMpButton.interactable = false;
-			playMpButtonText.color = new Color(0.8f, 0, 0);
-			playMpButtonText.text = "Mp available in Hub";
+			if (SceneManager.GetActiveScene().name == GameManager.Instance.hubAreaName)
+			{
+				playMpButton.onClick.AddListener(delegate { PlayMultiplayer(); });
+				playMpButton.interactable = true;
+				playMpButtonText.color = Color.black;
+				playMpButtonText.text = "Play Multiplayer";
+			}
+			else
+			{
+				playMpButton.interactable = false;
+				playMpButtonText.color = new Color(0.8f, 0, 0);
+				playMpButtonText.text = "Mp available in Hub";
+			}
 		}
 	}
 	public void PlayMultiplayer()
 	{
 		mainMenuPanel.SetActive(false);
 		MultiplayerMenuUi.Instance.ShowMpMenuUi();
+	}
+
+	//show MpLobbyUi when players in lobby
+	public void ShowLobbyUiWhenPlayerInLobby()
+	{
+		if (LobbyManager.Instance._Lobby != null)
+		{
+			MainMenuManager.Instance.HideMainMenu();
+			LobbyUi.Instance.ShowLobbyUi();
+		}
 	}
 
 	//SHOW/HIDE PANELS
@@ -141,6 +164,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void ShowMainMenu()
 	{
+		SetActionForPlayMpButton();
 		HideSaveSlotsMenu();
 		HideKeybindsMenu();
 		HidePlayerSettingsMenu();

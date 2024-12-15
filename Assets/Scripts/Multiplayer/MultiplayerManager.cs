@@ -60,6 +60,8 @@ public class MultiplayerManager : MonoBehaviour
 	}
 	public void PlayerConnectedCallback(ulong id)
 	{
+		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
+
 		if (IsPlayerHost())
 			HostManager.Instance.HandleClientConnectsAsHost(id);
 		else
@@ -67,8 +69,6 @@ public class MultiplayerManager : MonoBehaviour
 
 		if (NetworkManager.Singleton.LocalClientId == id)
 			LobbyUi.Instance.ShowLobbyUi();
-
-		MarkLobbyUiAsDirty?.Invoke();
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
@@ -76,8 +76,6 @@ public class MultiplayerManager : MonoBehaviour
 			HostManager.Instance.HandleClientDisconnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
-
-		MarkLobbyUiAsDirty?.Invoke();
 	}
 
 	//Shutdown NetworkManager

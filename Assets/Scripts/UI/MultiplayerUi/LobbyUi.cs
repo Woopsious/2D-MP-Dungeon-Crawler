@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -33,6 +34,7 @@ public class LobbyUi : MonoBehaviour
 
 	[Header("Lobby Ui")]
 	public List<PlayerCardInfoHandler> playerCardInfoList = new List<PlayerCardInfoHandler>();
+	public Button LobbySettingsButton;
 
 	[Header("Creating Lobby Panel")]
 	public GameObject creatingLobbyPanel;
@@ -43,14 +45,6 @@ public class LobbyUi : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;
-	}
-	private void OnEnable()
-	{
-		MultiplayerManager.MarkLobbyUiAsDirty += MarkUiDirty;
-	}
-	private void OnDisable()
-	{
-		MultiplayerManager.MarkLobbyUiAsDirty -= MarkUiDirty;
 	}
 
 	/// <summary>
@@ -138,22 +132,24 @@ public class LobbyUi : MonoBehaviour
 	//Set up Player list
 	public void SyncPlayerListforLobbyUi(Lobby lobby)
 	{
+		if (MultiplayerManager.Instance.IsPlayerHost())
+			LobbySettingsButton.gameObject.SetActive(true);
+		else
+			LobbySettingsButton.gameObject.SetActive(false);
+
 		int index = 0;
 		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
 		{
-			playerCard.UpdateInfo(lobby, index);
+			playerCard.UpdateUiInfo(lobby, index);
 			index++;
 		}
 	}
 	public void ClearPlayerListUi()
 	{
+		LobbySettingsButton.gameObject.SetActive(false);
+
 		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
 			playerCard.ClearUiInfo();
-	}
-	private void MarkUiDirty()
-	{
-		foreach (PlayerCardInfoHandler playerCard in playerCardInfoList)
-			playerCard.uiDirty = true;
 	}
 
 	//UI PANEL CHANGES

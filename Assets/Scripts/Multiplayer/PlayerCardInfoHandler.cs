@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
+using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,37 +19,19 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	public ulong clientNetworkId;
 	public Button button;
 
-	/// <summary>
-	/// will also need to mark ui as dirty when a player changes there class or level (left out for now)
-	/// </summary>
-
-	//update ui if not marked as dirty
-	public void UpdateInfo(Lobby lobby, int index)
-	{
-		if (uiDirty)
-		{
-			UpdateUi(lobby, index);
-			uiDirty = false;
-		}
-	}
-
 	//update ui text fields
-	private void UpdateUi(Lobby lobby, int index)
+	public void UpdateUiInfo(Lobby lobby, int index)
 	{
 		if (lobby.Players.Count - 1 < index || HostManager.Instance.connectedClientsList.Count - 1 < index) //blank info if no player exists
-		{
 			ClearUiInfo();
-		}
 		else
 		{
 			clientNetworkId = HostManager.Instance.connectedClientsList[index].clientNetworkedId;
 			SetHostText(index);
 			playerNameText.text = GetPlayerName(lobby, index);
 			PlayerInfoText.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
-			UpdatePlayerActionButton(lobby, index);
+			UpdatePlayerActionButton(index);
 		}
-
-		Debug.LogError("lobby player count - 1: " + lobby.Players.Count + " | index: " + index);
 	}
 	public void ClearUiInfo()
 	{
@@ -95,7 +78,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	/// </summary>
 
 	//show kick player button for host
-	private void UpdatePlayerActionButton(Lobby lobby, int index)
+	private void UpdatePlayerActionButton(int index)
 	{
 		button.gameObject.SetActive(true);
 		button.onClick.RemoveAllListeners();
@@ -118,7 +101,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			if (clientNetworkId == NetworkManager.Singleton.LocalClientId)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Leave Lobby";
-				button.onClick.AddListener(delegate { LeaveLobbyButton(); });
+				button.onClick.AddListener(delegate { LeaveRelayAndLobbyButton(); });
 			}
 			else
 			{
@@ -136,8 +119,8 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
 		HostManager.Instance.RemoveClientFromRelay(clientNetworkId, "Kicked from lobby by host");
 	}
-	private void LeaveLobbyButton()
+	private void LeaveRelayAndLobbyButton()
 	{
-		HostManager.Instance.LeaveLobbyServerRPC(clientNetworkId);
+		HostManager.Instance.LeaveRelayServerRPC(clientNetworkId);
 	}
 }

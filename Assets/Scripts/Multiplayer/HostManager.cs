@@ -27,8 +27,8 @@ public class HostManager : NetworkBehaviour
 	{
 		if (Instance == null)
 		{
-			Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			Instance = this;
+			Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
@@ -38,9 +38,9 @@ public class HostManager : NetworkBehaviour
 //START/STOP HOST
 	public void StartHost()
 	{
+		ClearPlayers();
 		GameManager.Instance.PauseGame(false);
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
-		ClearPlayers();
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.Instance.isMultiplayer = true;
 	}
@@ -48,7 +48,7 @@ public class HostManager : NetworkBehaviour
 	{
 		ClearPlayers();
 		LobbyManager.Instance.DeleteLobby();
-		LobbyManager.Instance.lobbyJoinCode = null;
+		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
@@ -121,7 +121,7 @@ public class HostManager : NetworkBehaviour
 			NetworkManager.Singleton.DisconnectClient(networkedId, disconnectReason);
 	}
 	[ServerRpc(RequireOwnership = false)]
-	public void LeaveLobbyServerRPC(ulong clientId) //non Host players leave lobby this way
+	public void LeaveRelayServerRPC(ulong clientId) //non Host players leave lobby this way
 	{
 		RemoveClientFromRelay(clientId, "player left lobby");
 	}
@@ -129,8 +129,6 @@ public class HostManager : NetworkBehaviour
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsHost(ulong id)
 	{
-		Debug.LogError("id of joining player: " + id);
-
 		if (id == 0) //grab host data locally as lobby is not yet made
 		{
 			if (Instance.connectedClientsList == null)

@@ -13,6 +13,7 @@ public class LobbyManager : NetworkBehaviour
 	public static LobbyManager Instance;
 
 	public Lobby _Lobby;
+	public ILobbyEvents _LobbyEvents;
 
 	public string lobbyName;
 	public bool lobbyPrivate;
@@ -164,13 +165,15 @@ public class LobbyManager : NetworkBehaviour
 	}
 
 	//DELETING LOBBIES
-	public async void DeleteLobby()
+	public async void DeleteLobby() //host delete lobby
 	{
 		if (Instance._Lobby != null)
-		{
 			await LobbyService.Instance.DeleteLobbyAsync(Instance._Lobby.Id);
-			Instance._Lobby = null;
-		}
+	}
+	public void ResetLobbyReferences() //host/client resets refs
+	{
+		Instance._Lobby = null;
+		Instance.lobbyJoinCode = null;
 	}
 
 	//set up player data when joining/creating lobby
@@ -192,7 +195,7 @@ public class LobbyManager : NetworkBehaviour
 		};
 	}
 
-	//lobby hearbeat and update poll
+	//lobby hearbeat
 	private async void LobbyHeartBeat()
 	{
 		if (Instance._Lobby.HostId == ClientManager.Instance.clientId)
@@ -205,6 +208,8 @@ public class LobbyManager : NetworkBehaviour
 			}
 		}
 	}
+
+	//poll lobby for updates
 	private async void HandleLobbyPollForUpdates()
 	{
 		lobbyPollTimer -= Time.deltaTime;
@@ -231,6 +236,7 @@ public class LobbyManager : NetworkBehaviour
 			{
 				Debug.LogError($"{e.Message}");
 				Instance._Lobby = null;
+				_LobbyEvents = null;
 			}
 		}
 	}
