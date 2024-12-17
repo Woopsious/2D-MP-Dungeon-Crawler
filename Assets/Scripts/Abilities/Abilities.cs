@@ -71,10 +71,10 @@ public class Abilities : MonoBehaviour
 		abilitySprite = effect.effectSprite;
 		abilityCooldownTimer = currentTimer;
 
-		GetComponent<ToolTipUi>().tipToShow = $"{abilityDescription}	";
+		GetComponent<ToolTipUi>().tipToShow = $"{abilityDescription}";
 	}
 
-	//tool tip
+	//tool tips
 	public void UpdateToolTip(EntityStats playerStats)
 	{
 		if (abilityBaseRef == null || abilityBaseRef.Description == null) return;
@@ -87,17 +87,17 @@ public class Abilities : MonoBehaviour
 		else if (abilityBaseRef.requiresTarget && !abilityBaseRef.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityBaseRef.damageType != SOAbilities.DamageType.isHealing) //abilty info
+		if (abilityBaseRef.damageType != IDamagable.DamageType.isHealing) //abilty info
 		{
 			int damage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
 
-			if (abilityBaseRef.damageType == SOAbilities.DamageType.isPhysicalDamageType)
+			if (abilityBaseRef.damageType == IDamagable.DamageType.isPhysicalDamage)
 				damage = (int)(damage * playerStats.physicalDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOAbilities.DamageType.isPoisonDamageType)
+			if (abilityBaseRef.damageType == IDamagable.DamageType.isPoisonDamage)
 				damage = (int)(damage * playerStats.poisonDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOAbilities.DamageType.isFireDamageType)
+			if (abilityBaseRef.damageType == IDamagable.DamageType.isFireDamage)
 				damage = (int)(damage * playerStats.fireDamagePercentageModifier.finalPercentageValue);
-			if (abilityBaseRef.damageType == SOAbilities.DamageType.isIceDamageType)
+			if (abilityBaseRef.damageType == IDamagable.DamageType.isIceDamage)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
 			if (damage != 0) //optional instant damage info
@@ -113,7 +113,7 @@ public class Abilities : MonoBehaviour
 			if (abilityBaseRef.hasStatusEffects) //optional effect info
 				info += SetStatusEffectToolTips(playerStats);
 		}
-		else if (abilityBaseRef.damageType == SOAbilities.DamageType.isHealing) //healing info
+		else if (abilityBaseRef.damageType == IDamagable.DamageType.isHealing) //healing info
 		{
 			float healing = Utilities.ConvertFloatToUiPercentage(abilityBaseRef.damageValuePercentage);
 
@@ -169,7 +169,7 @@ public class Abilities : MonoBehaviour
 		return info;
 	}
 
-	//timer types
+	//timers
 	private void AbilityCooldownTimer()
 	{
 		if (!isOnCooldown) return;

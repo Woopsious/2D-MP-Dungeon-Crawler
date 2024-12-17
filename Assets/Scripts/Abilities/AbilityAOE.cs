@@ -21,11 +21,7 @@ public class AbilityAOE : MonoBehaviour
 	private BoxCollider2D boxCollider;
 	private bool aoeLingers;
 	public int aoeDamage;
-	private DamageType damageType;
-	enum DamageType
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
-	}
+	private IDamagable.DamageType damageType;
 	private IDamagable.HitBye hitBye;
 
 	public List<EntityStats> entityStatsList = new List<EntityStats>();
@@ -78,16 +74,16 @@ public class AbilityAOE : MonoBehaviour
 	}
 	private void SetDamage()
 	{
-		damageType = (DamageType)abilityRef.damageType;
+		damageType = abilityRef.damageType;
 		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(abilityOwner.entityLevel));
 
-		if (damageType == DamageType.isPhysicalDamageType)
+		if (damageType == IDamagable.DamageType.isPhysicalDamage)
 			aoeDamage = (int)(newDamage * abilityOwner.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
+		if (damageType == IDamagable.DamageType.isPoisonDamage)
 			aoeDamage = (int)(newDamage * abilityOwner.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
+		if (damageType == IDamagable.DamageType.isFireDamage)
 			aoeDamage = (int)(newDamage * abilityOwner.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
+		if (damageType == IDamagable.DamageType.isIceDamage)
 			aoeDamage = (int)(newDamage * abilityOwner.iceDamagePercentageModifier.finalPercentageValue);
 
 		aoeDamage *= (int)abilityOwner.damageDealtModifier.finalPercentageValue;
@@ -163,14 +159,13 @@ public class AbilityAOE : MonoBehaviour
 		else
 			AddCollidedEntitiesToList(entity);
 	}
-
 	private void AddCollidedEntitiesToList(EntityStats entity)
 	{
 		if (entityStatsList.Contains(entity)) return;
 		entityStatsList.Add(entity);
 	}
 
-	//timer for aoe clean up + applying damage to entities in list
+	//timer
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer -= Time.deltaTime;
@@ -195,14 +190,12 @@ public class AbilityAOE : MonoBehaviour
 		}
 	}
 
-	//damage all entites in list
+	//ways of applying damage
 	private void DamageAllCollidedEntities()
 	{
 		foreach (EntityStats entity in entityStatsList)
 			ApplyDamageToCollidedEntity(entity, aoeDamage);
 	}
-
-	//split damage between all entites in list
 	private void SplitDamageBetweenCollidedEntities()
 	{
 		int damageToDeal = aoeDamage;
@@ -225,7 +218,7 @@ public class AbilityAOE : MonoBehaviour
 			ApplyDamageToCollidedEntity(entity, damageToDeal);
 	}
 
-	//apply damage + status effects to entity
+	//apply damage
 	private void ApplyDamageToCollidedEntity(EntityStats entity, float damageToDeal)
 	{
 		if (abilityRef.aoeType != SOAbilities.AoeType.isCircleAoe)
@@ -234,7 +227,7 @@ public class AbilityAOE : MonoBehaviour
 			if (!CollidedTargetInConeAngle(entity.gameObject)) return;
 
 		DamageSourceInfo damageSourceInfo = new(abilityOwner, hitBye, 
-			damageToDeal, (IDamagable.DamageType)damageType, abilityRef.isDamagePercentageBased);
+			damageToDeal, damageType, abilityRef.isDamagePercentageBased);
 
 		damageSourceInfo.SetDeathMessage(abilityRef);
 		entity.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);

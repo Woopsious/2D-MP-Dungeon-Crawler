@@ -22,12 +22,7 @@ public class SOStatusEffects : ScriptableObject
 	[Tooltip("if isDoT, value should be int, else percentage based 0.0 - 1.0")]
 	public bool isDOT;
 	public float effectValue;
-
-	public DamageType damageType;
-	public enum DamageType
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing, isMana
-	}
+	public IDamagable.DamageType damageType;
 
 	[Header("Duration Settings")]
 	[Tooltip("for status effects and DoT effects")]

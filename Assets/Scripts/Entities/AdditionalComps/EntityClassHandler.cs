@@ -76,7 +76,7 @@ public class EntityClassHandler : MonoBehaviour
 		List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
 		foreach (SOAbilities ability in unlockedAbilitiesList)
 		{
-			if (ability.damageType != SOAbilities.DamageType.isHealing)
+			if (ability.damageType != IDamagable.DamageType.isHealing)
 				offensiveAbilities.Add(ability);
 		}
 
@@ -89,7 +89,7 @@ public class EntityClassHandler : MonoBehaviour
 		List<SOAbilities> healingAbilities = new List<SOAbilities>();
 		foreach (SOAbilities ability in unlockedAbilitiesList)
 		{
-			if (ability.damageType == SOAbilities.DamageType.isHealing)
+			if (ability.damageType == IDamagable.DamageType.isHealing)
 				healingAbilities.Add(ability);
 		}
 

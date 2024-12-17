@@ -310,7 +310,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			if (!playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
 			{
 				Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetTimer());
+				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetAbilityDuration());
 				ability.gameObject.SetActive(true);
 				return;
 			}
@@ -503,7 +503,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	{
 		ClearSelectedTarget();
 	}
-	public void ClearSelectedTarget() //called via event + button in ui
+	public void ClearSelectedTarget()
 	{
 		if (selectedTarget == null) return;
 
@@ -549,7 +549,7 @@ public class PlayerHotbarUi : MonoBehaviour
 			if (!selectedTargetStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
 			{
 				Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetTimer());
+				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetAbilityDuration());
 				ability.gameObject.SetActive(true);
 				return;
 			}
@@ -574,10 +574,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//UI PANEL CHANGE EVENTS
-	public void OpenPlayerDeathScreen(PlayerController player)
-	{
-
-	}
 	public void OpenInventoryButton()
 	{
 		PlayerEventManager.ShowPlayerInventory();

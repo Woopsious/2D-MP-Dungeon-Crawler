@@ -28,8 +28,6 @@ public class LobbyManager : NetworkBehaviour
 	private readonly float lobbyPollWaitTimer = 1.5f;
 	public float lobbyPollTimer;
 
-	//private float kickPlayerFromLobbyOnFailedToConnectTimer = 10f;
-
 	private void Awake()
 	{
 		if (Instance == null)

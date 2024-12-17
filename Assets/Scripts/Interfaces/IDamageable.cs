@@ -6,7 +6,7 @@ public interface IDamagable
 	}
 	enum DamageType
 	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
+		isPhysicalDamage, isPoisonDamage, isFireDamage, isIceDamage, isHealing
 	}
 	void RecieveDamage(int damage, DamageType damageType, bool isPercentageValue);
 }

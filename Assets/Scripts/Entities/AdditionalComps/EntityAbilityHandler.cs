@@ -103,7 +103,7 @@ public class EntityAbilityHandler : MonoBehaviour
 	}
 
 	//ability cooldown timers (called in EntityBehaviour scripts)
-	public void HealingAbilityTimer()
+	public void HealingAbilityCooldownTimer()
 	{
 		if (canCastHealingAbility) return;
 
@@ -112,7 +112,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		if (healingAbilityTimer <= 0)
 			canCastHealingAbility = true;
 	}
-	public void OffensiveAbilityTimer()
+	public void OffensiveAbilityCooldownTimer()
 	{
 		if (canCastOffensiveAbility) return;
 
@@ -121,7 +121,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		if (offensiveAbilityTimer <= 0)
 			canCastOffensiveAbility = true;
 	}
-	public void BossAbilityTimerOne()
+	public void BossAbilityCooldownTimerOne()
 	{
 		if (canCastAbilityOne) return;
 
@@ -130,7 +130,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		if (abilityTimerOneCounter <= 0)
 			canCastAbilityOne = true;
 	}
-	public void BossAbilityTimerTwo()
+	public void BossAbilityCooldownTimerTwo()
 	{
 		if (canCastAbilityTwo) return;
 
@@ -139,7 +139,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		if (abilityTimerTwoCounter <= 0)
 			canCastAbilityTwo = true;
 	}
-	public void BossAbilityTimerThree()
+	public void BossAbilityCooldownTimerThree()
 	{
 		if (canCastAbilityThree) return;
 
@@ -149,8 +149,8 @@ public class EntityAbilityHandler : MonoBehaviour
 			canCastAbilityThree = true;
 	}
 
-	//casting timers (called in EntityBehaviour scripts)
-	public void AbilityCastingTimer()
+	//casting timer
+	public void CastAbilityTimer()
 	{
 		if (abilityBeingCasted != null)
 		{
@@ -191,7 +191,7 @@ public class EntityAbilityHandler : MonoBehaviour
 	//types of casting
 	private void CastEffect(SOAbilities ability)
 	{
-		if (ability.damageType == SOAbilities.DamageType.isHealing)
+		if (ability.damageType == IDamagable.DamageType.isHealing)
 		{
 			//eventually add support to heal friendlies
 			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
@@ -286,7 +286,7 @@ public class EntityAbilityHandler : MonoBehaviour
 			abilityIndicators.HideAoeIndicators();
 	}
 
-	//override current PlayerTarget, making abilities target another player or position
+	//override current PlayerTarget
 	private void OverrideCurrentPlayerTarget(PlayerController player)
 	{
 		overriddenPlayerTarget = player;

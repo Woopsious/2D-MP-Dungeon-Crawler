@@ -9,13 +9,8 @@ public class AbilityStatusEffect : MonoBehaviour
 	private EntityStats entityEffectIsAppliedTo;
 
 	public int damage;
-	private DamageType damageType;
-	enum DamageType
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
-	}
 
-	private float damageOverTimeCooldown = 1f;
+	private readonly float damageOverTimeCooldown = 1f;
 	private float timerTillNextDamage;
 
 	private void Update()
@@ -32,7 +27,6 @@ public class AbilityStatusEffect : MonoBehaviour
 		gameObject.name = statusEffect.Name + "Effect";
 		entityEffectIsAppliedTo = entityToApplyEffectTo;
 
-		//dot effects only get level modifier
 		damage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 		timerTillNextDamage = 0f;
 
@@ -44,7 +38,7 @@ public class AbilityStatusEffect : MonoBehaviour
 		Destroy(gameObject);
 	}
 
-	//timer
+	//timers
 	private void AbilityDurationTimer()
 	{
 		abilityDurationTimer += Time.deltaTime;
@@ -55,7 +49,6 @@ public class AbilityStatusEffect : MonoBehaviour
 			Destroy(gameObject);
 		}
 	}
-
 	//dot effect if it has one
 	private void DamageOverTimeEffect()
 	{
@@ -64,7 +57,7 @@ public class AbilityStatusEffect : MonoBehaviour
 		timerTillNextDamage -= Time.deltaTime;
 		if (timerTillNextDamage < 0)
 		{
-			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, damage, (IDamagable.DamageType)damageType, false);
+			DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, damage, statusEffect.damageType, false);
 
 			damageSourceInfo.SetDeathMessage(statusEffect);
 			entityEffectIsAppliedTo.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
@@ -72,11 +65,11 @@ public class AbilityStatusEffect : MonoBehaviour
 		}
 	}
 
-	public void ResetTimer()
+	public void ResetAbilityTimer()
 	{
 		abilityDurationTimer = 0;
 	}
-	public float GetTimer()
+	public float GetAbilityDuration()
 	{
 		return abilityDurationTimer;
 	}

@@ -21,7 +21,7 @@ public class PortalHandler : MonoBehaviour, IInteractables
 	public AudioClip portalSfx;
 	private readonly float portalSoundCooldown = 5f;
 	private float portalSoundTimer;
-	private readonly int chanceOfPortalSound = 25;
+	private readonly int chanceOfPortalSound = 15;
 
 	private void Awake()
 	{

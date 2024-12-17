@@ -16,9 +16,9 @@ public class BossEntityBehaviour : EntityBehaviour
 	{
 		base.Update();
 
-		abilityHandler.BossAbilityTimerOne();
-		abilityHandler.BossAbilityTimerTwo();
-		abilityHandler.BossAbilityTimerThree();
+		abilityHandler.BossAbilityCooldownTimerOne();
+		abilityHandler.BossAbilityCooldownTimerTwo();
+		abilityHandler.BossAbilityCooldownTimerThree();
 	}
 
 	//build Boss Behaviour Tree
@@ -37,6 +37,7 @@ public class BossEntityBehaviour : EntityBehaviour
 		return root;
 	}
 
+	//unique boss behaviour trees
 	private BTNode SetUpGoblinBossBehaviourTree()
 	{
 		BTNode root = new Selector(new List<BTNode> //entity Behaviour Tree
@@ -128,7 +129,7 @@ public class BossEntityBehaviour : EntityBehaviour
 		return root;
 	}
 
-	//phase
+	//steps in phase transition
 	public void NextStepInPhase()
 	{
 		stepInPhaseTransition++;

@@ -68,9 +68,9 @@ public class EntityBehaviour : Tree
 		UpdateAggroRatingTimer();
 		TrackCurrentPlayerTarget();
 
-		abilityHandler.AbilityCastingTimer();
-		abilityHandler.HealingAbilityTimer();
-		abilityHandler.OffensiveAbilityTimer();
+		abilityHandler.CastAbilityTimer();
+		abilityHandler.HealingAbilityCooldownTimer();
+		abilityHandler.OffensiveAbilityCooldownTimer();
 
 		GlobalAttackTimer();
 		IsPlayerTargetVisibleTimer();
@@ -207,6 +207,7 @@ public class EntityBehaviour : Tree
 		else
 			animator.SetBool("isIdle", false);
 	}
+
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
 		if (resetSpeed)
@@ -252,6 +253,13 @@ public class EntityBehaviour : Tree
 	}
 
 	//playerTarget checks and pos tracking
+	private void TrackCurrentPlayerTarget()
+	{
+		if (!CurrentPlayerTargetVisible()) return;
+
+		playersLastKnownPosition = playerTarget.transform.position;
+		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
+	}
 	private bool CurrentPlayerTargetVisible()
 	{
 		if (playerTarget == null) return false;
@@ -260,44 +268,21 @@ public class EntityBehaviour : Tree
 			return true;
 		else return false;
 	}
-	private void TrackCurrentPlayerTarget()
-	{
-		if (!CurrentPlayerTargetVisible()) return;
 
-		playersLastKnownPosition = playerTarget.transform.position;
-		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
-	}
-
-	//MOVEMENT
+	//set destination
 	public void SetNewDestination(Vector2 destination)
 	{
 		navMeshAgent.SetDestination(destination);
 	}
 
-	//ATTACKING
+	//global attack timer
 	private void GlobalAttackTimer()
 	{
 		if (globalAttackTimer >= 0)
 			globalAttackTimer -= Time.deltaTime;
 	}
-	public void TryAttackWithMainWeapon()
-	{
-		if (equipmentHandler.equippedWeapon == null) return;
 
-		float maxDistanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange;
-		if (!equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon && entityStats.statsRef.isBossVersion)
-			maxDistanceToCheck = equipmentHandler.equippedWeapon.weaponBaseRef.maxAttackRange * 2;
-
-		if (distanceToPlayerTarget > maxDistanceToCheck) return;
-
-		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
-			equipmentHandler.equippedWeapon.RangedAttack(playerTarget.transform.position, projectilePrefab);
-		else
-			equipmentHandler.equippedWeapon.MeleeAttack(playerTarget.transform.position);
-	}
-
-	//ENEMY AGGRO LIST
-	//sort + update list then set playerTarget
+	//AGGRO LIST
 	private void UpdateAggroRatingTimer()
 	{
 		if (playerAggroList.Count <= 0)
@@ -338,13 +323,7 @@ public class EntityBehaviour : Tree
 		playerTarget = null;
 	}
 
-	//updating damage/distance values
-	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
-	{
-		float distance = Vector2.Distance(transform.position, player.transform.position);
-		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
-		return (int)aggroRating;
-	}
+	//update values
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
 	{
 		bool playerAlreadyInAggroList = false;
@@ -360,6 +339,12 @@ public class EntityBehaviour : Tree
 
 		if (playerAlreadyInAggroList) return;
 		AddPlayerToAggroList(player, damageRecieved);
+	}
+	private int GetAggroDistanceFromPlayer(PlayerController player, float aggroModifier)
+	{
+		float distance = Vector2.Distance(transform.position, player.transform.position);
+		float aggroRating = (entityStats.maxHealth.finalValue * aggroModifier) / distance;
+		return (int)aggroRating;
 	}
 
 	//adding/removing players

@@ -59,6 +59,14 @@ public abstract class EntityMovement : BTNode
 		return closerPos;
 	}
 
+	//boss entity movements
+	//move to center piece logic
+	protected void MoveToCenterPiece(BossEntityBehaviour bossBehaviour)
+	{
+		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
+		bossBehaviour.SetNewDestination(bossStats.roomCenterPiece.transform.position);
+	}
+
 	//distance checks
 	protected bool CheckDistanceToPlayerIsBigger(EntityBehaviour entity, float distanceToCheck)
 	{
@@ -69,15 +77,6 @@ public abstract class EntityMovement : BTNode
 		else
 			return false;
 	}
-
-	//boss entity movements
-	//move to center piece logic
-	protected void MoveToCenterPiece(BossEntityBehaviour bossBehaviour)
-	{
-		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;
-		bossBehaviour.SetNewDestination(bossStats.roomCenterPiece.transform.position);
-	}
-
 	protected bool BossReachedCenterPiece(BossEntityBehaviour bossBehaviour)
 	{
 		BossEntityStats bossStats = (BossEntityStats)bossBehaviour.entityStats;

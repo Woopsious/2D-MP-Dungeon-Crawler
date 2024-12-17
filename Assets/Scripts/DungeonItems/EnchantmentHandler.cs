@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class EnchantmentHandler : MonoBehaviour, IInteractables
 {
-	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 
 	//make ui for this shit, hook it all up, add enchant item button, - gold, check enchant not already 3
@@ -14,7 +13,6 @@ public class EnchantmentHandler : MonoBehaviour, IInteractables
 
 	private void Awake()
 	{
-		spriteRenderer = GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 	}
 
@@ -24,11 +22,15 @@ public class EnchantmentHandler : MonoBehaviour, IInteractables
 		PlayerEventManager.ShowPlayerInventory();
 		PlayerInventoryUi.Instance.ShowEnchanterUi();
 		player.isInteractingWithInteractable = true;
+
+		audioHandler.PlayAudio(audioSfx);
 	}
 	public void UnInteract(PlayerController player)
 	{
 		PlayerEventManager.ShowPlayerInventory();
 		PlayerInventoryUi.Instance.HideEnchanterUi();
 		player.isInteractingWithInteractable = false;
+
+		audioHandler.PlayAudio(audioSfx);
 	}
 }

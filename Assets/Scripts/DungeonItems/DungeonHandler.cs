@@ -12,8 +12,6 @@ public class DungeonHandler : MonoBehaviour
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
 	public List<Vector2> dungeonPortalPositionsList = new List<Vector2>();
 
-	//keep track of all chests when player leaves dungeon, save to GameData in DungeonData function weather they have/havnt been opened
-	//when player revisits dungeon OnSceneChangeFinish restore state of chests from GameData
 	public ChestHandler playerStorageChest;
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
 	private readonly int chanceForChestToActivate = 50;
@@ -99,7 +97,7 @@ public class DungeonHandler : MonoBehaviour
 		Instance.inActiveAoeAbilitesPool.Add(abilityAOE);
 	}
 
-	//GET CLOSEST RESPAWN PORTAL
+	//player respawns
 	public void RespawnPlayerAtClosestPortal(GameObject playerObj)
 	{
 		List<float> portalDistances = new();

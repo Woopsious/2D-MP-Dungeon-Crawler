@@ -96,7 +96,6 @@ public class AbilityIndicators : MonoBehaviour
 		boxAoeIndicator.SetActive(false);
 	}
 
-	//set up indicators
 	private void SetUpCircleIndicator(SOAbilities abilityRef)
 	{
 		indicatorType = AoeIndicatorType.isCircleAoe;
@@ -151,11 +150,10 @@ public class AbilityIndicators : MonoBehaviour
 		float adjustPos = (float)(boxAoeIndicator.transform.localScale.y / 13.33333333);
 		boxAoeIndicator.transform.localPosition = new Vector2(0, adjustPos);
 	}
-
-	//work out where the indicator should be
+	//point Indicator at target
 	private void UpdateTargetPosition()
 	{
-		if (lockTargetPosition) return;
+		if (lockTargetPosition) return; //dont track targets
 
 		if (caster.abilityHandler.overriddenPlayerTarget != null)
 			targetPosition = caster.abilityHandler.overriddenPlayerTarget.gameObject.transform.position;

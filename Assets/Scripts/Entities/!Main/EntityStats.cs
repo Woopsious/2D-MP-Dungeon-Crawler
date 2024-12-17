@@ -178,10 +178,12 @@ public class EntityStats : MonoBehaviour
 	}
 
 	/// <summary>
-	/// for MP when recieving damage as levels will no be synced, ill need to convert damage and healing recieved to a precentage 
+	/// for MP when recieving damage as levels will not be synced, ill need to convert damage and healing recieved to a precentage 
 	/// when it comes to resistances ignoring the difference shouldnt matter as everything scales at the same rate
 	/// </summary>
-	//health functions
+
+	//HEALTH EVENTS
+	//healing recieve event
 	public void OnHeal(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
 		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue, healingModifierPercentage);
@@ -202,6 +204,8 @@ public class EntityStats : MonoBehaviour
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
+
+	//damage recieve event
 	public void OnHit(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
 	{
         if (isDestroyedInOneHit)
@@ -209,13 +213,13 @@ public class EntityStats : MonoBehaviour
 			DungeonHandler.EntityDeathEvent(gameObject);
 			return;
 		}
-
+		NegateEntityResistances(damageSourceInfo);
 		OnRecieveDamageEvent?.Invoke(damageSourceInfo);
 	}
-	private void RecieveDamage(DamageSourceInfo damageSourceInfo)
+	private DamageSourceInfo NegateEntityResistances(DamageSourceInfo damageSourceInfo)
 	{
 		//Debug.Log(gameObject.name + " recieved: " + damage);
-		if (damageSourceInfo.damageType == IDamagable.DamageType.isPoisonDamageType)
+		if (damageSourceInfo.damageType == IDamagable.DamageType.isPoisonDamage)
 		{
 			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
 			if (damageSourceInfo.isPercentage)
@@ -223,7 +227,7 @@ public class EntityStats : MonoBehaviour
 			else
 				damageSourceInfo.damage -= poisonResistance.finalValue;
 		}
-		else if (damageSourceInfo.damageType == IDamagable.DamageType.isFireDamageType)
+		else if (damageSourceInfo.damageType == IDamagable.DamageType.isFireDamage)
 		{
 			//Debug.Log("Fire Dmg res: " + fireResistance.finalValue);
 			if (damageSourceInfo.isPercentage)
@@ -231,7 +235,7 @@ public class EntityStats : MonoBehaviour
 			else
 				damageSourceInfo.damage -= fireResistance.finalValue;
 		}
-		else if (damageSourceInfo.damageType == IDamagable.DamageType.isIceDamageType)
+		else if (damageSourceInfo.damageType == IDamagable.DamageType.isIceDamage)
 		{
 			//Debug.Log("Ice Dmg res: " + iceResistance.finalValue);
 			if (damageSourceInfo.isPercentage)
@@ -252,14 +256,18 @@ public class EntityStats : MonoBehaviour
 			damageSourceInfo.damage = 3;
 
 		//Debug.Log("FinalDmg: " + damage);
+		return damageSourceInfo;
+	}
+	private void RecieveDamage(DamageSourceInfo damageSourceInfo)
+	{
 		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(statsRef.hurtSfx);
 		if (!IsPlayerEntity() && damageSourceInfo.entity.playerRef != null)
 			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
 
-		if (currentHealth <= 0)
-			OnDeath(damageSourceInfo);
+		if (IsEntityDead())
+			EntityDeath(damageSourceInfo);
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
@@ -267,16 +275,6 @@ public class EntityStats : MonoBehaviour
 
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
-	}
-	private void OnDeath(DamageSourceInfo damageSourceInfo)
-	{
-		audioHandler.PlayAudio(statsRef.deathSfx);
-		StartCoroutine(OnDeathFinish(damageSourceInfo));
-		animator.SetTrigger("DeathTrigger");
-		boxCollider2D.enabled = false;
-
-		if (IsPlayerEntity()) return;
-		entityBehaviour.navMeshAgent.isStopped = true;
 	}
 	private void RedFlashOnRecieveDamage()
 	{
@@ -289,7 +287,19 @@ public class EntityStats : MonoBehaviour
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
-	private IEnumerator OnDeathFinish(DamageSourceInfo damageSourceInfo)
+
+	//death event
+	private void EntityDeath(DamageSourceInfo damageSourceInfo)
+	{
+		audioHandler.PlayAudio(statsRef.deathSfx);
+		StartCoroutine(EntityDeathFinish(damageSourceInfo));
+		animator.SetTrigger("DeathTrigger");
+		boxCollider2D.enabled = false;
+
+		if (IsPlayerEntity()) return;
+		entityBehaviour.navMeshAgent.isStopped = true;
+	}
+	private IEnumerator EntityDeathFinish(DamageSourceInfo damageSourceInfo)
 	{
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
@@ -300,8 +310,8 @@ public class EntityStats : MonoBehaviour
 			DungeonHandler.EntityDeathEvent(gameObject);
 	}
 
-	//mana functions
-	public void PassiveManaRegen()
+	//MANA EVENTS
+	private void PassiveManaRegen()
 	{
 		if (currentMana > maxMana.finalValue)
 			DecreaseMana(currentMana - maxMana.finalValue, false);
@@ -327,6 +337,7 @@ public class EntityStats : MonoBehaviour
 			currentMana = maxMana.finalValue;
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+
 		if (!IsPlayerEntity()) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
@@ -338,6 +349,7 @@ public class EntityStats : MonoBehaviour
 
 		currentMana = (int)(currentMana - manaValue);
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
+
 		if (!IsPlayerEntity()) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
@@ -348,10 +360,10 @@ public class EntityStats : MonoBehaviour
 	{
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
-			AbilityStatusEffect duplicateStatusEffect = CheckIfStatusEffectAlreadyApplied(effect);
+			AbilityStatusEffect duplicateStatusEffect = IsStatusEffectAlreadyApplied(effect);
 			if (duplicateStatusEffect != null)
 			{
-				duplicateStatusEffect.ResetTimer();
+				duplicateStatusEffect.ResetAbilityTimer();
 				OnResetStatusEffectTimer?.Invoke(effect);
 				continue;
 			}
@@ -427,7 +439,7 @@ public class EntityStats : MonoBehaviour
 		if (effect.isMarkedByBossEffect && IsPlayerEntity())
 			playerRef.UnMarkPlayer();
 	}
-	private AbilityStatusEffect CheckIfStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
+	private AbilityStatusEffect IsStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{
 		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
 		{
@@ -477,8 +489,8 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 	}
 
-	//update stat values/modifiers based on events
-	public void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
+	//STAT CHANGE EVENTS
+	private void OnEquipmentChanges(EntityEquipmentHandler equipmentHandler)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -503,7 +515,7 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnStatUnlock(SOClassStatBonuses statBoost)
+	private void OnStatUnlock(SOClassStatBonuses statBoost)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -532,7 +544,7 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
-	public void OnStatRefund(SOClassStatBonuses statBoost)
+	private void OnStatRefund(SOClassStatBonuses statBoost)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -561,7 +573,9 @@ public class EntityStats : MonoBehaviour
 		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
 		UpdatePlayerStatInfoUi();
 	}
-	public void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
+
+	//DUNGEON MODIFIERS
+	private void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -610,10 +624,10 @@ public class EntityStats : MonoBehaviour
 		UpdatePlayerStatInfoUi();
 	}
 
-	//full heal entity if not player and at full health on stat changes
+	//full heal entity on stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
 	{
-		if (playerRef == null && oldCurrentHealthEqualToOldMaxHealth)
+		if (!IsPlayerEntity() && oldCurrentHealthEqualToOldMaxHealth)
 		{
 			currentHealth = maxHealth.finalValue;
 			currentMana = maxMana.finalValue;
@@ -623,6 +637,7 @@ public class EntityStats : MonoBehaviour
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 	}
 
+	//update ui info if player
 	public void UpdatePlayerStatInfoUi()
 	{
 		if (!IsPlayerEntity()) return;

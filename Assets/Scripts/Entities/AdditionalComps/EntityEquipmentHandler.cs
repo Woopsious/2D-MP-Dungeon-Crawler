@@ -64,25 +64,26 @@ public class EntityEquipmentHandler : MonoBehaviour
 	//equip items to non players based on class
 	public void SpawnEntityEquipment()
 	{
-		if (entityStats.statsRef.canUseEquipment)
+		if (!entityStats.statsRef.canUseEquipment) //equip unique weapon
 		{
-			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
-				(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);//main weapon
-			//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);	//offhand weapon
-
-			foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)                             //armor
-			{
-				if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
-					EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-				if (armor.armorSlot == SOArmors.ArmorSlot.chest)
-					EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-				if (armor.armorSlot == SOArmors.ArmorSlot.legs)
-					EquipArmor(armor, equippedLegs, legsSlotContainer);
-			}
-			//Accessory functions here if/when i decide to add it
-		}
-		else
 			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
+			return;
+		}
+
+		EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
+			(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);
+		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);
+
+		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)
+		{
+			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
+				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
+			if (armor.armorSlot == SOArmors.ArmorSlot.chest)
+				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
+			if (armor.armorSlot == SOArmors.ArmorSlot.legs)
+				EquipArmor(armor, equippedLegs, legsSlotContainer);
+		}
+		//Accessory functions here if/when i decide to add it
 	}
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{

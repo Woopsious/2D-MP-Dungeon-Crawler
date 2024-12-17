@@ -21,7 +21,6 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public EntityDetection enemyDetection;
 	private PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
-	private SpriteRenderer spriteRenderer;
 	private Animator animator;
 
 	private float speed = 12;
@@ -73,7 +72,6 @@ public class PlayerController : MonoBehaviour
 		enemyDetection = GetComponentInChildren<EntityDetection>();
 		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
-		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
 		animator = GetComponent<Animator>();
 	}
 	private void Start()
@@ -429,10 +427,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastAbility(Abilities ability)
 	{
-		EntityStats enemyTarget = selectedEnemyTarget;
-
-		if (enemyTarget == null)
-			enemyTarget = TryGrabNewEntityOnQueuedAbilityClick(false);
+		EntityStats enemyTarget = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnQueuedAbilityClick(false);
 
 		if (ability.abilityBaseRef.isProjectile)
 			CastDirectionalAbility(ability);
@@ -493,7 +488,7 @@ public class PlayerController : MonoBehaviour
 	}
 	private void CastEffect(Abilities ability, EntityStats enemyTarget)
 	{
-		if (ability.abilityBaseRef.damageType == SOAbilities.DamageType.isHealing) //healing
+		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing) //healing
 		{
 			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
 			{

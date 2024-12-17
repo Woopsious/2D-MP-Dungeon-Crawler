@@ -162,7 +162,6 @@ public class SpawnHandler : MonoBehaviour
 	{
 		if (obj.GetComponent<EntityStats>().statsRef.isBossVersion) //boss entity deaths, unsub to event and set to null
 		{
-			if (bossEntity == null) return; //occasionally called multiple times so ignore if null
 			bossEntity = null;
 			return;
 		}
@@ -171,9 +170,6 @@ public class SpawnHandler : MonoBehaviour
 		{
 			listOfSpawnedEntities.Remove(obj.GetComponent<EntityStats>());
 			TrySpawnEntities();
-
-			if (isBossRoomSpawner) //decrease spawns on entity death for boss room spawners
-				maxNumOfEntitiesToSpawn--;
 		}
 	}
 
@@ -206,7 +202,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//SPAWNING OF ENTITIES AND BOSSES
-	public void ForceSpawnEntitiesForBosses(int numToSpawn) //called via health change event in bosses
+	public void ForceSpawnEntitiesForBosses(int numToSpawn)
 	{
 		if (!isBossSpawner) return;
 
@@ -215,10 +211,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void TrySpawnEntities()
 	{
-		if (isBossRoomSpawner) return;
-		if (listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn) return;
-		if (listOfPlayersInRange.Count == 0) return;
-		if (spawningDisabled) return;
+		if (!CanSpawnEntity()) return;
 
 		SpawnEntity();
 	}
@@ -271,14 +264,14 @@ public class SpawnHandler : MonoBehaviour
 			{
 				entityTypeMatches = true;
 				DungeonHandler.Instance.inActiveEntityPool.Remove(entity);
-				RespawnInActiveEntity(entity);
+				RespawnEntity(entity);
 				break;
 			}
 		}
 		if (!entityTypeMatches)
 			InstantiateNewEntity();
 	}
-	private void RespawnInActiveEntity(EntityStats entity)
+	private void RespawnEntity(EntityStats entity)
 	{
 		entity.gameObject.transform.position = Utilities.GetRandomPointInBounds(spawnBounds);
 		entity.gameObject.SetActive(true);
@@ -312,7 +305,13 @@ public class SpawnHandler : MonoBehaviour
 		TrySpawnEntities();
 	}
 
-	//checks
+	//bool checks
+	private bool CanSpawnEntity()
+	{
+		if (isBossRoomSpawner || spawningDisabled || listOfSpawnedEntities.Count >= maxNumOfEntitiesToSpawn || 
+			listOfPlayersInRange.Count == 0) return false;
+		else return true;
+	}
 	private bool CheckIfSpawnerShouldRespawnEnemies()
 	{
 		if (!isBossRoomSpawner) return true;

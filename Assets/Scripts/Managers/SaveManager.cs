@@ -1,13 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
-using UnityEngine.Windows;
-using Scene = UnityEngine.SceneManagement.Scene;
 
 public class SaveManager : MonoBehaviour
 {

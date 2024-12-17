@@ -27,13 +27,13 @@ public class Utilities
 		}
 		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.statusEffect)
 		{
-			if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isPhysicalDamageType)
+			if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isPhysicalDamage)
 				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} out";
-			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isPoisonDamageType)
+			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isPoisonDamage)
 				deathMessage = $"Died from being {damageSourceInfo.statusEffect.Name}";
-			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isFireDamageType)
+			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isFireDamage)
 				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} to death";
-			else if (damageSourceInfo.statusEffect.damageType == SOStatusEffects.DamageType.isIceDamageType)
+			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isIceDamage)
 				deathMessage = $"Died from Freezing internally";
 		}
 

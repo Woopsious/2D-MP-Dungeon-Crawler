@@ -91,9 +91,9 @@ public class LobbyUi : MonoBehaviour
 				LobbyManager.Instance.CreateLobby(lobbyNameInput.text, lobbyPrivate);
 			else
 				LobbyManager.Instance.CreateLobbyWithPassword(lobbyNameInput.text, lobbyPrivate, lobbyPasswordInput.text);
-		}
 
-		ShowCreatingLobbyUi();
+			ShowCreatingLobbyUi();
+		}
 	}
 	public void CancelLobbyCreation()
 	{

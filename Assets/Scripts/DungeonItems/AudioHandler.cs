@@ -44,7 +44,7 @@ public class AudioHandler : MonoBehaviour
 		else return false;
 	}
 
-	//audio event listner
+	//audio event listener
 	private void UpdateAudioSettings(float musicVolume, float menuSfxVolume, float ambienceVolume, float sfxVolume)
 	{
 		if (audioType == AudioType.music)

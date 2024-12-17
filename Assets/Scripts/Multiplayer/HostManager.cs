@@ -1,17 +1,15 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using Unity.Networking.Transport.Relay;
 using Unity.Services.Lobbies;
-using Unity.Services.Relay.Models;
-using Unity.Services.Relay;
-using UnityEngine;
-using UnityEngine.SceneManagement;
-using WebSocketSharp;
 using Unity.Services.Lobbies.Models;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using UnityEngine;
+using WebSocketSharp;
 
 public class HostManager : NetworkBehaviour
 {
@@ -35,7 +33,7 @@ public class HostManager : NetworkBehaviour
 			Destroy(gameObject);
 	}
 
-//START/STOP HOST
+	//START/STOP HOST
 	public void StartHost()
 	{
 		ClearPlayers();
@@ -114,6 +112,8 @@ public class HostManager : NetworkBehaviour
 	public void RemoveClientFromRelay(ulong networkedId, string disconnectReason)
 	{
 		networkIdOfKickedPlayer = networkedId.ToString();
+
+		//save data
 
 		if (disconnectReason.IsNullOrEmpty())
 			NetworkManager.Singleton.DisconnectClient(networkedId, "Network error"); //fall back reason

@@ -58,11 +58,10 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	private void OnTriggerEnter2D(Collider2D collision)
 	{
 		if (collision.GetComponent<PlayerController>() != null)
-		{
 			TryDetectTrap(collision.GetComponent<PlayerController>());
-		}
 	}
 
+	//trap initilization
 	private void Initilize()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
@@ -117,6 +116,28 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		trapDamage = (int)(trapBaseRef.baseDamage * levelModifier);
 	}
 
+	//set projectile spawn point
+	private void FindSpawnPointForProjectiles()
+	{
+		projectileSpawnPoint = FindPointWithinDonutShape();
+	}
+	private Vector2 FindPointWithinDonutShape()
+	{
+		for (var i = 0; i < 100; i++)
+		{
+			Vector2 pos = (Vector2)transform.position + (Random.insideUnitCircle * 7);
+			if (Vector3.Distance(pos, transform.position) > 4 && PositionVisible(pos))
+				return pos;
+		}
+		return Vector2.zero;
+	}
+	private bool PositionVisible(Vector2 pos)
+	{
+		if (Physics2D.Linecast(transform.position, pos, projectileObstaclesMaskCheck))
+			return false;
+		return true;
+	}
+
 	//trap actions
 	public IEnumerator ActivateTrapDelay(Collider2D coll)
 	{
@@ -169,6 +190,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		projectile.Initilize(trapBaseRef, trapDamage);
 	}
 
+	//trap detection
 	private void TryDetectTrap(PlayerController newPlayer)
 	{
 		if (trapDisabled || trapActivated) return;
@@ -213,6 +235,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		else return false;
 	}
 
+	//trap deactivation
 	private void DeactivateTrap()
 	{
 		if (trapDisabled || trapActivated) return;
@@ -221,36 +244,13 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		audioHandler.PlayAudio(trapDeactivatedSfx);
 		StartCoroutine(DisableObject(trapDeactivatedSfx.length));
 	}
-
-	//set projectile spawn point, avoiding positions too close or in LoS of obstacles
-	private void FindSpawnPointForProjectiles()
-	{
-		projectileSpawnPoint = FindPointWithinDonutShape();
-	}
-	private Vector2 FindPointWithinDonutShape()
-	{
-		for (var i = 0; i < 100; i++)
-		{
-			Vector2 pos = (Vector2)transform.position + (Random.insideUnitCircle * 7);
-			if (Vector3.Distance(pos, transform.position) > 4 && ProjectileSpawnPointInsideWall(pos))
-				return pos;
-		}
-		return Vector2.zero;
-	}
-	private bool ProjectileSpawnPointInsideWall(Vector2 pos)
-	{
-		if (Physics2D.Linecast(transform.position, pos, projectileObstaclesMaskCheck))
-			return false;
-		return true;
-	}
-
 	private IEnumerator DisableObject(float waitTime)
 	{
 		yield return new WaitForSeconds(waitTime);
 		gameObject.SetActive(false);
 	}
 
-	//interacts
+	//player interacts
 	public void Interact(PlayerController player)
 	{
 		if (trapDetected && !trapActivated)
@@ -258,7 +258,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	}
 	public void UnInteract(PlayerController player)
 	{
-
+		//noop
 	}
 
 	public void OnDrawGizmos()

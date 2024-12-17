@@ -130,7 +130,7 @@ public class LootSpawnHandler : MonoBehaviour
 		return 0; //incase of fail return first item
 	}
 
-	//event listners
+	//event listeners
 	private void OnEntityDeathEvent(GameObject obj)
 	{
 		if (obj != gameObject) return;
@@ -143,7 +143,6 @@ public class LootSpawnHandler : MonoBehaviour
 		levelModifier = playerStats.levelModifier;
 	}
 
-	//spawn loot
 	public void AddGold()
 	{
 		float goldModifier = levelModifier;
@@ -156,6 +155,8 @@ public class LootSpawnHandler : MonoBehaviour
 		int goldToAdd = Utilities.GetRandomNumberBetween((int)(minGold * goldModifier), (int)(maxGold * goldModifier));
 		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
 	}
+
+	//loot spawning
 	public void SpawnLoot()
 	{
 		int numOfItemsToSpawn = Utilities.GetRandomNumberBetween(lootPool.minDroppedItemsAmount, lootPool.maxDroppedItemsAmount);

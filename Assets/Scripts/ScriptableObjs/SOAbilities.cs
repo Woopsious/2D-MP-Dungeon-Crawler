@@ -65,11 +65,7 @@ public class SOAbilities : SOClassUnlocks
 
 	[Header("Damage Settings")]
 	public bool isDamagePercentageBased;
-	public DamageType damageType;
-	public enum DamageType
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType, isHealing
-	}
+	public IDamagable.DamageType damageType;
 	public int damageValue;
 	public float damageValuePercentage;
 

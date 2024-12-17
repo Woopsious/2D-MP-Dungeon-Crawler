@@ -109,17 +109,17 @@ public class ClassTreeNodeUi : MonoBehaviour
 		else if (abilityUnlock.unlock.requiresTarget && !abilityUnlock.unlock.isOffensiveAbility)
 			info += "\nNeeds selected friendly target";
 
-		if (abilityUnlock.unlock.damageType != SOAbilities.DamageType.isHealing) //abilty info
+		if (abilityUnlock.unlock.damageType != IDamagable.DamageType.isHealing) //abilty info
 		{
 			int damage = (int)(abilityUnlock.unlock.damageValue * Utilities.GetLevelModifier(playerStats.entityLevel));
 
-			if (abilityUnlock.unlock.damageType == SOAbilities.DamageType.isPhysicalDamageType)
+			if (abilityUnlock.unlock.damageType == IDamagable.DamageType.isPhysicalDamage)
 				damage = (int)(damage * playerStats.physicalDamagePercentageModifier.finalPercentageValue);
-			if (abilityUnlock.unlock.damageType == SOAbilities.DamageType.isPoisonDamageType)
+			if (abilityUnlock.unlock.damageType == IDamagable.DamageType.isPoisonDamage)
 				damage = (int)(damage * playerStats.poisonDamagePercentageModifier.finalPercentageValue);
-			if (abilityUnlock.unlock.damageType == SOAbilities.DamageType.isFireDamageType)
+			if (abilityUnlock.unlock.damageType == IDamagable.DamageType.isFireDamage)
 				damage = (int)(damage * playerStats.fireDamagePercentageModifier.finalPercentageValue);
-			if (abilityUnlock.unlock.damageType == SOAbilities.DamageType.isIceDamageType)
+			if (abilityUnlock.unlock.damageType == IDamagable.DamageType.isIceDamage)
 				damage = (int)(damage * playerStats.iceDamagePercentageModifier.finalPercentageValue);
 
 			if (damage != 0) //optional instant damage info
@@ -135,7 +135,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 			if (abilityUnlock.unlock.hasStatusEffects) //optional effect info
 				info += SetStatusEffectToolTips(playerStats);
 		}
-		else if (abilityUnlock.unlock.damageType == SOAbilities.DamageType.isHealing) //healing info
+		else if (abilityUnlock.unlock.damageType == IDamagable.DamageType.isHealing) //healing info
 		{
 			float healing = Utilities.ConvertFloatToUiPercentage(abilityUnlock.unlock.damageValuePercentage);
 
