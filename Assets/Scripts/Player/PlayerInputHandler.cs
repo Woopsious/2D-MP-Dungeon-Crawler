@@ -163,6 +163,6 @@ public class PlayerInputHandler : MonoBehaviour
 		ClassSkillTreeInput = _ClassSkillTreeAction.WasPressedThisFrame();
 		LearntAbilitiesInput = _LearntAbilitiesAction.WasPressedThisFrame();
 
-		//incase of keybinds not work, check InputManager SceneComponent names
+		//incase of keybinds not working, check InputManager SceneComponent names
 	}
 }

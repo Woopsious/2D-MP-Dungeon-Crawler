@@ -7,21 +7,21 @@
             "actions": [
                 {
                     "name": "CameraZoom",
-                    "type": "PassThrough",
+                    "type": "Value",
                     "id": "d6adc670-aec8-42ec-b1d4-6ee5fc87528c",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": false
+                    "initialStateCheck": true
                 },
                 {
                     "name": "Movement",
-                    "type": "Value",
+                    "type": "PassThrough",
                     "id": "400db62a-d32f-4b17-b984-c4f6855fbd45",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
-                    "initialStateCheck": true
+                    "initialStateCheck": false
                 },
                 {
                     "name": "MainAttack",

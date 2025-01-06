@@ -138,6 +138,8 @@ public class MainMenuManager : MonoBehaviour
 	public void PlayMultiplayer()
 	{
 		mainMenuPanel.SetActive(false);
+
+		SaveManager.Instance.AutoSaveData();
 		MultiplayerMenuUi.Instance.ShowMpMenuUi();
 	}
 

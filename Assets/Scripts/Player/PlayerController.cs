@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
 	[Header("Debug settings")]
 	public bool debugSetStartingItems;
@@ -19,11 +21,12 @@ public class PlayerController : MonoBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
-	private PlayerInputHandler playerInputs;
+	public PlayerInput playerInput;
+	public PlayerInputHandler playerInputs;
 	private Rigidbody2D rb;
 	private Animator animator;
 
-	private float speed = 12;
+	public float speed = 12;
 
 	//main attack auto attack timer
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
@@ -64,6 +67,7 @@ public class PlayerController : MonoBehaviour
 
 	private void Awake()
 	{
+		playerInput = GetComponent<PlayerInput>();
 		playerStats = GetComponent<EntityStats>();
 		playerClassHandler = GetComponent<EntityClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
@@ -121,7 +125,10 @@ public class PlayerController : MonoBehaviour
 	public void Initilize()
 	{
 		if (playerInputs == null)
+		{
 			playerInputs = PlayerInputHandler.Instance;
+			//playerInput.ActivateInput();
+		}
 
 		playerCamera.transform.parent = null;
 		PlayerBossMarker.SetActive(false);
@@ -150,17 +157,39 @@ public class PlayerController : MonoBehaviour
 	//movement
 	private void PlayerMovement()
 	{
-		rb.velocity = new Vector2(playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);
+		Vector2 moveInput = new (playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);
+
+		Debug.LogError(moveInput);
+
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+		{
+			Debug.LogError("sp");
+			Move(moveInput);
+		}
+		else if (IsHost && IsLocalPlayer)
+		{
+			Debug.LogError("host");
+			MoveServerRPC(moveInput);
+		}
+		else if (IsClient && IsLocalPlayer)
+		{
+			Debug.LogError("client");
+			MoveServerRPC(moveInput);
+		}
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
-	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
+	[ServerRpc]
+	private void MoveServerRPC(Vector2 moveInput)
 	{
-		if (resetSpeed)
-			speed = 12;
-		else
-			speed *= speedModifier;
+		Move(moveInput);
+	}
+	private void Move(Vector2 moveInput)
+	{
+		rb.velocity = moveInput;
+
+		Debug.LogError(rb.velocity);
 	}
 	private void UpdateSpriteDirection()
 	{
@@ -175,6 +204,13 @@ public class PlayerController : MonoBehaviour
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);
+	}
+	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
+	{
+		if (resetSpeed)
+			speed = 12;
+		else
+			speed *= speedModifier;
 	}
 
 	//player auto attack
@@ -549,6 +585,12 @@ public class PlayerController : MonoBehaviour
 	public void UnMarkPlayer()
 	{
 		PlayerBossMarker.SetActive(false);
+	}
+
+	public void CleanUpPlayer()
+	{
+		Destroy(playerCamera.gameObject);
+		Destroy(gameObject);
 	}
 
 	//bool checks

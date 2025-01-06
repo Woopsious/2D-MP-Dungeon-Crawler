@@ -138,6 +138,8 @@ public class HostManager : NetworkBehaviour
 				ClientManager.Instance.clientNetworkedId);
 
 			Instance.connectedClientsList.Add(data);
+
+
 		}
 		else //grab other clients data through lobby
 		{
@@ -146,6 +148,8 @@ public class HostManager : NetworkBehaviour
 
 			Instance.connectedClientsList.Add(data);
 		}
+
+		//MultiplayerManager.Instance.SpawnNetworkedPlayerObject(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{

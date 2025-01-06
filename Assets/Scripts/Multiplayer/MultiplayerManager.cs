@@ -17,8 +17,6 @@ public class MultiplayerManager : MonoBehaviour
 	public GameObject HostClientManagerObj;
 	public bool isMultiplayer;
 
-	public static Action MarkLobbyUiAsDirty;
-
 	private void Awake()
 	{
 		if (Instance == null)
@@ -78,16 +76,39 @@ public class MultiplayerManager : MonoBehaviour
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
 	}
 
-	//Shutdown NetworkManager
+	//Spawning/Shutdown NetworkManager
+	public void SpawnHostClientManager()
+	{
+		GameObject go = Instantiate(HostClientManagerObj);
+		go.transform.SetParent(null);
+	}
 	public void ShutDownNetworkManagerIfActive()
 	{
 		if (NetworkManager.Singleton.isActiveAndEnabled)
 			NetworkManager.Singleton.Shutdown();
 	}
-	public void SpawnHostClientManager()
+
+	//spawning/removing player object prefabs
+	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
-		GameObject go = Instantiate(HostClientManagerObj);
-		go.transform.SetParent(null);
+		GameObject playerObj = null;
+
+		if (IsPlayerHost())
+		{
+			playerObj = Instantiate(PlayerInfoUi.Instance.PlayerPrefab);
+			NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
+			playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner);
+		}
+
+		if(clientNetworkIdOfOwner == ClientManager.Instance.clientNetworkedId)
+			UpdatePlayerReference(playerObj.GetComponent<PlayerController>());
+	}
+	private void UpdatePlayerReference(PlayerController newPlayer)
+	{
+		newPlayer.transform.position = PlayerInfoUi.playerInstance.transform.position;
+		PlayerInfoUi.playerInstance.CleanUpPlayer();
+		PlayerInfoUi.playerInstance = newPlayer;
+		SaveManager.Instance.RestoreGameData();
 	}
 
 	public static bool CheckIfMultiplayerMenusOpen()

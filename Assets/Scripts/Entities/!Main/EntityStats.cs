@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class EntityStats : MonoBehaviour
+public class EntityStats : NetworkBehaviour
 {
 	[Header("Entity Info")]
 	public SOEntityStats statsRef;

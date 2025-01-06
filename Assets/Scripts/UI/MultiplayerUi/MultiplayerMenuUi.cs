@@ -31,11 +31,7 @@ public class MultiplayerMenuUi : MonoBehaviour
 			playerNamePlaceholder.text = "NAME REQUIRED";
 			return false;
 		}
-		else
-		{
-			ClientManager.Instance.clientUsername = playerNameInput.text;
-			return true;
-		}
+		else return true;
     }
 
 	//hosting/joining lobby
@@ -44,11 +40,12 @@ public class MultiplayerMenuUi : MonoBehaviour
 		if (HostManager.Instance != null)
 			HostManager.Instance.StopHost();
 
-		MultiplayerManager.Instance.SpawnHostClientManager();
-
 		if (!PlayerNameFilledIn()) return;
 
+		MultiplayerManager.Instance.SpawnHostClientManager();
 		AuthPlayer();
+		ClientManager.Instance.clientUsername = playerNameInput.text;
+
 		LobbyUi.Instance.ClearPlayerListUi();
 		LobbyUi.Instance.ShowLobbySettingsUiWithCreateLobbyButton();
 	}
@@ -57,11 +54,12 @@ public class MultiplayerMenuUi : MonoBehaviour
 		if (ClientManager.Instance != null)
 			ClientManager.Instance.StopClient();
 
-		MultiplayerManager.Instance.SpawnHostClientManager();
-
 		if (!PlayerNameFilledIn()) return;
 
+		MultiplayerManager.Instance.SpawnHostClientManager();
 		AuthPlayer();
+		ClientManager.Instance.clientUsername = playerNameInput.text;
+
 		LobbyUi.Instance.ClearPlayerListUi();
 		LobbyListUi.Instance.ShowLobbyListUi();
 	}
