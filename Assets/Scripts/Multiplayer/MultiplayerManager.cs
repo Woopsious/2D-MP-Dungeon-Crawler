@@ -14,6 +14,12 @@ public class MultiplayerManager : MonoBehaviour
 {
 	public static MultiplayerManager Instance;
 
+	public GameObject PlayerPrefab;
+
+	public PlayerController localPlayer;
+
+	public List<PlayerController> ListOfplayers = new List<PlayerController>();
+
 	public GameObject HostClientManagerObj;
 	public bool isMultiplayer;
 
@@ -91,24 +97,31 @@ public class MultiplayerManager : MonoBehaviour
 	//spawning/removing player object prefabs
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
-		GameObject playerObj = null;
-
-		if (IsPlayerHost())
-		{
-			playerObj = Instantiate(PlayerInfoUi.Instance.PlayerPrefab);
-			NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
-			playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner);
-		}
-
-		if(clientNetworkIdOfOwner == ClientManager.Instance.clientNetworkedId)
-			UpdatePlayerReference(playerObj.GetComponent<PlayerController>());
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
+		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner);
 	}
-	private void UpdatePlayerReference(PlayerController newPlayer)
-	{
-		newPlayer.transform.position = PlayerInfoUi.playerInstance.transform.position;
-		PlayerInfoUi.playerInstance.CleanUpPlayer();
-		PlayerInfoUi.playerInstance = newPlayer;
-		SaveManager.Instance.RestoreGameData();
+	public void UpdatePlayerReferences()
+	{       
+		///<summery>
+		/// instead of restoring all data split single event into multiple
+		/// first clearing old singleplayer player instance
+		///<summery>
+
+		PlayerController[] players = FindObjectsOfType<PlayerController>();
+
+		foreach (PlayerController player in players)
+		{
+            if (player.IsLocalPlayer && player != PlayerInfoUi.playerInstance)
+			{
+				player.transform.position = PlayerInfoUi.playerInstance.transform.position;
+				PlayerInfoUi.playerInstance.CleanUpPlayer();
+				PlayerInfoUi.playerInstance = player;
+
+				SaveManager.Instance.RestoreGameData();
+				return;
+			}
+        }
 	}
 
 	public static bool CheckIfMultiplayerMenusOpen()

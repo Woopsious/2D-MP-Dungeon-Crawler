@@ -21,8 +21,8 @@ public class PlayerController : NetworkBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
-	public PlayerInput playerInput;
-	public PlayerInputHandler playerInputs;
+	private PlayerInputHandler playerInputHandler;
+	private PlayerInput playerInput;
 	private Rigidbody2D rb;
 	private Animator animator;
 
@@ -77,6 +77,10 @@ public class PlayerController : NetworkBehaviour
 		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
+		playerCamera.transform.parent = null;
+
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			PlayerInfoUi.playerInstance = this;
 	}
 	private void Start()
 	{
@@ -104,9 +108,26 @@ public class PlayerController : NetworkBehaviour
 		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
+	public override void OnNetworkSpawn()
+	{
+		base.OnNetworkSpawn();
+		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+
+		MultiplayerManager.Instance.ListOfplayers.Add(this);
+	}
+
+	public override void OnNetworkDespawn()
+	{
+		base.OnNetworkDespawn();
+		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+
+		MultiplayerManager.Instance.ListOfplayers.Remove(this);
+	}
+
 	private void Update()
 	{
-		playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer || IsLocalPlayer)
+			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
 
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
@@ -124,19 +145,29 @@ public class PlayerController : NetworkBehaviour
 	//set player data
 	public void Initilize()
 	{
-		if (playerInputs == null)
+		playerInputHandler = PlayerInputHandler.Instance;
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 		{
-			playerInputs = PlayerInputHandler.Instance;
-			//playerInput.ActivateInput();
+			if (IsLocalPlayer)
+			{
+				Debug.LogError("is local player");
+				PlayerInfoUi.playerInstance = this;
+				playerInput.actions = playerInputHandler.playerControls;
+			}
+			else
+			{
+				Debug.LogError("is not local player");
+				DestroyPlayerLinkedCamera();
+			}
 		}
-
-		playerCamera.transform.parent = null;
-		PlayerBossMarker.SetActive(false);
+		else
+			playerInput.actions = playerInputHandler.playerControls;
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
 		else
 			playerStats.entityLevel = 1;
+
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
@@ -157,23 +188,23 @@ public class PlayerController : NetworkBehaviour
 	//movement
 	private void PlayerMovement()
 	{
-		Vector2 moveInput = new (playerInputs.MovementInput.x * speed, playerInputs.MovementInput.y * speed);
+		Vector2 moveInput = new (playerInputHandler.MovementInput.x * speed, playerInputHandler.MovementInput.y * speed);
 
-		Debug.LogError(moveInput);
+		//Debug.LogError("move input: " + moveInput);
 
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
-			Debug.LogError("sp");
+			//Debug.LogError("sp");
 			Move(moveInput);
 		}
 		else if (IsHost && IsLocalPlayer)
 		{
-			Debug.LogError("host");
+			//Debug.LogError("host");
 			MoveServerRPC(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
-			Debug.LogError("client");
+			//Debug.LogError("client");
 			MoveServerRPC(moveInput);
 		}
 
@@ -188,8 +219,6 @@ public class PlayerController : NetworkBehaviour
 	private void Move(Vector2 moveInput)
 	{
 		rb.velocity = moveInput;
-
-		Debug.LogError(rb.velocity);
 	}
 	private void UpdateSpriteDirection()
 	{
@@ -589,8 +618,12 @@ public class PlayerController : NetworkBehaviour
 
 	public void CleanUpPlayer()
 	{
-		Destroy(playerCamera.gameObject);
+		DestroyPlayerLinkedCamera();
 		Destroy(gameObject);
+	}
+	private void DestroyPlayerLinkedCamera()
+	{
+		Destroy(playerCamera.gameObject);
 	}
 
 	//bool checks
@@ -688,7 +721,7 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = playerInputs.CameraZoomInput;
+		float value = playerInputHandler.CameraZoomInput;
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}

@@ -9,7 +9,6 @@ using UnityEngine.SceneManagement;
 //things like selected target ui, aoe ui etc as those arnt necessarily hotbar ui related and variou types player info ui
 public class PlayerInfoUi : MonoBehaviour
 {
-	public GameObject PlayerPrefab;
 	public static PlayerInfoUi Instance;
 
 	public static PlayerController playerInstance;
@@ -23,19 +22,6 @@ public class PlayerInfoUi : MonoBehaviour
 	{
 		Instance = this;
 		Instance.interactWithText.SetActive(false);
-
-		if (Debug.isDebugBuild)
-		{
-			playerInstance = FindObjectOfType<PlayerController>();
-			//Debug.LogError("player ref:" + playerInstance.name);
-			return;
-		}
-
-		if (SceneManager.GetActiveScene().name != "TestingScene")
-		{
-			GameObject go = Instantiate(PlayerPrefab);
-			playerInstance = go.GetComponent<PlayerController>();
-		}
 	}
 	private void Update()
 	{

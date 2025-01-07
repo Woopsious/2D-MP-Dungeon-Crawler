@@ -149,7 +149,8 @@ public class HostManager : NetworkBehaviour
 			Instance.connectedClientsList.Add(data);
 		}
 
-		//MultiplayerManager.Instance.SpawnNetworkedPlayerObject(id);
+		MultiplayerManager.Instance.SpawnNetworkedPlayerObject(id);
+		MultiplayerManager.Instance.UpdatePlayerReferences();
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{

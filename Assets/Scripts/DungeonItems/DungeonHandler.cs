@@ -171,22 +171,29 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void SetPlayerSpawn()
 	{
-		if (dungeonPortalsList.Count <= 0) return;
+		if (dungeonPortalsList.Count <= 0)
+		{
+			//Debug.LogError("NO DUNGEON PORTAL REFERENCES SET");
+			return;
+		}
 
-		//need a better solution but it works for now, for mp will have to use player refs stored in a lobbyHandler or something similar
-		//then probably call an event to equip the gear the player is actually supposed to be wearing as well as when ever they change
-		//damage, spells, skill etc should just work if i call them through the rpc network manager events
-
-		/*
-		PlayerController player = PlayerInventoryManager.Instance.GetComponent<PlayerController>();
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			SetSpSpawns();
+		else
+			SetMpSpawns();
+	}
+	private void SetSpSpawns()
+	{
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
-		player.transform.position = portalSpawnPoint.transform.position;
-		*/
+		PlayerInfoUi.playerInstance.transform.position = portalSpawnPoint.transform.position;
+	}
+	private void SetMpSpawns()
+	{
+		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
 
-		PlayerController[] players = FindObjectsOfType<PlayerController>();
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 
-		foreach (PlayerController player in players)
+		foreach (PlayerController player in MultiplayerManager.Instance.ListOfplayers)
 			player.transform.position = portalSpawnPoint.transform.position;
 	}
 

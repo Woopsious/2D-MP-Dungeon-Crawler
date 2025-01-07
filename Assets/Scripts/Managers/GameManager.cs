@@ -91,22 +91,35 @@ public class GameManager : MonoBehaviour
 	{
 		GameManager.isNewGame = isNewGame;
 		SaveManager.Instance.GameData = new GameData();
+
 		StartCoroutine(LoadNewSceneAsync(mainMenuName, isNewGame));
 	}
 	public void LoadHubArea(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
-		StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
+
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+			LoadNewMultiplayerScene(hubAreaName, isNewGame);
+		else
+			StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
 	}
 	public void LoadDungeonOne()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+		else
+			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
 	public void LoadDungeonTwo()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+			LoadNewMultiplayerScene(dungeonLayoutOneName, false);
+		else
+			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
 	public void LoadRandomBossDungeon()
 	{
@@ -121,22 +134,39 @@ public class GameManager : MonoBehaviour
 	private void LoadBossDungoenOne()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
+
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+		else
+			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
 	}
 	private void LoadBossDungoenTwo()
 	{
 		GameManager.isNewGame = false;
-		StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutTwoName, false));
+
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+			LoadNewMultiplayerScene(bossDungeonLayoutTwoName, false);
+		else
+			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutTwoName, false));
 	}
 
 	//scene loading
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
+		GameManager.isNewGame = isNewGame;
+
 		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
 		OnSceneChangeStart?.Invoke();
 
 		while (!asyncLoad.isDone)
 			yield return null;
+	}
+	private void LoadNewMultiplayerScene(string sceneToLoad, bool isNewGame)
+	{
+		GameManager.isNewGame = isNewGame;
+
+		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
+		OnSceneChangeStart?.Invoke();
 	}
 
 	//pause game
