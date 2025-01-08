@@ -14,7 +14,7 @@ public class PlayerController : NetworkBehaviour
 	public int debugPlayerLevel;
 
 	[Header("Player Info")]
-	public Camera playerCamera;
+	private Camera playerCamera;
 	public LayerMask includeMe;
 	[HideInInspector] public EntityStats playerStats;
 	[HideInInspector] public EntityClassHandler playerClassHandler;
@@ -77,10 +77,6 @@ public class PlayerController : NetworkBehaviour
 		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
-		playerCamera.transform.parent = null;
-
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			PlayerInfoUi.playerInstance = this;
 	}
 	private void Start()
 	{
@@ -145,23 +141,10 @@ public class PlayerController : NetworkBehaviour
 	//set player data
 	public void Initilize()
 	{
-		playerInputHandler = PlayerInputHandler.Instance;
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-		{
-			if (IsLocalPlayer)
-			{
-				Debug.LogError("is local player");
-				PlayerInfoUi.playerInstance = this;
-				playerInput.actions = playerInputHandler.playerControls;
-			}
-			else
-			{
-				Debug.LogError("is not local player");
-				DestroyPlayerLinkedCamera();
-			}
-		}
-		else
-			playerInput.actions = playerInputHandler.playerControls;
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			SetUpPlayerCameraAndInputs();
+		else if (IsLocalPlayer)
+			SetUpPlayerCameraAndInputs();
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
@@ -171,11 +154,15 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
-
-	public void ResetPlayerAfterDeath()
+	private void SetUpPlayerCameraAndInputs()
 	{
-		playerStats.CalculateBaseStats();
+		SceneHandler.playerInstance = this;
+		playerCamera = SceneHandler.Instance.playerCamera.GetComponent<Camera>();
+
+		playerInputHandler = PlayerInputHandler.Instance;
+		playerInput.actions = playerInputHandler.playerControls;
 	}
+
 	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
@@ -614,16 +601,6 @@ public class PlayerController : NetworkBehaviour
 	public void UnMarkPlayer()
 	{
 		PlayerBossMarker.SetActive(false);
-	}
-
-	public void CleanUpPlayer()
-	{
-		DestroyPlayerLinkedCamera();
-		Destroy(gameObject);
-	}
-	private void DestroyPlayerLinkedCamera()
-	{
-		Destroy(playerCamera.gameObject);
 	}
 
 	//bool checks

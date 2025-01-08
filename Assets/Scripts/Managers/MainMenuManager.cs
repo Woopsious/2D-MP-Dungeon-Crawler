@@ -104,7 +104,7 @@ public class MainMenuManager : MonoBehaviour
 
 		if (GameManager.Instance == null) //testing
 		{
-			Debug.LogWarning("GM not found, showing play Multiplayer button, ignore if testing");
+			Debug.LogWarning("Game Manager Instance not found, showing play Multiplayer button, ignore if testing");
 			playMpButton.interactable = true;
 			playMpButtonText.color = Color.black;
 			playMpButtonText.text = "Play Multiplayer";

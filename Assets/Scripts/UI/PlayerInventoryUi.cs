@@ -522,7 +522,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.RemoveItemFromSlot();
 		}
 
-		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
+		SceneHandler.playerInstance.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		npcShopPanalUi.SetActive(false);
 		HideInventory();
@@ -629,7 +629,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		for (int i = playerChest.itemContainer.transform.childCount - 1;  i >= 0; i--) //re-add all items + any new ones
 			playerChest.itemList.Add(playerChest.itemContainer.transform.GetChild(i).GetComponent<InventoryItemUi>());
 
-		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
+		SceneHandler.playerInstance.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		storageChestPanelUi.SetActive(false);
 		HideInventory();
@@ -646,7 +646,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void HideEnchanterUi()
 	{
 		EnchanterUi.SetActive(false);
-		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
+		SceneHandler.playerInstance.isInteractingWithInteractable = false;
 		HideInventory();
 	}
 	public void UpdateEnchantItemUiInfo(InventoryItemUi item)
@@ -697,9 +697,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			InventoryItemUi itemUi = slotDataUi.itemInSlot;
 
 			if (itemUi.abilityBaseRef != null)
-				itemUi.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+				itemUi.GetComponent<Abilities>().UpdateToolTip(SceneHandler.playerInstance.playerStats);
 			else
-				itemUi.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, slotDataUi.IsShopSlot());
+				itemUi.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, slotDataUi.IsShopSlot());
 		}
 	}
 	private void UpdateCanEquipItem(GameObject obj)

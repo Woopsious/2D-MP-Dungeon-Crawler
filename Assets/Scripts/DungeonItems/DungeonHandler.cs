@@ -185,7 +185,7 @@ public class DungeonHandler : MonoBehaviour
 	private void SetSpSpawns()
 	{
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
-		PlayerInfoUi.playerInstance.transform.position = portalSpawnPoint.transform.position;
+		SceneHandler.playerInstance.transform.position = portalSpawnPoint.transform.position;
 	}
 	private void SetMpSpawns()
 	{

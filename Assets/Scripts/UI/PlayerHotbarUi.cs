@@ -517,7 +517,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
 		selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
 
-		PlayerInfoUi.playerInstance.ClearSelectedTarget();
+		SceneHandler.playerInstance.ClearSelectedTarget();
 		selectedTarget = null;
 	}
 

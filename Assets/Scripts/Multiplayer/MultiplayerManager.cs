@@ -112,11 +112,11 @@ public class MultiplayerManager : MonoBehaviour
 
 		foreach (PlayerController player in players)
 		{
-            if (player.IsLocalPlayer && player != PlayerInfoUi.playerInstance)
+            if (player.IsLocalPlayer && player != SceneHandler.playerInstance)
 			{
-				player.transform.position = PlayerInfoUi.playerInstance.transform.position;
-				PlayerInfoUi.playerInstance.CleanUpPlayer();
-				PlayerInfoUi.playerInstance = player;
+				player.transform.position = SceneHandler.playerInstance.transform.position;
+				Destroy(SceneHandler.playerInstance.gameObject);
+				SceneHandler.playerInstance = player;
 
 				SaveManager.Instance.RestoreGameData();
 				return;
@@ -126,10 +126,8 @@ public class MultiplayerManager : MonoBehaviour
 
 	public static bool CheckIfMultiplayerMenusOpen()
 	{
-		if (MultiplayerMenuUi.Instance.MpMenuUiPanel.activeInHierarchy ||
-			LobbyListUi.Instance.LobbyListUiPanel.activeInHierarchy ||
-			LobbyUi.Instance.LobbySettingsUiPanel.activeInHierarchy ||
-			LobbyUi.Instance.LobbyUiPanel.activeInHierarchy)
+		if (MultiplayerMenuUi.Instance.MpMenuUiPanel.activeInHierarchy || LobbyListUi.Instance.LobbyListUiPanel.activeInHierarchy ||
+			LobbyUi.Instance.LobbySettingsUiPanel.activeInHierarchy || LobbyUi.Instance.LobbyUiPanel.activeInHierarchy)
 			return true;
 		else return false;
 	}

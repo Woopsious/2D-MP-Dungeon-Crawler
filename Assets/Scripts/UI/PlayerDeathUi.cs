@@ -93,15 +93,15 @@ public class PlayerDeathUi : MonoBehaviour
 		//revive/reset player stats, send to closest portal
 		if (BossRoomHandler.Instance != null)
 		{
-			BossRoomHandler.Instance.RespawnPlayerAtPortal(PlayerInfoUi.playerInstance.gameObject);
+			BossRoomHandler.Instance.RespawnPlayerAtPortal(SceneHandler.playerInstance.gameObject);
 			BossRoomHandler.Instance.ResetRoom();
 		}
 		else
 		{
-			DungeonHandler.Instance.RespawnPlayerAtClosestPortal(PlayerInfoUi.playerInstance.gameObject);
+			DungeonHandler.Instance.RespawnPlayerAtClosestPortal(SceneHandler.playerInstance.gameObject);
 		}
 
-		PlayerInfoUi.playerInstance.playerStats.ResetEntityStats();
+		SceneHandler.playerInstance.playerStats.ResetEntityStats();
 
 		HidePlayerDeathUi();
 	}

@@ -142,6 +142,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
+    <Compile Include="Assets\Scripts\Managers\SceneHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossTransitions.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerDeathUi.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />

@@ -70,9 +70,9 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	private void OnDisable()
 	{
 		//subbing to events happens when abilities/consumables are equipped
-		PlayerInfoUi.playerInstance.playerStats.OnHealthChangeEvent -= CheckIfCanUseConsumables;
-		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= CheckIfCanUseConsumables;
-		PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent -= UpdateCanCastAbility;
+		SceneHandler.playerInstance.playerStats.OnHealthChangeEvent -= CheckIfCanUseConsumables;
+		SceneHandler.playerInstance.playerStats.OnManaChangeEvent -= CheckIfCanUseConsumables;
+		SceneHandler.playerInstance.playerStats.OnManaChangeEvent -= UpdateCanCastAbility;
 	}
 
 	//set item data
@@ -108,8 +108,8 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 		if (slotDataUi.slotType == InventorySlotDataUi.SlotType.consumables)
 		{
-			PlayerInfoUi.playerInstance.playerStats.OnHealthChangeEvent += CheckIfCanUseConsumables;
-			PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent += CheckIfCanUseConsumables;
+			SceneHandler.playerInstance.playerStats.OnHealthChangeEvent += CheckIfCanUseConsumables;
+			SceneHandler.playerInstance.playerStats.OnManaChangeEvent += CheckIfCanUseConsumables;
 		}
 	}
 	private void SetUpAbilities(Abilities ability)
@@ -131,7 +131,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		InventorySlotDataUi slotDataUi = transform.parent.GetComponent<InventorySlotDataUi>();
 
 		if (slotDataUi.slotType == InventorySlotDataUi.SlotType.equippedAbilities)
-			PlayerInfoUi.playerInstance.playerStats.OnManaChangeEvent += UpdateCanCastAbility;
+			SceneHandler.playerInstance.playerStats.OnManaChangeEvent += UpdateCanCastAbility;
 	}
 	private ClassRestriction GetClassRestriction()
 	{
@@ -224,7 +224,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable) return;
 		uiCantUtilizeItemNotif.gameObject.SetActive(true);
 
-		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel < itemLevel)
+		if (SceneHandler.playerInstance.GetComponent<EntityStats>().entityLevel < itemLevel)
 			uiCantUtilizeItemNotif.text = "Cant Equip \n low level";
 		else if (itemType == ItemType.isWeapon)
 		{
@@ -251,7 +251,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 		if (consumable.consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration)
 		{
-			if (consumable.EntityHealthFull(PlayerInfoUi.playerInstance.playerStats))
+			if (consumable.EntityHealthFull(SceneHandler.playerInstance.playerStats))
 			{
 				uiCantUtilizeItemNotif.text = "max health";
 				uiCantUtilizeItemNotif.gameObject.SetActive(true);
@@ -261,7 +261,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		}
 		else if (consumable.consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration)
 		{
-			if (consumable.EntityManaFull(PlayerInfoUi.playerInstance.playerStats))
+			if (consumable.EntityManaFull(SceneHandler.playerInstance.playerStats))
 			{
 				uiCantUtilizeItemNotif.text = "max mana";
 				uiCantUtilizeItemNotif.gameObject.SetActive(true);
@@ -276,7 +276,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 		Abilities equippedAbility = GetComponent<Abilities>();
 
-		if (!equippedAbility.CanAffordManaCost(PlayerInfoUi.playerInstance.playerStats))
+		if (!equippedAbility.CanAffordManaCost(SceneHandler.playerInstance.playerStats))
 		{
 			uiCantUtilizeItemNotif.text = "Not enough mana";
 			uiCantUtilizeItemNotif.gameObject.SetActive(true);

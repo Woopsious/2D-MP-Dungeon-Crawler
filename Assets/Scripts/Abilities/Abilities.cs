@@ -58,7 +58,7 @@ public class Abilities : MonoBehaviour
 		isOnCooldown = false;
 		abilityCooldownTimer = 0;
 
-		UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+		UpdateToolTip(SceneHandler.playerInstance.playerStats);
 	}
 	public void InitilizeStatusEffectUiTimer(SOStatusEffects effect, float currentTimer)
 	{
@@ -243,7 +243,7 @@ public class Abilities : MonoBehaviour
 	}
 	private bool PlayerHasSelectedEnemy()
 	{
-		if (PlayerInfoUi.playerInstance.selectedEnemyTarget != null)
+		if (SceneHandler.playerInstance.selectedEnemyTarget != null)
 			return true;
 		else return false;
 	}

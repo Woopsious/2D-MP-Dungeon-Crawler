@@ -615,7 +615,7 @@ public class PlayerClassesUi : MonoBehaviour
 		for (int i = currentUnlockedClassNodes.Count - 1; i >= 0; i--)
 			currentUnlockedClassNodes[i].RefundThisNode();
 
-		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+		UpdateMaxAbilitySlots(SceneHandler.playerInstance.playerStats);
 		currentUnlockedClassNodes.Clear();
 
 		OnClassChanges?.Invoke(currentPlayerClass);
@@ -639,7 +639,7 @@ public class PlayerClassesUi : MonoBehaviour
 
 		abilitySlotsUsed++;
 		classTreeSlot.isAlreadyUnlocked = true;
-		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+		UpdateMaxAbilitySlots(SceneHandler.playerInstance.playerStats);
 
 		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewAbilityUnlock?.Invoke(ability);
@@ -655,7 +655,7 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		abilitySlotsUsed--;
 		classTreeSlot.isAlreadyUnlocked = false;
-		UpdateMaxAbilitySlots(PlayerInfoUi.playerInstance.playerStats);
+		UpdateMaxAbilitySlots(SceneHandler.playerInstance.playerStats);
 
 		currentUnlockedClassNodes.Remove(classTreeSlot);
 		OnRefundAbilityUnlock?.Invoke(ability);
@@ -764,7 +764,7 @@ public class PlayerClassesUi : MonoBehaviour
 				MageClassPanel.SetActive(true);
 
 			UpdateToolTipsForClassNodes();
-			UpdateNodesInClassTree(PlayerInfoUi.playerInstance.playerStats);
+			UpdateNodesInClassTree(SceneHandler.playerInstance.playerStats);
 		}
 	}
 	public void HideClassSkillTree()
@@ -784,7 +784,7 @@ public class PlayerClassesUi : MonoBehaviour
 		foreach (ClassTreeNodeUi node in nodeSlotUiList)
 		{
 			if (node.GetComponent<ToolTipUi>() == null) continue;
-			node.SetToolTip(PlayerInfoUi.playerInstance.playerStats);
+			node.SetToolTip(SceneHandler.playerInstance.playerStats);
 		}
 	}
 }

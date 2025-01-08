@@ -10,8 +10,6 @@ using UnityEngine.SceneManagement;
 public class PlayerInfoUi : MonoBehaviour
 {
 	public static PlayerInfoUi Instance;
-
-	public static PlayerController playerInstance;
 	public TMP_Text playerInfo;
 
 	public GameObject interactWithText;
@@ -26,7 +24,7 @@ public class PlayerInfoUi : MonoBehaviour
 	private void Update()
 	{
 		if (currentPlayerInteractedObj != null && interactWithText.activeInHierarchy)
-			interactWithText.transform.position = Camera.main.WorldToScreenPoint(new Vector3(
+			interactWithText.transform.position = SceneHandler.Instance.playerCamera.WorldToScreenPoint(new Vector3(
 				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 
@@ -53,7 +51,7 @@ public class PlayerInfoUi : MonoBehaviour
 	//update text info in player inventory screen
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
-		playerInstance = stats.GetComponent<PlayerController>();
+		SceneHandler.playerInstance = stats.GetComponent<PlayerController>();
 
 		string mainInfo = $"(Player Name)\nHealth: {stats.currentHealth} / {stats.maxHealth.finalValue}" +
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";

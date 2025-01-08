@@ -195,7 +195,7 @@ public class PlayerJournalUi : MonoBehaviour
 			quest.transform.SetParent(npc.npcContainer.transform);
 
 		interactedQuestNpc = null;
-		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
+		SceneHandler.playerInstance.isInteractingWithInteractable = false;
 		npcJournalPanalUi.SetActive(false);
 		HidePlayerJournal();
 	}

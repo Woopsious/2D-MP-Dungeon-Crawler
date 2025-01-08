@@ -249,7 +249,7 @@ public class DungeonPortalUi : MonoBehaviour
 
 	public void HidePortalUi()
 	{
-		PlayerInfoUi.playerInstance.isInteractingWithInteractable = false;
+		SceneHandler.playerInstance.isInteractingWithInteractable = false;
 		portalPanelUi.SetActive(false);
 		dungeonEnterenceUi.SetActive(false);
 		dungeonExitUi.SetActive(false);

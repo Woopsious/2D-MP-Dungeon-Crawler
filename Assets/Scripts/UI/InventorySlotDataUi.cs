@@ -103,15 +103,15 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		{
 			Debug.LogError("item in slot: " + itemInSlot);
 		}
-		else if (PlayerInfoUi.playerInstance.playerStats == null)
+		else if (SceneHandler.playerInstance.playerStats == null)
 		{
-			Debug.LogError("player stats: " + PlayerInfoUi.playerInstance.playerStats);
+			Debug.LogError("player stats: " + SceneHandler.playerInstance.playerStats);
 		}
 
 		if (itemInSlot.abilityBaseRef != null)
-			itemInSlot.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+			itemInSlot.GetComponent<Abilities>().UpdateToolTip(SceneHandler.playerInstance.playerStats);
 		else
-			itemInSlot.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
+			itemInSlot.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, IsShopSlot());
 	}
 	public void RemoveItemFromSlot()
 	{
@@ -131,9 +131,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		itemInSlot.Initilize();
 
 		if (itemInSlot.abilityBaseRef != null)
-			itemInSlot.GetComponent<Abilities>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats);
+			itemInSlot.GetComponent<Abilities>().UpdateToolTip(SceneHandler.playerInstance.playerStats);
 		else
-			itemInSlot.GetComponent<Items>().UpdateToolTip(PlayerInfoUi.playerInstance.playerStats, IsShopSlot());
+			itemInSlot.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, IsShopSlot());
 	}
 
 	//other checks
@@ -289,7 +289,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public bool IsCorrectLevel(InventoryItemUi item)
 	{
-		if (PlayerInfoUi.playerInstance.GetComponent<EntityStats>().entityLevel >= item.itemLevel)
+		if (SceneHandler.playerInstance.GetComponent<EntityStats>().entityLevel >= item.itemLevel)
 			return true;
 		else return false;
 	}
