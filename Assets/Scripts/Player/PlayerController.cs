@@ -21,7 +21,6 @@ public class PlayerController : NetworkBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
-	private PlayerInputHandler playerInputHandler;
 	private PlayerInput playerInput;
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -104,26 +103,15 @@ public class PlayerController : NetworkBehaviour
 		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
-	public override void OnNetworkSpawn()
-	{
-		base.OnNetworkSpawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Add(this);
-	}
-
-	public override void OnNetworkDespawn()
-	{
-		base.OnNetworkDespawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Remove(this);
-	}
-
 	private void Update()
 	{
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer || IsLocalPlayer)
-			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+		{
+			if (LocalPlayerHasNoCamera())
+				UpdateLocalPlayerReferences();
+			else
+				playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+		}
 
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
@@ -141,10 +129,8 @@ public class PlayerController : NetworkBehaviour
 	//set player data
 	public void Initilize()
 	{
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			SetUpPlayerCameraAndInputs();
-		else if (IsLocalPlayer)
-			SetUpPlayerCameraAndInputs();
+		if (IsLocalPlayerOrSinglePlayer())
+			UpdateLocalPlayerReferences();
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
@@ -154,13 +140,16 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
-	private void SetUpPlayerCameraAndInputs()
+
+	private void UpdateLocalPlayerReferences()
 	{
 		SceneHandler.playerInstance = this;
-		playerCamera = SceneHandler.Instance.playerCamera.GetComponent<Camera>();
-
-		playerInputHandler = PlayerInputHandler.Instance;
-		playerInput.actions = playerInputHandler.playerControls;
+		SetLocalPlayerCamera();
+		playerInput.actions = PlayerInputHandler.Instance.playerControls;
+	}
+	private void SetLocalPlayerCamera()
+	{
+		playerCamera = SceneHandler.Instance.playerCamera;
 	}
 
 	private void ReloadPlayerInfo()
@@ -175,23 +164,21 @@ public class PlayerController : NetworkBehaviour
 	//movement
 	private void PlayerMovement()
 	{
-		Vector2 moveInput = new (playerInputHandler.MovementInput.x * speed, playerInputHandler.MovementInput.y * speed);
-
-		//Debug.LogError("move input: " + moveInput);
+		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);
 
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
-			//Debug.LogError("sp");
+			Debug.LogError("sp | move input: " + moveInput);
 			Move(moveInput);
 		}
 		else if (IsHost && IsLocalPlayer)
 		{
-			//Debug.LogError("host");
+			Debug.LogError("host | move input: " + moveInput);
 			MoveServerRPC(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
-			//Debug.LogError("client");
+			Debug.LogError("client | move input: " + moveInput);
 			MoveServerRPC(moveInput);
 		}
 
@@ -610,44 +597,85 @@ public class PlayerController : NetworkBehaviour
 			return true;
 		else return false;
 	}
-	
-	private void OnTriggerEnter2D(Collider2D other)
+	private bool IsLocalPlayerOrSinglePlayer()
 	{
-		if (other.GetComponent<BossRoomHandler>() != null|| other.GetComponent<PortalHandler>() != null || 
-			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null || 
-			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
-		{
-			currentInteractedObject = other.GetComponent<Interactables>();
-
-			if (other.GetComponent<TrapHandler>() != null)
-			{
-				TrapHandler trapHandler = other.GetComponent<TrapHandler>();
-				currentInteractedObject = other.GetComponent<Interactables>();
-
-				if (!trapHandler.trapDetected) return;
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			}
-			if (other.GetComponent<ChestHandler>() != null)
-			{
-				if (other.GetComponent<ChestHandler>().chestStateOpened)
-					PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-				else
-					PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-			}
-			else
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
-		}
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			return true;
+		else if (IsLocalPlayer)
+			return true;
+		else return false;
 	}
-	private void OnTriggerExit2D(Collider2D other)
+	private bool LocalPlayerHasNoCamera()
+	{
+		if (IsLocalPlayerOrSinglePlayer() && playerCamera == null)
+			return true;
+		else return false;
+	}
+	private bool IsCollidedObjectInteractable(Collider2D other)
 	{
 		if (other.GetComponent<BossRoomHandler>() != null || other.GetComponent<PortalHandler>() != null ||
 			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null ||
 			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
 		{
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
-			currentInteractedObject = null;
-			isInteractingWithInteractable = false;
+			return true;
 		}
+		else return false;
+	}
+
+	//INTERACTABLES COLLISSION TRIGGER EVENTS
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (IsCollidedObjectInteractable(other))
+			HandleInteractWithCollidables(other);
+	}
+	private void OnTriggerExit2D(Collider2D other)
+	{
+		if (IsCollidedObjectInteractable(other))
+			HandleUnInteractWithCollidables(other);
+	}
+	private void HandleInteractWithCollidables(Collider2D other)
+	{
+		currentInteractedObject = other.GetComponent<Interactables>();
+
+		if (other.GetComponent<TrapHandler>() != null)
+		{
+			TrapHandler trapHandler = other.GetComponent<TrapHandler>();
+			currentInteractedObject = other.GetComponent<Interactables>();
+
+			if (!trapHandler.trapDetected) return;
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+		}
+		if (other.GetComponent<ChestHandler>() != null)
+		{
+			if (other.GetComponent<ChestHandler>().chestStateOpened)
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			else
+				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+		}
+		else
+			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+	}
+	private void HandleUnInteractWithCollidables(Collider2D other)
+	{
+		PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+		currentInteractedObject = null;
+		isInteractingWithInteractable = false;
+	}
+
+	//MP ON NETWORK EVENTS
+	public override void OnNetworkSpawn()
+	{
+		base.OnNetworkSpawn();
+		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+
+		MultiplayerManager.Instance.ListOfplayers.Add(this);
+	}
+	public override void OnNetworkDespawn()
+	{
+		base.OnNetworkDespawn();
+		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+
+		MultiplayerManager.Instance.ListOfplayers.Remove(this);
 	}
 
 	/// <summary>
@@ -698,7 +726,7 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
 		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = playerInputHandler.CameraZoomInput;
+		float value = PlayerInputHandler.Instance.CameraZoomInput;
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}

@@ -70,7 +70,10 @@ public class PlayerInputHandler : MonoBehaviour
 	public InputAction _LearntAbilitiesAction;
 
 	//game inputs
+	public float zoomInput;
 	public float CameraZoomInput {  get; private set; }
+
+	public Vector2 moveInput;
 	public Vector2 MovementInput { get; private set; }
 	public bool MainAttackInput { get; private set; }
 	public bool RightClickInput { get; private set; }
@@ -139,7 +142,9 @@ public class PlayerInputHandler : MonoBehaviour
 	{
 		//game inputs
 		CameraZoomInput = _CameraZoomAction.ReadValue<float>();
+		zoomInput = CameraZoomInput;
 		MovementInput = _MovementAction.ReadValue<Vector2>();
+		moveInput = MovementInput;
 		MainAttackInput = _MainAttackAction.WasPressedThisFrame();
 		RightClickInput = _RightClickAction.WasPressedThisFrame();
 		InteractInput = _InteractAction.WasPressedThisFrame();

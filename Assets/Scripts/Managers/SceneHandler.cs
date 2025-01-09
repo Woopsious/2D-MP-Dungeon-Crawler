@@ -25,6 +25,8 @@ public class SceneHandler : MonoBehaviour
 	{
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
+			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
+
 			if (FindObjectOfType<PlayerController>() != null)
 			{
 				Debug.LogWarning("player prefab already exists, ignore if testing");
@@ -33,6 +35,10 @@ public class SceneHandler : MonoBehaviour
 
 			GameObject player = Instantiate(PlayerPrefab);
 			player.transform.parent = null;
+		}
+		else
+		{
+			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
 		}
 	}
 }

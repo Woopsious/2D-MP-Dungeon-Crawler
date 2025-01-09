@@ -172,9 +172,9 @@ public class GameManager : MonoBehaviour
 	//pause game
 	public void PauseGame(bool pauseGame)
     {
-        if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
+		if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
 			Time.timeScale = 0f;
 		else
-		 Time.timeScale = 1.0f;
+			Time.timeScale = 1.0f;
     }
 }

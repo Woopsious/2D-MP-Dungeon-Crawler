@@ -19592,7 +19592,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 609185498396968913}
         m_TargetAssemblyTypeName: DungeonPortalUi, Assembly-CSharp
         m_MethodName: HidePortalUi
         m_Mode: 1
@@ -39849,7 +39849,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
+      - m_Target: {fileID: 609185498396968913}
         m_TargetAssemblyTypeName: DungeonPortalUi, Assembly-CSharp
         m_MethodName: ReturnToHubButton
         m_Mode: 1
