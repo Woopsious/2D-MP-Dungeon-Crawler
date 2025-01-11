@@ -82,6 +82,8 @@ public class GameManager : MonoBehaviour
 		OnSceneChangeFinish?.Invoke();
 
 		if (scene.name == mainMenuName) return;
+
+		Debug.LogError("scene change finished at: " + DateTime.Now.ToString());
 		MainMenuManager.Instance.HideMainMenu();
 		Instance.PauseGame(false);
 	}

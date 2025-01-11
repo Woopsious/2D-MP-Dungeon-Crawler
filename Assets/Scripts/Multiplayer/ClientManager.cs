@@ -89,7 +89,7 @@ public class ClientManager : NetworkBehaviour
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsClient(ulong id)
 	{
-		MultiplayerManager.Instance.UpdatePlayerReferences();
+		//noop
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
 	{

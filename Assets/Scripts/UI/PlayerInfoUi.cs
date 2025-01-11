@@ -51,8 +51,6 @@ public class PlayerInfoUi : MonoBehaviour
 	//update text info in player inventory screen
 	public void UpdatePlayerStatInfo(EntityStats stats)
 	{
-		SceneHandler.playerInstance = stats.GetComponent<PlayerController>();
-
 		string mainInfo = $"(Player Name)\nHealth: {stats.currentHealth} / {stats.maxHealth.finalValue}" +
 			$"\r\nMana: {stats.currentMana} / {stats.maxMana.finalValue}";
 

@@ -11,17 +11,17 @@ public class SceneHandler : MonoBehaviour
 	public Camera playerCamera;
 
 	public GameObject PlayerPrefab;
-	public static PlayerController playerInstance;
+	public static PlayerController playerInstance {  get; private set; }
 
 	private void Awake()
 	{
 		Instance = this;
 		playerCamera.transform.parent = null;
 
-		SpawnPlayerObjForSp();
+		SpawnPlayerObject();
 	}
 
-	private void SpawnPlayerObjForSp()
+	private void SpawnPlayerObject()
 	{
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
@@ -40,5 +40,19 @@ public class SceneHandler : MonoBehaviour
 		{
 			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
 		}
+	}
+	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
+	{
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
+		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner);
+	}
+
+	public void UpdateLocalPlayerInstance(PlayerController newPlayerInstance)
+	{
+		if (playerInstance != null && playerInstance != newPlayerInstance)
+			Destroy(playerInstance.gameObject);
+
+		playerInstance = newPlayerInstance;
 	}
 }

@@ -140,18 +140,14 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
-
 	private void UpdateLocalPlayerReferences()
 	{
-		SceneHandler.playerInstance = this;
-		SetLocalPlayerCamera();
+		SceneHandler.Instance.UpdateLocalPlayerInstance(this);
+		playerCamera = SceneHandler.Instance.playerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
 	}
-	private void SetLocalPlayerCamera()
-	{
-		playerCamera = SceneHandler.Instance.playerCamera;
-	}
 
+	//event up update info
 	private void ReloadPlayerInfo()
 	{
 		playerStats.entityLevel = SaveManager.Instance.GameData.playerLevel;
@@ -168,17 +164,17 @@ public class PlayerController : NetworkBehaviour
 
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
-			Debug.LogError("sp | move input: " + moveInput);
+			//Debug.LogError("sp | move input: " + moveInput);
 			Move(moveInput);
 		}
 		else if (IsHost && IsLocalPlayer)
 		{
-			Debug.LogError("host | move input: " + moveInput);
+			//Debug.LogError("host | move input: " + moveInput);
 			MoveServerRPC(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
-			Debug.LogError("client | move input: " + moveInput);
+			//Debug.LogError("client | move input: " + moveInput);
 			MoveServerRPC(moveInput);
 		}
 
