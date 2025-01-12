@@ -145,7 +145,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		RestoreInventoryItems(SaveManager.Instance.GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
 	}
-	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
+	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> slotListObjs)
 	{
 		foreach (InventoryItemData itemData in itemDataList)
 		{
@@ -153,7 +153,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
 
 			ReloadItemData(newInventoryItem, itemData);
-			InventorySlotDataUi inventorySlot = gameObjects[itemData.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
+			InventorySlotDataUi inventorySlot = slotListObjs[itemData.inventorySlotIndex].GetComponent<InventorySlotDataUi>();
 
 			newInventoryItem.Initilize();
 			newInventoryItem.transform.SetParent(inventorySlot.transform);
@@ -687,24 +687,20 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//update items in ui incase any changes were made
-	private void UpdatePlayerInventoryItemsUi(List<GameObject> objList)
+	private void UpdatePlayerInventoryItemsUi(List<GameObject> slotListObjs)
 	{
-		foreach (GameObject obj in objList)
+		foreach (GameObject obj in slotListObjs)
 		{
-			if (!TryGetComponent<InventorySlotDataUi>(out var slotDataUi)) continue;
+			InventorySlotDataUi slot = obj.GetComponent<InventorySlotDataUi>();
+			if (slot.IsSlotEmpty()) continue;
 
-			UpdateCanEquipItem(obj);
-			InventoryItemUi itemUi = slotDataUi.itemInSlot;
+			InventoryItemUi itemUi = slot.itemInSlot;
+			itemUi.CheckIfCanEquipItem();
 
 			if (itemUi.abilityBaseRef != null)
 				itemUi.GetComponent<Abilities>().UpdateToolTip(SceneHandler.playerInstance.playerStats);
 			else
-				itemUi.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, slotDataUi.IsShopSlot());
+				itemUi.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, slot.IsShopSlot());
 		}
-	}
-	private void UpdateCanEquipItem(GameObject obj)
-	{
-		InventoryItemUi itemUi = obj.GetComponent<InventorySlotDataUi>().itemInSlot;
-		itemUi.CheckIfCanEquipItem();
 	}
 }

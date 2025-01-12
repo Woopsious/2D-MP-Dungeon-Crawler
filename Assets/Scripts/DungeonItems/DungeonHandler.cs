@@ -10,7 +10,7 @@ public class DungeonHandler : MonoBehaviour
 	public static DungeonHandler Instance;
 
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
-	public List<Vector2> dungeonPortalPositionsList = new List<Vector2>();
+	private GameObject dungeonEnterencePortal;
 
 	public ChestHandler playerStorageChest;
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
@@ -28,15 +28,14 @@ public class DungeonHandler : MonoBehaviour
 	{
 		Instance = this;
 		ActivateRandomChests();
+		SetDungeonEnterencePortal();
 	}
 	private void OnEnable()
 	{
-		GameManager.OnSceneChangeFinish += SetPlayerSpawn;
 		SaveManager.RestoreData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		GameManager.OnSceneChangeFinish -= SetPlayerSpawn;
 		SaveManager.RestoreData -= RestoreDungeonChestData;
 	}
 
@@ -119,6 +118,22 @@ public class DungeonHandler : MonoBehaviour
 	}
 
 	//DUNGEON SETUP
+	private void SetDungeonEnterencePortal()
+	{
+		if (dungeonPortalsList.Count <= 0)
+		{
+			//Debug.LogError("NO DUNGEON PORTAL REFERENCES SET");
+			return;
+		}
+		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
+		dungeonEnterencePortal = portalSpawnPoint;
+	}
+	public Vector2 GetDungeonEnterencePortal(GameObject player)
+	{
+		if (dungeonEnterencePortal == null)
+			return player.transform.position;
+		else return dungeonEnterencePortal.transform.position;
+	}
 	private void ActivateRandomChests()
 	{
 		foreach (ChestHandler chest in dungeonLootChestsList)
@@ -168,33 +183,6 @@ public class DungeonHandler : MonoBehaviour
 			newInventoryItem.Initilize();
 			playerStorageChest.itemList.Add(newInventoryItem);
 		}
-	}
-	private void SetPlayerSpawn()
-	{
-		if (dungeonPortalsList.Count <= 0)
-		{
-			//Debug.LogError("NO DUNGEON PORTAL REFERENCES SET");
-			return;
-		}
-
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			SetSpSpawns();
-		else
-			SetMpSpawns();
-	}
-	private void SetSpSpawns()
-	{
-		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
-		SceneHandler.playerInstance.transform.position = portalSpawnPoint.transform.position;
-	}
-	private void SetMpSpawns()
-	{
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
-
-		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
-
-		foreach (PlayerController player in MultiplayerManager.Instance.ListOfplayers)
-			player.transform.position = portalSpawnPoint.transform.position;
 	}
 
 	private void OnDrawGizmos()

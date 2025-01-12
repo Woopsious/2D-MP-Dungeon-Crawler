@@ -25,7 +25,8 @@ public class SceneHandler : MonoBehaviour
 	{
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
-			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
+			if (MultiplayerManager.Instance != null)
+				Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
 
 			if (FindObjectOfType<PlayerController>() != null)
 			{
@@ -33,8 +34,7 @@ public class SceneHandler : MonoBehaviour
 				return;
 			}
 
-			GameObject player = Instantiate(PlayerPrefab);
-			player.transform.parent = null;
+			Instantiate(PlayerPrefab);
 		}
 		else
 		{
@@ -44,8 +44,9 @@ public class SceneHandler : MonoBehaviour
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
 		GameObject playerObj = Instantiate(PlayerPrefab);
+		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
-		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner);
+		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
 	}
 
 	public void UpdateLocalPlayerInstance(PlayerController newPlayerInstance)

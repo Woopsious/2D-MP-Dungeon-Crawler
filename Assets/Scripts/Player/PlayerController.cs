@@ -106,12 +106,7 @@ public class PlayerController : NetworkBehaviour
 	private void Update()
 	{
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer || IsLocalPlayer)
-		{
-			if (LocalPlayerHasNoCamera())
-				UpdateLocalPlayerReferences();
-			else
-				playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
-		}
+			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
 
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
@@ -145,6 +140,9 @@ public class PlayerController : NetworkBehaviour
 		SceneHandler.Instance.UpdateLocalPlayerInstance(this);
 		playerCamera = SceneHandler.Instance.playerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
+
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(gameObject);
 	}
 
 	//event up update info
@@ -158,6 +156,12 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//movement
+	[ServerRpc]
+	private void TeleportPlayerServerRPC(Vector2 tpPosition)
+	{
+		Debug.LogError("moving player pos at: " + DateTime.Now.ToString());
+		transform.position = tpPosition;
+	}
 	private void PlayerMovement()
 	{
 		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);

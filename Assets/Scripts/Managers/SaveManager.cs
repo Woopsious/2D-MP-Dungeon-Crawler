@@ -371,16 +371,17 @@ public class SaveManager : MonoBehaviour
 		GrabInventoryItemsFromUi(Instance.GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
 		GrabQuestDataFromActiveOnes(Instance.GameData.activePlayerQuests, PlayerJournalUi.Instance.activeQuests);
 	}
-	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> gameObjects)
+	private void GrabInventoryItemsFromUi(List<InventoryItemData> itemDataList, List<GameObject> inventorySlots)
 	{
 		itemDataList.Clear();
 
-		foreach (GameObject slot in gameObjects)
+		foreach (GameObject slot in inventorySlots)
 		{
-			if (slot.GetComponent<InventorySlotDataUi>().IsSlotEmpty()) continue;
+			InventorySlotDataUi slotData = slot.GetComponent<InventorySlotDataUi>();
+			if (slotData.IsSlotEmpty()) continue;
 			else
 			{
-				InventoryItemUi inventoryItem = slot.GetComponent<InventorySlotDataUi>().itemInSlot;
+				InventoryItemUi inventoryItem = slotData.itemInSlot;
 				InventoryItemData itemData = new()
 				{
 					weaponBaseRef = inventoryItem.weaponBaseRef,

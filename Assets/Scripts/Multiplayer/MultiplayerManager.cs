@@ -102,80 +102,40 @@ public class MultiplayerManager : NetworkBehaviour
 		else return false;
 	}
 
-	/// <summary>
-	/// put these into the starting/stopping of both host/client managers when
-	/// NetworkManager.Singleton.SceneManager.OnSceneEvent += SceneManager_OnSceneEvent;
-	/// NetworkManager.Singleton.SceneManager.OnSceneEvent -= SceneManager_OnSceneEvent;
-	/// </summary>
-	/// <param name="sceneEvent"></param>
-
-	private void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
+	//mp scene change complete event
+	public void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
+		//disabled in sp as GameManager handles restoring data in sp
+		if (!Instance.isMultiplayer) return;
+
 		// Both client and server receive these notifications
 		switch (sceneEvent.SceneEventType)
 		{
-			// Handle server to client Load Notifications
-			case SceneEventType.Load:
-			{
-				// This event provides you with the associated AsyncOperation
-				// AsyncOperation.progress can be used to determine scene loading progression
-				var asyncOperation = sceneEvent.AsyncOperation;
-				// Since the server "initiates" the event we can simply just check if we are the server here
-				if (IsServer)
-				{
-					// Handle server side load event related tasks here
-				}
-				else
-				{
-					// Handle client side load event related tasks here
-				}
-				break;
-			}
-			// Handle client to server LoadComplete notifications
-			case SceneEventType.LoadComplete:
-			{
-				// This will let you know when a load is completed
-				// Server Side: receives thisn'tification for both itself and all clients
-				if (IsServer)
-				{
-					if (sceneEvent.ClientId == NetworkManager.LocalClientId)
-					{
-						// Handle server side LoadComplete related tasks here
-					}
-					else
-					{
-						// Handle client LoadComplete **server-side** notifications here
-					}
-				}
-				else // Clients generate thisn'tification locally
-				{
-					// Handle client side LoadComplete related tasks here
-				}
-
-				// So you can use sceneEvent.ClientId to also track when clients are finished loading a scene
-				break;
-			}
 			// Handle Server to Client Load Complete (all clients finished loading notification)
 			case SceneEventType.LoadEventCompleted:
 			{
 				// This will let you know when all clients have finished loading a scene
 				// Received on both server and clients
+
+
 				foreach (var clientId in sceneEvent.ClientsThatCompleted)
 				{
 					// Example of parsing through the clients that completed list
 					if (IsServer)
 					{
 						// Handle any server-side tasks here
-					}
-					else if (IsHost)
-					{
-
+						Debug.LogError("loadEventCompleted for server, client ID: " + clientId + " | at: " + DateTime.Now.ToString());
+						SceneHandler.Instance.SpawnNetworkedPlayerObject(clientId);
 					}
 					else
 					{
 						// Handle any client-side tasks here
+						Debug.LogError("loadEventCompleted for client, client ID: " + clientId + " | at: " + DateTime.Now.ToString());
 					}
 				}
+
+				SaveManager.Instance.RestoreGameData();
+
 				break;
 			}
 		}

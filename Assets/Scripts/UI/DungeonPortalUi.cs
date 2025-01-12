@@ -138,8 +138,6 @@ public class DungeonPortalUi : MonoBehaviour
 	//Events
 	private void ReloadSavedDungeons()
 	{
-		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return; //only reload in hub scene as lists not accessable in dungeons
-
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, hiddenDungeonsParentObj.transform);

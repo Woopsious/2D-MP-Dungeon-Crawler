@@ -79,11 +79,13 @@ public class GameManager : MonoBehaviour
 	//scene change finish event
 	private void SceneChangeFinished(Scene scene, LoadSceneMode mode)
 	{
+		//disabled in mp as MultiplayerManager script handles scene change event in for mp
+		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer) return;
+
 		OnSceneChangeFinish?.Invoke();
 
 		if (scene.name == mainMenuName) return;
 
-		Debug.LogError("scene change finished at: " + DateTime.Now.ToString());
 		MainMenuManager.Instance.HideMainMenu();
 		Instance.PauseGame(false);
 	}
