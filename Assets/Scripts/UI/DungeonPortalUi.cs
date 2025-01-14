@@ -63,7 +63,7 @@ public class DungeonPortalUi : MonoBehaviour
 	private void GenerateBossDungeonsOnAwake()
 	{
 		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return;
+		if (!Utilities.SceneIsActive("HubArea")) return;
 
 		for (int i = 0; i < bossesInGame.Count; i++) //generate dungond for each boss
 		{
@@ -84,7 +84,7 @@ public class DungeonPortalUi : MonoBehaviour
 	private void GenerateNewDungeons()
 	{
 		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return; //if not hub area return
+		if (!Utilities.SceneIsActive(GameManager.Instance.previouslyLoadedScene.name)) return; //if not hub area return
 
 		activeDungeonLists.Clear();
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WebSocketSharp;
 
 public class GameManager : MonoBehaviour
 {
@@ -21,16 +22,20 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public DungeonData currentDungeonData;
 
-	public readonly string mainMenuName = "MainMenu";
-	public readonly string hubAreaName = "HubArea";
+	public List<string> bossSceneNamesList = new List<string>();
 
-	public readonly string dungeonLayoutOneName = "DungeonOne";
-	public readonly string dungeonLayoutTwoName = "DungeonTwo";
+	public List<Scene> activeScenesList = new List<Scene>();
+	public List<string> activeScenesNameList = new List<string>();
 
-	public readonly string bossDungeonLayoutOneName = "BossDungeonOne";
-	public readonly string bossDungeonLayoutTwoName = "BossDungeonTwo";
+	public readonly string mainScene = "MainScene";
+	public readonly string menuScene = "MenuScene";
+	public readonly string uiScene = "UiScene";
 
-	private List<string> bossSceneNamesList = new List<string>();
+	public readonly string hubScene = "HubScene";
+	public readonly string dungeonOneScene = "DungeonOneScene";
+	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
+
+	public Scene previouslyLoadedScene;
 
 	private void Awake()
 	{
@@ -47,15 +52,23 @@ public class GameManager : MonoBehaviour
 			DontDestroyOnLoad(this.gameObject);
 		}
 		GetAllBossSceneNames();
+
+		if (MainMenuManager.Instance == null)
+			StartCoroutine(LoadUiScene());
+
+		if (SceneHandler.Instance == null) //if != null starting scene = different scene
+			LoadMainMenu(true); //starting scene = MainScene
 	}
 
 	private void OnEnable()
 	{
-		SceneManager.sceneLoaded += SceneChangeFinished;
+		SceneManager.sceneLoaded += OnLoadSceneFinish;
+		SceneManager.sceneUnloaded += OnUnloadSceneFinish;
 	}
 	private void OnDisable()
 	{
-		SceneManager.sceneLoaded -= SceneChangeFinished;
+		SceneManager.sceneLoaded -= OnLoadSceneFinish;
+		SceneManager.sceneUnloaded -= OnUnloadSceneFinish;
 	}
 	private void Update()
 	{
@@ -76,54 +89,40 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	//scene change finish event
-	private void SceneChangeFinished(Scene scene, LoadSceneMode mode)
-	{
-		//disabled in mp as MultiplayerManager script handles scene change event in for mp
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer) return;
-
-		OnSceneChangeFinish?.Invoke();
-
-		if (scene.name == mainMenuName) return;
-
-		MainMenuManager.Instance.HideMainMenu();
-		Instance.PauseGame(false);
-	}
-
 	//loading different scenes
 	public void LoadMainMenu(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
 		SaveManager.Instance.GameData = new GameData();
 
-		StartCoroutine(LoadNewSceneAsync(mainMenuName, isNewGame));
+		StartCoroutine(LoadSceneAsync(menuScene, isNewGame));
 	}
 	public void LoadHubArea(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(hubAreaName, isNewGame);
+			LoadNewMultiplayerScene(hubScene, isNewGame);
 		else
-			StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
+			StartCoroutine(LoadSceneAsync(hubScene, isNewGame));
 	}
 	public void LoadDungeonOne()
 	{
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(dungeonLayoutOneName, false);
+			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
 	}
 	public void LoadDungeonTwo()
 	{
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(dungeonLayoutOneName, false);
+			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
 	}
 	public void LoadRandomBossDungeon()
 	{
@@ -140,25 +139,32 @@ public class GameManager : MonoBehaviour
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
 	}
 	private void LoadBossDungoenTwo()
 	{
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
 	}
 
-	//scene loading
-	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
+	//SCENE LOADING
+	private IEnumerator LoadUiScene()
+	{
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(uiScene, LoadSceneMode.Additive);
+
+		while (!asyncLoadScene.isDone)
+			yield return null;
+	}
+	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
-		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single);
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
 
 		OnSceneChangeStart?.Invoke();
 
@@ -171,6 +177,43 @@ public class GameManager : MonoBehaviour
 
 		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
 		OnSceneChangeStart?.Invoke();
+	}
+
+	//SCENE LOAD EVENT
+	private void OnLoadSceneFinish(Scene newLoadedScene, LoadSceneMode mode)
+	{
+		Debug.LogError("loaded scene name: " + newLoadedScene.name);
+
+		//add loadedscene to active scene list
+
+		//SceneManager.SetActiveScene(newlyLoadedScene);
+
+		if (newLoadedScene.name == mainScene || newLoadedScene.name == uiScene) return; //scenes never unload
+
+		UnloadPreviousScene(previouslyLoadedScene.name);
+		previouslyLoadedScene = newLoadedScene;
+	}
+
+	//SCENE UNLOADING
+	private void UnloadPreviousScene(string previousSceneName)
+	{
+		if (previousSceneName.IsNullOrEmpty()) return; //no scene to unload
+		StartCoroutine(UnloadSceneAsync(previousSceneName));
+	}
+	private IEnumerator UnloadSceneAsync(string sceneToUnLoad)
+	{
+		AsyncOperation asyncLoadScene = SceneManager.UnloadSceneAsync(sceneToUnLoad);
+
+		while (!asyncLoadScene.isDone)
+			yield return null;
+	}
+
+	//SCENE UNLOAD EVENT
+	private void OnUnloadSceneFinish(Scene unLoadedScene)
+	{
+		Debug.LogError("loaded scene name: " + unLoadedScene.name);
+
+		//remove unloadedscene from active scene list
 	}
 
 	//pause game

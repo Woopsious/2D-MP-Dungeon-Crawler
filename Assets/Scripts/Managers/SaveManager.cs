@@ -37,13 +37,13 @@ public class SaveManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		GameManager.OnSceneChangeFinish += LoadPlayerData;
-		GameManager.OnSceneChangeFinish += RestoreGameData;
+		//GameManager.OnSceneChangeFinish += LoadPlayerData;
+		//GameManager.OnSceneChangeFinish += RestoreGameData;
 	}
 	private void OnDisable()
 	{
-		GameManager.OnSceneChangeFinish -= LoadPlayerData;
-		GameManager.OnSceneChangeFinish -= RestoreGameData;
+		//GameManager.OnSceneChangeFinish -= LoadPlayerData;
+		//GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
 	public void ReloadSaveSlots(GameObject saveSlotContainer)
@@ -167,12 +167,12 @@ public class SaveManager : MonoBehaviour
 	//auto features
 	public void AutoSaveData()
 	{
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	public void AutoLoadData() //(redundent function, may reuse at some point)
 	{
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 

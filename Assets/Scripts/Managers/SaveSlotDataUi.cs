@@ -44,7 +44,7 @@ public class SaveSlotDataUi : MonoBehaviour
 			loadButtonObj.SetActive(true);
 			deleteButtonObj.SetActive(true);
 		}
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName))
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene))
 			saveButtonObj.SetActive(false);
 		else
 			saveButtonObj.SetActive(true);
@@ -87,7 +87,7 @@ public class SaveSlotDataUi : MonoBehaviour
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(ConfirmLoadGame);
 
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName))
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene))
 		{
 			SaveManager.Instance.LoadGameData(folderDirectory);
 			GameManager.Instance.LoadHubArea(false);

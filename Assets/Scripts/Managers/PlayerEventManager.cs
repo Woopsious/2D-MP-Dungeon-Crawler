@@ -82,7 +82,7 @@ public static class PlayerEventManager
 		}
 		else //allow class swapping only in hub area
 		{
-			if (GameManager.Instance != null && Utilities.GetCurrentlyActiveScene(GameManager.Instance.hubAreaName))
+			if (GameManager.Instance != null && Utilities.SceneIsActive(GameManager.Instance.hubScene))
 				OnShowPlayerClassSelectionEvent?.Invoke();
 			else
 				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");

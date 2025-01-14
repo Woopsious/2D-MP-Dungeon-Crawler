@@ -157,12 +157,20 @@ public class Utilities
 	}
 
 	//check if current active scene == this scene name
-	public static bool GetCurrentlyActiveScene(string sceneName)
+	public static bool SceneIsActive(string sceneName)
 	{
-		Scene currentScene = SceneManager.GetActiveScene();
-		if (currentScene.name == sceneName)
-			return true;
-		else
-			return false;
+		List<Scene> loadedScenes = new List<Scene>();
+
+		for (int i = 0; i < SceneManager.sceneCount; i++)
+			loadedScenes.Add(SceneManager.GetSceneAt(i));
+
+		foreach(Scene scene in loadedScenes)
+		{
+			if (scene.name == sceneName)
+				return true;
+			else continue;
+		}
+
+		return false;
 	}
 }

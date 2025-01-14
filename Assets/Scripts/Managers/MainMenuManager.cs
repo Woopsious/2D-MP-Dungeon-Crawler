@@ -55,17 +55,51 @@ public class MainMenuManager : MonoBehaviour
 		SetActionForPlayMpButton();
 	}
 
-	private void EnableMainMenuButtons()
+	private void OnEnable()
 	{
-		//enable buttons unique to main menu scene
+		SceneManager.sceneLoaded += ShouldPlayerUiBeActive;
+	}
+	private void OnDisable()
+	{
+		SceneManager.sceneLoaded -= ShouldPlayerUiBeActive;
+	}
+
+	private void ShouldPlayerUiBeActive(Scene loadedScene, LoadSceneMode mode)
+	{
 		if (GameManager.Instance == null)
 		{
-			Debug.LogWarning("Game Manager Instance not found hiding title screen buttons, ignore if testing");
+			Debug.LogWarning("Game Manager Instance NULL on scene change event, ignore if testing");
 			return;
 		}
 
-		if (Utilities.GetCurrentlyActiveScene("TestingScene")) return;
-		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (loadedScene.name == GameManager.Instance.mainScene || loadedScene.name == GameManager.Instance.uiScene) return;
+
+		if (loadedScene.name == GameManager.Instance.menuScene) //disable/enable in game ui based on scene
+		{
+			Instance.ShowMainMenu();
+			PlayerInfoUi.Instance.gameObject.SetActive(false);
+			PlayerHotbarUi.Instance.gameObject.SetActive(false);
+
+			quitGameButton.SetActive(true);
+			startNewGameButton.SetActive(true);
+		}
+		else
+		{
+			Instance.HideMainMenu();
+			PlayerInfoUi.Instance.gameObject.SetActive(true);
+			PlayerHotbarUi.Instance.gameObject.SetActive(true);
+
+			quitGameButton.SetActive(false);
+			startNewGameButton.SetActive(false);
+		}
+	}
+
+	private void EnableMainMenuButtons()
+	{
+		//enable buttons unique to main menu scene
+
+		if (Utilities.SceneIsActive("TestingScene")) return;
+		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return;
 
 		quitGameButton.SetActive(true);
 		startNewGameButton.SetActive(true);
@@ -120,7 +154,7 @@ public class MainMenuManager : MonoBehaviour
 		}
 		else //player not in lobby show play mp process
 		{
-			if (SceneManager.GetActiveScene().name == GameManager.Instance.hubAreaName)
+			if (SceneManager.GetActiveScene().name == GameManager.Instance.hubScene)
 			{
 				playMpButton.onClick.AddListener(delegate { PlayMultiplayer(); });
 				playMpButton.interactable = true;

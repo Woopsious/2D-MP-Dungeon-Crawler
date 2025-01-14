@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,7 +22,28 @@ public class SceneHandler : MonoBehaviour
 		if (MultiplayerManager.Instance != null)
 			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
 
+		if (GameManager.Instance == null)
+			StartCoroutine(LoadMainScene());
+
+		if (MainMenuManager.Instance == null)
+			StartCoroutine(LoadUiScene());
+
 		SpawnSinglePlayerObject();
+	}
+
+	private IEnumerator LoadMainScene()
+	{
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
+
+		while (!asyncLoadScene.isDone)
+			yield return null;
+	}
+	private IEnumerator LoadUiScene()
+	{
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
+
+		while (!asyncLoadScene.isDone)
+			yield return null;
 	}
 
 	private void SpawnSinglePlayerObject()

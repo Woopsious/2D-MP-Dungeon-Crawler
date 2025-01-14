@@ -1,0 +1,141 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4909234089541067578
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7214683641568887233}
+  - component: {fileID: 5383993218733584273}
+  - component: {fileID: 1339910767177227557}
+  m_Layer: 0
+  m_Name: GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7214683641568887233
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5383993218733584273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 283b3ff3eed9d85438816f938c235e60, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentDungeonData:
+    hasExploredDungeon: 0
+    isDungeonSaved: 0
+    dungeonIndex: 0
+    dungeonNumber: 0
+    bossToSpawn: {fileID: 0}
+    dungeonStatModifiers:
+      difficultyModifier: 0
+      healthModifier: 0
+      manaModifier: 0
+      physicalResistanceModifier: 0
+      poisonResistanceModifier: 0
+      fireResistanceModifier: 0
+      iceResistanceModifier: 0
+      physicalDamageModifier: 0
+      poisonDamageModifier: 0
+      fireDamageModifier: 0
+      iceDamageModifier: 0
+      mainWeaponDamageModifier: 0
+      dualWeaponDamageModifier: 0
+      rangedWeaponDamageModifier: 0
+    dungeonChestData: []
+--- !u!114 &1339910767177227557
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b92c15b3bb896094ea8ca6565f68cea3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GameData:
+    rid: 6958908177517903872
+  SlotData:
+    rid: 6958908236439224349
+  saveSlotCardPrefab: {fileID: 6410491088095078613, guid: fd3b2f5695bb3cb4d82892e68855943e, type: 3}
+  references:
+    version: 2
+    RefIds:
+    - rid: 6958908177517903872
+      type: {class: GameData, ns: , asm: Assembly-CSharp}
+      data:
+        playerLevel: 0
+        playerCurrentExp: 0
+        playerCurrenthealth: 0
+        playerCurrentMana: 0
+        playerGoldAmount: 0
+        hasRecievedStartingItems: 0
+        hasRecievedKnightItems: 0
+        hasRecievedWarriorItems: 0
+        hasRecievedRogueItems: 0
+        hasRecievedRangerItems: 0
+        hasRecievedMageItems: 0
+        currentDungeon:
+          hasExploredDungeon: 0
+          isDungeonSaved: 0
+          dungeonIndex: 0
+          dungeonNumber: 0
+          bossToSpawn: {fileID: 0}
+          dungeonStatModifiers:
+            difficultyModifier: 0
+            healthModifier: 0
+            manaModifier: 0
+            physicalResistanceModifier: 0
+            poisonResistanceModifier: 0
+            fireResistanceModifier: 0
+            iceResistanceModifier: 0
+            physicalDamageModifier: 0
+            poisonDamageModifier: 0
+            fireDamageModifier: 0
+            iceDamageModifier: 0
+            mainWeaponDamageModifier: 0
+            dualWeaponDamageModifier: 0
+            rangedWeaponDamageModifier: 0
+          dungeonChestData: []
+        currentPlayerClass: {fileID: 0}
+        unlockedClassNodeIndexesList: []
+        playerStorageChestItems: []
+        playerInventoryItems: []
+        playerEquippedItems: []
+        PlayerEquippedConsumables: []
+        playerEquippedAbilities: []
+        activeDungeonsList: []
+        savedDungeonsList: []
+        activePlayerQuests: []
+    - rid: 6958908236439224349
+      type: {class: SlotData, ns: , asm: Assembly-CSharp}
+      data:
+        name: 
+        level: 
+        date: 
