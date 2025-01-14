@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+			LoadNewMultiplayerScene(dungeonLayoutOneName, false);
 		else
 			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
 	}
@@ -149,9 +149,9 @@ public class GameManager : MonoBehaviour
 		GameManager.isNewGame = false;
 
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutTwoName, false);
+			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutTwoName, false));
+			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
 	}
 
 	//scene loading
