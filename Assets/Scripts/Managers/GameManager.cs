@@ -158,11 +158,17 @@ public class GameManager : MonoBehaviour
 	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
+		AsyncOperation asyncLoadScene;
 
-		AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneToLoad);
+		if (Utilities.GetCurrentlyActiveScene(mainMenuName))
+			asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single);
+		else
+			asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
+
+
 		OnSceneChangeStart?.Invoke();
 
-		while (!asyncLoad.isDone)
+		while (!asyncLoadScene.isDone)
 			yield return null;
 	}
 	private void LoadNewMultiplayerScene(string sceneToLoad, bool isNewGame)

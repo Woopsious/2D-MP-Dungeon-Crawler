@@ -135,7 +135,7 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
-	private void UpdateLocalPlayerReferences()
+	public void UpdateLocalPlayerReferences()
 	{
 		SceneHandler.Instance.UpdateLocalPlayerInstance(this);
 		playerCamera = SceneHandler.Instance.playerCamera;
@@ -156,12 +156,6 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//movement
-	[ServerRpc]
-	private void TeleportPlayerServerRPC(Vector2 tpPosition)
-	{
-		Debug.LogError("moving player pos at: " + DateTime.Now.ToString());
-		transform.position = tpPosition;
-	}
 	private void PlayerMovement()
 	{
 		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);
@@ -602,12 +596,6 @@ public class PlayerController : NetworkBehaviour
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 			return true;
 		else if (IsLocalPlayer)
-			return true;
-		else return false;
-	}
-	private bool LocalPlayerHasNoCamera()
-	{
-		if (IsLocalPlayerOrSinglePlayer() && playerCamera == null)
 			return true;
 		else return false;
 	}

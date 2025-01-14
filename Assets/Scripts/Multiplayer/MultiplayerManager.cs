@@ -6,10 +6,7 @@ using System;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using System.Threading.Tasks;
-using Unity.Services.Lobbies.Models;
-using Unity.Services.Lobbies;
-using Unity.VisualScripting;
-using Unity.Services.Qos.V2.Models;
+using UnityEngine.SceneManagement;
 
 public class MultiplayerManager : NetworkBehaviour
 {
@@ -105,18 +102,86 @@ public class MultiplayerManager : NetworkBehaviour
 	//mp scene change complete event
 	public void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
-		//disabled in sp as GameManager handles restoring data in sp
-		if (!Instance.isMultiplayer) return;
-
 		// Both client and server receive these notifications
 		switch (sceneEvent.SceneEventType)
 		{
+			// Handle server to client Load Notifications
+			case SceneEventType.Load:
+			{
+				// This event provides you with the associated AsyncOperation
+				// AsyncOperation.progress can be used to determine scene loading progression
+
+				var asyncLoadScene = sceneEvent.AsyncOperation;
+
+				ulong clientId = sceneEvent.ClientId;
+
+				SaveManager.Instance.AutoSaveData();
+
+				// Since the server "initiates" the event we can simply just check if we are the server here
+				if (IsServer)
+				{
+					Debug.LogError("load for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+					// Handle server side load event related tasks here
+				}
+				else
+				{
+					// Handle client side load event related tasks here
+					Debug.LogError("load for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+				}
+				break;
+			}
+			// Handle server to client unload notifications
+			case SceneEventType.Unload:
+			{
+				// You can use the same pattern above under SceneEventType.Load here
+				break;
+			}
+			// Handle client to server LoadComplete notifications
+			case SceneEventType.LoadComplete:
+			{
+				// This will let you know when a load is completed
+				// Server Side: receives thisn'tification for both itself and all clients
+
+				ulong clientId = sceneEvent.ClientId;
+				if (IsServer)
+				{
+					Debug.LogError("loadCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+
+					if (sceneEvent.ClientId == NetworkManager.LocalClientId)
+					{
+						// Handle server side LoadComplete related tasks here
+					}
+					else
+					{
+						// Handle client LoadComplete **server-side** notifications here
+					}
+				}
+				else // Clients generate thisn'tification locally
+				{
+					// Handle client side LoadComplete related tasks here
+					Debug.LogError("loadCompleted for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+				}
+
+				// So you can use sceneEvent.ClientId to also track when clients are finished loading a scene
+				break;
+			}
+			// Handle Client to Server Unload Complete Notification(s)
+			case SceneEventType.UnloadComplete:
+			{
+				// This will let you know when an unload is completed
+				// You can follow the same pattern above as SceneEventType.LoadComplete here
+
+				// Server Side: receives thisn'tification for both itself and all clients
+				// Client Side: receives thisn'tification for itself
+
+				// So you can use sceneEvent.ClientId to also track when clients are finished unloading a scene
+				break;
+			}
 			// Handle Server to Client Load Complete (all clients finished loading notification)
 			case SceneEventType.LoadEventCompleted:
 			{
 				// This will let you know when all clients have finished loading a scene
 				// Received on both server and clients
-
 
 				foreach (var clientId in sceneEvent.ClientsThatCompleted)
 				{
@@ -124,18 +189,35 @@ public class MultiplayerManager : NetworkBehaviour
 					if (IsServer)
 					{
 						// Handle any server-side tasks here
-						Debug.LogError("loadEventCompleted for server, client ID: " + clientId + " | at: " + DateTime.Now.ToString());
+
 						SceneHandler.Instance.SpawnNetworkedPlayerObject(clientId);
+						Debug.LogError("loadEventCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
 					}
 					else
 					{
 						// Handle any client-side tasks here
-						Debug.LogError("loadEventCompleted for client, client ID: " + clientId + " | at: " + DateTime.Now.ToString());
+						Debug.LogError("loadEventCompleted for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
 					}
 				}
-
-				SaveManager.Instance.RestoreGameData();
-
+				break;
+			}
+			// Handle Server to Client unload Complete (all clients finished unloading notification)
+			case SceneEventType.UnloadEventCompleted:
+			{
+				// This will let you know when all clients have finished unloading a scene
+				// Received on both server and clients
+				foreach (var clientId in sceneEvent.ClientsThatCompleted)
+				{
+					// Example of parsing through the clients that completed list
+					if (IsServer)
+					{
+						// Handle any server-side tasks here
+					}
+					else
+					{
+						// Handle any client-side tasks here
+					}
+				}
 				break;
 			}
 		}

@@ -18,31 +18,27 @@ public class SceneHandler : MonoBehaviour
 		Instance = this;
 		playerCamera.transform.parent = null;
 
-		SpawnPlayerObject();
+		if (MultiplayerManager.Instance != null)
+			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
+
+		SpawnSinglePlayerObject();
 	}
 
-	private void SpawnPlayerObject()
+	private void SpawnSinglePlayerObject()
 	{
+		if (FindObjectOfType<PlayerController>() != null)
+		{
+			Debug.LogWarning("player prefab already exists in scene, ignore if testing");
+			return;
+		}
+
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-		{
-			if (MultiplayerManager.Instance != null)
-				Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
-
-			if (FindObjectOfType<PlayerController>() != null)
-			{
-				Debug.LogWarning("player prefab already exists, ignore if testing");
-				return;
-			}
-
 			Instantiate(PlayerPrefab);
-		}
-		else
-		{
-			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
-		}
 	}
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
+		Debug.LogError("spawned player obj");
+
 		GameObject playerObj = Instantiate(PlayerPrefab);
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();

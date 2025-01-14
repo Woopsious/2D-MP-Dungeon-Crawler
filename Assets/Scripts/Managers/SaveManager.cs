@@ -214,6 +214,7 @@ public class SaveManager : MonoBehaviour
 	//restore data event called on scene change
 	public void RestoreGameData()
 	{
+		Debug.LogError("restoring data at: " + DateTime.Now.ToString());
 		RestoreData?.Invoke();
 	}
 

@@ -50,7 +50,6 @@ public class HostManager : NetworkBehaviour
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
-		NetworkManager.Singleton.SceneManager.OnSceneEvent -= MultiplayerManager.Instance.SceneManager_OnSceneEvent;
 	}
 
 	//CREATE RELAY SERVER
