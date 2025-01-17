@@ -67,6 +67,13 @@ MonoBehaviour:
       dualWeaponDamageModifier: 0
       rangedWeaponDamageModifier: 0
     dungeonChestData: []
+  bossSceneNamesList: []
+  activeScenesList: []
+  activeScenesNameList: []
+  previouslyLoadedScene:
+    m_Handle: 0
+  PlayerPrefab: {fileID: 1405763340389273497, guid: 4ad8167d666d66843878d1850533ffa3, type: 3}
+  CameraPrefab: {fileID: 6279784292622444907, guid: 07d10b49cc8ee984980786b9c4b65829, type: 3}
 --- !u!114 &1339910767177227557
 MonoBehaviour:
   m_ObjectHideFlags: 0

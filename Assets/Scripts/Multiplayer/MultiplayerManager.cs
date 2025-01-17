@@ -190,7 +190,7 @@ public class MultiplayerManager : NetworkBehaviour
 					{
 						// Handle any server-side tasks here
 
-						SceneHandler.Instance.SpawnNetworkedPlayerObject(clientId);
+						//GameManager.Instance.SpawnNetworkedPlayerObject(clientId);
 						Debug.LogError("loadEventCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
 					}
 					else

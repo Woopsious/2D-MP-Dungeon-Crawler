@@ -139,8 +139,6 @@ public class HostManager : NetworkBehaviour
 				ClientManager.Instance.clientNetworkedId);
 
 			Instance.connectedClientsList.Add(data);
-
-
 		}
 		else //grab other clients data through lobby
 		{
@@ -150,7 +148,7 @@ public class HostManager : NetworkBehaviour
 			Instance.connectedClientsList.Add(data);
 		}
 
-		SceneHandler.Instance.SpawnNetworkedPlayerObject(id);
+		GameManager.Instance.SpawnNetworkedPlayerObject(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{

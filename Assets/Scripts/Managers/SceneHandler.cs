@@ -9,15 +9,10 @@ public class SceneHandler : MonoBehaviour
 {
 	public static SceneHandler Instance;
 
-	public Camera playerCamera;
-
-	public GameObject PlayerPrefab;
-	public static PlayerController playerInstance {  get; private set; }
-
 	private void Awake()
 	{
 		Instance = this;
-		playerCamera.transform.parent = null;
+		//playerCamera.transform.parent = null;
 
 		//SpawnSinglePlayerObject();
 
@@ -33,6 +28,7 @@ public class SceneHandler : MonoBehaviour
 			yield return null;
 	}
 
+	/*
 	private void SpawnSinglePlayerObject()
 	{
 		if (FindObjectOfType<PlayerController>() != null)
@@ -61,4 +57,5 @@ public class SceneHandler : MonoBehaviour
 
 		playerInstance = newPlayerInstance;
 	}
+	*/
 }

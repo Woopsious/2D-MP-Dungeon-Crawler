@@ -522,7 +522,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			slot.RemoveItemFromSlot();
 		}
 
-		SceneHandler.playerInstance.isInteractingWithInteractable = false;
+		GameManager.Localplayer.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		npcShopPanalUi.SetActive(false);
 		HideInventory();
@@ -629,7 +629,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		for (int i = playerChest.itemContainer.transform.childCount - 1;  i >= 0; i--) //re-add all items + any new ones
 			playerChest.itemList.Add(playerChest.itemContainer.transform.GetChild(i).GetComponent<InventoryItemUi>());
 
-		SceneHandler.playerInstance.isInteractingWithInteractable = false;
+		GameManager.Localplayer.isInteractingWithInteractable = false;
 		interactedInventorySlotsUi.SetActive(false);
 		storageChestPanelUi.SetActive(false);
 		HideInventory();
@@ -646,7 +646,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	public void HideEnchanterUi()
 	{
 		EnchanterUi.SetActive(false);
-		SceneHandler.playerInstance.isInteractingWithInteractable = false;
+		GameManager.Localplayer.isInteractingWithInteractable = false;
 		HideInventory();
 	}
 	public void UpdateEnchantItemUiInfo(InventoryItemUi item)
@@ -698,9 +698,9 @@ public class PlayerInventoryUi : MonoBehaviour
 			itemUi.CheckIfCanEquipItem();
 
 			if (itemUi.abilityBaseRef != null)
-				itemUi.GetComponent<Abilities>().UpdateToolTip(SceneHandler.playerInstance.playerStats);
+				itemUi.GetComponent<Abilities>().UpdateToolTip(GameManager.Localplayer.playerStats);
 			else
-				itemUi.GetComponent<Items>().UpdateToolTip(SceneHandler.playerInstance.playerStats, slot.IsShopSlot());
+				itemUi.GetComponent<Items>().UpdateToolTip(GameManager.Localplayer.playerStats, slot.IsShopSlot());
 		}
 	}
 }

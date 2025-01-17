@@ -48,6 +48,25 @@ public class MainMenuManager : MonoBehaviour
 	{
 		Instance = this;
 		canvasRef = GetComponent<Canvas>();
+
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
+		{
+			Instance.ShowMainMenu();
+			PlayerInfoUi.Instance.gameObject.SetActive(false);
+			PlayerHotbarUi.Instance.gameObject.SetActive(false);
+
+			quitGameButton.SetActive(true);
+			startNewGameButton.SetActive(true);
+		}
+		else //hide it
+		{
+			Instance.HideMainMenu();
+			PlayerInfoUi.Instance.gameObject.SetActive(true);
+			PlayerHotbarUi.Instance.gameObject.SetActive(true);
+
+			quitGameButton.SetActive(false);
+			startNewGameButton.SetActive(false);
+		}
 	}
 	private void Start()
 	{
@@ -74,7 +93,7 @@ public class MainMenuManager : MonoBehaviour
 
 		if (loadedScene.name == GameManager.Instance.mainScene || loadedScene.name == GameManager.Instance.uiScene) return;
 
-		if (loadedScene.name == GameManager.Instance.menuScene) //disable/enable in game ui based on scene
+		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
 		{
 			Instance.ShowMainMenu();
 			PlayerInfoUi.Instance.gameObject.SetActive(false);
@@ -83,7 +102,7 @@ public class MainMenuManager : MonoBehaviour
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
 		}
-		else
+		else //hide it
 		{
 			Instance.HideMainMenu();
 			PlayerInfoUi.Instance.gameObject.SetActive(true);
@@ -200,6 +219,8 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void ShowMainMenu()
 	{
+		Debug.LogError("Show Main Menu");
+
 		SetActionForPlayMpButton();
 		HideSaveSlotsMenu();
 		HideKeybindsMenu();
@@ -210,6 +231,8 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void HideMainMenu()
 	{
+		Debug.LogError("Hide Main Menu");
+
 		mainMenuPanel.SetActive(false);
 		GameManager.Instance.PauseGame(false);
 	}

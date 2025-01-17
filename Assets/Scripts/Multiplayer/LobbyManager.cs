@@ -186,9 +186,9 @@ public class LobbyManager : NetworkBehaviour
 				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					ClientManager.Instance.clientId.ToString())},
 				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
-					SceneHandler.playerInstance.playerStats.entityLevel.ToString())},
+					GameManager.Localplayer.playerStats.entityLevel.ToString())},
 				{ "PlayerClass", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
-					SceneHandler.playerInstance.playerClassHandler.currentEntityClass.className.ToString())},
+					GameManager.Localplayer.playerClassHandler.currentEntityClass.className.ToString())},
 			}
 		};
 	}

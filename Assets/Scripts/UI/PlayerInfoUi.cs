@@ -24,7 +24,7 @@ public class PlayerInfoUi : MonoBehaviour
 	private void Update()
 	{
 		if (currentPlayerInteractedObj != null && interactWithText.activeInHierarchy)
-			interactWithText.transform.position = SceneHandler.Instance.playerCamera.WorldToScreenPoint(new Vector3(
+			interactWithText.transform.position = GameManager.LocalPlayerCamera.WorldToScreenPoint(new Vector3(
 				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 

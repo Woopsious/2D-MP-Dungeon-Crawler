@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
 	/// </summary>
 	public DungeonData currentDungeonData;
 
+	public List<string> dungeonSceneNamesList = new List<string>();
 	public List<string> bossSceneNamesList = new List<string>();
 
 	public List<Scene> activeScenesList = new List<Scene>();
@@ -39,6 +40,8 @@ public class GameManager : MonoBehaviour
 
 	public GameObject PlayerPrefab;
 	public static PlayerController Localplayer { get; private set; }
+
+	public GameObject CameraPrefab;
 	public static Camera LocalPlayerCamera;
 
 	private void Awake()
@@ -55,6 +58,8 @@ public class GameManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
+
+		GetAllDungeonSceneNames();
 		GetAllBossSceneNames();
 
 		if (MainMenuManager.Instance == null)
@@ -92,6 +97,19 @@ public class GameManager : MonoBehaviour
 				bossSceneNamesList.Add(sceneName);
 		}
 	}
+	private void GetAllDungeonSceneNames()
+	{
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+		{
+			string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+			string[] splitScenePath = scenePath.Split('/');
+			string sceneFile = splitScenePath[splitScenePath.Length - 1];
+			string sceneName = sceneFile.Split('.')[0];
+			if (sceneName.Contains("Boss")) continue;
+			if (sceneName.Contains("Dungeon"))
+				dungeonSceneNamesList.Add(sceneName);
+		}
+	}
 
 	//loading different scenes
 	public void LoadMainMenu(bool isNewGame)
@@ -100,7 +118,7 @@ public class GameManager : MonoBehaviour
 		SaveManager.Instance.GameData = new GameData();
 
 		StartCoroutine(LoadSceneAsync(menuScene, isNewGame));
-	}
+	} 
 	public void LoadHubArea(bool isNewGame)
 	{
 		GameManager.isNewGame = isNewGame;
@@ -167,6 +185,8 @@ public class GameManager : MonoBehaviour
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
+		Debug.LogError("load scened async");
+
 		GameManager.isNewGame = isNewGame;
 		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
 
@@ -188,23 +208,28 @@ public class GameManager : MonoBehaviour
 	{
 		Debug.LogError("loaded scene name: " + newLoadedScene.name);
 
-		//add loadedscene to active scene list
+		UpdateActiveSceneToMainScene(newLoadedScene);
 
-		//SceneManager.SetActiveScene(newlyLoadedScene);
-
-		if (newLoadedScene.name == mainScene || newLoadedScene.name == uiScene) return; //scenes never unload
-
-		UnloadPreviousScene(previouslyLoadedScene.name);
+		TryUnloadPreviousScene(previouslyLoadedScene);
 		previouslyLoadedScene = newLoadedScene;
+
+		if (LocalPlayerCamera == null)
+			SpawnPlayerCamera();
+
+		if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
+			SpawnSinglePlayerObject();
 
 		Debug.LogError("current active scene: " + SceneManager.GetActiveScene().name);
 	}
 
 	//SCENE UNLOADING
-	private void UnloadPreviousScene(string previousSceneName)
+	private void TryUnloadPreviousScene(Scene newLoadedScene)
 	{
-		if (previousSceneName.IsNullOrEmpty()) return; //no scene to unload
-		StartCoroutine(UnloadSceneAsync(previousSceneName));
+		if (newLoadedScene.name.IsNullOrEmpty() || previouslyLoadedScene.name.IsNullOrEmpty()) return; //no scene to unload
+		if (NewLoadedSceneNeverUnloaded(newLoadedScene)) return;
+
+		StartCoroutine(UnloadSceneAsync(previouslyLoadedScene.name));
+		previouslyLoadedScene = newLoadedScene;
 	}
 	private IEnumerator UnloadSceneAsync(string sceneToUnLoad)
 	{
@@ -220,6 +245,39 @@ public class GameManager : MonoBehaviour
 		Debug.LogError("unloaded scene name: " + unLoadedScene.name);
 
 		//remove unloadedscene from active scene list
+	}
+
+	//SCENE CHECKS
+	private bool NewLoadedSceneNeverUnloaded(Scene newLoadedScene)
+	{
+		if (newLoadedScene.name == mainScene || newLoadedScene.name == uiScene)
+			return true;
+		else return false;
+	}
+	private bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
+	{
+		if (newLoadedScene.name.Contains("Dungeon") || newLoadedScene.name.Contains("Hub"))
+		{
+			Debug.LogError("Scene is dungeon or hub");
+			return true;
+		}
+		else
+		{
+			Debug.LogError("Scene isnt dungeon or hub");
+			return false;
+		}
+	}
+
+	//SET ACTIVE SCENE
+	private void UpdateActiveSceneToMainScene(Scene newLoadedScene)
+	{
+		Scene currentActiveScene = SceneManager.GetActiveScene();
+		if (currentActiveScene.name == mainScene) return;
+
+		if (SceneIsHubOrDungeonScene(currentActiveScene))
+			SpawnSinglePlayerObject();
+
+		SceneManager.SetActiveScene(newLoadedScene);
 	}
 
 	//PLAYER OBJECT SPAWNING
@@ -252,6 +310,13 @@ public class GameManager : MonoBehaviour
 		Localplayer = newLocalPlayer;
 	}
 
+	//PLAYER CAMERA SPAWNING
+	private void SpawnPlayerCamera()
+	{
+		GameObject cameraObj = Instantiate(CameraPrefab);
+		LocalPlayerCamera = cameraObj.GetComponent<Camera>();
+	}
+
 	//pause game
 	public void PauseGame(bool pauseGame)
     {
@@ -269,5 +334,7 @@ public class GameManager : MonoBehaviour
 			else
 				Time.timeScale = 1.0f;
 		}
+
+		Debug.LogError("timescale: " + Time.timeScale);
     }
 }

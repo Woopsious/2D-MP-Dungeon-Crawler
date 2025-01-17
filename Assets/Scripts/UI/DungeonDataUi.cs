@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -41,7 +42,8 @@ public class DungeonDataUi : MonoBehaviour
 		hasExploredDungeon = false;
 		isDungeonSaved = false;
 		dungeonIndex = index;
-		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 3); //(not including hub and main menu scene)
+		int choice = Utilities.GetRandomNumber(GameManager.Instance.dungeonSceneNamesList.Count - 1);
+		dungeonNumber = choice + 4; //+4 for other scenes in build
 		int modifier = Utilities.GetRandomNumber(2);
 
 		if (hasExploredDungeon == false)
@@ -280,13 +282,14 @@ public class DungeonDataUi : MonoBehaviour
 
 		if (dungeonNumber == -1)
 			EnterBossDungeon();
-		else EnterNormalDungeon();
+		else	
+			EnterNormalDungeon();
 	}
 	private void EnterNormalDungeon()
 	{
-		if (dungeonNumber == 0)
+		if (dungeonNumber == 4)
 			GameManager.Instance.LoadDungeonOne();
-		else if (dungeonNumber == 1)
+		else if (dungeonNumber == 5)
 			GameManager.Instance.LoadDungeonTwo();
 	}
 	private void EnterBossDungeon()

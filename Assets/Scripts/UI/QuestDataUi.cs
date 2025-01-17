@@ -126,8 +126,8 @@ public class QuestDataUi : MonoBehaviour
 		}
 		if (questRewardType == RewardType.isGoldReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween((int)(50 * SceneHandler.playerInstance.playerStats.levelModifier), 
-				(int)(75 * SceneHandler.playerInstance.playerStats.levelModifier));
+			rewardToAdd = Utilities.GetRandomNumberBetween((int)(50 * GameManager.Localplayer.playerStats.levelModifier), 
+				(int)(75 * GameManager.Localplayer.playerStats.levelModifier));
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
 	}

@@ -290,7 +290,7 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerInfoData()
 	{
 		//need reworking for mp
-		EntityStats playerStats = SceneHandler.playerInstance.playerStats;
+		EntityStats playerStats = GameManager.Localplayer.playerStats;
 
 		Instance.SlotData.name = Utilities.GetRandomNumber(1000).ToString();
 		Instance.SlotData.level = playerStats.entityLevel.ToString();
