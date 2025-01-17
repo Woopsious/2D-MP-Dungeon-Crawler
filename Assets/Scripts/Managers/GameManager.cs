@@ -37,6 +37,10 @@ public class GameManager : MonoBehaviour
 
 	public Scene previouslyLoadedScene;
 
+	public GameObject PlayerPrefab;
+	public static PlayerController Localplayer { get; private set; }
+	public static Camera LocalPlayerCamera;
+
 	private void Awake()
 	{
 		//if vSyncCount == 0, .targetFrameRate is enabled. (default setting)
@@ -192,6 +196,8 @@ public class GameManager : MonoBehaviour
 
 		UnloadPreviousScene(previouslyLoadedScene.name);
 		previouslyLoadedScene = newLoadedScene;
+
+		Debug.LogError("current active scene: " + SceneManager.GetActiveScene().name);
 	}
 
 	//SCENE UNLOADING
@@ -211,17 +217,57 @@ public class GameManager : MonoBehaviour
 	//SCENE UNLOAD EVENT
 	private void OnUnloadSceneFinish(Scene unLoadedScene)
 	{
-		Debug.LogError("loaded scene name: " + unLoadedScene.name);
+		Debug.LogError("unloaded scene name: " + unLoadedScene.name);
 
 		//remove unloadedscene from active scene list
+	}
+
+	//PLAYER OBJECT SPAWNING
+	private void SpawnSinglePlayerObject()
+	{
+		if (FindObjectOfType<PlayerController>() != null)
+		{
+			Debug.LogWarning("player prefab already exists in scene, ignore if testing");
+			return;
+		}
+
+		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+			Instantiate(PlayerPrefab);
+	}
+	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
+	{
+		Debug.LogError("spawned player obj");
+
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
+		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
+		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
+	}
+
+	public void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
+	{
+		if (Localplayer != null && Localplayer != newLocalPlayer)
+			Destroy(Localplayer.gameObject);
+
+		Localplayer = newLocalPlayer;
 	}
 
 	//pause game
 	public void PauseGame(bool pauseGame)
     {
-		if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
-			Time.timeScale = 0f;
+		if (MultiplayerManager.Instance != null)
+		{
+			if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
+				Time.timeScale = 0f;
+			else
+				Time.timeScale = 1.0f;
+		}
 		else
-			Time.timeScale = 1.0f;
+		{
+			if (pauseGame)
+				Time.timeScale = 0f;
+			else
+				Time.timeScale = 1.0f;
+		}
     }
 }

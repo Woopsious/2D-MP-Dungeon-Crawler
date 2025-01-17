@@ -19,28 +19,15 @@ public class SceneHandler : MonoBehaviour
 		Instance = this;
 		playerCamera.transform.parent = null;
 
-		if (MultiplayerManager.Instance != null)
-			Debug.LogError("is multipler = " + MultiplayerManager.Instance.isMultiplayer);
+		//SpawnSinglePlayerObject();
 
 		if (GameManager.Instance == null)
 			StartCoroutine(LoadMainScene());
-
-		if (MainMenuManager.Instance == null)
-			StartCoroutine(LoadUiScene());
-
-		SpawnSinglePlayerObject();
 	}
 
 	private IEnumerator LoadMainScene()
 	{
-		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
-
-		while (!asyncLoadScene.isDone)
-			yield return null;
-	}
-	private IEnumerator LoadUiScene()
-	{
-		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync("UiScene", LoadSceneMode.Additive);
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync("MainScene", LoadSceneMode.Additive);
 
 		while (!asyncLoadScene.isDone)
 			yield return null;
