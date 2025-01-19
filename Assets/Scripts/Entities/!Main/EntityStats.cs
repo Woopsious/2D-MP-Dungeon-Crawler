@@ -96,6 +96,8 @@ public class EntityStats : NetworkBehaviour
 
 	protected virtual void OnEnable()
 	{
+		SceneManager.sceneLoaded += ApplyDungeonModifiersToPlayers;
+
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
 		OnRecieveHealingEvent += RecieveHealing;
@@ -107,6 +109,8 @@ public class EntityStats : NetworkBehaviour
 	}
 	protected virtual void OnDisable()
 	{
+		SceneManager.sceneLoaded -= ApplyDungeonModifiersToPlayers;
+
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
 		OnRecieveHealingEvent -= RecieveHealing;
@@ -138,9 +142,8 @@ public class EntityStats : NetworkBehaviour
 				statsRef.lootPool, statsRef.itemRarityChanceModifier);
 		}
 
-		if (GameManager.Instance == null) return; //for now leave this line in
-		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
-			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
+		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers != null) //apply dungeon modifiers
+			ApplyDungeonModifiersToEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
 	}
 	public void ResetEntityStats()
 	{
@@ -576,7 +579,64 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//DUNGEON MODIFIERS
-	private void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
+	public void UpdateDungeonModifiersAppliedToPlayer(Scene newSceneLoaded, LoadSceneMode mode)
+	{
+		if (!IsPlayerEntity()) return;
+
+		if (newSceneLoaded.name == GameManager.Instance.hubScene)
+			RemoveDungeonModifiersFromEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
+		else
+			ApplyDungeonModifiersToEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
+	}
+	private void RemoveDungeonModifiersFromEntity(DungeonStatModifier dungeonModifiers)
+	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		if (!IsPlayerEntity())
+		{
+			maxHealth.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			maxMana.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			physicalResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			poisonResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			fireResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			iceResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+
+			healingPercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			physicalDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			poisonDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			fireDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			iceDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			mainWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			dualWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			rangedWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+		}
+
+		maxHealth.RemovePercentageValue(dungeonModifiers.healthModifier);
+		maxMana.RemovePercentageValue(dungeonModifiers.manaModifier);
+		physicalResistance.RemovePercentageValue(dungeonModifiers.physicalResistanceModifier);
+		poisonResistance.RemovePercentageValue(dungeonModifiers.poisonResistanceModifier);
+		fireResistance.RemovePercentageValue(dungeonModifiers.fireResistanceModifier);
+		iceResistance.RemovePercentageValue(dungeonModifiers.iceResistanceModifier);
+
+		//healingPercentageModifier.AddPercentageValue();
+		physicalDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.physicalDamageModifier);
+		poisonDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.poisonDamageModifier);
+		fireDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.fireDamageModifier);
+		iceDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.iceDamageModifier);
+		mainWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.mainWeaponDamageModifier);
+		dualWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.dualWeaponDamageModifier);
+		rangedWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.rangedWeaponDamageModifier);
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfoUi();
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		UpdatePlayerStatInfoUi();
+	}
+	private void ApplyDungeonModifiersToEntity(DungeonStatModifier dungeonModifiers)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -628,7 +688,7 @@ public class EntityStats : NetworkBehaviour
 	//full heal entity on stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
 	{
-		if (!IsPlayerEntity() && oldCurrentHealthEqualToOldMaxHealth)
+		if (oldCurrentHealthEqualToOldMaxHealth)
 		{
 			currentHealth = maxHealth.finalValue;
 			currentMana = maxMana.finalValue;

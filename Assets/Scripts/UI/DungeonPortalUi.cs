@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonPortalUi : MonoBehaviour
 {
@@ -47,6 +48,8 @@ public class DungeonPortalUi : MonoBehaviour
 		PlayerEventManager.OnShowPortalUi += ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi += HidePortalUi;
 
+		SceneManager.sceneLoaded += HidePortalUiOnSceneChange;
+
 		DungeonDataUi.OnDungeonSave += OnSaveDungeon;
 		DungeonDataUi.OnDungeonDelete += OnDeleteDungeon;
 	}
@@ -55,6 +58,8 @@ public class DungeonPortalUi : MonoBehaviour
 		SaveManager.RestoreData -= ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi -= ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi -= HidePortalUi;
+
+		SceneManager.sceneLoaded -= HidePortalUiOnSceneChange;
 
 		DungeonDataUi.OnDungeonSave -= OnSaveDungeon;
 		DungeonDataUi.OnDungeonDelete -= OnDeleteDungeon;
@@ -172,26 +177,36 @@ public class DungeonPortalUi : MonoBehaviour
 
 		Destroy(dungeonData.gameObject);
 	}
+	private void HidePortalUiOnSceneChange(Scene newSceneLoaded, LoadSceneMode mode)
+	{
+		portalPanelUi.SetActive(false);
+	}
 
 	//UI CHANGES
 	public void ShowPortalUi(PortalHandler portal)
 	{
-		if (portalPanelUi.activeInHierarchy)
-			HidePortalUi();
+		portalPanelUi.SetActive(true);
+
+		if (portal.portalType == PortalHandler.PortalType.isDungeonEnterencePortal)
+		{
+			dungeonEnterenceUi.SetActive(true);
+			dungeonExitUi.SetActive(false);
+			ShowActiveDungeonListUi();
+		}
 		else
 		{
-			HidePortalUi(); //hide all ui incase incorrect panel already active
-			portalPanelUi.SetActive(true);
-
-			if (portal.portalType == PortalHandler.PortalType.isDungeonEnterencePortal)
-			{
-				dungeonEnterenceUi.SetActive(true);
-				ShowActiveDungeonListUi();
-			}
-			else
-				dungeonExitUi.SetActive(true);
+			dungeonEnterenceUi.SetActive(false);
+			dungeonExitUi.SetActive(true);
 		}
 	}
+	public void HidePortalUi()
+	{
+		GameManager.Localplayer.isInteractingWithInteractable = false;
+		portalPanelUi.SetActive(false);
+		dungeonEnterenceUi.SetActive(false);
+		dungeonExitUi.SetActive(false);
+	}
+
 	public void ShowActiveDungeonListUi() //button click
 	{
 		if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons) return; //ignore if already showing
@@ -243,13 +258,5 @@ public class DungeonPortalUi : MonoBehaviour
 			foreach (DungeonDataUi dungeonData in bossDungeonLists)
 				dungeonData.transform.SetParent(dungeonListContent.transform);
 		}
-	}
-
-	public void HidePortalUi()
-	{
-		GameManager.Localplayer.isInteractingWithInteractable = false;
-		portalPanelUi.SetActive(false);
-		dungeonEnterenceUi.SetActive(false);
-		dungeonExitUi.SetActive(false);
 	}
 }

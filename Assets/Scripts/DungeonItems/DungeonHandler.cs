@@ -26,9 +26,9 @@ public class DungeonHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		Instance = this;
+		Instance = this;	
 		ActivateRandomChests();
-		SetDungeonEnterencePortal();
+		MovePlayersToEnterencePortal();
 	}
 	private void OnEnable()
 	{
@@ -118,15 +118,12 @@ public class DungeonHandler : MonoBehaviour
 	}
 
 	//DUNGEON SETUP
-	private void SetDungeonEnterencePortal()
+	private void MovePlayersToEnterencePortal()
 	{
-		if (dungeonPortalsList.Count <= 0)
-		{
-			//Debug.LogError("NO DUNGEON PORTAL REFERENCES SET");
-			return;
-		}
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 		dungeonEnterencePortal = portalSpawnPoint;
+
+		GameManager.Localplayer.transform.position = dungeonEnterencePortal.transform.position;
 	}
 	public Vector2 GetDungeonEnterencePortal(GameObject player)
 	{

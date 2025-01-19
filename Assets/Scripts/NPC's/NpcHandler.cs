@@ -42,6 +42,7 @@ public class NpcHandler : MonoBehaviour, IInteractables
 	private void OnDisable()
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
+		Destroy(NpcTypeText.gameObject);
 	}
 	private void Update()
 	{
@@ -71,13 +72,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 			if (npc.shopType == SONpcs.ShopType.isGeneralStore)
 				NpcTypeText.text = "General Store Npc";
 		}
-
-		/*
-		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
-			GenerateNewQuests();
-		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
-			GenerateShopItems();
-		*/
 	}
 	private void UpdateNpcTypeText()
 	{
