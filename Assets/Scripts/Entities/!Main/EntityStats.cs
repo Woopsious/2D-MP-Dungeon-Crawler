@@ -96,7 +96,7 @@ public class EntityStats : NetworkBehaviour
 
 	protected virtual void OnEnable()
 	{
-		SceneManager.sceneLoaded += ApplyDungeonModifiersToPlayers;
+		SceneManager.sceneLoaded += UpdateDungeonModifiersAppliedToPlayer;
 
 		GetComponent<Damageable>().OnHit += OnHit;
 		OnRecieveDamageEvent += RecieveDamage;
@@ -109,7 +109,7 @@ public class EntityStats : NetworkBehaviour
 	}
 	protected virtual void OnDisable()
 	{
-		SceneManager.sceneLoaded -= ApplyDungeonModifiersToPlayers;
+		SceneManager.sceneLoaded -= UpdateDungeonModifiersAppliedToPlayer;
 
 		GetComponent<Damageable>().OnHit -= OnHit;
 		OnRecieveDamageEvent -= RecieveDamage;
