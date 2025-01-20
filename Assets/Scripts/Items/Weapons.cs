@@ -221,11 +221,12 @@ public class Weapons : Items
 	{
 		if (!canAttackAgain) return;
 
-		Projectiles projectile = DungeonHandler.GetProjectile();
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 		}
 
 		projectile.transform.SetParent(null);

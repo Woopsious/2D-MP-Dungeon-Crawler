@@ -214,7 +214,7 @@ public class EntityStats : NetworkBehaviour
 	{
         if (isDestroyedInOneHit)
         {
-			DungeonHandler.EntityDeathEvent(gameObject);
+			ObjectPoolingManager.EntityDeathEvent(gameObject);
 			return;
 		}
 		NegateEntityResistances(damageSourceInfo);
@@ -267,7 +267,8 @@ public class EntityStats : NetworkBehaviour
 		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
 		RedFlashOnRecieveDamage();
 		audioHandler.PlayAudio(statsRef.hurtSfx);
-		if (!IsPlayerEntity() && damageSourceInfo.entity.playerRef != null)
+
+		if (!IsPlayerEntity() && damageSourceInfo.hitBye == IDamagable.HitBye.player)
 			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
 
 		if (IsEntityDead())
@@ -311,7 +312,7 @@ public class EntityStats : NetworkBehaviour
 		if (IsPlayerEntity())
 			PlayerEventManager.PlayerDeath(gameObject,damageSourceInfo);
 		else
-			DungeonHandler.EntityDeathEvent(gameObject);
+			ObjectPoolingManager.EntityDeathEvent(gameObject);
 	}
 
 	//MANA EVENTS

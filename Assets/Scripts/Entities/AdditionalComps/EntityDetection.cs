@@ -34,7 +34,7 @@ public class EntityDetection : MonoBehaviour
 				entityBehaviour.RemovePlayerFromAggroList(other.GetComponent<PlayerController>());
 
 			if (entityBehaviour.markedForCleanUp)
-				DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviour.entityStats);
+				ObjectPoolingManager.AddEntityToInActivePool(entityBehaviour.entityStats);
 		}
 		else if (player != null) //detect others
 		{

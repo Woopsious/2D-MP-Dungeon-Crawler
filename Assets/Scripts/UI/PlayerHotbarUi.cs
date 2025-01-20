@@ -119,7 +119,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
-		DungeonHandler.OnEntityDeathEvent += OnTargetDeathUnSelect;
+		ObjectPoolingManager.OnEntityDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
@@ -136,7 +136,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
-		DungeonHandler.OnEntityDeathEvent -= OnTargetDeathUnSelect;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
 	{

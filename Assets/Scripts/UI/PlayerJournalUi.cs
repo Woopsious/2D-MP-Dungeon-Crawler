@@ -43,7 +43,7 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerJournal;
 
-		DungeonHandler.OnEntityDeathEvent += OnEntityDeathUpdateKillQuests;
+		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeathUpdateKillQuests;
 		PlayerEventManager.OnShowNpcJournal += ShowAvailableNpcQuests;
 		PlayerEventManager.OnHideNpcJournal += HideAvailableNpcQuests;
 	}
@@ -58,7 +58,7 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerJournal;
 
-		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
 		PlayerEventManager.OnShowNpcJournal -= ShowAvailableNpcQuests;
 		PlayerEventManager.OnHideNpcJournal -= HideAvailableNpcQuests;
 	}

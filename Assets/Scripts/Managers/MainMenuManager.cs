@@ -91,6 +91,11 @@ public class MainMenuManager : MonoBehaviour
 			return;
 		}
 
+		if (GameManager.Instance == null)
+		{
+			//load the main scene
+		}
+
 		if (loadedScene.name == GameManager.Instance.mainScene || loadedScene.name == GameManager.Instance.uiScene) return;
 
 		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu

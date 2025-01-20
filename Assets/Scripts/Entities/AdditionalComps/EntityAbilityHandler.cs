@@ -228,12 +228,13 @@ public class EntityAbilityHandler : MonoBehaviour
 	}
 	private void CastDirectionalAbility(SOAbilities ability)
 	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
 			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 			projectile.transform.SetParent(null);
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 		}
 
 		if (overridePlayerTarget)
@@ -251,12 +252,13 @@ public class EntityAbilityHandler : MonoBehaviour
 	}
 	private void CastAoeAbility(SOAbilities ability)
 	{
-		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
 		if (abilityAOE == null)
 		{
 			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
 			abilityAOE = go.GetComponent<AbilityAOE>();
 			abilityAOE.transform.SetParent(null);
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
 		}
 
 		if (overridePlayerTarget)

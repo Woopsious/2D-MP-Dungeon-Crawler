@@ -130,7 +130,14 @@ public class DungeonPortalUi : MonoBehaviour
 		}
 
 		GameManager.Instance.currentDungeonData.dungeonChestData = chestData;
+
 		//save data to corrisponding DungeonSlotUi, where SaveManager will then save/reload all DungeonSlotUi's
+		if (savedDungeonLists.Count == 0 && activeDungeonLists.Count == 0)
+		{
+			Debug.LogError("returning to hub scene whilst tesing dungeon scene not supported");
+			return;
+		}
+
 		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
 			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
 		else

@@ -615,9 +615,6 @@ public class PlayerClassesUi : MonoBehaviour
 		for (int i = currentUnlockedClassNodes.Count - 1; i >= 0; i--)
 			currentUnlockedClassNodes[i].RefundThisNode();
 
-		Debug.LogError("local player: " + GameManager.Localplayer);
-		Debug.LogError("local player stats: " + GameManager.Localplayer.playerStats);
-
 		UpdateMaxAbilitySlots(GameManager.Localplayer.playerStats);
 		currentUnlockedClassNodes.Clear();
 

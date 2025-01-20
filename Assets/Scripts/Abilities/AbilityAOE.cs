@@ -174,7 +174,7 @@ public class AbilityAOE : MonoBehaviour
 		{
 			if (debugLockDamage)
 			{
-				DungeonHandler.AoeAbilitiesCleanUp(this);
+				ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
 				return;
 			}
 
@@ -186,7 +186,7 @@ public class AbilityAOE : MonoBehaviour
 					DamageAllCollidedEntities();
 			}
 			debugLockDamage = true;
-			DungeonHandler.AoeAbilitiesCleanUp(this);
+			ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
 		}
 	}
 

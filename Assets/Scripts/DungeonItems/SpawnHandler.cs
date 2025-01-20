@@ -56,7 +56,7 @@ public class SpawnHandler : MonoBehaviour
 	private void OnEnable()
 	{
 		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
-		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
+		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish += TrySpawnEntities;
 
@@ -66,7 +66,7 @@ public class SpawnHandler : MonoBehaviour
 	private void OnDisable()
 	{
 		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
-		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
 		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
 
@@ -193,7 +193,7 @@ public class SpawnHandler : MonoBehaviour
 			if (listOfSpawnedEntities[i] == null) return;
 
 			if (listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().playerTarget == null)
-				DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEntities[i]);
+				ObjectPoolingManager.AddEntityToInActivePool(listOfSpawnedEntities[i]);
 			else
 				listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
 
@@ -256,19 +256,11 @@ public class SpawnHandler : MonoBehaviour
 	private void SpawnEntity()
 	{
 		int num = GetIndexOfEnemyToSpawn();
-		bool entityTypeMatches = false;
+		EntityStats entity = ObjectPoolingManager.GetInActiveEntity(possibleEntityTypesToSpawn[num]);
 
-		foreach (EntityStats entity in DungeonHandler.Instance.inActiveEntityPool)
-		{
-			if (entity.statsRef == possibleEntityTypesToSpawn[num])
-			{
-				entityTypeMatches = true;
-				DungeonHandler.Instance.inActiveEntityPool.Remove(entity);
-				RespawnEntity(entity);
-				break;
-			}
-		}
-		if (!entityTypeMatches)
+		if (entity != null)
+			RespawnEntity(entity);
+		else
 			InstantiateNewEntity();
 	}
 	private void RespawnEntity(EntityStats entity)
@@ -296,6 +288,7 @@ public class SpawnHandler : MonoBehaviour
 		entity.GetComponent<EntityBehaviour>().behaviourRef = possibleEntityTypesToSpawn[num].entityBehaviour;
 		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
+		ObjectPoolingManager.AddEntityToObjectPooling(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
 			entity.entityLevel = debugSpawnerLevel;

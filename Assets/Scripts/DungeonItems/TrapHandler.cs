@@ -178,11 +178,12 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	}
 	private void ShootProjectiles(EntityStats entity)
 	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 		}
 
 		projectile.transform.SetParent(null);

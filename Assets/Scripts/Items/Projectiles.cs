@@ -130,7 +130,7 @@ public class Projectiles : MonoBehaviour
 	private void OnTriggerEnter2D(Collider2D other)
 	{
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-			DungeonHandler.ProjectileCleanUp(this);
+			ObjectPoolingManager.AddProjectileToInActivePool(this);
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
@@ -167,7 +167,7 @@ public class Projectiles : MonoBehaviour
 			damageSourceInfo.SetDeathMessage(weaponBaseRef);
 			other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
-		DungeonHandler.ProjectileCleanUp(this);
+		ObjectPoolingManager.AddProjectileToInActivePool(this);
 	}
 	private void FixedUpdate()
 	{
@@ -176,6 +176,6 @@ public class Projectiles : MonoBehaviour
 
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
-			DungeonHandler.ProjectileCleanUp(this);
+			ObjectPoolingManager.AddProjectileToInActivePool(this);
 	}
 }

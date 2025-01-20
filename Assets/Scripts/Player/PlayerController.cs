@@ -90,12 +90,12 @@ public class PlayerController : NetworkBehaviour
 	private void OnEnable()
 	{
 		SaveManager.RestoreData += ReloadPlayerInfo;
-		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
+		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= ReloadPlayerInfo;
-		DungeonHandler.OnEntityDeathEvent -= OnSelectedTargetDeath;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
 
@@ -481,11 +481,12 @@ public class PlayerController : NetworkBehaviour
 	//types of casting
 	private void CastDirectionalAbility(Abilities ability)
 	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 		}
 
 		projectile.transform.SetParent(null);
@@ -499,11 +500,12 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void CastAoeAbility(Abilities ability)
 	{
-		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
 		if (abilityAOE == null)
 		{
 			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
 			abilityAOE = go.GetComponent<AbilityAOE>();
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
 		}
 
 		//will need additional code here to handle supportive and offensive aoe abilities

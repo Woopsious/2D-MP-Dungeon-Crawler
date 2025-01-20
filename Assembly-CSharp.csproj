@@ -139,6 +139,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskTrackPlayer.cs" />
     <Compile Include="Assets\Scripts\Abilities\Abilities.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\EnchantmentHandler.cs" />
+    <Compile Include="Assets\Scripts\Managers\ObjectPoolingManager.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SONpcs.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\EntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />

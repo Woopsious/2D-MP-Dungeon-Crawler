@@ -19,13 +19,13 @@ public class LootSpawnHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
+		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
 		PlayerClassesUi.OnClassChanges += UpdateLootSpawnTable;
 	}
 	private void OnDisable()
 	{
-		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeathEvent;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
 		PlayerClassesUi.OnClassChanges -= UpdateLootSpawnTable;
 
@@ -199,6 +199,7 @@ public class LootSpawnHandler : MonoBehaviour
 		item.itemName = lootPool.lootPoolList[index].name;
 		item.itemSprite = lootPool.lootPoolList[index].itemImage;
 		item.itemPrice = lootPool.lootPoolList[index].itemPrice;
+		ObjectPoolingManager.AddItemsToObjectPooling(item);
 	}
 	private void SetUpWeaponItem(GameObject go, int index)
 	{

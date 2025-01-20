@@ -16,14 +16,6 @@ public class DungeonHandler : MonoBehaviour
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
 	private readonly int chanceForChestToActivate = 50;
 
-	public List<EntityStats> inActiveEntityPool = new List<EntityStats>();
-
-	public List<Projectiles> inActiveProjectilesPool = new List<Projectiles>();
-	public List<AbilityAOE> inActiveAoeAbilitesPool = new List<AbilityAOE>();
-
-	public static event Action<GameObject> OnEntityDeathEvent;
-	public static event Action OnEntitySpawnEvent;
-
 	private void Awake()
 	{
 		Instance = this;	
@@ -37,63 +29,6 @@ public class DungeonHandler : MonoBehaviour
 	private void OnDisable()
 	{
 		SaveManager.RestoreData -= RestoreDungeonChestData;
-	}
-
-	//OBJECT POOLING
-	//entity obj pooling + death event
-	public void AddNewEntitiesToPool(EntityStats entity)
-	{
-		entity.gameObject.SetActive(false);
-		entity.transform.position = Vector3.zero;
-		inActiveEntityPool.Add(entity);
-	}
-	public static void EntityDeathEvent(GameObject gameObject)
-	{
-		OnEntityDeathEvent?.Invoke(gameObject);
-
-		Instance.OnEntityDeath(gameObject);
-	}
-	private void OnEntityDeath(GameObject obj)
-	{
-		obj.SetActive(false);
-		EntityStats entityStats = obj.GetComponent<EntityStats>();
-		inActiveEntityPool.Add(entityStats);
-	}
-
-	//projectile obj pooling
-	public static Projectiles GetProjectile()
-	{
-		if (Instance.inActiveProjectilesPool.Count != 0)
-		{
-			Projectiles projectile = Instance.inActiveProjectilesPool[0];
-			Instance.inActiveProjectilesPool.RemoveAt(0);
-			return projectile;
-		}
-		else return null;
-	}
-	public static void ProjectileCleanUp(Projectiles projectile)
-	{
-		projectile.gameObject.SetActive(false);
-		projectile.transform.position = Vector3.zero;
-		Instance.inActiveProjectilesPool.Add(projectile);
-	}
-
-	//aoe obj pooling
-	public static AbilityAOE GetAoeAbility()
-	{
-		if (Instance.inActiveAoeAbilitesPool.Count != 0)
-		{
-			AbilityAOE abilityAOE = Instance.inActiveAoeAbilitesPool[0];
-			Instance.inActiveAoeAbilitesPool.RemoveAt(0);
-			return abilityAOE;
-		}
-		else return null;
-	}
-	public static void AoeAbilitiesCleanUp(AbilityAOE abilityAOE)
-	{
-		abilityAOE.gameObject.SetActive(false);
-		abilityAOE.transform.position = Vector3.zero;
-		Instance.inActiveAoeAbilitesPool.Add(abilityAOE);
 	}
 
 	//player respawns

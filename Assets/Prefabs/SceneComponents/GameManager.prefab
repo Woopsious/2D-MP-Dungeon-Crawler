@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7214683641568887233}
   - component: {fileID: 5383993218733584273}
+  - component: {fileID: 5661256335365762632}
   - component: {fileID: 1339910767177227557}
   m_Layer: 0
   m_Name: GameManager
@@ -67,6 +68,7 @@ MonoBehaviour:
       dualWeaponDamageModifier: 0
       rangedWeaponDamageModifier: 0
     dungeonChestData: []
+  dungeonSceneNamesList: []
   bossSceneNamesList: []
   activeScenesList: []
   activeScenesNameList: []
@@ -74,6 +76,25 @@ MonoBehaviour:
     m_Handle: 0
   PlayerPrefab: {fileID: 1405763340389273497, guid: 4ad8167d666d66843878d1850533ffa3, type: 3}
   CameraPrefab: {fileID: 6279784292622444907, guid: 07d10b49cc8ee984980786b9c4b65829, type: 3}
+--- !u!114 &5661256335365762632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817ee5d073684c44ab72429af788e54c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entityPool: []
+  inActiveEntityPool: []
+  projectilesPool: []
+  inActiveProjectilesPool: []
+  abilityAoePool: []
+  inActiveAoeAbilitesPool: []
+  droppedItemsPool: []
 --- !u!114 &1339910767177227557
 MonoBehaviour:
   m_ObjectHideFlags: 0
