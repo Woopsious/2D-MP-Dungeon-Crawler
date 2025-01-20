@@ -31331,11 +31331,11 @@ RectTransform:
   - {fileID: 1661627042995224068}
   m_Father: {fileID: 6994754436231198238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -307.5, y: -10}
+  m_AnchorMin: {x: 0.5, y: 0}
+  m_AnchorMax: {x: 0.5, y: 0}
+  m_AnchoredPosition: {x: -307.5, y: 0}
   m_SizeDelta: {x: 215, y: 110}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_Pivot: {x: 0.5, y: 0}
 --- !u!223 &4888830156908992441
 Canvas:
   m_ObjectHideFlags: 0
@@ -47484,6 +47484,21 @@ MonoBehaviour:
   playerClassInfoText: {fileID: 5768824015255671719}
   goldAmountText: {fileID: 2834414472775449577}
   HotbarPanelUi: {fileID: 7524796947458589187}
+  hotbarUiObjects:
+  - {fileID: 4956030042237734130}
+  - {fileID: 8399237272448690100}
+  - {fileID: 4068732767319813351}
+  - {fileID: 241850729739197790}
+  - {fileID: 703172367234421262}
+  - {fileID: 2698534989879193143}
+  - {fileID: 1810347815908879310}
+  - {fileID: 2381681405701470452}
+  - {fileID: 120942548899910582}
+  - {fileID: 8334821560254736514}
+  - {fileID: 8543483559059363495}
+  - {fileID: 134925773757496682}
+  - {fileID: 3563413776642544280}
+  - {fileID: 966088159208922444}
   ConsumableSlots:
   - {fileID: 8729422233047221231}
   - {fileID: 1269957131305269457}

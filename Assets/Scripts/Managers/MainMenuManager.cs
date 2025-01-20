@@ -52,8 +52,8 @@ public class MainMenuManager : MonoBehaviour
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
 		{
 			Instance.ShowMainMenu();
-			PlayerInfoUi.Instance.gameObject.SetActive(false);
-			PlayerHotbarUi.Instance.gameObject.SetActive(false);
+			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
+				obj.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -61,8 +61,8 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			PlayerInfoUi.Instance.gameObject.SetActive(true);
-			PlayerHotbarUi.Instance.gameObject.SetActive(true);
+			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
+				obj.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);
@@ -101,8 +101,8 @@ public class MainMenuManager : MonoBehaviour
 		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
 		{
 			Instance.ShowMainMenu();
-			PlayerInfoUi.Instance.gameObject.SetActive(false);
-			PlayerHotbarUi.Instance.gameObject.SetActive(false);
+			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
+				obj.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -110,8 +110,8 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			PlayerInfoUi.Instance.gameObject.SetActive(true);
-			PlayerHotbarUi.Instance.gameObject.SetActive(true);
+			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
+				obj.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);
@@ -141,7 +141,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void QuitToMainMenuButton()
 	{
-		GameManager.Instance.LoadMainMenu(false);
+		GameManager.Instance.LoadMainMenu();
 	}
 
 	public void PlayGameButton()

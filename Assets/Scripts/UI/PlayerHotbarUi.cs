@@ -16,6 +16,8 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	public GameObject HotbarPanelUi;
 
+	public List<GameObject> hotbarUiObjects = new List<GameObject>();
+
 	[Header("Hotbar Consumables")]
 	public List<GameObject> ConsumableSlots = new List<GameObject>();
 	public GameObject consumableSlotOne;

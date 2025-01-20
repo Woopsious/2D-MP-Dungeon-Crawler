@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerClassesUi : MonoBehaviour
@@ -91,7 +92,9 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerClass;
+		//SaveManager.RestoreData += ReloadPlayerClass;
+		SceneManager.sceneLoaded += OnSceneChange;
+		SaveManager.ReloadSaveGameData += ReloadPlayerClass;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent += ShowPlayerClassSelection;
@@ -111,7 +114,9 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerClass;
+		//SaveManager.RestoreData -= ReloadPlayerClass;
+		SceneManager.sceneLoaded -= OnSceneChange;
+		SaveManager.ReloadSaveGameData -= ReloadPlayerClass;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent -= ShowPlayerClassSelection;
@@ -145,8 +150,12 @@ public class PlayerClassesUi : MonoBehaviour
 		SetUpRogueClassTree();
 		SetUpRangerClassTree();
 		SetUpMageClassTree();
+	}
 
-		ShowPlayerClassSelection();
+	private void OnSceneChange(Scene newLoadedScene, LoadSceneMode mode)
+	{
+		if (newLoadedScene.name == GameManager.Instance.hubScene && GameManager.isNewGame)
+			ShowPlayerClassSelection();
 	}
 
 	//set up text ui for class selection panel
@@ -723,13 +732,8 @@ public class PlayerClassesUi : MonoBehaviour
 			ClassSelectionUiPanel.SetActive(true);
 			playerClassSelectionPanel.SetActive(true);
 
-			if (GameManager.Instance != null) //should only be null when testing in specific scenes
-			{
-				if (GameManager.isNewGame)
-					closeplayerClassSelectionButton.SetActive(false);
-				else
-					closeplayerClassSelectionButton.SetActive(true);
-			}
+			if (GameManager.isNewGame)
+				closeplayerClassSelectionButton.SetActive(false);
 			else
 				closeplayerClassSelectionButton.SetActive(true);
 		}

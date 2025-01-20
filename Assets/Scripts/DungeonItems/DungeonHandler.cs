@@ -24,11 +24,13 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += RestoreDungeonChestData;
+		//SaveManager.RestoreData += RestoreDungeonChestData;
+		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= RestoreDungeonChestData;
+		//SaveManager.RestoreData -= RestoreDungeonChestData;
+		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
 	}
 
 	//player respawns

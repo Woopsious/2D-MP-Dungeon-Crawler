@@ -20,13 +20,15 @@ public class PlayerExperienceHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerExp;
+		//SaveManager.RestoreData += ReloadPlayerExp;
+		SaveManager.ReloadSaveGameData += ReloadPlayerExp;
 		ObjectPoolingManager.OnEntityDeathEvent += AddExperience;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerExp;
+		//SaveManager.RestoreData -= ReloadPlayerExp;
+		SaveManager.ReloadSaveGameData -= ReloadPlayerExp;
 		ObjectPoolingManager.OnEntityDeathEvent -= AddExperience;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}

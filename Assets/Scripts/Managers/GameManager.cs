@@ -10,10 +10,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-	public static event Action OnSceneChangeStart;
-	public static event Action OnSceneChangeFinish;
+	public static bool isNewGame;   //dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 
-	public static bool isNewGame;	//dictates if data is restored + resets recievedStartingItems bool + set false on getting items
+	public static event Action sceneFinishedLoading;
+
 	public static string currentGameDataDirectory;
 
 	/// <summary>
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 			StartCoroutine(LoadUiScene());
 
 		if (SceneHandler.Instance == null) //if != null starting scene = different scene
-			LoadMainMenu(true); //starting scene = MainScene
+			LoadMainMenu(); //starting scene = MainScene
 	}
 
 	private void OnEnable()
@@ -112,17 +112,14 @@ public class GameManager : MonoBehaviour
 	}
 
 	//loading different scenes
-	public void LoadMainMenu(bool isNewGame)
+	public void LoadMainMenu()
 	{
-		GameManager.isNewGame = isNewGame;
 		SaveManager.Instance.GameData = new GameData();
 
-		StartCoroutine(LoadSceneAsync(menuScene, isNewGame));
+		StartCoroutine(LoadSceneAsync(menuScene, false));
 	} 
 	public void LoadHubArea(bool isNewGame)
 	{
-		GameManager.isNewGame = isNewGame;
-
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(hubScene, isNewGame);
 		else
@@ -130,8 +127,6 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonOne()
 	{
-		GameManager.isNewGame = false;
-
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
@@ -139,8 +134,6 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonTwo()
 	{
-		GameManager.isNewGame = false;
-
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
@@ -148,7 +141,6 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadRandomBossDungeon()
 	{
-		GameManager.isNewGame = false;
 		int bossDungeonIndex = Utilities.GetRandomNumber(bossSceneNamesList.Count - 1);
 
 		if (bossDungeonIndex == 0)
@@ -158,8 +150,6 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadBossDungoenOne()
 	{
-		GameManager.isNewGame = false;
-
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
@@ -167,8 +157,6 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadBossDungoenTwo()
 	{
-		GameManager.isNewGame = false;
-
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
@@ -185,12 +173,11 @@ public class GameManager : MonoBehaviour
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
-		Debug.LogError("load scened async");
+		Debug.LogError("load scene async");
 
 		GameManager.isNewGame = isNewGame;
+		Instance.PauseGame(false);
 		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
-
-		OnSceneChangeStart?.Invoke();
 
 		while (!asyncLoadScene.isDone)
 			yield return null;
@@ -200,13 +187,12 @@ public class GameManager : MonoBehaviour
 		GameManager.isNewGame = isNewGame;
 
 		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
-		OnSceneChangeStart?.Invoke();
 	}
 
 	//SCENE LOAD EVENT
 	private void OnLoadSceneFinish(Scene newLoadedScene, LoadSceneMode mode)
 	{
-		Debug.LogError("loaded scene name: " + newLoadedScene.name);
+		Debug.LogError("loaded scene name: " + newLoadedScene.name + " at: " + DateTime.Now.ToString());
 
 		UpdateActiveSceneToMainScene(newLoadedScene);
 
@@ -219,7 +205,10 @@ public class GameManager : MonoBehaviour
 		if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
 			SpawnSinglePlayerObject();
 
-		Debug.LogError("current active scene: " + SceneManager.GetActiveScene().name);
+		if (newLoadedScene.name == Instance.hubScene && !isNewGame)
+			SaveManager.Instance.RestoreSaveGameData();
+		else
+			SaveManager.Instance.RestoreDungeonData();
 	}
 
 	//SCENE UNLOADING
@@ -243,8 +232,6 @@ public class GameManager : MonoBehaviour
 	private void OnUnloadSceneFinish(Scene unLoadedScene)
 	{
 		Debug.LogError("unloaded scene name: " + unLoadedScene.name);
-
-		//remove unloadedscene from active scene list
 	}
 
 	//SCENE CHECKS
@@ -254,16 +241,16 @@ public class GameManager : MonoBehaviour
 			return true;
 		else return false;
 	}
-	private bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
+	public bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
 	{
 		if (newLoadedScene.name.Contains("Dungeon") || newLoadedScene.name.Contains("Hub"))
 		{
-			Debug.LogError("Scene is dungeon or hub");
+			//Debug.LogError("Scene is dungeon or hub");
 			return true;
 		}
 		else
 		{
-			Debug.LogError("Scene isnt dungeon or hub");
+			//Debug.LogError("Scene isnt dungeon or hub");
 			return false;
 		}
 	}
@@ -290,19 +277,21 @@ public class GameManager : MonoBehaviour
 		}
 
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			Instantiate(PlayerPrefab);
+		{
+			GameObject obj = Instantiate(PlayerPrefab);
+			PlayerController player = obj.GetComponent<PlayerController>();
+			Instance.UpdateLocalPlayerInstance(player);
+		}
 	}
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
-		Debug.LogError("spawned player obj");
-
 		GameObject playerObj = Instantiate(PlayerPrefab);
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
 		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
 	}
 
-	public void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
+	private void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
 	{
 		if (Localplayer != null && Localplayer != newLocalPlayer)
 			Destroy(Localplayer.gameObject);
@@ -334,7 +323,5 @@ public class GameManager : MonoBehaviour
 			else
 				Time.timeScale = 1.0f;
 		}
-
-		Debug.LogError("timescale: " + Time.timeScale);
     }
 }

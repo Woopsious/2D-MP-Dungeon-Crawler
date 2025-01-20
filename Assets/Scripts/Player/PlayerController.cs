@@ -89,12 +89,14 @@ public class PlayerController : NetworkBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerInfo;
+		//SaveManager.RestoreData += ReloadPlayerInfo;
+		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerInfo;
+		//SaveManager.RestoreData -= ReloadPlayerInfo;
+		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 
 		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
@@ -137,7 +139,6 @@ public class PlayerController : NetworkBehaviour
 	}
 	public void UpdateLocalPlayerReferences()
 	{
-		GameManager.Instance.UpdateLocalPlayerInstance(this);
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
 

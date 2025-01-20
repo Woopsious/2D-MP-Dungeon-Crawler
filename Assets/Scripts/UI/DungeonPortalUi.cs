@@ -44,7 +44,8 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadSavedDungeons;
+		//SaveManager.RestoreData += ReloadSavedDungeons;
+		SaveManager.ReloadSaveGameData += ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi += ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi += HidePortalUi;
 
@@ -55,7 +56,8 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadSavedDungeons;
+		//SaveManager.RestoreData -= ReloadSavedDungeons;
+		SaveManager.ReloadSaveGameData -= ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi -= ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi -= HidePortalUi;
 

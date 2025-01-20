@@ -5,6 +5,7 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class PlayerInventoryUi : MonoBehaviour
@@ -70,7 +71,9 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerInventory;
+		//SaveManager.RestoreData += ReloadPlayerInventory;
+		SaveManager.ReloadSaveGameData += ReloadPlayerInventory;
+
 		PlayerClassesUi.OnNewAbilityUnlock += AddNewUnlockedAbility;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
@@ -95,7 +98,9 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerInventory;
+		//SaveManager.RestoreData -= ReloadPlayerInventory;
+		SaveManager.ReloadSaveGameData -= ReloadPlayerInventory;
+
 		PlayerClassesUi.OnNewAbilityUnlock -= AddNewUnlockedAbility;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
@@ -138,6 +143,10 @@ public class PlayerInventoryUi : MonoBehaviour
 	//restore player inventory data
 	private void ReloadPlayerInventory()
 	{
+		Debug.LogWarning("RELOADING PLAYER INVENTORY");
+
+		Debug.LogWarning("gold in save data: " + SaveManager.Instance.GameData.playerGoldAmount);
+
 		UpdateGoldAmount(SaveManager.Instance.GameData.playerGoldAmount);
 
 		RestoreInventoryItems(SaveManager.Instance.GameData.playerInventoryItems, InventorySlots);

@@ -6,6 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class SpawnHandler : MonoBehaviour
 {
@@ -58,7 +59,7 @@ public class SpawnHandler : MonoBehaviour
 		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
-		GameManager.OnSceneChangeFinish += TrySpawnEntities;
+		SceneManager.sceneLoaded += TrySpawnEntitiesOnSceneLoad;
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
@@ -68,7 +69,7 @@ public class SpawnHandler : MonoBehaviour
 		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
-		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
+		SceneManager.sceneLoaded -= TrySpawnEntitiesOnSceneLoad;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -208,6 +209,10 @@ public class SpawnHandler : MonoBehaviour
 
 		for (int i = 0; i < numToSpawn; i++)
 			SpawnEntity();
+	}
+	private void TrySpawnEntitiesOnSceneLoad(Scene newLoadedScene, LoadSceneMode mode)
+	{
+		TrySpawnEntities();
 	}
 	private void TrySpawnEntities()
 	{

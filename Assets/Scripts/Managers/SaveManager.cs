@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
 	public static SaveManager Instance;
 
-	public static event Action RestoreData; //event for data that needs to be restored
+	//public static event Action RestoreData; //event for data that needs to be restored
+
+	public static event Action ReloadSaveGameData;
+
+	public static event Action ReloadDungeonData;
 
 	[SerializeReference] public GameData GameData = new GameData();
 	[SerializeReference] public SlotData SlotData = new SlotData();
@@ -33,17 +38,6 @@ public class SaveManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
-	}
-
-	private void OnEnable()
-	{
-		//GameManager.OnSceneChangeFinish += LoadPlayerData;
-		//GameManager.OnSceneChangeFinish += RestoreGameData;
-	}
-	private void OnDisable()
-	{
-		//GameManager.OnSceneChangeFinish -= LoadPlayerData;
-		//GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
 	public void ReloadSaveSlots(GameObject saveSlotContainer)
@@ -197,7 +191,6 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadGameData(string directory)
 	{
-		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
@@ -214,8 +207,19 @@ public class SaveManager : MonoBehaviour
 	//restore data event called on scene change
 	public void RestoreGameData()
 	{
+		//Debug.LogError("restoring data at: " + DateTime.Now.ToString());
+		//RestoreData?.Invoke();
+	}
+
+	public void RestoreSaveGameData()
+	{
+		Debug.LogError("restoring game data at: " + DateTime.Now.ToString());
+		ReloadSaveGameData?.Invoke();
+	}
+	public void RestoreDungeonData()
+	{
 		Debug.LogError("restoring data at: " + DateTime.Now.ToString());
-		RestoreData?.Invoke();
+		ReloadDungeonData?.Invoke();
 	}
 
 	//saving/loading/deleting json file
@@ -236,6 +240,8 @@ public class SaveManager : MonoBehaviour
 		string filePath = directory + fileName;
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		Instance.GameData = JsonUtility.FromJson<GameData>(inventoryData);
+
+		Debug.LogWarning("gold in save data: " + SaveManager.Instance.GameData.playerGoldAmount);
 	}
 	private void DeleteJsonFile(string directory, string fileName)
 	{

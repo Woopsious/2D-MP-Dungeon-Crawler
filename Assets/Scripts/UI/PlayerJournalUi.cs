@@ -34,7 +34,8 @@ public class PlayerJournalUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadActiveQuests;
+		//SaveManager.RestoreData += ReloadActiveQuests;
+		SaveManager.ReloadSaveGameData += ReloadActiveQuests;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent += HidePlayerJournal;
@@ -49,7 +50,8 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadActiveQuests;
+		//SaveManager.RestoreData -= ReloadActiveQuests;
+		SaveManager.ReloadSaveGameData -= ReloadActiveQuests;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerClassSelectionEvent -= HidePlayerJournal;
