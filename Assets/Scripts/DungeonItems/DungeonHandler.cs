@@ -20,6 +20,9 @@ public class DungeonHandler : MonoBehaviour
 	{
 		Instance = this;	
 		ActivateRandomChests();
+	}
+	private void Start()
+	{
 		MovePlayersToEnterencePortal();
 	}
 	private void OnEnable()

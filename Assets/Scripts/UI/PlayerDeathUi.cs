@@ -84,7 +84,7 @@ public class PlayerDeathUi : MonoBehaviour
 	//button actions
 	public void RespawnPlayerInHubArea()
 	{
-		GameManager.Instance.LoadHubArea(false);
+		GameManager.Instance.LoadHubArea(false, false);
 
 		HidePlayerDeathUi();
 	}

@@ -240,8 +240,6 @@ public class SaveManager : MonoBehaviour
 		string filePath = directory + fileName;
 		string inventoryData = System.IO.File.ReadAllText(filePath);
 		Instance.GameData = JsonUtility.FromJson<GameData>(inventoryData);
-
-		Debug.LogWarning("gold in save data: " + SaveManager.Instance.GameData.playerGoldAmount);
 	}
 	private void DeleteJsonFile(string directory, string fileName)
 	{

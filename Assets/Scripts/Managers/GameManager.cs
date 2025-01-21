@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
 	public static bool isNewGame;   //dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 
+
+
 	public static event Action sceneFinishedLoading;
 
 	public static string currentGameDataDirectory;
@@ -36,7 +38,8 @@ public class GameManager : MonoBehaviour
 	public readonly string dungeonOneScene = "DungeonOneScene";
 	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
 
-	public Scene previouslyLoadedScene;
+	//public Scene previouslyLoadedScene;
+	public Scene currentlyLoadedScene;
 
 	public GameObject PlayerPrefab;
 	public static PlayerController Localplayer { get; private set; }
@@ -63,7 +66,7 @@ public class GameManager : MonoBehaviour
 		GetAllBossSceneNames();
 
 		if (MainMenuManager.Instance == null)
-			StartCoroutine(LoadUiScene());
+			LoadUiScene();
 
 		if (SceneHandler.Instance == null) //if != null starting scene = different scene
 			LoadMainMenu(); //starting scene = MainScene
@@ -112,14 +115,26 @@ public class GameManager : MonoBehaviour
 	}
 
 	//loading different scenes
+	public void LoadUiScene()
+	{
+		StartCoroutine(LoadSceneAsync(uiScene, false));
+	}
 	public void LoadMainMenu()
 	{
 		SaveManager.Instance.GameData = new GameData();
 
 		StartCoroutine(LoadSceneAsync(menuScene, false));
 	} 
-	public void LoadHubArea(bool isNewGame)
+	public void LoadHubArea(bool isNewGame, bool reloadAllScenes)
 	{
+		Debug.LogError("reload all scenes: " + reloadAllScenes);
+
+		if (reloadAllScenes)
+		{
+			ReloadAllScenes();
+			return;
+		}
+
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(hubScene, isNewGame);
 		else
@@ -164,16 +179,17 @@ public class GameManager : MonoBehaviour
 	}
 
 	//SCENE LOADING
-	private IEnumerator LoadUiScene()
+	private void ReloadAllScenes() //when loading a save file whilst already in a game scene
 	{
-		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(uiScene, LoadSceneMode.Additive);
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
-		while (!asyncLoadScene.isDone)
-			yield return null;
+		StartCoroutine(LoadSceneAsync(uiScene, false));
+		StartCoroutine(LoadSceneAsync(hubScene, false));
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
-		Debug.LogError("load scene async");
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		GameManager.isNewGame = isNewGame;
 		Instance.PauseGame(false);
@@ -195,9 +211,7 @@ public class GameManager : MonoBehaviour
 		Debug.LogError("loaded scene name: " + newLoadedScene.name + " at: " + DateTime.Now.ToString());
 
 		UpdateActiveSceneToMainScene(newLoadedScene);
-
-		TryUnloadPreviousScene(previouslyLoadedScene);
-		previouslyLoadedScene = newLoadedScene;
+		UpdateCurrentlyLoadedScene(newLoadedScene);
 
 		if (LocalPlayerCamera == null)
 			SpawnPlayerCamera();
@@ -207,31 +221,28 @@ public class GameManager : MonoBehaviour
 
 		if (newLoadedScene.name == Instance.hubScene && !isNewGame)
 			SaveManager.Instance.RestoreSaveGameData();
-		else
+		else if (newLoadedScene.name.Contains("Boss")) //boss dungeons dont have data to restore
+			return;
+		else if (newLoadedScene.name.Contains("Dungeon"))
 			SaveManager.Instance.RestoreDungeonData();
 	}
 
 	//SCENE UNLOADING
-	private void TryUnloadPreviousScene(Scene newLoadedScene)
+	private IEnumerator TryUnLoadSceneAsync(string sceneToUnLoad)
 	{
-		if (newLoadedScene.name.IsNullOrEmpty() || previouslyLoadedScene.name.IsNullOrEmpty()) return; //no scene to unload
-		if (NewLoadedSceneNeverUnloaded(newLoadedScene)) return;
+		if (!sceneToUnLoad.IsNullOrEmpty())
+		{
+			AsyncOperation asyncUnLoadScene = SceneManager.UnloadSceneAsync(sceneToUnLoad);
 
-		StartCoroutine(UnloadSceneAsync(previouslyLoadedScene.name));
-		previouslyLoadedScene = newLoadedScene;
-	}
-	private IEnumerator UnloadSceneAsync(string sceneToUnLoad)
-	{
-		AsyncOperation asyncLoadScene = SceneManager.UnloadSceneAsync(sceneToUnLoad);
-
-		while (!asyncLoadScene.isDone)
-			yield return null;
+			while (!asyncUnLoadScene.isDone)
+				yield return null;
+		}
 	}
 
 	//SCENE UNLOAD EVENT
 	private void OnUnloadSceneFinish(Scene unLoadedScene)
 	{
-		Debug.LogError("unloaded scene name: " + unLoadedScene.name);
+		Debug.LogError("unloaded scene: " + unLoadedScene.name + " at: " + DateTime.Now.ToString());
 	}
 
 	//SCENE CHECKS
@@ -255,16 +266,30 @@ public class GameManager : MonoBehaviour
 		}
 	}
 
-	//SET ACTIVE SCENE
+	//IMPORTANT SCENE CHECKS
 	private void UpdateActiveSceneToMainScene(Scene newLoadedScene)
 	{
 		Scene currentActiveScene = SceneManager.GetActiveScene();
 		if (currentActiveScene.name == mainScene) return;
-
-		if (SceneIsHubOrDungeonScene(currentActiveScene))
-			SpawnSinglePlayerObject();
-
 		SceneManager.SetActiveScene(newLoadedScene);
+
+		//if (SceneIsHubOrDungeonScene(currentActiveScene))
+			//SpawnSinglePlayerObject();
+	}
+	private void UpdateCurrentlyLoadedScene(Scene newLoadedScene)
+	{
+		//scenes always stay loaded so ignore
+		if (NewLoadedSceneNeverUnloaded(newLoadedScene)) return;
+		currentlyLoadedScene = newLoadedScene;
+
+		Debug.LogError("update loaded scene name: " + newLoadedScene.name);
+	}
+
+	//PLAYER CAMERA SPAWNING
+	private void SpawnPlayerCamera()
+	{
+		GameObject cameraObj = Instantiate(CameraPrefab);
+		LocalPlayerCamera = cameraObj.GetComponent<Camera>();
 	}
 
 	//PLAYER OBJECT SPAWNING
@@ -297,13 +322,6 @@ public class GameManager : MonoBehaviour
 			Destroy(Localplayer.gameObject);
 
 		Localplayer = newLocalPlayer;
-	}
-
-	//PLAYER CAMERA SPAWNING
-	private void SpawnPlayerCamera()
-	{
-		GameObject cameraObj = Instantiate(CameraPrefab);
-		LocalPlayerCamera = cameraObj.GetComponent<Camera>();
 	}
 
 	//pause game

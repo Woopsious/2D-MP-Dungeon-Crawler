@@ -91,7 +91,7 @@ public class DungeonPortalUi : MonoBehaviour
 	private void GenerateNewDungeons()
 	{
 		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.SceneIsActive(GameManager.Instance.previouslyLoadedScene.name)) return; //if not hub area return
+		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return; //if not hub area return
 
 		activeDungeonLists.Clear();
 
@@ -146,7 +146,7 @@ public class DungeonPortalUi : MonoBehaviour
 			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
 
 		SaveManager.Instance.AutoSaveData();
-		GameManager.Instance.LoadHubArea(false);
+		GameManager.Instance.LoadHubArea(false, false);
 	}
 
 	//Events

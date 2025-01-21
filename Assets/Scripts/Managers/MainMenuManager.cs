@@ -76,21 +76,15 @@ public class MainMenuManager : MonoBehaviour
 
 	private void OnEnable()
 	{
-		SceneManager.sceneLoaded += ShouldPlayerUiBeActive;
+		SceneManager.sceneLoaded += UpdatePlayerUiOnSceneChange;
 	}
 	private void OnDisable()
 	{
-		SceneManager.sceneLoaded -= ShouldPlayerUiBeActive;
+		SceneManager.sceneLoaded -= UpdatePlayerUiOnSceneChange;
 	}
 
-	private void ShouldPlayerUiBeActive(Scene loadedScene, LoadSceneMode mode)
+	private void UpdatePlayerUiOnSceneChange(Scene loadedScene, LoadSceneMode mode)
 	{
-		if (GameManager.Instance == null)
-		{
-			Debug.LogWarning("Game Manager Instance NULL on scene change event, ignore if testing");
-			return;
-		}
-
 		if (GameManager.Instance == null)
 		{
 			//load the main scene
@@ -120,10 +114,7 @@ public class MainMenuManager : MonoBehaviour
 
 	private void EnableMainMenuButtons()
 	{
-		//enable buttons unique to main menu scene
-
-		if (Utilities.SceneIsActive("TestingScene")) return;
-		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return;
+		if (!Utilities.SceneIsActive(GameManager.Instance.mainScene)) return;
 
 		quitGameButton.SetActive(true);
 		startNewGameButton.SetActive(true);
@@ -151,7 +142,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void StartNewGameButton()
 	{
-		GameManager.Instance.LoadHubArea(true);
+		GameManager.Instance.LoadHubArea(true, false);
 	}
 
 
@@ -224,8 +215,6 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void ShowMainMenu()
 	{
-		Debug.LogError("Show Main Menu");
-
 		SetActionForPlayMpButton();
 		HideSaveSlotsMenu();
 		HideKeybindsMenu();
@@ -236,8 +225,6 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void HideMainMenu()
 	{
-		Debug.LogError("Hide Main Menu");
-
 		mainMenuPanel.SetActive(false);
 		GameManager.Instance.PauseGame(false);
 	}
