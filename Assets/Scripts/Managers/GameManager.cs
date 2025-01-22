@@ -5,6 +5,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
+using static GameManager;
 
 public class GameManager : MonoBehaviour
 {
@@ -12,7 +13,11 @@ public class GameManager : MonoBehaviour
 
 	public static bool isNewGame;   //dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 
-
+	public GameDataReloadMode gameDataReloadMode;
+	public enum GameDataReloadMode
+	{
+		reloadAllScenesAndData, reloadGameData, reloadDungeonData, noReload
+	}
 
 	public static event Action sceneFinishedLoading;
 
@@ -125,11 +130,15 @@ public class GameManager : MonoBehaviour
 
 		StartCoroutine(LoadSceneAsync(menuScene, false));
 	} 
-	public void LoadHubArea(bool isNewGame, bool reloadAllScenes)
+	public void LoadHubArea(bool isNewGame, GameDataReloadMode gameDataRestoreMode)
 	{
-		Debug.LogError("reload all scenes: " + reloadAllScenes);
+		Debug.LogError("reload all scenes: " + gameDataRestoreMode.ToString());
+		Debug.LogError("is new game: " + isNewGame);
 
-		if (reloadAllScenes)
+		GameManager.isNewGame = isNewGame;
+		Instance.gameDataReloadMode = gameDataRestoreMode;
+
+		if (gameDataRestoreMode == GameDataReloadMode.reloadAllScenesAndData)
 		{
 			ReloadAllScenes();
 			return;
@@ -184,6 +193,9 @@ public class GameManager : MonoBehaviour
 		StartCoroutine(TryUnLoadSceneAsync(uiScene));
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
+		Destroy(Localplayer.gameObject);
+		SpawnSinglePlayerObject();
+
 		StartCoroutine(LoadSceneAsync(uiScene, false));
 		StartCoroutine(LoadSceneAsync(hubScene, false));
 	}
@@ -219,12 +231,21 @@ public class GameManager : MonoBehaviour
 		if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
 			SpawnSinglePlayerObject();
 
-		if (newLoadedScene.name == Instance.hubScene && !isNewGame)
-			SaveManager.Instance.RestoreSaveGameData();
-		else if (newLoadedScene.name.Contains("Boss")) //boss dungeons dont have data to restore
-			return;
-		else if (newLoadedScene.name.Contains("Dungeon"))
-			SaveManager.Instance.RestoreDungeonData();
+
+		if (SceneIsHubOrDungeonScene(newLoadedScene))
+		{
+			if (gameDataReloadMode == GameDataReloadMode.reloadAllScenesAndData)
+			{
+				SaveManager.Instance.ReloadSaveGameDataEvent();
+				SaveManager.Instance.ReloadDungeonDataEvent();
+			}
+			else if (gameDataReloadMode == GameDataReloadMode.reloadGameData)
+				SaveManager.Instance.ReloadSaveGameDataEvent();
+			else if (gameDataReloadMode == GameDataReloadMode.reloadDungeonData)
+				SaveManager.Instance.ReloadDungeonDataEvent();
+
+			Instance.gameDataReloadMode = GameDataReloadMode.noReload;
+		}
 	}
 
 	//SCENE UNLOADING

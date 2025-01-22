@@ -36,12 +36,13 @@ public class PlayerInventoryHandler : MonoBehaviour
 	//spawn starting items based on starting class + if already receieved them
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
+		RestorePlayerStartingItemsState();
+
 		if (Application.isEditor)
 		{
 			DebugSpawnStartingItems(playerClass);
 			return;
 		}
-		RestorePlayerStartingItemsState();
 
 		if (SaveManager.Instance != null) //skip when in testing scene
 		{

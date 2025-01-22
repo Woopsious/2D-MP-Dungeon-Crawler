@@ -142,7 +142,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void StartNewGameButton()
 	{
-		GameManager.Instance.LoadHubArea(true, false);
+		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.noReload);
 	}
 
 

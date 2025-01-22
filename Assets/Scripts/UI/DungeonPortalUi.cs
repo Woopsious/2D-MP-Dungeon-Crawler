@@ -140,18 +140,27 @@ public class DungeonPortalUi : MonoBehaviour
 			return;
 		}
 
+		Debug.LogError("GM current dungeon data index: " + GameManager.Instance.currentDungeonData.dungeonIndex);
+		Debug.LogError("saved dungeons count: " + savedDungeonLists.Count);
+
+		Debug.LogError("GM current dungeon data index: " + GameManager.Instance.currentDungeonData.dungeonIndex);
+		Debug.LogError("active dungeons count: " + activeDungeonLists.Count);
+
 		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
 			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
 		else
 			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
 
 		SaveManager.Instance.AutoSaveData();
-		GameManager.Instance.LoadHubArea(false, false);
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.noReload);
 	}
 
 	//Events
 	private void ReloadSavedDungeons()
 	{
+		Debug.LogError("saved dungeons count: " + SaveManager.Instance.GameData.savedDungeonsList.Count);
+		Debug.LogError("active dungeons count: " + SaveManager.Instance.GameData.activeDungeonsList.Count);
+
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, hiddenDungeonsParentObj.transform);
@@ -178,6 +187,7 @@ public class DungeonPortalUi : MonoBehaviour
 
 		activeDungeonLists.Remove(dungeonData);
 		savedDungeonLists.Add(dungeonData);
+		UpdateDungeonIndexes();
 	}
 	private void OnDeleteDungeon(DungeonDataUi dungeonData)
 	{
@@ -185,6 +195,14 @@ public class DungeonPortalUi : MonoBehaviour
 		savedDungeonLists.Remove(dungeonData);
 
 		Destroy(dungeonData.gameObject);
+		UpdateDungeonIndexes();
+	}
+	private void UpdateDungeonIndexes()
+	{
+		for (int i = 0; i < activeDungeonLists.Count; i++)
+			activeDungeonLists[i].dungeonIndex = i;
+		for (int i = 0; i < savedDungeonLists.Count; i++)
+			savedDungeonLists[i].dungeonIndex = i;
 	}
 	private void HidePortalUiOnSceneChange(Scene newSceneLoaded, LoadSceneMode mode)
 	{
@@ -200,7 +218,11 @@ public class DungeonPortalUi : MonoBehaviour
 		{
 			dungeonEnterenceUi.SetActive(true);
 			dungeonExitUi.SetActive(false);
-			ShowActiveDungeonListUi();
+
+			if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
+				ShowActiveDungeonListUi();
+			else
+				ShowSavedDungeonListUi();
 		}
 		else
 		{
@@ -218,8 +240,6 @@ public class DungeonPortalUi : MonoBehaviour
 
 	public void ShowActiveDungeonListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Active Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.activeDungeons;
 		RemoveContentFromDungeonList();
@@ -227,8 +247,6 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ShowSavedDungeonListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.savedDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Saved Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.savedDungeons;
 		RemoveContentFromDungeonList();
@@ -236,8 +254,6 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ShowBossDungeonsListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Boss Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.bossDungeons;
 		RemoveContentFromDungeonList();
@@ -255,17 +271,26 @@ public class DungeonPortalUi : MonoBehaviour
 		if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in activeDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
 		else if (dungeonListTypeToShow == DungeonListTypeToShow.savedDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in savedDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
 		else if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in bossDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
 	}
 }

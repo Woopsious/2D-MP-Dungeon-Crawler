@@ -211,12 +211,12 @@ public class SaveManager : MonoBehaviour
 		//RestoreData?.Invoke();
 	}
 
-	public void RestoreSaveGameData()
+	public void ReloadSaveGameDataEvent()
 	{
 		Debug.LogError("restoring game data at: " + DateTime.Now.ToString());
 		ReloadSaveGameData?.Invoke();
 	}
-	public void RestoreDungeonData()
+	public void ReloadDungeonDataEvent()
 	{
 		Debug.LogError("restoring data at: " + DateTime.Now.ToString());
 		ReloadDungeonData?.Invoke();

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 4675728202416371542}
   - component: {fileID: 56621275109952259}
   m_Layer: 5
-  m_Name: UnExplored
+  m_Name: ExploredText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -415,7 +415,7 @@ GameObject:
   - component: {fileID: 663233435168473576}
   - component: {fileID: 1515268032787356978}
   m_Layer: 5
-  m_Name: Save
+  m_Name: SaveButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -548,7 +548,7 @@ GameObject:
   - component: {fileID: 1838538752394646467}
   - component: {fileID: 2481735150716793021}
   m_Layer: 5
-  m_Name: Enter
+  m_Name: EnterButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -764,7 +764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   saveDungeonButtonObj: {fileID: 4041248023949442013}
   deleteDungeonButtonObj: {fileID: 5371224632907642263}
-  dungeonUnExploredText: {fileID: 56621275109952259}
+  dungeonExploredText: {fileID: 56621275109952259}
   dungeonDifficultyText: {fileID: 2634872586238428159}
   dungeonModifiersText: {fileID: 444695567295311962}
   hasExploredDungeon: 0
@@ -772,6 +772,7 @@ MonoBehaviour:
   dungeonIndex: 0
   dungeonNumber: 0
   maxDungeonModifiers: 0
+  bossToSpawn: {fileID: 0}
   dungeonStatModifiers:
     difficultyModifier: 0
     healthModifier: 0
@@ -802,7 +803,7 @@ GameObject:
   - component: {fileID: 933185565861877937}
   - component: {fileID: 5251040313538628223}
   m_Layer: 5
-  m_Name: Delete
+  m_Name: DeleteButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -934,7 +935,7 @@ GameObject:
   - component: {fileID: 5176490384587171160}
   - component: {fileID: 444695567295311962}
   m_Layer: 5
-  m_Name: Modifiers
+  m_Name: ModifiersText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1068,7 +1069,7 @@ GameObject:
   - component: {fileID: 839854484553219658}
   - component: {fileID: 2634872586238428159}
   m_Layer: 5
-  m_Name: Difficulty
+  m_Name: DifficultyText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

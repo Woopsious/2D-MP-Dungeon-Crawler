@@ -12,7 +12,7 @@ public class DungeonDataUi : MonoBehaviour
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
 
-	public TMP_Text dungeonUnExploredText;
+	public TMP_Text dungeonExploredText;
 	public TMP_Text dungeonDifficultyText;
 	public TMP_Text dungeonModifiersText;
 
@@ -46,29 +46,8 @@ public class DungeonDataUi : MonoBehaviour
 		dungeonNumber = choice + 4; //+4 for other scenes in build
 		int modifier = Utilities.GetRandomNumber(2);
 
-		if (hasExploredDungeon == false)
-			dungeonUnExploredText.gameObject.SetActive(true);
-		else
-			dungeonUnExploredText.gameObject.SetActive(false);
-
-		if (modifier == 0)
-		{
-			maxDungeonModifiers = 1;
-			dungeonStatModifiers.difficultyModifier = 0;
-			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
-		}
-		else if (modifier == 1)
-		{
-			maxDungeonModifiers = 3;
-			dungeonStatModifiers.difficultyModifier = 0.1f;
-			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
-		}
-		else
-		{
-			maxDungeonModifiers = 5;
-			dungeonStatModifiers.difficultyModifier = 0.25f;
-			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
-		}
+		SetDifficultyModifierAndUI(modifier);
+		UpdateDynamicUi();
 
 		for (int i = 0; i < maxDungeonModifiers; i++)
 		{
@@ -76,11 +55,8 @@ public class DungeonDataUi : MonoBehaviour
 			if (chanceOfModifier <= 50) continue;
 
 			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetModifierForDungeon(modifierType);
+			SetDungeonModifiersAndUi(modifierType);
 		}
-		
-		saveDungeonButtonObj.SetActive(true);
-		deleteDungeonButtonObj.SetActive(false);
 	}
 	public void Initilize(DungeonData dungeonData, int index) //initilize dungeon from saved data
 	{
@@ -91,26 +67,16 @@ public class DungeonDataUi : MonoBehaviour
 		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
 		dungeonChestData = dungeonData.dungeonChestData;
 
-		if (hasExploredDungeon == false)
-			dungeonUnExploredText.gameObject.SetActive(true);
-		else
-			dungeonUnExploredText.gameObject.SetActive(false);
-
+		int modifier;
 		if (dungeonStatModifiers.difficultyModifier == 0)
-		{
-			maxDungeonModifiers = 1;
-			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
-		}
+			modifier = 0;
 		else if (dungeonStatModifiers.difficultyModifier == 0.1f)
-		{
-			maxDungeonModifiers = 3;
-			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
-		}
+			modifier = 1;
 		else
-		{
-			maxDungeonModifiers = 5;
-			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
-		}
+			modifier = 2;
+
+		SetDifficultyModifierAndUI(modifier);
+		UpdateDynamicUi();
 
 		if (dungeonStatModifiers.healthModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.healthModifier)}% more Health";
@@ -151,46 +117,33 @@ public class DungeonDataUi : MonoBehaviour
 		this.bossToSpawn = bossToSpawn;
 		int modifier = dungeonDifficulty;
 
-		//repurpose text to display what boss player will face
-		dungeonUnExploredText.gameObject.SetActive(true);
-		dungeonUnExploredText.text = bossToSpawn.entityName;
+		SetDifficultyModifierAndUI(modifier);
+		UpdateDynamicUi();
+	}
 
-		//for now boss dungeons have no modifiers just difficulty
+	//dungeon set ups + ui
+	private void SetDifficultyModifierAndUI(int modifier)
+	{
 		if (modifier == 0)
 		{
-			maxDungeonModifiers = 0;
+			maxDungeonModifiers = 1;
 			dungeonStatModifiers.difficultyModifier = 0;
 			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
 		}
 		else if (modifier == 1)
 		{
-			maxDungeonModifiers = 0;
+			maxDungeonModifiers = 3;
 			dungeonStatModifiers.difficultyModifier = 0.1f;
 			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
 		}
 		else
 		{
-			maxDungeonModifiers = 0;
+			maxDungeonModifiers = 5;
 			dungeonStatModifiers.difficultyModifier = 0.25f;
 			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
 		}
-
-		/*
-		for (int i = 0; i < maxDungeonModifiers; i++)
-		{
-			int chanceOfModifier = Utilities.GetRandomNumber(100);
-			if (chanceOfModifier <= 50) continue;
-
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetModifierForDungeon(modifierType);
-		}
-		*/
-
-		//boss dungeons dont care about this
-		saveDungeonButtonObj.SetActive(false);
-		deleteDungeonButtonObj.SetActive(false);
 	}
-	private void SetModifierForDungeon(int modifierType)
+	private void SetDungeonModifiersAndUi(int modifierType)
 	{
 		float modifierValue = 0.25f;
 
@@ -264,6 +217,33 @@ public class DungeonDataUi : MonoBehaviour
 		}
 		else
 			Debug.LogError("modifer type out of range");
+	}
+	public void UpdateDynamicUi()
+	{
+		if (dungeonNumber == -1) //boss dungeon
+		{
+			dungeonExploredText.gameObject.SetActive(true);
+			dungeonExploredText.text = bossToSpawn.entityName;
+
+			saveDungeonButtonObj.SetActive(false);
+			deleteDungeonButtonObj.SetActive(false);
+		}
+
+		if (hasExploredDungeon)
+			dungeonExploredText.text = "<color=yellow>Explored</color>";
+		else
+			dungeonExploredText.text = "<color=yellow>!!!Unexplored!!!</color>";
+
+		if (isDungeonSaved)
+		{
+			saveDungeonButtonObj.SetActive(false);
+			deleteDungeonButtonObj.SetActive(true);
+		}
+		else
+		{
+			saveDungeonButtonObj.SetActive(true);
+			deleteDungeonButtonObj.SetActive(false);
+		}
 	}
 
 	//actions

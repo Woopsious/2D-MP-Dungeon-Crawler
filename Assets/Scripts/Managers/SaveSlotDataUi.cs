@@ -90,7 +90,7 @@ public class SaveSlotDataUi : MonoBehaviour
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene))
 		{
 			SaveManager.Instance.LoadGameData(folderDirectory);
-			GameManager.Instance.LoadHubArea(false, false);
+			GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadGameData);
 			MainMenuManager.Instance.HideSaveSlotsMenu();
 		}
 		else
@@ -99,7 +99,7 @@ public class SaveSlotDataUi : MonoBehaviour
 	public void ConfirmLoadGame()
 	{
 		SaveManager.Instance.LoadGameData(folderDirectory);
-		GameManager.Instance.LoadHubArea(false, true);
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 		MainMenuManager.Instance.HideConfirmActionPanel();
 		MainMenuManager.Instance.HideSaveSlotsMenu();
 	}
