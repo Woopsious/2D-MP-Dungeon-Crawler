@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
@@ -13,27 +14,13 @@ public class GameManager : MonoBehaviour
 
 	public static bool isNewGame;   //dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 
-	public GameDataReloadMode gameDataReloadMode;
+	private GameDataReloadMode gameDataReloadMode;
 	public enum GameDataReloadMode
 	{
 		reloadAllScenesAndData, reloadGameData, reloadDungeonData, noReload
 	}
 
-	public static event Action sceneFinishedLoading;
-
 	public static string currentGameDataDirectory;
-
-	/// <summary>
-	/// if i ever want to make it so u can go from a standard dungeon to a boss dungeon. to save a lot of headache and it might possibly 
-	/// be funner, is once u kill the boss in the boss dungeon it returns u to the hub instead of the standard dungeon u entered from.
-	/// </summary>
-	public DungeonData currentDungeonData;
-
-	public List<string> dungeonSceneNamesList = new List<string>();
-	public List<string> bossSceneNamesList = new List<string>();
-
-	public List<Scene> activeScenesList = new List<Scene>();
-	public List<string> activeScenesNameList = new List<string>();
 
 	public readonly string mainScene = "MainScene";
 	public readonly string menuScene = "MenuScene";
@@ -43,7 +30,7 @@ public class GameManager : MonoBehaviour
 	public readonly string dungeonOneScene = "DungeonOneScene";
 	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
 
-	//public Scene previouslyLoadedScene;
+	public GameObject LoadingLevelPanel;
 	public Scene currentlyLoadedScene;
 
 	public GameObject PlayerPrefab;
@@ -51,6 +38,11 @@ public class GameManager : MonoBehaviour
 
 	public GameObject CameraPrefab;
 	public static Camera LocalPlayerCamera;
+
+	public List<string> dungeonSceneNamesList = new List<string>();
+	public List<string> bossSceneNamesList = new List<string>();
+
+	public DungeonData currentDungeonData;
 
 	private void Awake()
 	{
@@ -132,9 +124,6 @@ public class GameManager : MonoBehaviour
 	} 
 	public void LoadHubArea(bool isNewGame, GameDataReloadMode gameDataRestoreMode)
 	{
-		Debug.LogError("reload all scenes: " + gameDataRestoreMode.ToString());
-		Debug.LogError("is new game: " + isNewGame);
-
 		GameManager.isNewGame = isNewGame;
 		Instance.gameDataReloadMode = gameDataRestoreMode;
 
@@ -194,13 +183,13 @@ public class GameManager : MonoBehaviour
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		Destroy(Localplayer.gameObject);
-		SpawnSinglePlayerObject();
 
 		StartCoroutine(LoadSceneAsync(uiScene, false));
 		StartCoroutine(LoadSceneAsync(hubScene, false));
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
+		LoadingLevelPanel.SetActive(true);
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		GameManager.isNewGame = isNewGame;
@@ -228,9 +217,11 @@ public class GameManager : MonoBehaviour
 		if (LocalPlayerCamera == null)
 			SpawnPlayerCamera();
 
-		if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
-			SpawnSinglePlayerObject();
-
+		if (!MultiplayerManager.Instance.isMultiplayer)
+		{
+			if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
+				SpawnSinglePlayerObject();
+		}
 
 		if (SceneIsHubOrDungeonScene(newLoadedScene))
 		{
@@ -246,6 +237,8 @@ public class GameManager : MonoBehaviour
 
 			Instance.gameDataReloadMode = GameDataReloadMode.noReload;
 		}
+
+		LoadingLevelPanel.SetActive(false);
 	}
 
 	//SCENE UNLOADING
@@ -266,44 +259,29 @@ public class GameManager : MonoBehaviour
 		Debug.LogError("unloaded scene: " + unLoadedScene.name + " at: " + DateTime.Now.ToString());
 	}
 
-	//SCENE CHECKS
+	//SCENE CHECKS/UPDATES
+	private void UpdateActiveSceneToMainScene(Scene newLoadedScene)
+	{
+		Scene currentActiveScene = SceneManager.GetActiveScene();
+		if (currentActiveScene.name == mainScene) return;
+		SceneManager.SetActiveScene(newLoadedScene);
+	}
+	private void UpdateCurrentlyLoadedScene(Scene newLoadedScene)
+	{
+		if (NewLoadedSceneNeverUnloaded(newLoadedScene)) return;    //scenes always stay loaded so ignore
+		currentlyLoadedScene = newLoadedScene;
+	}
 	private bool NewLoadedSceneNeverUnloaded(Scene newLoadedScene)
 	{
 		if (newLoadedScene.name == mainScene || newLoadedScene.name == uiScene)
 			return true;
 		else return false;
 	}
-	public bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
+	private bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
 	{
 		if (newLoadedScene.name.Contains("Dungeon") || newLoadedScene.name.Contains("Hub"))
-		{
-			//Debug.LogError("Scene is dungeon or hub");
 			return true;
-		}
-		else
-		{
-			//Debug.LogError("Scene isnt dungeon or hub");
-			return false;
-		}
-	}
-
-	//IMPORTANT SCENE CHECKS
-	private void UpdateActiveSceneToMainScene(Scene newLoadedScene)
-	{
-		Scene currentActiveScene = SceneManager.GetActiveScene();
-		if (currentActiveScene.name == mainScene) return;
-		SceneManager.SetActiveScene(newLoadedScene);
-
-		//if (SceneIsHubOrDungeonScene(currentActiveScene))
-			//SpawnSinglePlayerObject();
-	}
-	private void UpdateCurrentlyLoadedScene(Scene newLoadedScene)
-	{
-		//scenes always stay loaded so ignore
-		if (NewLoadedSceneNeverUnloaded(newLoadedScene)) return;
-		currentlyLoadedScene = newLoadedScene;
-
-		Debug.LogError("update loaded scene name: " + newLoadedScene.name);
+		else return false;
 	}
 
 	//PLAYER CAMERA SPAWNING
@@ -324,14 +302,17 @@ public class GameManager : MonoBehaviour
 
 		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
 		{
-			GameObject obj = Instantiate(PlayerPrefab);
-			PlayerController player = obj.GetComponent<PlayerController>();
+			GameObject playerObj = Instantiate(PlayerPrefab);
+			PlayerController player = playerObj.GetComponent<PlayerController>();
 			Instance.UpdateLocalPlayerInstance(player);
 		}
 	}
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
 		GameObject playerObj = Instantiate(PlayerPrefab);
+		PlayerController player = playerObj.GetComponent<PlayerController>();
+		Instance.UpdateLocalPlayerInstance(player);
+
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
 		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner, true);

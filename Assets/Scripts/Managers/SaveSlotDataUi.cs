@@ -44,10 +44,16 @@ public class SaveSlotDataUi : MonoBehaviour
 			loadButtonObj.SetActive(true);
 			deleteButtonObj.SetActive(true);
 		}
-		if (Utilities.SceneIsActive(GameManager.Instance.menuScene))
-			saveButtonObj.SetActive(false);
+
+		if (MultiplayerManager.Instance.isMultiplayer) //hide button for Mp
+			loadButtonObj.SetActive(false);
 		else
+			loadButtonObj.SetActive(true);
+
+		if (Utilities.SceneIsActive(GameManager.Instance.hubScene)) //limit saving game to hub area
 			saveButtonObj.SetActive(true);
+		else
+			saveButtonObj.SetActive(false);
 	}
 	private string GrabSaveSlotNumber(string directory)
 	{

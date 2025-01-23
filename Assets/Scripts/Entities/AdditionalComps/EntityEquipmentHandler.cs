@@ -85,6 +85,8 @@ public class EntityEquipmentHandler : MonoBehaviour
 		}
 		//Accessory functions here if/when i decide to add it
 	}
+
+	//equip items visibly to player sprite (armor currently not supported visualy)
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
@@ -131,7 +133,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equipmentMana -= weapon.bonusMana;
 
 		entityStats.IdleWeaponSprite.sprite = null;
-		Destroy(weapon);
+		Destroy(weapon.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
@@ -163,7 +165,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
 
-		Destroy(armor);
+		Destroy(armor.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
@@ -199,7 +201,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 
-		Destroy(accessory);
+		Destroy(accessory.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)

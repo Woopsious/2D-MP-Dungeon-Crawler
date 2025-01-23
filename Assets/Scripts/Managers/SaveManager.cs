@@ -213,12 +213,12 @@ public class SaveManager : MonoBehaviour
 
 	public void ReloadSaveGameDataEvent()
 	{
-		Debug.LogError("restoring game data at: " + DateTime.Now.ToString());
+		Debug.LogError("reloading game data at: " + DateTime.Now.ToString());
 		ReloadSaveGameData?.Invoke();
 	}
 	public void ReloadDungeonDataEvent()
 	{
-		Debug.LogError("restoring data at: " + DateTime.Now.ToString());
+		Debug.LogError("reloading dungeon data at: " + DateTime.Now.ToString());
 		ReloadDungeonData?.Invoke();
 	}
 

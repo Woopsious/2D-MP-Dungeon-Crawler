@@ -194,10 +194,6 @@ public class EntityStats : NetworkBehaviour
 	}
 	private void RecieveHealing(float healthValue, bool isPercentageValue, float healingModifierPercentage)
 	{
-		Debug.LogError("hp value: " + healthValue);
-		Debug.LogError("percentage value: " + isPercentageValue);
-		Debug.LogError("hp percentage value: " + healingModifierPercentage);
-
 		if (isPercentageValue)
 			healthValue = maxHealth.finalValue * healthValue;
 

@@ -107,44 +107,20 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void HandleEmptySlots(InventorySlotDataUi slot)
 	{
 		if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
-		{
 			OnWeaponUnequip(equippedWeapon);
-			Destroy(equippedWeapon.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.weaponOffhand)
-		{
 			OnWeaponUnequip(equippedOffhandWeapon);
-			Destroy(equippedOffhandWeapon.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
-		{
 			OnArmorUnequip(equippedHelmet);
-			Destroy(equippedHelmet.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
-		{
 			OnArmorUnequip(equippedChestpiece);
-			Destroy(equippedChestpiece.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.legs)
-		{
 			OnArmorUnequip(equippedLegs);
-			Destroy(equippedLegs.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
-		{
 			OnAccessoryUnequip(equippedNecklace);
-			Destroy(equippedNecklace.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
-		{
 			OnAccessoryUnequip(equippedRingOne);
-			Destroy(equippedRingOne.gameObject);
-		}
 		if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
-		{
 			OnAccessoryUnequip(equippedRingTwo);
-			Destroy(equippedRingTwo.gameObject);
-		}
 	}
 }

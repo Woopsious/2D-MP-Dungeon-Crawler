@@ -153,15 +153,6 @@ public class MainMenuManager : MonoBehaviour
 	{
 		playMpButton.onClick.RemoveAllListeners();
 
-		if (GameManager.Instance == null) //testing
-		{
-			Debug.LogWarning("Game Manager Instance not found, showing play Multiplayer button, ignore if testing");
-			playMpButton.interactable = true;
-			playMpButtonText.color = Color.black;
-			playMpButtonText.text = "Play Multiplayer";
-			return;
-		}
-
 		if (LobbyManager.Instance != null && LobbyManager.Instance._Lobby != null) //player in lobby show lobby ui
 		{
 			playMpButton.onClick.AddListener(delegate { ShowLobbyUiWhenPlayerInLobby(); });
@@ -171,7 +162,7 @@ public class MainMenuManager : MonoBehaviour
 		}
 		else //player not in lobby show play mp process
 		{
-			if (SceneManager.GetActiveScene().name == GameManager.Instance.hubScene)
+			if (Utilities.SceneIsActive(GameManager.Instance.hubScene))
 			{
 				playMpButton.onClick.AddListener(delegate { PlayMultiplayer(); });
 				playMpButton.interactable = true;

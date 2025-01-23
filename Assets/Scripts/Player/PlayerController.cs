@@ -123,10 +123,13 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//set player data
-	public void Initilize()
+	private void Initilize()
 	{
 		if (IsLocalPlayerOrSinglePlayer())
+		{
 			UpdateLocalPlayerReferences();
+			PlayerInventoryUi.Instance.ReEquipPlayerEquipment();
+		}
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
@@ -136,7 +139,7 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.PlayerLevelUp(playerStats);
 		playerStats.CalculateBaseStats();
 	}
-	public void UpdateLocalPlayerReferences()
+	private void UpdateLocalPlayerReferences()
 	{
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
