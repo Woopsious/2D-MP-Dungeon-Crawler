@@ -95,6 +95,7 @@ public class MainMenuManager : MonoBehaviour
 		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
 		{
 			Instance.ShowMainMenu();
+			PlayerHotbarUi.Instance.HotbarPanelUi.GetComponent<Image>().enabled = false;
 			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
 				obj.SetActive(false);
 
@@ -104,6 +105,7 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
+			PlayerHotbarUi.Instance.HotbarPanelUi.GetComponent<Image>().enabled = true;
 			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
 				obj.SetActive(true);
 

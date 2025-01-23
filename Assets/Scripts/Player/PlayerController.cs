@@ -89,13 +89,11 @@ public class PlayerController : NetworkBehaviour
 
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += ReloadPlayerInfo;
 		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= ReloadPlayerInfo;
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 
@@ -107,7 +105,7 @@ public class PlayerController : NetworkBehaviour
 
 	private void Update()
 	{
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer || IsLocalPlayer)
+		if (GameManager.Localplayer == this)
 			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
 
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
@@ -121,6 +119,7 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		PlayerMovement();
+		HealPlayerInHubScene();
 	}
 
 	//set player data
@@ -209,6 +208,13 @@ public class PlayerController : NetworkBehaviour
 			speed = 12;
 		else
 			speed *= speedModifier;
+	}
+
+	private void HealPlayerInHubScene()
+	{
+		if (GameManager.Instance.currentlyLoadedScene.name != GameManager.Instance.hubScene) return;
+		if (playerStats.currentHealth < playerStats.maxHealth.finalValue)
+			playerStats.OnHeal(100, false, playerStats.healingPercentageModifier.finalPercentageValue);
 	}
 
 	//player auto attack
