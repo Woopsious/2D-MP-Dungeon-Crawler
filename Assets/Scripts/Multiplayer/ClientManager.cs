@@ -70,7 +70,7 @@ public class ClientManager : NetworkBehaviour
 
 		NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 		NetworkManager.Singleton.StartClient();
-		NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
+		//NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
 	}
 	public static async Task<RelayServerData> JoinRelayServerFromJoinCode(string joinCode)
 	{

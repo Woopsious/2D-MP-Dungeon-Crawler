@@ -48,7 +48,9 @@ public class MainMenuManager : MonoBehaviour
 	{
 		Instance = this;
 		canvasRef = GetComponent<Canvas>();
-
+	}
+	private void Start()
+	{
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
 		{
 			Instance.ShowMainMenu();
@@ -67,9 +69,7 @@ public class MainMenuManager : MonoBehaviour
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);
 		}
-	}
-	private void Start()
-	{
+
 		EnableMainMenuButtons();
 		SetActionForPlayMpButton();
 	}

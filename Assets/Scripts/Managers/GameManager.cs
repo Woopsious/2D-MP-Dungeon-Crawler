@@ -189,6 +189,8 @@ public class GameManager : MonoBehaviour
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
+		Debug.LogError("loading scene name: " + sceneToLoad + " at: " + DateTime.Now.ToString());
+
 		LoadingLevelPanel.SetActive(true);
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
@@ -201,9 +203,11 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadNewMultiplayerScene(string sceneToLoad, bool isNewGame)
 	{
-		GameManager.isNewGame = isNewGame;
+		LoadingLevelPanel.SetActive(true);
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
-		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
+		GameManager.isNewGame = isNewGame;
+		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);
 	}
 
 	//SCENE LOAD EVENT
@@ -310,20 +314,38 @@ public class GameManager : MonoBehaviour
 	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
 	{
 		GameObject playerObj = Instantiate(PlayerPrefab);
-		PlayerController player = playerObj.GetComponent<PlayerController>();
-		Instance.UpdateLocalPlayerInstance(player);
+		playerObj.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
 
+		Instance.UpdateLocalPlayerInstance(playerObj.GetComponent<PlayerController>());
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
-		NetworkObject playerNetworkedObj = playerObj.GetComponent<NetworkObject>();
-		playerNetworkedObj.SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
 	}
 
 	private void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
 	{
+		if (!NewPlayerObjOwnedByClient(newLocalPlayer))
+		{
+			Debug.LogError("not owner of new local player");
+			return;
+		}
+
+		DestroyOldLocalPlayer(newLocalPlayer);
+		Localplayer = newLocalPlayer;
+	}
+	private bool NewPlayerObjOwnedByClient(PlayerController newLocalPlayer)
+	{
+		if (!MultiplayerManager.Instance.isMultiplayer)
+			return true;
+		else
+		{
+			if (newLocalPlayer.IsOwner)
+				return true;
+			else return false;
+		}
+	}
+	private void DestroyOldLocalPlayer(PlayerController newLocalPlayer)
+	{
 		if (Localplayer != null && Localplayer != newLocalPlayer)
 			Destroy(Localplayer.gameObject);
-
-		Localplayer = newLocalPlayer;
 	}
 
 	//pause game

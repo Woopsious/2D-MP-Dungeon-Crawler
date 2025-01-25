@@ -71,7 +71,7 @@ public class HostManager : NetworkBehaviour
 		yield return null;
 
 		NetworkManager.Singleton.StartHost();
-		NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
+		//NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
 	}
 	public static async Task<RelayServerData> AllocateRelayServerAndGetJoinCode(int maxConnections, string region = null)
 	{

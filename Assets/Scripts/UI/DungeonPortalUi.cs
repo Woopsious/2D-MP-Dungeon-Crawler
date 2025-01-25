@@ -136,15 +136,9 @@ public class DungeonPortalUi : MonoBehaviour
 		//save data to corrisponding DungeonSlotUi, where SaveManager will then save/reload all DungeonSlotUi's
 		if (savedDungeonLists.Count == 0 && activeDungeonLists.Count == 0)
 		{
-			Debug.LogError("returning to hub scene whilst tesing dungeon scene not supported");
+			Debug.LogError("returning to hub scene whilst testing dungeon scene not supported");
 			return;
 		}
-
-		Debug.LogError("GM current dungeon data index: " + GameManager.Instance.currentDungeonData.dungeonIndex);
-		Debug.LogError("saved dungeons count: " + savedDungeonLists.Count);
-
-		Debug.LogError("GM current dungeon data index: " + GameManager.Instance.currentDungeonData.dungeonIndex);
-		Debug.LogError("active dungeons count: " + activeDungeonLists.Count);
 
 		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
 			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
@@ -158,9 +152,6 @@ public class DungeonPortalUi : MonoBehaviour
 	//Events
 	private void ReloadSavedDungeons()
 	{
-		Debug.LogError("saved dungeons count: " + SaveManager.Instance.GameData.savedDungeonsList.Count);
-		Debug.LogError("active dungeons count: " + SaveManager.Instance.GameData.activeDungeonsList.Count);
-
 		for (int i = 0; i < SaveManager.Instance.GameData.savedDungeonsList.Count; i++)
 		{
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, hiddenDungeonsParentObj.transform);
