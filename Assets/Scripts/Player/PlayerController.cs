@@ -141,6 +141,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void UpdateLocalPlayerReferences()
 	{
+		GameManager.Instance.UpdateLocalPlayerInstance(this);
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
 

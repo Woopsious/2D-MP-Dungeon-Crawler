@@ -36,6 +36,8 @@ public class ClientManager : NetworkBehaviour
 	//START/STOP CLIENT
 	public void StartClientAndJoinLobby(Lobby lobby)
 	{
+		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningGame);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
@@ -70,7 +72,7 @@ public class ClientManager : NetworkBehaviour
 
 		NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 		NetworkManager.Singleton.StartClient();
-		//NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
+		NetworkManager.Singleton.SceneManager.OnSceneEvent += MultiplayerManager.Instance.SceneManager_OnSceneEvent;
 	}
 	public static async Task<RelayServerData> JoinRelayServerFromJoinCode(string joinCode)
 	{
@@ -90,16 +92,12 @@ public class ClientManager : NetworkBehaviour
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsClient(ulong id)
 	{
+		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 		//noop
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
 	{
-		if (id != Instance.clientNetworkedId) return;
-		///<summery>
-		/// if disconnected player is this player stop client
-		/// shut down all mp related stuff, probably send player back to hub world/reload hubworld
-		/// possibly save player inventory or not??
-		///<summery>
+		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 
 		MultiplayerMenuUi.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
 		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();

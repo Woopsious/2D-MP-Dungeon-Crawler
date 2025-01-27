@@ -247,8 +247,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7214683641568887233}
   - component: {fileID: 5383993218733584273}
-  - component: {fileID: 5661256335365762632}
   - component: {fileID: 1339910767177227557}
+  - component: {fileID: 5661256335365762632}
+  - component: {fileID: 517425498110648122}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -313,25 +314,6 @@ MonoBehaviour:
       dualWeaponDamageModifier: 0
       rangedWeaponDamageModifier: 0
     dungeonChestData: []
---- !u!114 &5661256335365762632
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4909234089541067578}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 817ee5d073684c44ab72429af788e54c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  entityPool: []
-  inActiveEntityPool: []
-  projectilesPool: []
-  inActiveProjectilesPool: []
-  abilityAoePool: []
-  inActiveAoeAbilitesPool: []
-  droppedItemsPool: []
 --- !u!114 &1339910767177227557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,6 +386,39 @@ MonoBehaviour:
         name: 
         level: 
         date: 
+--- !u!114 &5661256335365762632
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 817ee5d073684c44ab72429af788e54c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entityPool: []
+  inActiveEntityPool: []
+  projectilesPool: []
+  inActiveProjectilesPool: []
+  abilityAoePool: []
+  inActiveAoeAbilitesPool: []
+  droppedItemsPool: []
+--- !u!114 &517425498110648122
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fb457562ce826d48a1b3abaf94fdbe3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Canvas: {fileID: 4176325808570439206}
+  loadingMessage: {fileID: 4894662497238019239}
 --- !u!1 &7033138063955345154
 GameObject:
   m_ObjectHideFlags: 0

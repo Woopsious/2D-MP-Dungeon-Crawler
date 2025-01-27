@@ -112,10 +112,12 @@ public class MultiplayerManager : NetworkBehaviour
 				// AsyncOperation.progress can be used to determine scene loading progression
 
 				var asyncLoadScene = sceneEvent.AsyncOperation;
-
 				ulong clientId = sceneEvent.ClientId;
 
 				SaveManager.Instance.AutoSaveData();
+
+				if (IsClient)
+					GameManager.Instance.UnloadSceneForConnectedClients();
 
 				// Since the server "initiates" the event we can simply just check if we are the server here
 				if (IsServer)
@@ -160,6 +162,9 @@ public class MultiplayerManager : NetworkBehaviour
 				{
 					// Handle client side LoadComplete related tasks here
 					Debug.LogError("loadCompleted for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+
+					if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
+						SaveManager.Instance.ReloadSaveGameDataEvent();
 				}
 
 				// So you can use sceneEvent.ClientId to also track when clients are finished loading a scene

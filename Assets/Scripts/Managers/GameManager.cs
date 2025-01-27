@@ -30,7 +30,6 @@ public class GameManager : MonoBehaviour
 	public readonly string dungeonOneScene = "DungeonOneScene";
 	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
 
-	public GameObject LoadingLevelPanel;
 	public Scene currentlyLoadedScene;
 
 	public GameObject PlayerPrefab;
@@ -79,11 +78,6 @@ public class GameManager : MonoBehaviour
 		SceneManager.sceneLoaded -= OnLoadSceneFinish;
 		SceneManager.sceneUnloaded -= OnUnloadSceneFinish;
 	}
-	private void Update()
-	{
-		//Debug.LogError("vsync: " + QualitySettings.vSyncCount);
-		//Debug.LogError("framerate: " + Application.targetFrameRate);
-	}
 
 	private void GetAllBossSceneNames()
 	{
@@ -120,10 +114,12 @@ public class GameManager : MonoBehaviour
 	{
 		SaveManager.Instance.GameData = new GameData();
 
+		DestroyCurrentLocalPlayer();
 		StartCoroutine(LoadSceneAsync(menuScene, false));
 	} 
 	public void LoadHubArea(bool isNewGame, GameDataReloadMode gameDataRestoreMode)
 	{
+		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.game);
 		GameManager.isNewGame = isNewGame;
 		Instance.gameDataReloadMode = gameDataRestoreMode;
 
@@ -140,6 +136,8 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonOne()
 	{
+		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
+
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
@@ -147,6 +145,8 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonTwo()
 	{
+		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
+
 		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
@@ -154,6 +154,7 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadRandomBossDungeon()
 	{
+		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.bossDungeon);
 		int bossDungeonIndex = Utilities.GetRandomNumber(bossSceneNamesList.Count - 1);
 
 		if (bossDungeonIndex == 0)
@@ -187,11 +188,14 @@ public class GameManager : MonoBehaviour
 		StartCoroutine(LoadSceneAsync(uiScene, false));
 		StartCoroutine(LoadSceneAsync(hubScene, false));
 	}
+	public void ClearDuplicateScenesForMultiplayer()
+	{
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
 		Debug.LogError("loading scene name: " + sceneToLoad + " at: " + DateTime.Now.ToString());
-
-		LoadingLevelPanel.SetActive(true);
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		GameManager.isNewGame = isNewGame;
@@ -203,7 +207,6 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadNewMultiplayerScene(string sceneToLoad, bool isNewGame)
 	{
-		LoadingLevelPanel.SetActive(true);
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		GameManager.isNewGame = isNewGame;
@@ -242,10 +245,14 @@ public class GameManager : MonoBehaviour
 			Instance.gameDataReloadMode = GameDataReloadMode.noReload;
 		}
 
-		LoadingLevelPanel.SetActive(false);
+		LoadingScreensManager.instance.HideLoadingScreen();
 	}
 
 	//SCENE UNLOADING
+	public void UnloadSceneForConnectedClients()
+	{
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+	}
 	private IEnumerator TryUnLoadSceneAsync(string sceneToUnLoad)
 	{
 		if (!sceneToUnLoad.IsNullOrEmpty())
@@ -320,7 +327,7 @@ public class GameManager : MonoBehaviour
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 	}
 
-	private void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
+	public void UpdateLocalPlayerInstance(PlayerController newLocalPlayer)
 	{
 		if (!NewPlayerObjOwnedByClient(newLocalPlayer))
 		{
@@ -345,6 +352,11 @@ public class GameManager : MonoBehaviour
 	private void DestroyOldLocalPlayer(PlayerController newLocalPlayer)
 	{
 		if (Localplayer != null && Localplayer != newLocalPlayer)
+			Destroy(Localplayer.gameObject);
+	}
+	private void DestroyCurrentLocalPlayer()
+	{
+		if (Localplayer != null)
 			Destroy(Localplayer.gameObject);
 	}
 
