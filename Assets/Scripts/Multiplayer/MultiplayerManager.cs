@@ -194,8 +194,6 @@ public class MultiplayerManager : NetworkBehaviour
 					if (IsServer)
 					{
 						// Handle any server-side tasks here
-
-						//GameManager.Instance.SpawnNetworkedPlayerObject(clientId);
 						Debug.LogError("loadEventCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
 					}
 					else
