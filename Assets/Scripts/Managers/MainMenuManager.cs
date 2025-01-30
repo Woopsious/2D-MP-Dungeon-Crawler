@@ -54,8 +54,8 @@ public class MainMenuManager : MonoBehaviour
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
 		{
 			Instance.ShowMainMenu();
-			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
-				obj.SetActive(false);
+			PlayerHudUi.Instance.HotbarPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -63,8 +63,8 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
-				obj.SetActive(true);
+			PlayerHudUi.Instance.HotbarPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);
@@ -91,13 +91,11 @@ public class MainMenuManager : MonoBehaviour
 		}
 
 		if (loadedScene.name == GameManager.Instance.mainScene || loadedScene.name == GameManager.Instance.uiScene) return;
-
 		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
 		{
 			Instance.ShowMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.GetComponent<Image>().enabled = false;
-			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
-				obj.SetActive(false);
+			PlayerHudUi.Instance.HotbarPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -105,9 +103,8 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.GetComponent<Image>().enabled = true;
-			foreach (GameObject obj in PlayerHotbarUi.Instance.hotbarUiObjects)
-				obj.SetActive(true);
+			PlayerHudUi.Instance.HotbarPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);

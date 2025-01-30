@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 196367380301703981}
-  - component: {fileID: 8136481829911126724}
+  - component: {fileID: 5452668360820683293}
   - component: {fileID: 7080152121891675569}
   - component: {fileID: 7276465179195958761}
   - component: {fileID: 6832624781841984311}
@@ -35,7 +35,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &8136481829911126724
+--- !u!114 &5452668360820683293
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3801340338
+  GlobalObjectIdHash: 3023004582
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -87,6 +87,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8e7a25e38969b094d992c34ab129785d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  clientListObj: {fileID: 7973327638281833085, guid: 3421a57fa7fe95d4690095226aeaf775, type: 3}
   connectedPlayers: 0
   idOfKickedPlayer: 
   networkIdOfKickedPlayer: 

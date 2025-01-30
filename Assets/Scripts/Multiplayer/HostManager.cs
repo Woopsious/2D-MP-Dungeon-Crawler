@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -15,7 +16,9 @@ public class HostManager : NetworkBehaviour
 {
 	public static HostManager Instance;
 
-	public NetworkList<ClientDataInfo> connectedClientsList;
+	public List<ClientDataInfo> connectedClientsList;
+
+	public GameObject clientListObj;
 
 	public int connectedPlayers;
 	public string idOfKickedPlayer;
@@ -26,7 +29,6 @@ public class HostManager : NetworkBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
@@ -97,7 +99,13 @@ public class HostManager : NetworkBehaviour
 		}
 		return new RelayServerData(allocation, "dtls");
 	}
-
+	
+	private void SpawnClientListObj(ClientDataInfo data)
+	{
+		var instance = Instantiate(clientListObj);
+		var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+		instanceNetworkObject.Spawn();
+	}
 
 	//DISCONNECT OPTIONS
 	//close lobby
@@ -130,36 +138,12 @@ public class HostManager : NetworkBehaviour
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsHost(ulong id)
 	{
-		if (id == 0) //grab host data locally as lobby is not yet made
-		{
-			if (Instance.connectedClientsList == null)
-				connectedClientsList = new NetworkList<ClientDataInfo>();
-
-			ClientDataInfo data = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId,
-				ClientManager.Instance.clientNetworkedId);
-
-			Instance.connectedClientsList.Add(data);
-		}
-		else //grab other clients data through lobby
-		{
-			Player player = LobbyManager.Instance._Lobby.Players[Instance.connectedClientsList.Count];
-			ClientDataInfo data = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
-
-			Instance.connectedClientsList.Add(data);
-		}
-
+		AddClientToConnectedClients(id);
 		GameManager.Instance.SpawnNetworkedPlayerObject(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{
-		foreach (ClientDataInfo clientData in connectedClientsList)
-		{
-			if (clientData.clientNetworkedId == id)
-			{
-				connectedClientsList.Remove(clientData);
-				RemoveClientFromLobby(clientData.clientId.ToString());
-			}
-		}
+		RemoveClientFromConnectedClients(id);
 	}
 
 	//remove clients from lobby after disconnects
@@ -173,6 +157,44 @@ public class HostManager : NetworkBehaviour
 		catch (LobbyServiceException e)
 		{
 			Debug.LogError(e.Message);
+		}
+	}
+
+	//Sync connectedClientsList for all clients
+
+	private void AddClientToConnectedClients(ulong id)
+	{
+		if (id == 0) //grab host data locally as lobby is not yet made
+		{
+			if (Instance.connectedClientsList == null)
+				Instance.connectedClientsList = new List<ClientDataInfo>();
+
+			ClientDataInfo clientData = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId,
+				ClientManager.Instance.clientNetworkedId);
+
+			Instance.connectedClientsList.Add(clientData);
+			SpawnClientListObj(clientData);
+			ConnectedClients.Instance.AddClientToList(clientData);
+		}
+		else //grab other clients data through lobby
+		{
+			Player player = LobbyManager.Instance._Lobby.Players[Instance.connectedClientsList.Count];
+			ClientDataInfo clientData = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
+
+			Instance.connectedClientsList.Add(clientData);
+			ConnectedClients.Instance.AddClientToList(clientData);
+		}
+	}
+	private void RemoveClientFromConnectedClients(ulong id)
+	{
+		foreach (ClientDataInfo clientData in Instance.connectedClientsList)
+		{
+			if (clientData.clientNetworkedId == id)
+			{
+				Instance.connectedClientsList.Remove(clientData);
+				ConnectedClients.Instance.RemoveClientFromList(clientData);
+				RemoveClientFromLobby(clientData.clientId.ToString());
+			}
 		}
 	}
 

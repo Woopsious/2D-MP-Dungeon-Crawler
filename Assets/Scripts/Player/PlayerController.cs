@@ -81,10 +81,10 @@ public class PlayerController : NetworkBehaviour
 	{
 		Initilize();
 
-		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
+		OnNewTargetSelected += PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
 
-		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer += PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
+		playerStats.OnNewStatusEffect += PlayerHudUi.Instance.OnNewStatusEffectsForPlayer;
+		playerStats.OnResetStatusEffectTimer += PlayerHudUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void OnEnable()
@@ -97,10 +97,10 @@ public class PlayerController : NetworkBehaviour
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 
-		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
+		OnNewTargetSelected -= PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
 
-		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
+		playerStats.OnNewStatusEffect -= PlayerHudUi.Instance.OnNewStatusEffectsForPlayer;
+		playerStats.OnResetStatusEffectTimer -= PlayerHudUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void Update()
@@ -761,22 +761,22 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
-		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
-		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
+		if (PlayerHudUi.Instance.equippedConsumableOne == null) return;
+		PlayerHudUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
-		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
-		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
+		if (PlayerHudUi.Instance.equippedConsumableTwo == null) return;
+		PlayerHudUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
+		if (queuedAbility != null || PlayerHudUi.Instance.equippedAbilityOne == null) return;
 
-		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityOne;
+		Abilities newQueuedAbility = PlayerHudUi.Instance.equippedAbilityOne;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 
 		TryReacquireNewTarget();
@@ -788,9 +788,9 @@ public class PlayerController : NetworkBehaviour
 	private void OnAbilityTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
+		if (queuedAbility != null || PlayerHudUi.Instance.equippedAbilityTwo == null) return;
 
-		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityTwo;
+		Abilities newQueuedAbility = PlayerHudUi.Instance.equippedAbilityTwo;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 
 		TryReacquireNewTarget();
@@ -802,9 +802,9 @@ public class PlayerController : NetworkBehaviour
 	private void OnAbilityThree()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
+		if (queuedAbility != null || PlayerHudUi.Instance.equippedAbilityThree == null) return;
 
-		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityThree;
+		Abilities newQueuedAbility = PlayerHudUi.Instance.equippedAbilityThree;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 
 		TryReacquireNewTarget();
@@ -816,9 +816,9 @@ public class PlayerController : NetworkBehaviour
 	private void OnAbilityFour()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
+		if (queuedAbility != null || PlayerHudUi.Instance.equippedAbilityFour == null) return;
 
-		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFour;
+		Abilities newQueuedAbility = PlayerHudUi.Instance.equippedAbilityFour;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 
 		TryReacquireNewTarget();
@@ -830,9 +830,9 @@ public class PlayerController : NetworkBehaviour
 	private void OnAbilityFive()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
+		if (queuedAbility != null || PlayerHudUi.Instance.equippedAbilityFive == null) return;
 
-		Abilities newQueuedAbility = PlayerHotbarUi.Instance.equippedAbilityFive;
+		Abilities newQueuedAbility = PlayerHudUi.Instance.equippedAbilityFive;
 		if (!newQueuedAbility.CanUseAbility(playerStats)) return;
 
 		TryReacquireNewTarget();

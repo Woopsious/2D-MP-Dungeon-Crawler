@@ -10,8 +10,6 @@ using UnityEngine.UI;
 
 public class PlayerCardInfoHandler : MonoBehaviour
 {
-	public bool uiDirty;
-
 	public TMP_Text hostText;
 	public TMP_Text playerNameText;
 	public TMP_Text PlayerInfoText;
@@ -22,11 +20,13 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	//update ui text fields
 	public void UpdateUiInfo(Lobby lobby, int index)
 	{
-		if (lobby.Players.Count - 1 < index || HostManager.Instance.connectedClientsList.Count - 1 < index) //blank info if no player exists
+		if (ConnectedClients.Instance == null) return;
+
+		if (lobby.Players.Count - 1 < index || ConnectedClients.Instance.clientsList.Count - 1 < index) //blank info if no player exists
 			ClearUiInfo();
 		else
 		{
-			clientNetworkId = HostManager.Instance.connectedClientsList[index].clientNetworkedId;
+			clientNetworkId = ConnectedClients.Instance.clientsList[index].clientNetworkedId;
 			SetHostText(index);
 			playerNameText.text = GetPlayerName(lobby, index);
 			PlayerInfoText.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
@@ -36,7 +36,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	public void ClearUiInfo()
 	{
 		hostText.text = "";
-		playerNameText.text = "Empty";
+		playerNameText.text = "No Player";
 		PlayerInfoText.text = "";
 		button.gameObject.SetActive(false);
 	}

@@ -207,9 +207,9 @@ public class ToolTipManager : MonoBehaviour
 			equipItemButtonOne.gameObject.SetActive(true);
 			equipItemButtonTwo.gameObject.SetActive(true);
 			equipItemButtonOne.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotOne); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.consumableSlotOne); });
 			equipItemButtonTwo.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotTwo); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.consumableSlotTwo); });
 		}
 		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
 		{
@@ -219,15 +219,15 @@ public class ToolTipManager : MonoBehaviour
 			equipItemButtonFour.gameObject.SetActive(true);
 			equipItemButtonFive.gameObject.SetActive(true);
 			equipItemButtonOne.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotOne); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.abilitySlotOne); });
 			equipItemButtonTwo.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotTwo); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.abilitySlotTwo); });
 			equipItemButtonThree.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotThree); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.abilitySlotThree); });
 			equipItemButtonFour.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotFour); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.abilitySlotFour); });
 			equipItemButtonFive.onClick.AddListener(
-				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.abilitySlotFive); });
+				delegate { EquipItemToThisSlot(slot, PlayerHudUi.Instance.abilitySlotFive); });
 		}
 	}
 	private void UnEquipItem(InventorySlotDataUi oldSlot)

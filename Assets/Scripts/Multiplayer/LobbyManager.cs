@@ -145,6 +145,7 @@ public class LobbyManager : NetworkBehaviour
 
 			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
 			Instance._Lobby = lobby;
+			lobbyName = lobby.Name;
 			lobbyJoinCode = _Lobby.Data["joinCode"].Value;
 		}
 		catch (LobbyServiceException e)

@@ -4,9 +4,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PlayerHotbarUi : MonoBehaviour
+public class PlayerHudUi : MonoBehaviour
 {
-	public static PlayerHotbarUi Instance;
+	public static PlayerHudUi Instance;
 
 	public GameObject statusEffectUiPrefab;
 
@@ -15,8 +15,9 @@ public class PlayerHotbarUi : MonoBehaviour
 	public TMP_Text goldAmountText;
 
 	public GameObject HotbarPanelUi;
-
 	public List<GameObject> hotbarUiObjects = new List<GameObject>();
+
+	public GameObject PlayerPartyPanelUi;
 
 	[Header("Hotbar Consumables")]
 	public List<GameObject> ConsumableSlots = new List<GameObject>();
@@ -69,21 +70,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	[Header("Player Status Effects Ui")]
 	public GameObject playerStatusEffectsParentObj;
 
-	[Header("Selected Target Ui")]
-	public GameObject unSelectedTargetUi;
-	public GameObject selectedTargetUi;
-	public GameObject selectedTargetTrackerUi;
-	public TMP_Text selectedTargetUiName;
-	public Image selectedTargetUiImage;
-	public Image selectedTargetHealthBarFiller;
-	public TMP_Text selectedTargetHealth;
-	public Image selectedTargetManaBarFiller;
-	public TMP_Text selectedTargetMana;
-	public EntityStats selectedTarget;
-
-	[Header("Selected Target Status Effects Ui")]
-	public GameObject selectedTargetStatusEffectsParentObj;
-
 	[Header("ExpBar")]
 	public Image expBarFiller;
 	public TMP_Text expBarText;
@@ -104,7 +90,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	private void Update()
 	{
 		UpdateAbilityIndicators();
-		UpdateSelectedTargetTrackerUi();
 	}
 	private void OnEnable()
 	{
@@ -121,7 +106,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerClassesUi.OnClassChanges += UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock += OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip += EquipHotbarItem;
-		ObjectPoolingManager.OnEntityDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
@@ -138,7 +122,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerClassesUi.OnClassChanges -= UpdatePlayerClassInfo;
 		PlayerClassesUi.OnRefundAbilityUnlock -= OnAbilityRefund;
 		InventorySlotDataUi.OnHotbarItemEquip -= EquipHotbarItem;
-		ObjectPoolingManager.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 	}
 	private void Initilize()
 	{
@@ -152,7 +135,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		coneMeshIndicator = coneIndicatorUi.GetComponent<ConeMesh>();
 		boxIndicatorImage = boxIndicatorUi.GetComponent<Image>();
 
-		selectedTargetUi.SetActive(false);
 		queuedAbilityUi.SetActive(false);
 		queuedAbilityTextInfo.gameObject.SetActive(false);
 		queuedAbilityIndicatorUi.SetActive(false);
@@ -453,126 +435,6 @@ public class PlayerHotbarUi : MonoBehaviour
 
 		float adjustPos = (float)(boxIndicatorUi.transform.localScale.y / 2);
 		boxIndicatorUi.transform.localPosition = new Vector2(0, adjustPos);
-	}
-
-	//SELECTED TARGET UI
-	//events
-	public void OnNewTargetSelected(EntityStats entityStats)
-	{
-		if (!selectedTargetUi.activeInHierarchy)
-			selectedTargetUi.SetActive(true);
-		if (unSelectedTargetUi.activeInHierarchy)
-			unSelectedTargetUi.SetActive(false);
-
-		if (selectedTarget != null) //unsub from old target
-		{
-			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-			selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
-			selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
-		}
-
-		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
-		{
-			Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-			ability.gameObject.SetActive(false);
-		}
-
-		selectedTarget = entityStats;
-		selectedTargetUiImage.sprite = entityStats.statsRef.sprite;
-
-		string targetName;
-		if (selectedTarget.statsRef.canUseEquipment)
-			targetName = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
-		else
-			targetName = entityStats.statsRef.entityName;
-		selectedTargetUiName.text = targetName;
-
-		//new target event subs
-		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
-		selectedTarget.OnNewStatusEffect += OnNewStatusEffectsForSelectedTarget;
-		selectedTarget.OnResetStatusEffectTimer += OnResetStatusEffectTimerForSelectedTarget;
-
-		//initial setting data for ui
-		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
-		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
-
-		foreach (AbilityStatusEffect statusEffect in selectedTarget.currentStatusEffects)
-			OnNewStatusEffectsForSelectedTarget(statusEffect);
-	}
-	private void OnTargetDeathUnSelect(GameObject obj)
-	{
-		ClearSelectedTarget();
-	}
-	public void ClearSelectedTarget()
-	{
-		if (selectedTarget == null) return;
-
-		if (selectedTargetUi.activeInHierarchy)
-			selectedTargetUi.SetActive(false);
-		if (!unSelectedTargetUi.activeInHierarchy)
-			unSelectedTargetUi.SetActive(true);
-
-		selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-		selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
-		selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
-
-		GameManager.Localplayer.ClearSelectedTarget();
-		selectedTarget = null;
-	}
-
-	//ui updates
-	private void UpdateSelectedTargetTrackerUi()
-	{
-		if (selectedTarget == null || !selectedTargetTrackerUi.activeInHierarchy) return;
-		Vector2 position = Camera.main.WorldToScreenPoint(selectedTarget.transform.position);
-		selectedTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
-	}
-
-	//ui event updates
-	private void OnTargetHealthChange(int MaxValue, int currentValue)
-	{
-		float percentage = (float)currentValue / MaxValue;
-		selectedTargetHealthBarFiller.fillAmount = percentage;
-		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
-	}
-	private void OnTargetManaChange(int MaxValue, int currentValue)
-	{
-		float percentage = (float)currentValue / MaxValue;
-		selectedTargetManaBarFiller.fillAmount = percentage;
-		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
-	}
-	private void OnNewStatusEffectsForSelectedTarget(AbilityStatusEffect statusEffect)
-	{
-		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
-		{
-			if (!selectedTargetStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
-			{
-				Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetAbilityDuration());
-				ability.gameObject.SetActive(true);
-				return;
-			}
-		}
-	}
-	private void OnResetStatusEffectTimerForSelectedTarget(SOStatusEffects effect)
-	{
-		for (int i = 0; i < selectedTargetStatusEffectsParentObj.transform.childCount; i++)
-		{
-			if (!selectedTargetStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
-				continue;
-
-			Abilities ability = selectedTargetStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-			if (ability.effectBaseRef != effect)
-				continue;
-			else
-			{
-				ability.ResetEffectTimer();
-				return;
-			}
-		}
 	}
 
 	//UI PANEL CHANGE EVENTS

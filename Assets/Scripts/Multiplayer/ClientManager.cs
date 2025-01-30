@@ -26,7 +26,6 @@ public class ClientManager : NetworkBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
