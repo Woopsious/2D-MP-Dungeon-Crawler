@@ -91,7 +91,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 	public void ShowMpMenuUi()
 	{
 		MpMenuUiPanel.SetActive(true);
-		HideDisconnectUiPanel();
 		LobbyListUi.Instance.HideLobbyListUi();
 		LobbyUi.Instance.HideLobbyUi();
 		LobbyUi.Instance.HideLobbySettingsUi();
@@ -116,5 +115,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 	public void HideDisconnectUiPanel()
 	{
 		disconnectUiPanel.SetActive(false);
+		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 	}
 }

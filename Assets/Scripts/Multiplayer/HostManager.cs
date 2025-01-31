@@ -124,6 +124,12 @@ public class HostManager : NetworkBehaviour
 
 		//save data
 
+		if (networkedId == 0)
+		{
+			NetworkManager.Singleton.Shutdown();
+			return;
+		}
+
 		if (disconnectReason.IsNullOrEmpty())
 			NetworkManager.Singleton.DisconnectClient(networkedId, "Network error"); //fall back reason
 		else
@@ -161,7 +167,6 @@ public class HostManager : NetworkBehaviour
 	}
 
 	//Sync connectedClientsList for all clients
-
 	private void AddClientToConnectedClients(ulong id)
 	{
 		if (id == 0) //grab host data locally as lobby is not yet made
@@ -195,6 +200,11 @@ public class HostManager : NetworkBehaviour
 				ConnectedClients.Instance.RemoveClientFromList(clientData);
 				RemoveClientFromLobby(clientData.clientId.ToString());
 			}
+		}
+
+		if (id == 0)
+		{
+			Debug.LogError("Client Disconnecting is host");
 		}
 	}
 

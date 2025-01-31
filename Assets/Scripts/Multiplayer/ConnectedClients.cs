@@ -34,26 +34,4 @@ public class ConnectedClients : NetworkBehaviour
 	{
 		clientsList.Remove(clientData);
 	}
-
-	[Rpc(SendTo.Server, RequireOwnership = false)]
-	private void RequestClientsSyncRPC()
-	{
-		SyncConnectedClientsListRPC();
-	}
-
-	[Rpc(SendTo.Everyone)]
-	public void SyncConnectedClientsListRPC()
-	{
-		Debug.LogError("SYNC CONNECTED CLIENTS RPC");
-		ClientDataInfo[] clientDataArray = HostManager.Instance.connectedClientsList.ToArray();
-		SyncConnectedClients(clientDataArray);
-	}
-	private void SyncConnectedClients(ClientDataInfo[] clientDataArray)
-	{
-		Debug.LogError("SYNC CONNECTED CLIENTS");
-		Instance.clientsList = new NetworkList<ClientDataInfo>();
-
-		foreach (ClientDataInfo clientData in clientDataArray)
-			Instance.clientsList.Add(clientData);
-	}
 }

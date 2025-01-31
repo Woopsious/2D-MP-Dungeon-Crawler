@@ -171,7 +171,6 @@ public class LobbyUi : MonoBehaviour
 
 		LobbySettingsUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
-		MultiplayerMenuUi.Instance.HideDisconnectUiPanel();
 		LobbyListUi.Instance.HideLobbyListUi();
 		HideLobbyUi();
 	}
@@ -189,7 +188,6 @@ public class LobbyUi : MonoBehaviour
 
 		LobbyUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
-		MultiplayerMenuUi.Instance.HideDisconnectUiPanel();
 		LobbyListUi.Instance.HideLobbyListUi();
 		HideLobbySettingsUi();
 	}
