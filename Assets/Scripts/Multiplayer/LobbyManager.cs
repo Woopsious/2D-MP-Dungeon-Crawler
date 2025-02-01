@@ -120,6 +120,28 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
+	public async void UpdateJoiningClientsNetworkID()
+	{
+		try
+		{
+			UpdatePlayerOptions options = new UpdatePlayerOptions();
+
+			options.Data = new Dictionary<string, PlayerDataObject>()
+			{
+				{ "PlayerNetworkID", new PlayerDataObject(
+				visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: ClientManager.Instance.clientNetworkedId.ToString())}
+			};
+
+			string playerId = AuthenticationService.Instance.PlayerId;
+			await LobbyService.Instance.UpdatePlayerAsync(_Lobby.Id, playerId, options);
+		}
+		catch (LobbyServiceException e)
+		{
+			Debug.Log(e);
+		}
+	}
+
 	//updating lobby settings
 	public void UpdateLobbySettings(string lobbyName, bool lobbyPrivate, bool hasPassword, string lobbyPassword)
 	{
@@ -186,6 +208,8 @@ public class LobbyManager : NetworkBehaviour
 					ClientManager.Instance.clientUsername.ToString())},
 				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
 					ClientManager.Instance.clientId.ToString())},
+				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
+					ClientManager.Instance.clientNetworkedId.ToString())},
 				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					GameManager.Localplayer.playerStats.entityLevel.ToString())},
 				{ "PlayerClass", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
@@ -220,6 +244,14 @@ public class LobbyManager : NetworkBehaviour
 				Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._Lobby.Id);
 				LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
 
+				int index = 1;
+
+				foreach (Player player in Instance._Lobby.Players)
+				{
+					LogLobbyPlayerInfo(index, player);
+					index++;
+				}
+
 				//debug logs for logging
 				/*
 				if (MultiplayerManager.Instance.IsPlayerHost())
@@ -237,6 +269,23 @@ public class LobbyManager : NetworkBehaviour
 				Instance._Lobby = null;
 				_LobbyEvents = null;
 			}
+		}
+	}
+
+	private void LogLobbyPlayerInfo(int index, Player player)
+	{
+		for (int i = 0; i < player.Data.Count; i++)
+		{
+			if (i == 0)
+				Debug.LogError(index + "| PlayerName: " + player.Data["PlayerName"].Value);
+			else if (i == 1)
+				Debug.LogError(index + "| PlayerID: " + player.Data["PlayerID"].Value);
+			else if (i == 2)
+				Debug.LogError(index + "| PlayerNetworkID: " + player.Data["PlayerNetworkID"].Value);
+			else if (i == 3)
+				Debug.LogError(index + "| PlayerLevel: " + player.Data["PlayerLevel"].Value);
+			else if (i == 4)
+				Debug.LogError(index + "| PlayerClass: " + player.Data["PlayerClass"].Value);
 		}
 	}
 

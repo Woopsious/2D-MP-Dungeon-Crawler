@@ -22,14 +22,14 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	{
 		if (ConnectedClients.Instance == null) return;
 
-		if (lobby.Players.Count - 1 < index || ConnectedClients.Instance.clientsList.Count - 1 < index) //blank info if no player exists
+		if (lobby.Players.Count - 1 < index) //blank info if no player exists
 			ClearUiInfo();
 		else
 		{
-			clientNetworkId = ConnectedClients.Instance.clientsList[index].clientNetworkedId;
 			SetHostText(index);
 			playerNameText.text = GetPlayerName(lobby, index);
 			PlayerInfoText.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
+			clientNetworkId = GetPlayerNetworkId(lobby, index);
 			UpdatePlayerActionButton(index);
 		}
 	}
@@ -71,6 +71,13 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			Debug.LogError("player Class Key not found");
 
 		return playerClass.Value.ToString();
+	}
+	private ulong GetPlayerNetworkId(Lobby lobby, int index)
+	{
+		if (!lobby.Players[index].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
+			Debug.LogError("player Name Key not found");
+
+		return Convert.ToUInt64(playerNetworkId.Value);
 	}
 
 	/// <summary>

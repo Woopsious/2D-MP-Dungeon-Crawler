@@ -92,7 +92,8 @@ public class ClientManager : NetworkBehaviour
 	public void HandleClientConnectsAsClient(ulong id)
 	{
 		if (id != Instance.clientNetworkedId) return; //joined player is not this player
-		//noop
+
+		LobbyManager.Instance.UpdateJoiningClientsNetworkID();
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
 	{
