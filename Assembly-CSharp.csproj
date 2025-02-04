@@ -111,7 +111,6 @@
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerJournalUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BTNode.cs" />
-    <Compile Include="Assets\Scripts\Multiplayer\ConnectedClients.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryItemUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\LootSpawnHandler.cs" />
@@ -150,6 +149,7 @@
     <Compile Include="Assets\Scripts\Managers\SaveManager.cs" />
     <Compile Include="Assets\Scripts\Managers\SceneHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossTransitions.cs" />
+    <Compile Include="Assets\Scripts\Multiplayer\ClientRpcManager.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerDeathUi.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />

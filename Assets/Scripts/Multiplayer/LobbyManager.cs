@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,12 +8,14 @@ using Unity.Services.Lobbies;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WebSocketSharp;
 
 public class LobbyManager : NetworkBehaviour
 {
 	public static LobbyManager Instance;
 
 	public Lobby _Lobby;
+	public string _LobbyId;
 	public ILobbyEvents _LobbyEvents;
 
 	public string lobbyName;
@@ -40,7 +43,7 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public void Update()
 	{
-		if (_Lobby == null) return;
+		if (_Lobby == null || _LobbyId.IsNullOrEmpty()) return;
 
 		HandleLobbyPollForUpdates();
 		if (MultiplayerManager.Instance.IsPlayerHost())
@@ -51,8 +54,7 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
-	//LOBBY CREATION/UPDATES
-	//creating lobbies
+	//LOBBY CREATION
 	public async void CreateLobby(string lobbyName, bool lobbyPrivate)
 	{
 		this.lobbyName = lobbyName;
@@ -79,6 +81,7 @@ public class LobbyManager : NetworkBehaviour
 				lobbyName, Instance.maxConnections, createLobbyOptions);
 
 			Instance._Lobby = lobby;
+			Instance._LobbyId = lobby.Id;
 			Debug.LogWarning($"Created lobby with name: {lobby.Name} and Id: {lobby.Id}");
 			Debug.LogWarning($"lobby code: {lobby.Data["joinCode"].Value}");
 		}
@@ -111,34 +114,13 @@ public class LobbyManager : NetworkBehaviour
 				lobbyName, Instance.maxConnections, createLobbyOptions);
 
 			Instance._Lobby = lobby;
+			Instance._LobbyId = lobby.Id;
 			Debug.LogWarning($"Created lobby with name: {lobby.Name} and Id: {lobby.Id}");
 			Debug.LogWarning($"lobby code: {lobby.Data["joinCode"].Value}");
 		}
 		catch (LobbyServiceException e)
 		{
 			Debug.LogError(e.Message);
-		}
-	}
-
-	public async void UpdateJoiningClientsNetworkID()
-	{
-		try
-		{
-			UpdatePlayerOptions options = new UpdatePlayerOptions();
-
-			options.Data = new Dictionary<string, PlayerDataObject>()
-			{
-				{ "PlayerNetworkID", new PlayerDataObject(
-				visibility: PlayerDataObject.VisibilityOptions.Member,
-				value: ClientManager.Instance.clientNetworkedId.ToString())}
-			};
-
-			string playerId = AuthenticationService.Instance.PlayerId;
-			await LobbyService.Instance.UpdatePlayerAsync(_Lobby.Id, playerId, options);
-		}
-		catch (LobbyServiceException e)
-		{
-			Debug.Log(e);
 		}
 	}
 
@@ -167,6 +149,7 @@ public class LobbyManager : NetworkBehaviour
 
 			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
 			Instance._Lobby = lobby;
+			Instance._LobbyId = lobby.Id;
 			lobbyName = lobby.Name;
 			lobbyJoinCode = _Lobby.Data["joinCode"].Value;
 		}
@@ -189,24 +172,25 @@ public class LobbyManager : NetworkBehaviour
 	public async void DeleteLobby() //host delete lobby
 	{
 		if (Instance._Lobby != null)
-			await LobbyService.Instance.DeleteLobbyAsync(Instance._Lobby.Id);
+			await LobbyService.Instance.DeleteLobbyAsync(Instance._LobbyId);
 	}
 	public void ResetLobbyReferences() //host/client resets refs
 	{
 		Instance._Lobby = null;
+		Instance._LobbyId = null;
 		Instance.lobbyJoinCode = null;
 	}
 
-	//set up player data when joining/creating lobby
+	//UPDATING LOBBY PLAYER DATA
 	public Player GetPlayerData()
 	{
 		return new Player
 		{
 			Data = new Dictionary<string, PlayerDataObject>
 			{
-				{ "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public, 
+				{ "PlayerName", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Public,
 					ClientManager.Instance.clientUsername.ToString())},
-				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member, 
+				{ "PlayerID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					ClientManager.Instance.clientId.ToString())},
 				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					ClientManager.Instance.clientNetworkedId.ToString())},
@@ -216,6 +200,49 @@ public class LobbyManager : NetworkBehaviour
 					GameManager.Localplayer.playerClassHandler.currentEntityClass.className.ToString())},
 			}
 		};
+	}
+	public async void UpdateJoiningClientsNetworkID()
+	{
+		try
+		{
+			UpdatePlayerOptions options = new UpdatePlayerOptions();
+
+			options.Data = new Dictionary<string, PlayerDataObject>()
+			{
+				{ "PlayerNetworkID", new PlayerDataObject(
+				visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: ClientManager.Instance.clientNetworkedId.ToString())}
+			};
+
+			string playerId = AuthenticationService.Instance.PlayerId;
+			await LobbyService.Instance.UpdatePlayerAsync(_LobbyId, playerId, options);
+		}
+		catch (LobbyServiceException e)
+		{
+			Debug.Log(e);
+		}
+	}
+
+	public void LogSpecificPlayerInfo(string networkIdOfPlayerToLog)
+	{
+		foreach (Player player in  _Lobby.Players)
+		{
+			if (player.Data["PlayerNetworkID"].Value != networkIdOfPlayerToLog) continue;
+
+			for (int i = 0; i < player.Data.Count; i++)
+			{
+				if (i == 0)
+					Debug.LogError("PlayerName: " + player.Data["PlayerName"].Value);
+				else if (i == 1)
+					Debug.LogError("PlayerID: " + player.Data["PlayerID"].Value);
+				else if (i == 2)
+					Debug.LogError("PlayerNetworkID: " + player.Data["PlayerNetworkID"].Value);
+				else if (i == 3)
+					Debug.LogError("PlayerLevel: " + player.Data["PlayerLevel"].Value);
+				else if (i == 4)
+					Debug.LogError("PlayerClass: " + player.Data["PlayerClass"].Value);
+			}
+		}
 	}
 
 	//lobby hearbeat
@@ -241,51 +268,16 @@ public class LobbyManager : NetworkBehaviour
 			lobbyPollTimer = lobbyPollWaitTimer;
 			try
 			{
-				Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._Lobby.Id);
+				Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._LobbyId);
 				LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
-
-				int index = 1;
-
-				foreach (Player player in Instance._Lobby.Players)
-				{
-					LogLobbyPlayerInfo(index, player);
-					index++;
-				}
-
-				//debug logs for logging
-				/*
-				if (MultiplayerManager.Instance.IsPlayerHost())
-					Debug.LogWarning($"connected Networked clients: {NetworkManager.Singleton.ConnectedClientsList.Count}");
-
-				Debug.LogWarning($"connected clients count: {HostManager.Instance.connectedClientsList.Count}");
-				Debug.LogWarning($"clients in lobby: {_Lobby.Players.Count}");
-				Debug.LogWarning($"Local Networked ID: {ClientManager.Instance.clientNetworkedId}");
-				Debug.LogWarning($"Lobby Join Code: {_Lobby.Data["joinCode"].Value}");
-				*/
 			}
 			catch (LobbyServiceException e)
 			{
 				Debug.LogError($"{e.Message}");
 				Instance._Lobby = null;
+				Instance._LobbyId = null;
 				_LobbyEvents = null;
 			}
-		}
-	}
-
-	private void LogLobbyPlayerInfo(int index, Player player)
-	{
-		for (int i = 0; i < player.Data.Count; i++)
-		{
-			if (i == 0)
-				Debug.LogError(index + "| PlayerName: " + player.Data["PlayerName"].Value);
-			else if (i == 1)
-				Debug.LogError(index + "| PlayerID: " + player.Data["PlayerID"].Value);
-			else if (i == 2)
-				Debug.LogError(index + "| PlayerNetworkID: " + player.Data["PlayerNetworkID"].Value);
-			else if (i == 3)
-				Debug.LogError(index + "| PlayerLevel: " + player.Data["PlayerLevel"].Value);
-			else if (i == 4)
-				Debug.LogError(index + "| PlayerClass: " + player.Data["PlayerClass"].Value);
 		}
 	}
 

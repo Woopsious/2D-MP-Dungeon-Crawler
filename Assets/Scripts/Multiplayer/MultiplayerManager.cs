@@ -7,6 +7,7 @@ using Unity.Netcode;
 using Unity.Services.Authentication;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
+using TMPro;
 
 public class MultiplayerManager : NetworkBehaviour
 {
@@ -20,6 +21,10 @@ public class MultiplayerManager : NetworkBehaviour
 
 	public GameObject HostClientManagerObj;
 	public bool isMultiplayer;
+
+	[Header("Disconnect Menu")]
+	public GameObject disconnectUiPanel;
+	public TMP_Text disconnectReasonText;
 
 	private void Awake()
 	{
@@ -85,11 +90,6 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		GameObject go = Instantiate(HostClientManagerObj);
 		go.transform.SetParent(null);
-	}
-	public void ShutDownNetworkManagerIfActive()
-	{
-		if (NetworkManager.Singleton.isActiveAndEnabled)
-			NetworkManager.Singleton.Shutdown();
 	}
 	public static bool CheckIfMultiplayerMenusOpen()
 	{

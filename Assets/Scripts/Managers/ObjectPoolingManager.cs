@@ -22,7 +22,7 @@ public class ObjectPoolingManager : MonoBehaviour
 	public List<Items> droppedItemsPool = new List<Items>();
 
 	public static event Action<GameObject> OnEntityDeathEvent;
-	public static event Action OnEntitySpawnEvent;
+	//public static event Action OnEntitySpawnEvent;
 
 	private void Awake()
 	{

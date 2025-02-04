@@ -183,7 +183,8 @@ public class GameManager : MonoBehaviour
 		StartCoroutine(TryUnLoadSceneAsync(uiScene));
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
-		Destroy(Localplayer.gameObject);
+		if (Localplayer != null)
+			Destroy(Localplayer.gameObject);
 
 		StartCoroutine(LoadSceneAsync(uiScene, false));
 		StartCoroutine(LoadSceneAsync(hubScene, false));

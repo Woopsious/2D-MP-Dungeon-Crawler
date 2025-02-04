@@ -20,8 +20,6 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	//update ui text fields
 	public void UpdateUiInfo(Lobby lobby, int index)
 	{
-		if (ConnectedClients.Instance == null) return;
-
 		if (lobby.Players.Count - 1 < index) //blank info if no player exists
 			ClearUiInfo();
 		else
@@ -80,6 +78,11 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		return Convert.ToUInt64(playerNetworkId.Value);
 	}
 
+	public void LogPlayerInfo()
+	{
+		LobbyManager.Instance.LogSpecificPlayerInfo(clientNetworkId.ToString());
+	}
+
 	/// <summary>
 	/// will need additional checks to stop host from kicking players in certian situations (left out for now)
 	/// </summary>
@@ -124,10 +127,12 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	private void KickPlayerButton()
 	{
 		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
-		HostManager.Instance.RemoveClientFromRelay(clientNetworkId, "Kicked from lobby by host");
+		HostManager.Instance.RemoveClientFromRelay(clientNetworkId.ToString(), "Kicked from lobby by host");
 	}
 	private void LeaveRelayAndLobbyButton()
 	{
-		HostManager.Instance.LeaveRelayServerRPC(clientNetworkId);
+		ClientManager.Instance.StopClient();
+		MultiplayerMenuUi.Instance.SetDisconnectReason("Lobby Left");
+		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
 	}
 }

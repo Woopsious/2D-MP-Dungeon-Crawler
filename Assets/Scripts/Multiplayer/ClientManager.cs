@@ -44,10 +44,13 @@ public class ClientManager : NetworkBehaviour
 	}
 	public void StopClient()
 	{
+		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
+			SaveManager.Instance.AutoSaveData();
+
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
-		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
 		MultiplayerManager.Instance.isMultiplayer = false;
+		NetworkManager.Singleton.Shutdown();
 	}
 
 	//JOINING HOST RELAY SERVER

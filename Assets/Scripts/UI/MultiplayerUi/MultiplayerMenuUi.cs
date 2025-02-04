@@ -37,9 +37,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 	//hosting/joining lobby
 	public void HostLobby()
 	{
-		if (HostManager.Instance != null)
-			HostManager.Instance.StopHost();
-
 		if (!PlayerNameFilledIn()) return;
 
 		MultiplayerManager.Instance.SpawnHostClientManager();
@@ -51,9 +48,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 	}
 	public void JoinLobby()
 	{
-		if (ClientManager.Instance != null)
-			ClientManager.Instance.StopClient();
-
 		if (!PlayerNameFilledIn()) return;
 
 		MultiplayerManager.Instance.SpawnHostClientManager();
@@ -82,11 +76,6 @@ public class MultiplayerMenuUi : MonoBehaviour
 		LobbyUi.Instance.HideLobbySettingsUi();
 	}
 
-	public void ConfirmDisconnectReason()
-	{
-		ShowMpMenuUi();
-	}
-
 	//UI PANEL CHANGES
 	public void ShowMpMenuUi()
 	{
@@ -100,6 +89,7 @@ public class MultiplayerMenuUi : MonoBehaviour
 		MpMenuUiPanel.SetActive(false);
 	}
 
+	//DISCONNECT PANEL + Actions
 	public void SetDisconnectReason(string reason)
 	{
 		disconnectReasonText.text = "DISCONNECTED\n" + reason;
@@ -116,5 +106,10 @@ public class MultiplayerMenuUi : MonoBehaviour
 	{
 		disconnectUiPanel.SetActive(false);
 		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.reloadAllScenesAndData);
+	}
+
+	public void ConfirmDisconnectReason()
+	{
+		HideDisconnectUiPanel();
 	}
 }
