@@ -167,9 +167,6 @@ public class SaveManager : MonoBehaviour
 	public void AutoLoadData() //(redundent function, may reuse at some point)
 	{
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
-
-		Debug.LogError("auto loading game data for mp");
-
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 
@@ -208,12 +205,6 @@ public class SaveManager : MonoBehaviour
 	}
 
 	//restore data event called on scene change
-	public void RestoreGameData()
-	{
-		//Debug.LogError("restoring data at: " + DateTime.Now.ToString());
-		//RestoreData?.Invoke();
-	}
-
 	public void ReloadSaveGameDataEvent()
 	{
 		Debug.LogError("reloading game data at: " + DateTime.Now.ToString());

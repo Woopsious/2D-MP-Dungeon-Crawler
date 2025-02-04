@@ -467,7 +467,7 @@ public class PlayerInventoryUi : MonoBehaviour
 		if (inventorySlotData.itemInSlot == null) return;
 
 		InventoryItemUi inventoryItemUi = inventorySlotData.itemInSlot;
-		inventorySlotData.RemoveItemFromSlot();
+		//inventorySlotData.RemoveItemFromSlot();
 		inventorySlotData.AddItemToSlot(inventoryItemUi);
 	}
 

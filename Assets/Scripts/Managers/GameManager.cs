@@ -227,11 +227,11 @@ public class GameManager : MonoBehaviour
 
 		if (!MultiplayerManager.Instance.isMultiplayer)
 		{
-			if (SceneIsHubOrDungeonScene(newLoadedScene) && Localplayer == null)
+			if (SceneIsHubOrDungeonScene(newLoadedScene.name) && Localplayer == null)
 				SpawnSinglePlayerObject();
 		}
 
-		if (SceneIsHubOrDungeonScene(newLoadedScene))
+		if (SceneIsHubOrDungeonScene(newLoadedScene.name))
 		{
 			if (gameDataReloadMode == GameDataReloadMode.reloadAllScenesAndData)
 			{
@@ -289,9 +289,9 @@ public class GameManager : MonoBehaviour
 			return true;
 		else return false;
 	}
-	private bool SceneIsHubOrDungeonScene(Scene newLoadedScene)
+	public bool SceneIsHubOrDungeonScene(string newLoadedSceneName)
 	{
-		if (newLoadedScene.name.Contains("Dungeon") || newLoadedScene.name.Contains("Hub"))
+		if (newLoadedSceneName.Contains("Dungeon") || newLoadedSceneName.Contains("Hub"))
 			return true;
 		else return false;
 	}

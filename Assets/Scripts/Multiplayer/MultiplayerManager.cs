@@ -114,8 +114,6 @@ public class MultiplayerManager : NetworkBehaviour
 				var asyncLoadScene = sceneEvent.AsyncOperation;
 				ulong clientId = sceneEvent.ClientId;
 
-				SaveManager.Instance.AutoSaveData();
-
 				if (IsClient)
 					GameManager.Instance.UnloadSceneForConnectedClients();
 

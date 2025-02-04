@@ -78,9 +78,9 @@ public class EntityEquipmentHandler : MonoBehaviour
 		{
 			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
 				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.chest)
+			else if(armor.armorSlot == SOArmors.ArmorSlot.chest)
 				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.legs)
+			else if(armor.armorSlot == SOArmors.ArmorSlot.legs)
 				EquipArmor(armor, equippedLegs, legsSlotContainer);
 		}
 		//Accessory functions here if/when i decide to add it
@@ -194,11 +194,11 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
 			physicalDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
 			poisonDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
 			fireDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 
 		Destroy(accessory.gameObject);
@@ -215,11 +215,11 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
 			physicalDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		else if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
 			poisonDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
 			fireDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage += accessory.bonusPercentageValue;
 
 		AssignItemRefOnEquip(accessory, slotItemIsIn);
@@ -229,15 +229,10 @@ public class EntityEquipmentHandler : MonoBehaviour
 	//physically spawned on entites
 	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
 	{
-		GameObject go;
-		if (slotToSpawnIn.transform.childCount == 0)
-		{
-			go = Instantiate(itemPrefab, slotToSpawnIn.transform);
-			return go;
-		}
-		else return slotToSpawnIn.transform.GetChild(0).gameObject;
+		GameObject go = Instantiate(itemPrefab, slotToSpawnIn.transform);
+		return go;
 	}
-	private Items AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
+	private void AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
 	{
 		if (SlotItemIsIn == weaponSlotContainer)
 			equippedWeapon = (Weapons)itemToAssign;
@@ -256,6 +251,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else if (SlotItemIsIn == ringTwoSlotContainer)
 			equippedRingTwo = (Accessories)itemToAssign;
 		else
-			Debug.LogError("item doesnt match any equipment slot"); return null;
+			Debug.LogError("item doesnt match any equipment slot");
 	}
 }

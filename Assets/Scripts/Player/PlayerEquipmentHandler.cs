@@ -26,12 +26,17 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
+		{
 			HandleEmptySlots(slot);
+			return;
+		}
 
-		else if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
+		Debug.LogError("Equip Item");
+
+		if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
 			Weapons weapon = item.GetComponent<Weapons>();
-			if (weapon.weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
+			if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
 				EquipWeapon(weapon, equippedWeapon, weaponSlotContainer);
 			else
 				EquipWeapon(weapon, equippedOffhandWeapon, offhandWeaponSlotContainer);
@@ -39,48 +44,48 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		else if (item.itemType == InventoryItemUi.ItemType.isArmor)
 		{
 			Armors armor = item.GetComponent<Armors>();
-			if (armor.armorSlot == Armors.ArmorSlot.helmet)
+			if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
 				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
 
-			if (armor.armorSlot == Armors.ArmorSlot.chestpiece)
+			else if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
 				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
 
-			if (armor.armorSlot == Armors.ArmorSlot.legs)
+			else if (slot.slotType == InventorySlotDataUi.SlotType.legs)
 				EquipArmor(armor, equippedLegs, legsSlotContainer);
 		}
 		else if (item.itemType == InventoryItemUi.ItemType.isAccessory)
 		{
 			Accessories accessories = item.GetComponent<Accessories>();
-			if (accessories.accessorySlot == Accessories.AccessorySlot.necklace)
+			if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
 				EquipAccessory(accessories, equippedNecklace, necklaceSlotContainer);
 
-			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlotDataUi.SlotType.ringOne)
+			else if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
 				EquipAccessory(accessories, equippedRingOne, ringOneSlotContainer);
 
-			if (accessories.accessorySlot == Accessories.AccessorySlot.ring && slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
+			else if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
 				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
 		}
 	}
 	private void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
-		GameObject go;
 		OnWeaponUnequip(equippedWeaponRef);
 
-		go = SpawnItemPrefab(slotToSpawnIn);
+		GameObject go = SpawnItemPrefab(slotToSpawnIn);
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
 		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, weaponToEquip.itemEnchantmentLevel);
+
+		Debug.LogError("weapon name: " + equippedWeaponRef.itemName);
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
 	}
 	private void EquipArmor(Armors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
-		GameObject go;
 		OnArmorUnequip(equippedArmorRef);
 
-		go = SpawnItemPrefab(slotToSpawnIn);
+		GameObject go = SpawnItemPrefab(slotToSpawnIn);
 		equippedArmorRef = go.AddComponent<Armors>();
 
 		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
@@ -91,10 +96,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	}
 	private void EquipAccessory(Accessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
 	{
-		GameObject go;
 		OnAccessoryUnequip(equippedAccessoryRef);
 
-		go = SpawnItemPrefab(slotToSpawnIn);
+		GameObject go = SpawnItemPrefab(slotToSpawnIn);
 		equippedAccessoryRef = go.AddComponent<Accessories>();
 
 		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;

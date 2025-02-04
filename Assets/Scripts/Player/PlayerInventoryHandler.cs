@@ -40,8 +40,8 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 		if (Application.isEditor)
 		{
-			DebugSpawnStartingItems(playerClass);
-			return;
+			//DebugSpawnStartingItems(playerClass);
+			//return;
 		}
 
 		if (SaveManager.Instance != null) //skip when in testing scene
