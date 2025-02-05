@@ -10,6 +10,8 @@ public class ObjectPoolingManager : MonoBehaviour
 {
 	public static ObjectPoolingManager Instance;
 
+	public List<PlayerController> playersPool = new List<PlayerController>();
+
 	public List<EntityStats> entityPool = new List<EntityStats>();
 	public List<EntityStats> inActiveEntityPool = new List<EntityStats>();
 
@@ -82,6 +84,15 @@ public class ObjectPoolingManager : MonoBehaviour
 	}
 
 	//OBJECT POOLING
+	//player obj pooling
+	public static void AddPlayerToList(PlayerController player)
+	{
+		Instance.playersPool.Add(player);
+	}
+	public static void RemovePlayerFromList(PlayerController player)
+	{
+		Instance.playersPool.Remove(player);
+	}
 	//entity obj pooling
 	public static void AddEntityToObjectPooling(EntityStats entity)
 	{

@@ -26,14 +26,8 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
-		{
 			HandleEmptySlots(slot);
-			return;
-		}
-
-		Debug.LogError("Equip Item");
-
-		if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
+		else if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
 		{
 			Weapons weapon = item.GetComponent<Weapons>();
 			if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
@@ -75,8 +69,6 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 
 		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
 		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, weaponToEquip.itemEnchantmentLevel);
-
-		Debug.LogError("weapon name: " + equippedWeaponRef.itemName);
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);

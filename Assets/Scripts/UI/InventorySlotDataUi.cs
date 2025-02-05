@@ -44,7 +44,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		//Abilities
 		if (slotType == SlotType.equippedAbilities)
 		{
-			if (PlayerHudUi.Instance.IsAbilityAlreadyEquipped(item.abilityBaseRef)) //only 1 copy of ability equipable
+			if (PlayerHotbarUi.Instance.IsAbilityAlreadyEquipped(item.abilityBaseRef)) //only 1 copy of ability equipable
 				return;
 
 			CheckIfItemInEquipmentSlot(item);

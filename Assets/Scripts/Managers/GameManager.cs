@@ -178,6 +178,11 @@ public class GameManager : MonoBehaviour
 	}
 
 	//SCENE LOADING
+	public void ClearDuplicateScenesForMultiplayer()
+	{
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+	}
 	private void ReloadAllScenes() //when loading a save file whilst already in a game scene
 	{
 		StartCoroutine(TryUnLoadSceneAsync(uiScene));
@@ -188,11 +193,6 @@ public class GameManager : MonoBehaviour
 
 		StartCoroutine(LoadSceneAsync(uiScene, false));
 		StartCoroutine(LoadSceneAsync(hubScene, false));
-	}
-	public void ClearDuplicateScenesForMultiplayer()
-	{
-		StartCoroutine(TryUnLoadSceneAsync(uiScene));
-		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
 	{
@@ -245,7 +245,6 @@ public class GameManager : MonoBehaviour
 
 			Instance.gameDataReloadMode = GameDataReloadMode.noReload;
 		}
-
 		LoadingScreensManager.instance.HideLoadingScreen();
 	}
 

@@ -71,6 +71,8 @@
     <Compile Include="Assets\Scripts\UI\MultiplayerUi\MultiplayerMenuUi.cs" />
     <Compile Include="Assets\Scripts\UI\ClassTreeNodeUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\DungeonHandler.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerPartyHandlerUi.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerJournalUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskWeaponAttack.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossPhases.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityStatusEffect.cs" />
@@ -79,7 +81,6 @@
     <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerPartyUi.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInventoryHandler.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\SpawnHandler.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\Obstacles.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityIndicators.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\LobbyManager.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Assets\Scripts\ScriptableObjs\SOLootPools.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOEntityBehaviour.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckPlayerInAttackRange.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerClassesUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckPlayerInFOV.cs" />
     <Compile Include="Assets\Scripts\CustomMeshes\ConeMesh.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerClassHandler.cs" />
@@ -107,9 +109,7 @@
     <Compile Include="Assets\Scripts\UI\DungeonDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerJournalUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BTNode.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
     <Compile Include="Assets\Scripts\UI\InventoryItemUi.cs" />
@@ -119,7 +119,6 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskIdle.cs" />
     <Compile Include="Assets\Scripts\UI\DungeonPortalUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskUseAbility.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerHudUi.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerHotbarUi.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossPhases.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskGoblinBossAbilities.cs" />
@@ -162,7 +161,6 @@
     <Compile Include="Assets\Scripts\Managers\ToolTipManager.cs" />
     <Compile Include="Assets\Scripts\NPC&apos;s\NpcHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckGlobalAttackCooldown.cs" />
-    <Compile Include="Assets\Scripts\UI\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\EntityStats.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\TrapActivationCollider.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
@@ -176,6 +174,7 @@
     <Compile Include="Assets\Scripts\UI\MultiplayerUi\LobbyUi.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerSettingsManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerInventoryUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClasses.cs" />
     <Compile Include="Assets\Scripts\Utilities.cs" />
     <Compile Include="Assets\Scripts\UI\MultiplayerUi\MultiplayerHotbarUi.cs" />
@@ -184,6 +183,7 @@
     <Compile Include="Assets\Scripts\Abilities\AbilityAOE.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\ClientManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IBossInterfaces.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerInfoUi.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerInputHandler.cs" />
   </ItemGroup>

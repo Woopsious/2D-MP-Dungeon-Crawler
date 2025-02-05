@@ -91,6 +91,15 @@ public class ClientManager : NetworkBehaviour
 		return new RelayServerData(allocation, "dtls");
 	}
 
+	//DISCONNECT OPTIONS
+	//leave lobby
+	public void ClientLeaveRelayAndLobby(string disconnectReason)
+	{
+		Instance.StopClient();
+		MultiplayerMenuUi.Instance.SetDisconnectReason(disconnectReason);
+		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+	}
+
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsClient(ulong id)
 	{

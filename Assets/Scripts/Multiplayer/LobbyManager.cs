@@ -137,7 +137,20 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
-	//JOINING LOBBIES
+	//DELETING LOBBIES
+	public async void DeleteLobby() //host delete lobby
+	{
+		if (Instance._Lobby != null)
+			await LobbyService.Instance.DeleteLobbyAsync(Instance._LobbyId);
+	}
+	public void ResetLobbyReferences() //host/client resets refs
+	{
+		Instance._Lobby = null;
+		Instance._LobbyId = null;
+		Instance.lobbyJoinCode = null;
+	}
+
+	//CLIENTS JOINING LOBBY
 	public async void JoinLobby(Lobby lobby)
 	{
 		try
@@ -168,17 +181,23 @@ public class LobbyManager : NetworkBehaviour
 		//GameManager.Instance.playerNotifsManager.DisplayNotifisMessage("Failed to join Lobby", 3f);
 	}
 
-	//DELETING LOBBIES
-	public async void DeleteLobby() //host delete lobby
+	//CLIENTS LEAVING LOBBY (getting removed by host on disconnect)
+	public async void RemoveDisconnectedClientFromLobby(string clientId)
 	{
-		if (Instance._Lobby != null)
-			await LobbyService.Instance.DeleteLobbyAsync(Instance._LobbyId);
-	}
-	public void ResetLobbyReferences() //host/client resets refs
-	{
-		Instance._Lobby = null;
-		Instance._LobbyId = null;
-		Instance.lobbyJoinCode = null;
+		try
+		{
+			for (int i = 0; i < Instance._Lobby.Players.Count; i++)
+			{
+				Player player = Instance._Lobby.Players[i];
+
+				if (player.Data["PlayerNetworkID"].Value == clientId)
+					await LobbyService.Instance.RemovePlayerAsync(Instance._LobbyId, player.Data["PlayerID"].Value);
+			}
+		}
+		catch (LobbyServiceException e)
+		{
+			Debug.LogError(e.Message);
+		}
 	}
 
 	//UPDATING LOBBY PLAYER DATA
@@ -270,6 +289,7 @@ public class LobbyManager : NetworkBehaviour
 			{
 				Instance._Lobby = await LobbyService.Instance.GetLobbyAsync(Instance._LobbyId);
 				LobbyUi.Instance.SyncPlayerListforLobbyUi(Instance._Lobby);
+				PlayerPartyUi.Instance.SyncPlayerListforPartyUi(Instance._Lobby);
 			}
 			catch (LobbyServiceException e)
 			{

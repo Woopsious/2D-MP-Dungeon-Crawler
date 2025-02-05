@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class PlayerPartyUi : MonoBehaviour
@@ -8,13 +9,20 @@ public class PlayerPartyUi : MonoBehaviour
 
 	public GameObject playerPartyPanelUi;
 
-	public GameObject PlayerOnePanelUi;
-	public GameObject PlayerTwoPanelUi;
-	public GameObject PlayerThreePanelUi;
-	public GameObject PlayerFourPanelUi;
+	public List<PlayerPartyHandlerUi> playerPartyHandlerUiList = new List<PlayerPartyHandlerUi>();
 
 	private void Awake()
 	{
 		Instance = this;
+	}
+
+	public void SyncPlayerListforPartyUi(Lobby lobby)
+	{
+		int index = 0;
+		foreach (PlayerPartyHandlerUi player in playerPartyHandlerUiList)
+		{
+			player.UpdatePlayersInParty(lobby, index);
+			index++;
+		}
 	}
 }

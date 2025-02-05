@@ -145,8 +145,8 @@ public class PlayerInventoryUi : MonoBehaviour
 
 		RestoreInventoryItems(SaveManager.Instance.GameData.playerInventoryItems, InventorySlots);
 		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedItems, EquipmentSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.PlayerEquippedConsumables, PlayerHudUi.Instance.ConsumableSlots);
-		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedAbilities, PlayerHudUi.Instance.AbilitySlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.PlayerEquippedConsumables, PlayerHotbarUi.Instance.ConsumableSlots);
+		RestoreInventoryItems(SaveManager.Instance.GameData.playerEquippedAbilities, PlayerHotbarUi.Instance.AbilitySlots);
 	}
 	private void RestoreInventoryItems(List<InventoryItemData> itemDataList, List<GameObject> slotListObjs)
 	{
@@ -467,7 +467,6 @@ public class PlayerInventoryUi : MonoBehaviour
 		if (inventorySlotData.itemInSlot == null) return;
 
 		InventoryItemUi inventoryItemUi = inventorySlotData.itemInSlot;
-		//inventorySlotData.RemoveItemFromSlot();
 		inventorySlotData.AddItemToSlot(inventoryItemUi);
 	}
 

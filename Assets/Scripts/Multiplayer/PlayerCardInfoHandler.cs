@@ -98,12 +98,12 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			if (index == 0)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Close Lobby";
-				button.onClick.AddListener(delegate { CloseLobbyButton(); });
+				button.onClick.AddListener(delegate { HostCloseLobbyButton(); });
 			}
 			else
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Kick Player";
-				button.onClick.AddListener(delegate { KickPlayerButton(); });
+				button.onClick.AddListener(delegate { HostKickPlayerButton(); });
 			}
 		}
 		else
@@ -111,7 +111,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			if (clientNetworkId == NetworkManager.Singleton.LocalClientId)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Leave Lobby";
-				button.onClick.AddListener(delegate { LeaveRelayAndLobbyButton(); });
+				button.onClick.AddListener(delegate { ClientLeaveRelayAndLobbyButton(); });
 			}
 			else
 			{
@@ -119,20 +119,22 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			}
 		}
 	}
-	private void CloseLobbyButton()
+	private void ClientLeaveRelayAndLobbyButton()
+	{
+		if (MultiplayerManager.Instance.IsPlayerHost()) return; //double check
+
+		ClientManager.Instance.ClientLeaveRelayAndLobby("Lobby Left");
+	}
+	private void HostCloseLobbyButton()
 	{
 		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
+
 		HostManager.Instance.CloseLobby("Host Closed Lobby");
 	}
-	private void KickPlayerButton()
+	private void HostKickPlayerButton()
 	{
 		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
-		HostManager.Instance.RemoveClientFromRelay(clientNetworkId.ToString(), "Kicked from lobby by host");
-	}
-	private void LeaveRelayAndLobbyButton()
-	{
-		ClientManager.Instance.StopClient();
-		MultiplayerMenuUi.Instance.SetDisconnectReason("Lobby Left");
-		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+
+		HostManager.Instance.KickClientFromRelay(clientNetworkId.ToString(), "Kicked from lobby by host");
 	}
 }

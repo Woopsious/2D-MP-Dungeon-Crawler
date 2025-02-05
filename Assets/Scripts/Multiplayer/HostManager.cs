@@ -43,6 +43,9 @@ public class HostManager : NetworkBehaviour
 	}
 	public void StopHost()
 	{
+		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
+			SaveManager.Instance.AutoSaveData();
+
 		LobbyManager.Instance.DeleteLobby();
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
@@ -95,7 +98,6 @@ public class HostManager : NetworkBehaviour
 		}
 		return new RelayServerData(allocation, "dtls");
 	}
-	
 	private void SpawnClientListObj()
 	{
 		var instance = Instantiate(clientListObj);
@@ -113,13 +115,20 @@ public class HostManager : NetworkBehaviour
 			RemoveClientFromRelay(player.Data["PlayerNetworkID"].Value, disconnectReason);
 		}
 
-		MultiplayerMenuUi.Instance.ShowMpMenuUi();
 		StopHost();
+		MultiplayerMenuUi.Instance.SetDisconnectReason(disconnectReason);
+		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+	}
+	//kick client
+	public void KickClientFromRelay(string networkedStringId, string disconnectReason)
+	{
+		RemoveClientFromRelay(networkedStringId, disconnectReason);
 	}
 	//remove clients from relay
-	public void RemoveClientFromRelay(string networkedStringId, string disconnectReason)
+	private void RemoveClientFromRelay(string networkedStringId, string disconnectReason)
 	{
 		ulong networkedId = Convert.ToUInt64(networkedStringId);
+		if (networkedId == 0) return; //skip host disconnecting
 
 		if (disconnectReason.IsNullOrEmpty())
 			NetworkManager.Singleton.DisconnectClient(networkedId, "Network error"); //fall back reason
@@ -130,46 +139,21 @@ public class HostManager : NetworkBehaviour
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsHost(ulong id)
 	{
-		AddClientToConnectedClients(id);
+		if (id == 0)
+			SpawnClientListObj();
+
 		GameManager.Instance.SpawnNetworkedPlayerObject(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{
-		RemoveClientFromConnectedClients(id);
+		RemoveDisconnectedClientsFromLobby(id);
 	}
 
-	//remove clients from lobby after disconnects
-	public async void RemoveClientFromLobby(string clientId)
+	//auto remove disconnected clients from lobby for what ever reason
+	private void RemoveDisconnectedClientsFromLobby(ulong id)
 	{
-		try
-		{
-			await LobbyService.Instance.RemovePlayerAsync(LobbyManager.Instance._LobbyId, clientId);
-			Debug.LogWarning($"player with Id: {clientId} kicked from lobby");
-		}
-		catch (LobbyServiceException e)
-		{
-			Debug.LogError(e.Message);
-		}
-	}
+		if (id == 0) return; //host disconnected, possibly check to ensure lobby host was in is also shut down
 
-	//Sync connectedClientsList for all clients
-	private void AddClientToConnectedClients(ulong id)
-	{
-		if (id == 0)
-			SpawnClientListObj();
-	}
-	private void RemoveClientFromConnectedClients(ulong id)
-	{
-		if (id == 0)
-		{
-			Debug.LogError("Client Disconnecting is host");
-			return;
-		}
-
-		foreach (Player player in LobbyManager.Instance._Lobby.Players)
-		{
-			if (player.Data["PlayerNetworkID"].Value == id.ToString())
-				RemoveClientFromLobby(player.Data["PlayerID"].Value);
-		}
+		LobbyManager.Instance.RemoveDisconnectedClientFromLobby(id.ToString());
 	}
 }
