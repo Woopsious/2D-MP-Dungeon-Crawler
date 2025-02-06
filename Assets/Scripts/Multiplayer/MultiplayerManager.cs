@@ -225,7 +225,7 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 
 	//bool checks
-	public bool IsMultiplayer()
+	public static bool IsMultiplayer()
 	{
 		if (NetworkManager.Singleton != null)
 		{       
@@ -235,7 +235,7 @@ public class MultiplayerManager : NetworkBehaviour
 		//Debug.LogError("is Singleplayer");
 		return false;
 	}
-	public bool IsPlayerHost()
+	public static bool IsPlayerHost()
 	{
 		if (NetworkManager.Singleton != null)
 		{

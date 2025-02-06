@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using Unity.VisualScripting;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.Pool;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
-public class SpawnHandler : MonoBehaviour
+public class SpawnHandler : NetworkBehaviour
 {
 	[Header("Spawner Info")]
 	public int debugSpawnerLevel;
@@ -52,7 +54,13 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		Initilize();
+		if (IsClient)
+		{
+			Debug.LogError("spawner is on clients side");
+			gameObject.SetActive(false);
+		}
+		else
+			Initilize();
 	}
 	private void OnEnable()
 	{
@@ -224,6 +232,7 @@ public class SpawnHandler : MonoBehaviour
 	//boss entity spawning
 	private void SpawnBossEntity(GameObject roomCenterPiece)
 	{
+		if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsPlayerHost()) return;
 		if (!isBossSpawner || bossEntity != null) return; //disable spawning multiple
 
 		SOEntityStats bossToSpawn = null;
@@ -245,6 +254,10 @@ public class SpawnHandler : MonoBehaviour
 	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn, GameObject roomCenterPiece)
 	{
 		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
+
+		if (MultiplayerManager.Instance.isMultiplayer)
+			go.GetComponent<NetworkObject>().Spawn();
+
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		bossEntity.statsRef = bossToSpawn;
@@ -260,6 +273,8 @@ public class SpawnHandler : MonoBehaviour
 	//entity spawning
 	private void SpawnEntity()
 	{
+		if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsPlayerHost()) return;
+
 		int num = GetIndexOfEnemyToSpawn();
 		EntityStats entity = ObjectPoolingManager.GetInActiveEntity(possibleEntityTypesToSpawn[num]);
 
@@ -289,8 +304,15 @@ public class SpawnHandler : MonoBehaviour
 		int num = GetIndexOfEnemyToSpawn();
 		GameObject go = Instantiate(entityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
-		entity.statsRef = possibleEntityTypesToSpawn[num];
-		entity.GetComponent<EntityBehaviour>().behaviourRef = possibleEntityTypesToSpawn[num].entityBehaviour;
+
+		if (MultiplayerManager.Instance.isMultiplayer)
+		{
+			go.GetComponent<NetworkObject>().Spawn();
+			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(possibleEntityTypesToSpawn[num]));
+		}
+		else
+			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(possibleEntityTypesToSpawn[num]));
+
 		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
 		ObjectPoolingManager.AddEntityToObjectPooling(entity);
@@ -301,6 +323,22 @@ public class SpawnHandler : MonoBehaviour
 			entity.entityLevel = spawnerLevel;
 
 		TrySpawnEntities();
+	}
+
+	//sync entity SO Refs for Mp
+	private int GetIndexOfEntityInDatabase(SOEntityStats statsRef)
+	{
+		int index = 0;
+		foreach (SOEntityStats stats in AssetDatabase.Database.entities)
+		{
+			if (statsRef == stats)
+				return index;
+            else
+				index++;
+        }
+
+		Debug.LogError("entity not in database ADD IT PLEASE I BEG");
+		return index;
 	}
 
 	//bool checks

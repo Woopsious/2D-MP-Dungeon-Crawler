@@ -669,14 +669,14 @@ public class PlayerController : NetworkBehaviour
 	public override void OnNetworkSpawn()
 	{
 		base.OnNetworkSpawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+		if (!MultiplayerManager.IsPlayerHost()) return;
 
 		MultiplayerManager.Instance.ListOfplayers.Add(this);
 	}
 	public override void OnNetworkDespawn()
 	{
 		base.OnNetworkDespawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
+		if (!MultiplayerManager.IsPlayerHost()) return;
 
 		MultiplayerManager.Instance.ListOfplayers.Remove(this);
 	}

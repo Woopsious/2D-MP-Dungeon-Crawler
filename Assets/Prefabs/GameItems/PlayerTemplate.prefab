@@ -313,7 +313,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2150965340
+  GlobalObjectIdHash: 298178217
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -481,8 +481,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugSetStartingItems: 0
   debugUseSelectedTargetForAttackDirection: 0
-  debugSetPlayerLevelOnStart: 0
-  debugPlayerLevel: 1
+  debugSetPlayerLevelOnStart: 1
+  debugPlayerLevel: 20
   includeMe:
     serializedVersion: 2
     m_Bits: 576
@@ -679,7 +679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  invincible: 0
+  invincible: 1
   isDestroyedInOneHit: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:

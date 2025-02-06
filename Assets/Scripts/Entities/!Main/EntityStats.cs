@@ -127,6 +127,18 @@ public class EntityStats : NetworkBehaviour
 		PlayIdleSound();
 	}
 
+	[Rpc(SendTo.Everyone)]
+	public void SyncEntitySORefsRPC(int index)
+	{
+		SetEntitySoRefs(index);
+	}
+	public void SetEntitySoRefs(int index)
+	{
+		SOEntityStats statsRef = AssetDatabase.Database.entities[index];
+		this.statsRef = statsRef;
+		entityBehaviour.behaviourRef = statsRef.entityBehaviour;
+	}
+
 	//set entity data
 	public void Initilize()
 	{
@@ -292,6 +304,9 @@ public class EntityStats : NetworkBehaviour
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
+
+	//MP sync damage
+	//private void 
 
 	//death event
 	private void EntityDeath(DamageSourceInfo damageSourceInfo)

@@ -54,7 +54,7 @@ public class MainMenuManager : MonoBehaviour
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
 		{
 			Instance.ShowMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.SetActive(false);
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
 			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
@@ -63,7 +63,7 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.SetActive(true);
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
 			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);
@@ -94,7 +94,7 @@ public class MainMenuManager : MonoBehaviour
 		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
 		{
 			Instance.ShowMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.SetActive(false);
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
 			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
@@ -103,7 +103,7 @@ public class MainMenuManager : MonoBehaviour
 		else //hide it
 		{
 			Instance.HideMainMenu();
-			PlayerHotbarUi.Instance.HotbarPanelUi.SetActive(true);
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
 			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);

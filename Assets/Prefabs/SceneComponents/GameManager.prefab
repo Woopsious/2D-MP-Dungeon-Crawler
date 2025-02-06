@@ -247,6 +247,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7214683641568887233}
   - component: {fileID: 5383993218733584273}
+  - component: {fileID: 6821541940476306434}
   - component: {fileID: 1339910767177227557}
   - component: {fileID: 5661256335365762632}
   - component: {fileID: 517425498110648122}
@@ -285,7 +286,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 283b3ff3eed9d85438816f938c235e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LoadingLevelPanel: {fileID: 4176325808570439206}
   currentlyLoadedScene:
     m_Handle: 0
   PlayerPrefab: {fileID: 1405763340389273497, guid: 4ad8167d666d66843878d1850533ffa3, type: 3}
@@ -314,6 +314,26 @@ MonoBehaviour:
       dualWeaponDamageModifier: 0
       rangedWeaponDamageModifier: 0
     dungeonChestData: []
+--- !u!114 &6821541940476306434
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4909234089541067578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 25c60896551568b4db204972c26a25e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  entities:
+  - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
+  - {fileID: 11400000, guid: 8bd1f8d3151add04a83bb1c081de4b56, type: 2}
+  - {fileID: 11400000, guid: ba9e0e514cd645d48a919eca75198f71, type: 2}
+  - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
+  - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
+  - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
+  - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
 --- !u!114 &1339910767177227557
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -398,6 +418,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 817ee5d073684c44ab72429af788e54c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playersPool: []
   entityPool: []
   inActiveEntityPool: []
   projectilesPool: []

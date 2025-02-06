@@ -1515,7 +1515,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4363855631156084302}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerHotbarUi, Assembly-CSharp
         m_MethodName: OpenClassSkillTreeButton
         m_Mode: 1
@@ -6962,7 +6962,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4363855631156084302}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerHotbarUi, Assembly-CSharp
         m_MethodName: OpenPlayerJournalButton
         m_Mode: 1
@@ -23641,7 +23641,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4363855631156084302}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerHotbarUi, Assembly-CSharp
         m_MethodName: OpenLearntAbilitiesButton
         m_Mode: 1
@@ -47787,7 +47787,7 @@ GameObject:
   - component: {fileID: 2922992525806491361}
   - component: {fileID: 6824016814130538255}
   - component: {fileID: 1539330488876557022}
-  - component: {fileID: 4363855631156084302}
+  - component: {fileID: 2447766026124618478}
   - component: {fileID: 2233141921698956000}
   - component: {fileID: 6093953005704255882}
   m_Layer: 5
@@ -47868,7 +47868,7 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7524796947458589187}
   m_CullTransparentMesh: 1
---- !u!114 &4363855631156084302
+--- !u!114 &2447766026124618478
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -47877,30 +47877,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 7524796947458589187}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d2e1040d27845934b9096b90f716abc5, type: 3}
+  m_Script: {fileID: 11500000, guid: a563ba403a5a6f3458bc3a41240e8ae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  statusEffectUiPrefab: {fileID: 1553254548581500665, guid: 26ee061d1cb3930419eb8e6bf4e35ee0, type: 3}
+  hotbarPanelUi: {fileID: 8082360755280803338}
   playerLevelInfoText: {fileID: 8937329504494479845}
   playerClassInfoText: {fileID: 5768824015255671719}
   goldAmountText: {fileID: 2834414472775449577}
-  HotbarPanelUi: {fileID: 8082360755280803338}
-  hotbarUiObjects:
-  - {fileID: 4956030042237734130}
-  - {fileID: 8399237272448690100}
-  - {fileID: 4068732767319813351}
-  - {fileID: 241850729739197790}
-  - {fileID: 703172367234421262}
-  - {fileID: 2698534989879193143}
-  - {fileID: 1810347815908879310}
-  - {fileID: 2381681405701470452}
-  - {fileID: 120942548899910582}
-  - {fileID: 8334821560254736514}
-  - {fileID: 8543483559059363495}
-  - {fileID: 134925773757496682}
-  - {fileID: 3563413776642544280}
-  - {fileID: 966088159208922444}
-  PlayerPartyPanelUi: {fileID: 0}
+  playerStatusEffectsParentObj: {fileID: 4623928643594463385}
+  expBarFiller: {fileID: 2448156908114931600}
+  expBarText: {fileID: 7533061059015618404}
+  healthBarFiller: {fileID: 6519850961201342184}
+  HealthBarText: {fileID: 9135475724895279160}
+  manaBarFiller: {fileID: 6244199202842080668}
+  manaBarText: {fileID: 6685085245716465098}
   ConsumableSlots:
   - {fileID: 8729422233047221231}
   - {fileID: 1269957131305269457}
@@ -47927,17 +47917,9 @@ MonoBehaviour:
   queuedAbilityUi: {fileID: 241850729739197790}
   queuedAbilityIndicatorUi: {fileID: 6002389559376604500}
   queuedAbilityTextInfo: {fileID: 6716385031230419256}
-  queuedAbility: {fileID: 0}
   circleIndicatorUi: {fileID: 6822740543145830685}
   coneIndicatorUi: {fileID: 4210040374614287318}
   boxIndicatorUi: {fileID: 6542899387237432984}
-  playerStatusEffectsParentObj: {fileID: 4623928643594463385}
-  expBarFiller: {fileID: 2448156908114931600}
-  expBarText: {fileID: 7533061059015618404}
-  healthBarFiller: {fileID: 6519850961201342184}
-  HealthBarText: {fileID: 9135475724895279160}
-  manaBarFiller: {fileID: 6244199202842080668}
-  manaBarText: {fileID: 6685085245716465098}
 --- !u!114 &2233141921698956000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -50922,19 +50904,19 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 8344385097714884912}
-  - {fileID: 914898168934945200}
+  - {fileID: 5021190611384442855}
+  - {fileID: 9132956199261764050}
+  - {fileID: 4932117619870059610}
+  - {fileID: 3853213620427184449}
+  - {fileID: 8135647619337385828}
+  - {fileID: 2426788709991006038}
   - {fileID: 8027940111367179065}
-  - {fileID: 5979120034462989633}
   - {fileID: 3276348399066894259}
   - {fileID: 714920063937309012}
   - {fileID: 7579469098595544185}
-  - {fileID: 2426788709991006038}
-  - {fileID: 8135647619337385828}
-  - {fileID: 3853213620427184449}
-  - {fileID: 4932117619870059610}
-  - {fileID: 9132956199261764050}
-  - {fileID: 5021190611384442855}
+  - {fileID: 8344385097714884912}
+  - {fileID: 914898168934945200}
+  - {fileID: 5979120034462989633}
   m_Father: {fileID: 6994754436231198238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
@@ -52979,7 +52961,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4363855631156084302}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerHotbarUi, Assembly-CSharp
         m_MethodName: OpenInventoryButton
         m_Mode: 1
@@ -54574,7 +54556,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 4363855631156084302}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: PlayerHotbarUi, Assembly-CSharp
         m_MethodName: OpenClassSelectionButton
         m_Mode: 1

@@ -6,7 +6,6 @@ using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
-using static GameManager;
 
 public class GameManager : MonoBehaviour
 {

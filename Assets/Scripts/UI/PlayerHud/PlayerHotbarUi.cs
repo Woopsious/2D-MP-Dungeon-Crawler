@@ -8,16 +8,27 @@ public class PlayerHotbarUi : MonoBehaviour
 {
 	public static PlayerHotbarUi Instance;
 
-	public GameObject statusEffectUiPrefab;
+	public GameObject hotbarPanelUi;
 
+	[Header("Player Info")]
 	public TMP_Text playerLevelInfoText;
 	public TMP_Text playerClassInfoText;
 	public TMP_Text goldAmountText;
 
-	public GameObject HotbarPanelUi;
-	public List<GameObject> hotbarUiObjects = new List<GameObject>();
+	[Header("Player Status Effects Ui")]
+	public GameObject playerStatusEffectsParentObj;
 
-	public GameObject PlayerPartyPanelUi;
+	[Header("ExpBar")]
+	public Image expBarFiller;
+	public TMP_Text expBarText;
+
+	[Header("HealthBar")]
+	public Image healthBarFiller;
+	public TMP_Text HealthBarText;
+
+	[Header("ManaBar")]
+	public Image manaBarFiller;
+	public TMP_Text manaBarText;
 
 	[Header("Hotbar Consumables")]
 	public List<GameObject> ConsumableSlots = new List<GameObject>();
@@ -44,17 +55,17 @@ public class PlayerHotbarUi : MonoBehaviour
 	public Abilities equippedAbilityFive;
 
 	[Header("Ability Indicators")]
-	private Vector3 playerScreenPosition;
 	public GameObject queuedAbilityUi;
 	public GameObject queuedAbilityIndicatorUi;
 	public TMP_Text queuedAbilityTextInfo;
-	public Abilities queuedAbility;
 
+	private Vector3 playerScreenPosition;
 	private AoeIndicatorType indicatorType;
 	private enum AoeIndicatorType
 	{
 		isDirectional, isCircleAoe, isConeAoe, isBoxAoe
 	}
+
 	[Header("Circle Indicator")]
 	public GameObject circleIndicatorUi;
 	private Image circleIndicatorImage;
@@ -66,21 +77,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	[Header("Box Indicator")]
 	public GameObject boxIndicatorUi;
 	private Image boxIndicatorImage;
-
-	[Header("Player Status Effects Ui")]
-	public GameObject playerStatusEffectsParentObj;
-
-	[Header("ExpBar")]
-	public Image expBarFiller;
-	public TMP_Text expBarText;
-
-	[Header("HealthBar")]
-	public Image healthBarFiller;
-	public TMP_Text HealthBarText;
-
-	[Header("ManaBar")]
-	public Image manaBarFiller;
-	public TMP_Text manaBarText;
 
 	public void Awake()
 	{
@@ -322,7 +318,6 @@ public class PlayerHotbarUi : MonoBehaviour
 	//events
 	public void PlayerQueueAbility(Abilities ability)
 	{
-		queuedAbility = ability;
 		queuedAbilityIndicatorUi.transform.SetPositionAndRotation(new Vector3(0, 0, 0), new Quaternion(0, 0, 0, 0));
 		queuedAbilityUi.SetActive(true);
 		queuedAbilityTextInfo.gameObject.SetActive(true);
@@ -359,7 +354,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		circleIndicatorUi.SetActive(false);
 		coneIndicatorUi.SetActive(false);
 		boxIndicatorUi.SetActive(false);
-		queuedAbility = null;
 	}
 	public void PlayerCancelAbility()
 	{
@@ -369,7 +363,6 @@ public class PlayerHotbarUi : MonoBehaviour
 		circleIndicatorUi.SetActive(false);
 		coneIndicatorUi.SetActive(false);
 		boxIndicatorUi.SetActive(false);
-		queuedAbility = null;
 	}
 
 	private void SetUpCircleIndicator(SOAbilities abilityRef)

@@ -46,7 +46,7 @@ public class LobbyManager : NetworkBehaviour
 		if (_Lobby == null || _LobbyId.IsNullOrEmpty()) return;
 
 		HandleLobbyPollForUpdates();
-		if (MultiplayerManager.Instance.IsPlayerHost())
+		if (MultiplayerManager.IsPlayerHost())
 		{
 			LobbyHeartBeat();
 			//no longer valid with multiple joined players

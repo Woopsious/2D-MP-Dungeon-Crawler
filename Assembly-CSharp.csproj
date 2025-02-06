@@ -172,6 +172,7 @@
     <Compile Include="Assets\Scripts\DungeonItems\ChestHandler.cs" />
     <Compile Include="Assets\Scripts\Managers\MainMenuManager.cs" />
     <Compile Include="Assets\Scripts\UI\MultiplayerUi\LobbyUi.cs" />
+    <Compile Include="Assets\Scripts\AssetDatabase.cs" />
     <Compile Include="Assets\Scripts\Managers\PlayerSettingsManager.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IGetStatModifier.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHud\PlayerInventoryUi.cs" />
