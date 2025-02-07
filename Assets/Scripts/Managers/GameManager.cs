@@ -128,7 +128,7 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 			LoadNewMultiplayerScene(hubScene, isNewGame);
 		else
 			StartCoroutine(LoadSceneAsync(hubScene, isNewGame));
@@ -137,7 +137,7 @@ public class GameManager : MonoBehaviour
 	{
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
 			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
@@ -146,7 +146,7 @@ public class GameManager : MonoBehaviour
 	{
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
 			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
@@ -163,14 +163,14 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadBossDungoenOne()
 	{
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
 			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
 	}
 	private void LoadBossDungoenTwo()
 	{
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
 			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
@@ -222,12 +222,12 @@ public class GameManager : MonoBehaviour
 		UpdateCurrentlyLoadedScene(newLoadedScene);
 
 		if (LocalPlayerCamera == null)
-			SpawnPlayerCamera();
+			SpawnPlayerCameraPrefab();
 
-		if (!MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 		{
 			if (SceneIsHubOrDungeonScene(newLoadedScene.name) && Localplayer == null)
-				SpawnSinglePlayerObject();
+				SpawnPlayerPrefab();
 		}
 
 		if (SceneIsHubOrDungeonScene(newLoadedScene.name))
@@ -295,14 +295,14 @@ public class GameManager : MonoBehaviour
 	}
 
 	//PLAYER CAMERA SPAWNING
-	private void SpawnPlayerCamera()
+	private void SpawnPlayerCameraPrefab()
 	{
 		GameObject cameraObj = Instantiate(CameraPrefab);
 		LocalPlayerCamera = cameraObj.GetComponent<Camera>();
 	}
 
 	//PLAYER OBJECT SPAWNING
-	private void SpawnSinglePlayerObject()
+	private void SpawnPlayerPrefab()
 	{
 		if (FindObjectOfType<PlayerController>() != null)
 		{
@@ -310,18 +310,14 @@ public class GameManager : MonoBehaviour
 			return;
 		}
 
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-		{
-			GameObject playerObj = Instantiate(PlayerPrefab);
-			PlayerController player = playerObj.GetComponent<PlayerController>();
-			Instance.UpdateLocalPlayerInstance(player);
-		}
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		Instance.UpdateLocalPlayerInstance(playerObj.GetComponent<PlayerController>());
+		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 	}
-	public void SpawnNetworkedPlayerObject(ulong clientNetworkIdOfOwner)
+	public void SpawnPlayerPrefab(ulong clientNetworkIdOfOwner)
 	{
 		GameObject playerObj = Instantiate(PlayerPrefab);
 		playerObj.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
-
 		Instance.UpdateLocalPlayerInstance(playerObj.GetComponent<PlayerController>());
 		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
 	}
@@ -339,7 +335,7 @@ public class GameManager : MonoBehaviour
 	}
 	private bool NewPlayerObjOwnedByClient(PlayerController newLocalPlayer)
 	{
-		if (!MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 			return true;
 		else
 		{
@@ -364,7 +360,7 @@ public class GameManager : MonoBehaviour
     {
 		if (MultiplayerManager.Instance != null)
 		{
-			if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
+			if (pauseGame && !MultiplayerManager.IsMultiplayer())
 				Time.timeScale = 0f;
 			else
 				Time.timeScale = 1.0f;

@@ -132,7 +132,7 @@ public class LobbyUi : MonoBehaviour
 	//Set up Player list
 	public void SyncPlayerListforLobbyUi(Lobby lobby)
 	{
-		if (MultiplayerManager.IsPlayerHost())
+		if (MultiplayerManager.IsClientHost())
 			LobbySettingsButton.gameObject.SetActive(true);
 		else
 			LobbySettingsButton.gameObject.SetActive(false);

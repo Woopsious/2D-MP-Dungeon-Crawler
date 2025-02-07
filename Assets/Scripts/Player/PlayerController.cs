@@ -146,9 +146,6 @@ public class PlayerController : NetworkBehaviour
 		GameManager.Instance.UpdateLocalPlayerInstance(this);
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
-
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(gameObject);
 	}
 
 	//event up update info
@@ -166,7 +163,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);
 
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 		{
 			//Debug.LogError("sp | move input: " + moveInput);
 			Move(moveInput);
@@ -608,7 +605,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private bool IsLocalPlayerOrSinglePlayer()
 	{
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 			return true;
 		else if (IsLocalPlayer)
 			return true;
@@ -663,22 +660,6 @@ public class PlayerController : NetworkBehaviour
 		PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;
-	}
-
-	//MP ON NETWORK EVENTS
-	public override void OnNetworkSpawn()
-	{
-		base.OnNetworkSpawn();
-		if (!MultiplayerManager.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Add(this);
-	}
-	public override void OnNetworkDespawn()
-	{
-		base.OnNetworkDespawn();
-		if (!MultiplayerManager.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Remove(this);
 	}
 
 	/// <summary>

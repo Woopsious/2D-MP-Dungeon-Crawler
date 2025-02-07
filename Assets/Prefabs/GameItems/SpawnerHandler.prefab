@@ -9,7 +9,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8178575193403000882}
-  - component: {fileID: -4686784138967153234}
   - component: {fileID: 2346674039196739215}
   - component: {fileID: 978756309994241589}
   m_Layer: 0
@@ -34,27 +33,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &-4686784138967153234
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2240971873413102165}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 444399904
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
 --- !u!114 &2346674039196739215
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -76,16 +54,10 @@ MonoBehaviour:
   spawnBounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
   entityTemplatePrefab: {fileID: 8615628319028095835, guid: 54dfd8507215cc845a3f23c4eb342c9b, type: 3}
-  possibleEntityTypesToSpawn:
-  - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
-  - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
-  - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
-  - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
-  - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
   isBossRoomSpawner: 0
   isBossSpawner: 0
-  bossEntityTemplatePrefab: {fileID: 8615628319028095835, guid: 4ba0113bacef69c448f05dfecdab0710, type: 3}
   bossEntityToSpawn: {fileID: 0}
   BossRoomCenterPiecePrefab: {fileID: 3871581706630097176, guid: 1d44e4c4142b2a643853c726054f5a7d, type: 3}
   obstaclePrefab: {fileID: 6873319500750903154, guid: 4a06b34e38eec0f438dd4265a4a678b1, type: 3}

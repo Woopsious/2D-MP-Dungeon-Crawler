@@ -39,7 +39,7 @@ public class HostManager : NetworkBehaviour
 		GameManager.Instance.PauseGame(false);
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		MultiplayerManager.Instance.SubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = true;
+		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
 	public void StopHost()
 	{
@@ -49,7 +49,7 @@ public class HostManager : NetworkBehaviour
 		LobbyManager.Instance.DeleteLobby();
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = false;
+		MultiplayerManager.UpdateIsMultiplayer(false);
 		NetworkManager.Singleton.Shutdown();
 	}
 
@@ -98,7 +98,7 @@ public class HostManager : NetworkBehaviour
 		}
 		return new RelayServerData(allocation, "dtls");
 	}
-	private void SpawnClientListObj()
+	private void SpawnClientRpcManager()
 	{
 		var instance = Instantiate(clientListObj);
 		var instanceNetworkObject = instance.GetComponent<NetworkObject>();
@@ -140,9 +140,9 @@ public class HostManager : NetworkBehaviour
 	public void HandleClientConnectsAsHost(ulong id)
 	{
 		if (id == 0)
-			SpawnClientListObj();
+			SpawnClientRpcManager();
 
-		GameManager.Instance.SpawnNetworkedPlayerObject(id);
+		GameManager.Instance.SpawnPlayerPrefab(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{

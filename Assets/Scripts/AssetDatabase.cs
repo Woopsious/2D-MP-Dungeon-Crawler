@@ -7,6 +7,7 @@ public class AssetDatabase : MonoBehaviour
 	public static AssetDatabase Database;
 
 	public List<SOEntityStats> entities = new List<SOEntityStats>();
+	public List<SOEntityStats> bossEntities = new List<SOEntityStats>();
 
 	private void Awake()
 	{

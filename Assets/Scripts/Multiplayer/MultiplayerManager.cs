@@ -8,6 +8,7 @@ using Unity.Services.Authentication;
 using System.Threading.Tasks;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
 
 public class MultiplayerManager : NetworkBehaviour
 {
@@ -17,10 +18,10 @@ public class MultiplayerManager : NetworkBehaviour
 
 	public PlayerController localPlayer;
 
-	public List<PlayerController> ListOfplayers = new List<PlayerController>();
+	//public List<PlayerController> ListOfplayers = new List<PlayerController>();
 
 	public GameObject HostClientManagerObj;
-	public bool isMultiplayer;
+	private bool isMultiplayer;
 
 	[Header("Disconnect Menu")]
 	public GameObject disconnectUiPanel;
@@ -69,7 +70,7 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
 
-		if (IsPlayerHost())
+		if (IsClientHost())
 			HostManager.Instance.HandleClientConnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientConnectsAsClient(id);
@@ -79,10 +80,16 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
-		if (IsPlayerHost())
+		if (IsClientHost())
 			HostManager.Instance.HandleClientDisconnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
+	}
+
+	//UPDATE MP MODE
+	public static void UpdateIsMultiplayer(bool isMultiplayer)
+	{
+		Instance.isMultiplayer = isMultiplayer;
 	}
 
 	//Spawning/Shutdown NetworkManager
@@ -227,7 +234,7 @@ public class MultiplayerManager : NetworkBehaviour
 	//bool checks
 	public static bool IsMultiplayer()
 	{
-		if (NetworkManager.Singleton != null)
+		if (Instance.isMultiplayer)
 		{       
 			//Debug.LogError("is Multiplayer");
 			return true;
@@ -235,11 +242,11 @@ public class MultiplayerManager : NetworkBehaviour
 		//Debug.LogError("is Singleplayer");
 		return false;
 	}
-	public static bool IsPlayerHost()
+	public static bool IsClientHost()
 	{
-		if (NetworkManager.Singleton != null)
+		if (IsMultiplayer())
 		{
-			if (NetworkManager.Singleton.IsHost)
+			if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
 			{
 				//Debug.LogError("CLIENT IS HOST");
 				return true;
@@ -250,7 +257,8 @@ public class MultiplayerManager : NetworkBehaviour
 				return false;
 			}
 		}
-		//Debug.LogError("NetworkManager doesnt exist");
-		return false;
+
+		//Debug.LogError("CLIENT IS HOST/SP GAME");
+		return true;
 	}
 }

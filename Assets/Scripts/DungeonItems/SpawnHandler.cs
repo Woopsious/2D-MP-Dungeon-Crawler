@@ -1,16 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.Pool;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
-public class SpawnHandler : NetworkBehaviour
+public class SpawnHandler : MonoBehaviour
 {
 	[Header("Spawner Info")]
 	public int debugSpawnerLevel;
@@ -21,23 +15,22 @@ public class SpawnHandler : NetworkBehaviour
 
 	private CircleCollider2D playerCollider;
 	private List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
-	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
-	private float closestPlayerDistance;
-	private bool spawningDisabled;
+	public List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	public float closestPlayerDistance;
+	public bool spawningDisabled;
 
 	[Header("Spawner Range Settings")]
 	public int maxSpawningDistance;
 	public int minSpawningDistance;
 	[HideInInspector] public Bounds spawnBounds;
 
-	[Header("Spawner Settings")]
+	[Header("Entity Template Prefabs")]
+	public GameObject bossEntityTemplatePrefab;
 	public GameObject entityTemplatePrefab;
-	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
 
 	[Header("Boss Spawner Settings")]
 	public bool isBossRoomSpawner;
 	public bool isBossSpawner;
-	public GameObject bossEntityTemplatePrefab;
 	public SOEntityStats bossEntityToSpawn;
 	private BossEntityStats bossEntity;
 
@@ -54,20 +47,14 @@ public class SpawnHandler : NetworkBehaviour
 
 	private void Awake()
 	{
-		if (IsClient)
-		{
-			Debug.LogError("spawner is on clients side");
-			gameObject.SetActive(false);
-		}
-		else
-			Initilize();
+		Initilize();
 	}
 	private void OnEnable()
 	{
 		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
-		SceneManager.sceneLoaded += TrySpawnEntitiesOnSceneLoad;
+
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
@@ -77,7 +64,6 @@ public class SpawnHandler : NetworkBehaviour
 		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
-		SceneManager.sceneLoaded -= TrySpawnEntitiesOnSceneLoad;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -85,6 +71,12 @@ public class SpawnHandler : NetworkBehaviour
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;
 		StopAllCoroutines();
+	}
+
+	private void Start()
+	{
+		spawnerLevel = GameManager.Localplayer.playerStats.entityLevel;
+		TrySpawnEntities();
 	}
 
 	//track players
@@ -126,40 +118,24 @@ public class SpawnHandler : NetworkBehaviour
 		playerCollider.radius = maxSpawningDistance;
 		closestPlayerDistance = maxSpawningDistance;
 		spawningDisabled = false;
+		CreateEnemySpawnTable();
 
 		spawnBounds.min = new Vector3(transform.position.x - (minSpawningDistance / 3f),
 			transform.position.y - (minSpawningDistance / 3f), transform.position.z);
 
 		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
 			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
-
-		CreateEnemySpawnTable();
-		TrySpawnEntities();
 	}
 	private void CreateEnemySpawnTable()
 	{
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;
 
-		foreach (SOEntityStats enemy in possibleEntityTypesToSpawn)
+		foreach (SOEntityStats enemy in AssetDatabase.Database.entities)
 			enemySpawnChanceTable.Add(enemy.enemySpawnChance);
 
 		foreach (float num in enemySpawnChanceTable)
 			totalEnemySpawnChance += num;
-	}
-	private int GetIndexOfEnemyToSpawn()
-	{
-		float rand = Random.Range(0, totalEnemySpawnChance);
-		float cumChance = 0;
-
-		for (int i = 0; i < enemySpawnChanceTable.Count; i++)
-		{
-			cumChance += enemySpawnChanceTable[i];
-
-			if (rand <= cumChance)
-				return i;
-		}
-		return -1;
 	}
 
 	//event listeners
@@ -218,21 +194,16 @@ public class SpawnHandler : NetworkBehaviour
 		for (int i = 0; i < numToSpawn; i++)
 			SpawnEntity();
 	}
-	private void TrySpawnEntitiesOnSceneLoad(Scene newLoadedScene, LoadSceneMode mode)
-	{
-		TrySpawnEntities();
-	}
 	private void TrySpawnEntities()
 	{
 		if (!CanSpawnEntity()) return;
-
 		SpawnEntity();
 	}
 
 	//boss entity spawning
 	private void SpawnBossEntity(GameObject roomCenterPiece)
 	{
-		if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsPlayerHost()) return;
+		if (!MultiplayerManager.IsClientHost()) return; //disable spawning if not host
 		if (!isBossSpawner || bossEntity != null) return; //disable spawning multiple
 
 		SOEntityStats bossToSpawn = null;
@@ -249,19 +220,23 @@ public class SpawnHandler : NetworkBehaviour
 
 
 		if (bossToSpawn == null) return;
-		InstantiateNewBossEntity(bossToSpawn, roomCenterPiece);
+		InstantiateNewBossEntity(roomCenterPiece);
 	}
-	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn, GameObject roomCenterPiece)
+	private void InstantiateNewBossEntity(GameObject roomCenterPiece)
 	{
 		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
-
-		if (MultiplayerManager.Instance.isMultiplayer)
-			go.GetComponent<NetworkObject>().Spawn();
-
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
-		bossEntity.SetCenterPieceRef(roomCenterPiece);
-		bossEntity.statsRef = bossToSpawn;
+
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			go.GetComponent<NetworkObject>().Spawn();
+			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+		}
+		else
+			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+
 		bossEntity.transform.SetParent(null);
+		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		this.bossEntity = bossEntity;
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -273,10 +248,10 @@ public class SpawnHandler : NetworkBehaviour
 	//entity spawning
 	private void SpawnEntity()
 	{
-		if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsPlayerHost()) return;
+		if (!MultiplayerManager.IsClientHost()) return; //disable spawning if not host
 
 		int num = GetIndexOfEnemyToSpawn();
-		EntityStats entity = ObjectPoolingManager.GetInActiveEntity(possibleEntityTypesToSpawn[num]);
+		EntityStats entity = ObjectPoolingManager.GetInActiveEntity(AssetDatabase.Database.entities[num]);
 
 		if (entity != null)
 			RespawnEntity(entity);
@@ -305,13 +280,13 @@ public class SpawnHandler : NetworkBehaviour
 		GameObject go = Instantiate(entityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
 
-		if (MultiplayerManager.Instance.isMultiplayer)
+		if (MultiplayerManager.IsMultiplayer())
 		{
 			go.GetComponent<NetworkObject>().Spawn();
-			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(possibleEntityTypesToSpawn[num]));
+			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
 		}
 		else
-			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(possibleEntityTypesToSpawn[num]));
+			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
 
 		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
@@ -323,6 +298,20 @@ public class SpawnHandler : NetworkBehaviour
 			entity.entityLevel = spawnerLevel;
 
 		TrySpawnEntities();
+	}
+	private int GetIndexOfEnemyToSpawn()
+	{
+		float rand = Random.Range(0, totalEnemySpawnChance);
+		float cumChance = 0;
+
+		for (int i = 0; i < enemySpawnChanceTable.Count; i++)
+		{
+			cumChance += enemySpawnChanceTable[i];
+
+			if (rand <= cumChance)
+				return i;
+		}
+		return -1;
 	}
 
 	//sync entity SO Refs for Mp
@@ -338,6 +327,20 @@ public class SpawnHandler : NetworkBehaviour
         }
 
 		Debug.LogError("entity not in database ADD IT PLEASE I BEG");
+		return index;
+	}
+	private int GetIndexOfBossEntityInDatabase(SOEntityStats statsRef)
+	{
+		int index = 0;
+		foreach (SOEntityStats stats in AssetDatabase.Database.bossEntities)
+		{
+			if (statsRef == stats)
+				return index;
+			else
+				index++;
+		}
+
+		Debug.LogError("boss entity not in database ADD IT PLEASE I BEG");
 		return index;
 	}
 

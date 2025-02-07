@@ -63,7 +63,7 @@ public class EntityBehaviour : Tree
 
 	protected override void Update()
 	{
-		if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsPlayerHost()) return; //let host control these
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
 		if (entityStats.IsEntityDead()) return;
 
 		UpdateAggroRatingTimer();

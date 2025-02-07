@@ -45,7 +45,7 @@ public class SaveSlotDataUi : MonoBehaviour
 			deleteButtonObj.SetActive(true);
 		}
 
-		if (MultiplayerManager.Instance.isMultiplayer) //hide button for Mp
+		if (MultiplayerManager.IsMultiplayer()) //hide button for Mp
 			loadButtonObj.SetActive(false);
 		else
 			loadButtonObj.SetActive(true);

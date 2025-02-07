@@ -40,7 +40,7 @@ public class ClientManager : NetworkBehaviour
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = true;
+		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
 	public void StopClient()
 	{
@@ -49,7 +49,7 @@ public class ClientManager : NetworkBehaviour
 
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = false;
+		MultiplayerManager.UpdateIsMultiplayer(false);
 		NetworkManager.Singleton.Shutdown();
 	}
 

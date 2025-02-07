@@ -63,7 +63,7 @@ public class DungeonHandler : MonoBehaviour
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 		dungeonEnterencePortal = portalSpawnPoint;
 
-		if (!MultiplayerManager.IsMultiplayer() || MultiplayerManager.IsPlayerHost())
+		if (!MultiplayerManager.IsMultiplayer() || MultiplayerManager.IsClientHost())
 		{
 			foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
 				player.transform.position = dungeonEnterencePortal.transform.position;

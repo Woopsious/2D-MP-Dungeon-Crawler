@@ -93,7 +93,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		button.gameObject.SetActive(true);
 		button.onClick.RemoveAllListeners();
 
-		if (MultiplayerManager.IsPlayerHost())
+		if (MultiplayerManager.IsClientHost())
 		{
 			if (index == 0)
 			{
@@ -121,19 +121,19 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	}
 	private void ClientLeaveRelayAndLobbyButton()
 	{
-		if (MultiplayerManager.IsPlayerHost()) return; //double check
+		if (MultiplayerManager.IsClientHost()) return; //double check
 
 		ClientManager.Instance.ClientLeaveRelayAndLobby("Lobby Left");
 	}
 	private void HostCloseLobbyButton()
 	{
-		if (!MultiplayerManager.IsPlayerHost()) return; //double check
+		if (!MultiplayerManager.IsClientHost()) return; //double check
 
 		HostManager.Instance.CloseLobby("Host Closed Lobby");
 	}
 	private void HostKickPlayerButton()
 	{
-		if (!MultiplayerManager.IsPlayerHost()) return; //double check
+		if (!MultiplayerManager.IsClientHost()) return; //double check
 
 		HostManager.Instance.KickClientFromRelay(clientNetworkId.ToString(), "Kicked from lobby by host");
 	}
