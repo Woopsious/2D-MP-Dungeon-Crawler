@@ -8356,7 +8356,7 @@ GameObject:
   - component: {fileID: 1842219066664834017}
   - component: {fileID: 3979166327755089012}
   m_Layer: 5
-  m_Name: PlayerLeaveJoinUi
+  m_Name: PartyMessagesPanelUi
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -8377,11 +8377,11 @@ RectTransform:
   - {fileID: 4214261852879137260}
   m_Father: {fileID: 6994754436231198238}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 1}
-  m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -706, y: 100}
-  m_SizeDelta: {x: 500, y: 100}
-  m_Pivot: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 0.5}
+  m_AnchorMax: {x: 0, y: 0.5}
+  m_AnchoredPosition: {x: 5, y: 160}
+  m_SizeDelta: {x: 540, y: 185}
+  m_Pivot: {x: 0, y: 0.5}
 --- !u!223 &5272701430355914712
 Canvas:
   m_ObjectHideFlags: 0
@@ -8400,7 +8400,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -37449,8 +37449,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0.000091552734}
-  m_SizeDelta: {x: 500, y: 0}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &5302066648714008642
 MonoBehaviour:
@@ -37464,7 +37464,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3245ec927659c4140ac4f8d17403cc18, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_HorizontalFit: 0
+  m_HorizontalFit: 2
   m_VerticalFit: 2
 --- !u!114 &6821610488794804456
 MonoBehaviour:
@@ -37481,10 +37481,10 @@ MonoBehaviour:
   m_Padding:
     m_Left: 0
     m_Right: 0
-    m_Top: 10
-    m_Bottom: 0
+    m_Top: 5
+    m_Bottom: 5
   m_ChildAlignment: 1
-  m_Spacing: 10
+  m_Spacing: 5
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
@@ -47955,12 +47955,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b9202cfa0eb9cb94fa8f0433193f9a71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  playerPartyPanelUi: {fileID: 0}
+  playerPartyPanelUi: {fileID: 2990203291649848926}
   playerPartyHandlerUiList:
   - {fileID: 2321197412173147248}
   - {fileID: 3930805811393463186}
   - {fileID: 8586746754222752940}
   - {fileID: 5113717211506351162}
+  partyMessagesPanelUi: {fileID: 1262725868807657558}
+  partyMessagesContent: {fileID: 5909855993184967244}
+  partyMessagePrefab: {fileID: 7370209113152440779, guid: 657c49605c208614fb1c6d995bb52a2f, type: 3}
 --- !u!1 &7526383101510464748
 GameObject:
   m_ObjectHideFlags: 0

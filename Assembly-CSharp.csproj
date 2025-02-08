@@ -152,6 +152,7 @@
     <Compile Include="Assets\Scripts\UI\PlayerDeathUi.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerHud\PartyMessagesUi.cs" />
     <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\BossRoomHandler.cs" />

@@ -89,6 +89,8 @@ public class LobbyManager : NetworkBehaviour
 		{
 			Debug.LogError(e.Message);
 		}
+
+		SubToLobbyEvents();
 	}
 	public async void CreateLobbyWithPassword(string lobbyName, bool lobbyPrivate, string lobbyPassword)
 	{
@@ -122,6 +124,8 @@ public class LobbyManager : NetworkBehaviour
 		{
 			Debug.LogError(e.Message);
 		}
+
+		SubToLobbyEvents();
 	}
 
 	//updating lobby settings
@@ -145,6 +149,7 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public void ResetLobbyReferences() //host/client resets refs
 	{
+		UnSubToLobbyEvents();
 		Instance._Lobby = null;
 		Instance._LobbyId = null;
 		Instance.lobbyJoinCode = null;
@@ -173,6 +178,7 @@ public class LobbyManager : NetworkBehaviour
 			return;
 		}
 
+		SubToLobbyEvents();
 		StartCoroutine(ClientManager.Instance.RelayConfigureTransportAsConnectingPlayer());
 	}
 	public void ReturnToLobbyListWhenFailedToJoinLobby()
@@ -198,6 +204,51 @@ public class LobbyManager : NetworkBehaviour
 		{
 			Debug.LogError(e.Message);
 		}
+	}
+
+	//LOBBY EVENTS
+	private async void SubToLobbyEvents()
+	{
+		try
+		{
+			var callbacks = new LobbyEventCallbacks();
+			callbacks.PlayerJoined += PlayerJoinedLobby;
+			callbacks.PlayerLeft += PlayerLeftLobby;
+			_LobbyEvents = await Lobbies.Instance.SubscribeToLobbyEventsAsync(_LobbyId, callbacks);
+		}
+		catch (LobbyServiceException ex)
+		{
+			switch (ex.Reason)
+			{
+				case LobbyExceptionReason.AlreadySubscribedToLobby: Debug.LogWarning
+					($"Already subscribed to lobby[{_Lobby.Id}]. didnt need to subscribe again. Exception Message: {ex.Message}"); break;
+				case LobbyExceptionReason.SubscriptionToLobbyLostWhileBusy: Debug.LogError(
+					$"Subscription to lobby events was lost while it was busy trying to subscribe. Exception Message: {ex.Message}"); throw;
+				case LobbyExceptionReason.LobbyEventServiceConnectionError: Debug.LogError(
+					$"Failed to connect to lobby events. Exception Message: {ex.Message}"); throw;
+				default: throw;
+			}
+		}
+	}
+	private void UnSubToLobbyEvents()
+	{
+		_LobbyEvents.Callbacks.PlayerJoined -= PlayerJoinedLobby;
+		_LobbyEvents.Callbacks.PlayerLeft -= PlayerLeftLobby;
+		_LobbyEvents = null;
+	}
+
+	private void PlayerJoinedLobby(List<LobbyPlayerJoined> playersJoined)
+	{
+		foreach (LobbyPlayerJoined player in playersJoined)
+		{
+			string playerName = player.Player.Data["PlayerName"].Value;
+			PlayerPartyUi.Instance.SendPlayerJoinedMessage(playerName);
+		}
+	}
+	private void PlayerLeftLobby(List<int> playerLeft)
+	{
+		string playerName = _Lobby.Players[playerLeft.Count].Data["PlayerName"].Value;
+		PlayerPartyUi.Instance.SendPlayerLeftMessage(playerName);
 	}
 
 	//UPDATING LOBBY PLAYER DATA

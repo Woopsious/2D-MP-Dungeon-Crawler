@@ -8,8 +8,11 @@ public class PlayerPartyUi : MonoBehaviour
 	public static PlayerPartyUi Instance;
 
 	public GameObject playerPartyPanelUi;
-
 	public List<PlayerPartyHandlerUi> playerPartyHandlerUiList = new List<PlayerPartyHandlerUi>();
+
+	public GameObject partyMessagesPanelUi;
+	public GameObject partyMessagesContent;
+	public GameObject partyMessagePrefab;
 
 	private void Awake()
 	{
@@ -24,5 +27,26 @@ public class PlayerPartyUi : MonoBehaviour
 			player.UpdatePlayersInParty(lobby, index);
 			index++;
 		}
+	}
+
+	public void SendPlayerJoinedMessage(string playerName)
+	{
+		if (LobbyManager.Instance._Lobby == null) return;
+
+		GameObject go = Instantiate(partyMessagePrefab, partyMessagesContent.transform);
+		PartyMessagesUi partyMessage = go.GetComponent<PartyMessagesUi>();
+
+		string newMessage = "Player" + playerName + " joined the party";
+		partyMessage.SetMessage(newMessage, 100);
+	}
+	public void SendPlayerLeftMessage(string playerName)
+	{
+		if (LobbyManager.Instance._Lobby == null) return;
+
+		GameObject go = Instantiate(partyMessagePrefab, partyMessagesContent.transform);
+		PartyMessagesUi partyMessage = go.GetComponent<PartyMessagesUi>();
+
+		string newMessage = "Player" + playerName + " left the party";
+		partyMessage.SetMessage(newMessage, 100);
 	}
 }

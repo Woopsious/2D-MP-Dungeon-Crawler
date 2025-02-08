@@ -26,10 +26,15 @@ public class PlayerPartyHandlerUi : MonoBehaviour
 			ClearUiInfo();
 		else
 		{
-			gameObject.SetActive(true);
 			LinkToClientPlayerObject(lobby, index);
-			playerName.text = GetPlayerName(lobby, index);
+
+			if (playerClientNetworkId == NetworkManager.Singleton.LocalClientId)
+				playerName.text = "(YOU)" + GetPlayerName(lobby, index);
+			else
+				playerName.text = GetPlayerName(lobby, index);
+
 			playerInfo.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
+			gameObject.SetActive(true);
 		}
 	}
 	private void LinkToClientPlayerObject(Lobby lobby, int index)
@@ -51,9 +56,11 @@ public class PlayerPartyHandlerUi : MonoBehaviour
 			playerClient = player;
 			player.playerStats.OnHealthChangeEvent += UpdatePlayerHealthBar;
 			player.playerStats.OnManaChangeEvent += UpdatePlayerManaBar;
+
+			UpdatePlayerHealthBar(player.playerStats.maxHealth.finalValue, player.playerStats.currentHealth);
+			UpdatePlayerManaBar(player.playerStats.maxMana.finalValue, player.playerStats.currentMana);
 		}
 	}
-
 	public void ClearUiInfo()
 	{
 		gameObject.SetActive(false);

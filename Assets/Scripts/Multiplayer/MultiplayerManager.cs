@@ -37,7 +37,6 @@ public class MultiplayerManager : NetworkBehaviour
 		else
 			Destroy(gameObject);
 	}
-
 	public async Task AuthenticatePlayer()
 	{
 		await UnityServices.InitializeAsync();
