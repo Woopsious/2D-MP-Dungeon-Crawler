@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
-public class EntityAbilityHandler : MonoBehaviour
+public class EntityAbilityHandler : NetworkBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityBehaviour behaviour;
@@ -68,6 +69,114 @@ public class EntityAbilityHandler : MonoBehaviour
 		SetBossAbilities();
 	}
 
+	//SET ENTITY ABILITIES
+	public void AssignEntityRandomAbilities()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		int offensiiveAbilityIndex = FindRandomAbilityIndex(true);
+		int healingbilityIndex = FindRandomAbilityIndex(false);
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncEntityClassForClientsRPC(offensiiveAbilityIndex, healingbilityIndex);
+		else
+			SetEntityAbilities(offensiiveAbilityIndex, healingbilityIndex);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityClassForClientsRPC(int offensiiveAbilityIndex, int healingbilityIndex)
+	{
+		SetEntityAbilities(offensiiveAbilityIndex, healingbilityIndex);
+	}
+	private void SetEntityAbilities(int offensiiveAbilityIndex, int healingbilityIndex)
+	{
+		if (offensiiveAbilityIndex == -1)
+			offensiveAbility = null;
+		else
+			offensiveAbility = GetChosenAbility(true, offensiiveAbilityIndex);
+
+		if (healingbilityIndex == -1)
+			healingAbility = null;
+		else
+			healingAbility = GetChosenAbility(false, healingbilityIndex);
+	}
+
+	//set entity abilities helper funcs
+	private int FindRandomAbilityIndex(bool offensiveAbility)
+	{
+		if (offensiveAbility == true)
+		{
+			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			{
+				if (ability.damageType != IDamagable.DamageType.isHealing)
+					offensiveAbilities.Add(ability);
+			}
+
+			if (offensiveAbilities.Count == 0)
+				return -1;
+			else return Utilities.GetRandomNumber(offensiveAbilities.Count - 1);
+		}
+		else
+		{
+			List<SOAbilities> healingAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			{
+				if (ability.damageType == IDamagable.DamageType.isHealing)
+					healingAbilities.Add(ability);
+			}
+
+			if (healingAbilities.Count == 0)
+				return -1;
+			else return Utilities.GetRandomNumber(healingAbilities.Count - 1);
+		}
+	}
+	private SOAbilities GetChosenAbility(bool offensiveAbility, int indexOfAbility)
+	{
+		if (offensiveAbility == true)
+		{
+			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			{
+				if (ability.damageType != IDamagable.DamageType.isHealing)
+					offensiveAbilities.Add(ability);
+			}
+
+			//"world level" of client different and cant always sync ability reliably so return null if it happens
+			if (indexOfAbility > offensiveAbilities.Count) return null;
+
+			return offensiveAbilities[indexOfAbility];
+		}
+		else
+		{
+			List<SOAbilities> healingAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			{
+				if (ability.damageType == IDamagable.DamageType.isHealing)
+					healingAbilities.Add(ability);
+			}
+
+			//"world level" of client different and cant always sync ability reliably so return null if it happens
+			if (indexOfAbility > healingAbilities.Count) return null;
+
+			return healingAbilities[indexOfAbility];
+		}
+	}
+	//duplicate ability check
+	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
+	{
+		if (abilityToCheck == offensiveAbility) return true;
+		if (abilityToCheck == healingAbility) return true;
+		return false;
+	}
+
+	//reset/reroll abilities
+	public void RerollEquippedAbilities()
+	{
+		entityStats.abilityHandler.offensiveAbility = null;
+		entityStats.abilityHandler.healingAbility = null;
+		AssignEntityRandomAbilities();
+	}
 	public void ResetEntityAbilities()
 	{
 		abilityBeingCasted = null;
@@ -81,6 +190,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		abilityTimerThreeCounter = 0;
 	}
 
+	//boss abilities
 	private void SetBossAbilities()
 	{
 		if (behaviour.behaviourRef is SOBossEntityBehaviour bossBehaviour)

@@ -137,6 +137,7 @@ public class EntityStats : NetworkBehaviour
 		SOEntityStats statsRef = AssetDatabase.Database.entities[index];
 		this.statsRef = statsRef;
 		entityBehaviour.behaviourRef = statsRef.entityBehaviour;
+		entityLevel = GameManager.Localplayer.playerStats.entityLevel;
 	}
 
 	//set entity data
@@ -148,8 +149,9 @@ public class EntityStats : NetworkBehaviour
 
 		if (playerRef == null)
 		{
-			classHandler.SetEntityClass();
-			equipmentHandler.SpawnEntityEquipment();
+			classHandler.AssignEntityRandomClass();
+			equipmentHandler.AssignEntityRandomEquipment();
+			abilityHandler.AssignEntityRandomAbilities();
 			lootSpawnHandler.Initilize(statsRef.maxDroppedGoldAmount, statsRef.minDroppedGoldAmount,
 				statsRef.lootPool, statsRef.itemRarityChanceModifier);
 		}
@@ -177,7 +179,7 @@ public class EntityStats : NetworkBehaviour
 		else
 		{
 			animator.ResetTrigger("DeathTrigger");//+ this vis versa??
-			classHandler.RerollEquippedAbilities();
+			abilityHandler.RerollEquippedAbilities();
 		}
 	}
 

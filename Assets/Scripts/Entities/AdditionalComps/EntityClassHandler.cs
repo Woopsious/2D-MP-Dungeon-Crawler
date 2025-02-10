@@ -1,9 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EntityClassHandler : MonoBehaviour
+public class EntityClassHandler : NetworkBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
 	[Header("Current Class")]
@@ -23,10 +24,28 @@ public class EntityClassHandler : MonoBehaviour
 	}
 
 	//set classes + abilities of non players
-	public void SetEntityClass()
+
+	//set class
+	public void AssignEntityRandomClass()
 	{
-		int num = Utilities.GetRandomNumber(entityStats.statsRef.possibleClassesList.Count - 1);
-		currentEntityClass = entityStats.statsRef.possibleClassesList[num];
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		int classIndex = Utilities.GetRandomNumber(entityStats.statsRef.possibleClassesList.Count - 1);
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncEntityClassForClientsRPC(classIndex);
+		else
+			SetEntityClass(classIndex);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityClassForClientsRPC(int classIndex)
+	{
+		SetEntityClass(classIndex);
+	}
+	private void SetEntityClass(int classIndex)
+	{
+		currentEntityClass = entityStats.statsRef.possibleClassesList[classIndex];
 
 		foreach (ClassStatUnlocks statBonuses in currentEntityClass.classStatBonusList)
 		{
@@ -48,62 +67,6 @@ public class EntityClassHandler : MonoBehaviour
 			if (entityStats.entityLevel < ability.LevelRequirement) continue;
 			UnlockAbility(ability.unlock);
 		}
-
-		SetUpEntityEquippedAbilities();
-	}
-	public void RerollEquippedAbilities()
-	{
-		entityStats.abilityHandler.offensiveAbility = null;
-		entityStats.abilityHandler.healingAbility = null;
-		SetUpEntityEquippedAbilities();
-	}
-	private void SetUpEntityEquippedAbilities()
-	{
-		ChooseEntityAbilities();
-	}
-	private void ChooseEntityAbilities()
-	{
-		SOAbilities pickedAbility = PickOffensiveAbility();
-		if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
-			entityStats.abilityHandler.offensiveAbility = pickedAbility;
-
-		pickedAbility = PickHealingAbility();
-        if (pickedAbility != null && !IsAbilityAlreadyEquipped(pickedAbility))
-			entityStats.abilityHandler.healingAbility = pickedAbility;
-	}
-	private SOAbilities PickOffensiveAbility()
-	{
-		List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
-		foreach (SOAbilities ability in unlockedAbilitiesList)
-		{
-			if (ability.damageType != IDamagable.DamageType.isHealing)
-				offensiveAbilities.Add(ability);
-		}
-
-		if (offensiveAbilities.Count == 0)
-			return null;
-		else return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
-	}
-	private SOAbilities PickHealingAbility()
-	{
-		List<SOAbilities> healingAbilities = new List<SOAbilities>();
-		foreach (SOAbilities ability in unlockedAbilitiesList)
-		{
-			if (ability.damageType == IDamagable.DamageType.isHealing)
-				healingAbilities.Add(ability);
-		}
-
-		if (healingAbilities.Count == 0)
-			return null;
-		else return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
-	}
-
-	//duplicate ability check
-	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
-	{
-		if (abilityToCheck == entityStats.abilityHandler.offensiveAbility) return true;
-		if (abilityToCheck == entityStats.abilityHandler.healingAbility) return true;
-		return false;
 	}
 
 	//entity class updates

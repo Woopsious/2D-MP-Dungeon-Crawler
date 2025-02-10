@@ -26,13 +26,15 @@ MonoBehaviour:
   statusEffects:
   - {fileID: 11400000, guid: aebfd8933e53d3449b2452b82fe6167b, type: 2}
   isAOE: 0
-  isCircleAOE: 0
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeSize: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 20
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 20

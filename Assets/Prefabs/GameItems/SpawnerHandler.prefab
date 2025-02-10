@@ -48,7 +48,10 @@ MonoBehaviour:
   debugSpawnerLevel: 0
   debugSpawnEnemiesAtSetLevel: 0
   spawnerLevel: 0
-  maxNumOfEntitiesToSpawn: 5
+  maxNumOfEntitiesToSpawn: 2
+  listOfPlayersInRange: []
+  closestPlayerDistance: 0
+  spawningDisabled: 0
   maxSpawningDistance: 30
   minSpawningDistance: 25
   spawnBounds:

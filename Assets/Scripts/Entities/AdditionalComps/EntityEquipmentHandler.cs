@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
-public class EntityEquipmentHandler : MonoBehaviour
+public class EntityEquipmentHandler : NetworkBehaviour
 {
 	public GameObject itemPrefab;
 
@@ -62,27 +63,40 @@ public class EntityEquipmentHandler : MonoBehaviour
 	}
 
 	//equip items to non players based on class
-	public void SpawnEntityEquipment()
+	public void AssignEntityRandomEquipment()
 	{
-		if (!entityStats.statsRef.canUseEquipment) //equip unique weapon
-		{
-			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
-			return;
-		}
+		if (!MultiplayerManager.IsClientHost()) return;
 
-		EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
-			(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);
-		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);
+		int weaponIndex = Utilities.GetRandomNumber(entityClassHandler.currentEntityClass.startingWeapon.Count - 1);
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncEntityEquipmentForClientsRPC(weaponIndex);
+		else
+			EquipEntityEquipment(weaponIndex);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityEquipmentForClientsRPC(int weaponIndex)
+	{
+		EquipEntityEquipment(weaponIndex);
+	}
+	private void EquipEntityEquipment(int weaponIndex)
+	{
+		if (entityStats.statsRef.canUseEquipment)
+			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[weaponIndex], equippedWeapon, weaponSlotContainer);
+		else //equip unique weapon
+			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
 
 		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)
 		{
 			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
 				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-			else if(armor.armorSlot == SOArmors.ArmorSlot.chest)
+			else if (armor.armorSlot == SOArmors.ArmorSlot.chest)
 				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-			else if(armor.armorSlot == SOArmors.ArmorSlot.legs)
+			else if (armor.armorSlot == SOArmors.ArmorSlot.legs)
 				EquipArmor(armor, equippedLegs, legsSlotContainer);
 		}
+
 		//Accessory functions here if/when i decide to add it
 	}
 
