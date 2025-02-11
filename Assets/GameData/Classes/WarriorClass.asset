@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 033d642619f066f47932f5d8986b3241, type: 3}
-  m_Name: WarriorsClass
+  m_Name: WarriorClass
   m_EditorClassIdentifier: 
   className: Warrior
   classDescription: Warriors are a good mixing between dealing and taking damage,
@@ -69,11 +69,13 @@ MonoBehaviour:
   classRestriction: 1
   startingWeapon:
   - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  startingOffhandWeapon: []
   startingArmor:
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
   - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
   - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
   startingAccessories: []
   startingConsumables:
+  - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
   - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
   - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

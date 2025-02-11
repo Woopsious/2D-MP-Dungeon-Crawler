@@ -10,37 +10,37 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
-  m_Name: BossGoblin
+  m_Name: GoblinRanger
   m_EditorClassIdentifier: 
-  entityName: Boss Goblin
-  sprite: {fileID: -1464768431, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  isBossVersion: 1
+  entityName: Goblin
+  sprite: {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 0
   humanoidType: 1
   enemySpawnChance: 0.25
-  entityBehaviour: {fileID: 11400000, guid: a9d7a6a162486d143acd0998313d689c, type: 2}
-  maxHealth: 250
+  entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
+  maxHealth: 50
   damageDealtBaseModifier: 0.5
-  physicalDamageResistance: 8
-  poisonDamageResistance: 8
-  fireDamageResistance: 8
-  iceDamageResistance: 8
+  physicalDamageResistance: 5
+  poisonDamageResistance: 5
+  fireDamageResistance: 5
+  iceDamageResistance: 5
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
   entityClasses:
-  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
   entityWeapons:
-  - {fileID: 11400000, guid: 3d3734054398be248bac2a8d0b37c4de, type: 2}
+  - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
   entityHelmetArmours:
-  - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
+  - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
   entityChestArmours:
-  - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
+  - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
   entityLegArmours:
-  - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
-  expOnDeath: 100
-  maxDroppedGoldAmount: 30
-  minDroppedGoldAmount: 15
-  itemRarityChanceModifier: 0.05
+  - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
+  expOnDeath: 40
+  maxDroppedGoldAmount: 12
+  minDroppedGoldAmount: 5
+  itemRarityChanceModifier: 0
   lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   deathSfx: {fileID: 8300000, guid: 9771b0b29a5887b4bb5842c380bc522d, type: 3}
   hurtSfx: {fileID: 8300000, guid: 6274901710450704bac9a0b867987657, type: 3}

@@ -95,7 +95,10 @@ public class PlayerInventoryHandler : MonoBehaviour
 	//spawning starting items
 	private void SpawnClassStartingItems(SOClasses playerClass)
 	{
-		SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
+		if (playerClass.startingWeapon.Count != 0)
+			SpawnStartingItem(playerClass.startingWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
+		if (playerClass.startingOffhandWeapon.Count != 0)
+			SpawnStartingItem(playerClass.startingOffhandWeapon[Utilities.GetRandomNumber(playerClass.startingWeapon.Count - 1)]);
 
 		foreach (SOArmors SOarmor in playerClass.startingArmor)
 			SpawnStartingItem(SOarmor);
@@ -126,6 +129,12 @@ public class PlayerInventoryHandler : MonoBehaviour
 	}
 	private void SpawnStartingItem(SOItems SOitem)
 	{
+		if (SOitem == null)
+		{
+			Debug.LogError("No item to spawn in");
+			return;
+		}
+
 		GameObject go = Instantiate(droppedItemPrefab, gameObject.transform.position, Quaternion.identity);
 
 		if (SOitem.itemType == SOItems.ItemType.isWeapon)

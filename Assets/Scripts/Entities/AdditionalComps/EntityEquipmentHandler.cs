@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class EntityEquipmentHandler : NetworkBehaviour
@@ -67,35 +68,43 @@ public class EntityEquipmentHandler : NetworkBehaviour
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		int weaponIndex = Utilities.GetRandomNumber(entityClassHandler.currentEntityClass.startingWeapon.Count - 1);
+		//armour can be blank so check list and skip if it is
+		int helmetIndex = -1;
+		int chestIndex = -1;
+		int legsIndex = -1;
+
+		int weaponIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityWeapons.Count - 1);
+
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			helmetIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityHelmetArmours.Count - 1);
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			chestIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityChestArmours.Count - 1);
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			legsIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityLegArmours.Count - 1);
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncEntityEquipmentForClientsRPC(weaponIndex);
+			SyncEntityEquipmentForClientsNewRPC(weaponIndex, helmetIndex, chestIndex, legsIndex);
 		else
-			EquipEntityEquipment(weaponIndex);
+			EquipEntityEquipmentNew(weaponIndex, helmetIndex, chestIndex, legsIndex);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncEntityEquipmentForClientsRPC(int weaponIndex)
+	private void SyncEntityEquipmentForClientsNewRPC(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
 	{
-		EquipEntityEquipment(weaponIndex);
+		EquipEntityEquipmentNew(weaponIndex, helmetIndex, chestIndex, legsIndex);
 	}
-	private void EquipEntityEquipment(int weaponIndex)
+	private void EquipEntityEquipmentNew(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
 	{
-		if (entityStats.statsRef.canUseEquipment)
-			EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[weaponIndex], equippedWeapon, weaponSlotContainer);
-		else //equip unique weapon
-			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
+		//check index, skipping equipment thats left blank
+		if (weaponIndex != -1)
+			EquipWeapon(entityStats.statsRef.entityWeapons[weaponIndex], equippedWeapon, weaponSlotContainer);
 
-		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)
-		{
-			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
-				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-			else if (armor.armorSlot == SOArmors.ArmorSlot.chest)
-				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-			else if (armor.armorSlot == SOArmors.ArmorSlot.legs)
-				EquipArmor(armor, equippedLegs, legsSlotContainer);
-		}
+		if (helmetIndex != -1)
+			EquipArmor(entityStats.statsRef.entityHelmetArmours[helmetIndex], equippedHelmet, helmetSlotContainer);
+		if (chestIndex != -1)
+			EquipArmor(entityStats.statsRef.entityChestArmours[chestIndex], equippedChestpiece, chestpieceSlotContainer);
+		if (legsIndex != -1)
+			EquipArmor(entityStats.statsRef.entityLegArmours[legsIndex], equippedLegs, legsSlotContainer);
 
 		//Accessory functions here if/when i decide to add it
 	}

@@ -14,14 +14,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   entityName: Bat
   sprite: {fileID: -1099789057, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 0
   humanoidType: 3
   enemySpawnChance: 0.1
-  canUseEquipment: 0
-  UniqueAttackWeapon: {fileID: 11400000, guid: a9db01ee02432424db8fe2628146aa85, type: 2}
-  expOnDeath: 20
-  maxDroppedGoldAmount: 0
-  minDroppedGoldAmount: 0
-  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 4d7d320eb5c9bba47aac464f8851ba4c, type: 2}
   maxHealth: 25
   damageDealtBaseModifier: 0.5
@@ -32,8 +27,17 @@ MonoBehaviour:
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
-  possibleClassesList:
-  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  entityClasses: []
+  entityWeapons:
+  - {fileID: 11400000, guid: a9db01ee02432424db8fe2628146aa85, type: 2}
+  entityHelmetArmours: []
+  entityChestArmours: []
+  entityLegArmours: []
+  expOnDeath: 20
+  maxDroppedGoldAmount: 0
+  minDroppedGoldAmount: 0
+  itemRarityChanceModifier: 0
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   deathSfx: {fileID: 8300000, guid: 2d79f0a2b9a788b4c9c29a44b37e2a1f, type: 3}
   hurtSfx: {fileID: 8300000, guid: 60876d7bbe2dd1f488913c488f16dc3e, type: 3}
   idleSfx: {fileID: 8300000, guid: c38dc26fa936b874f8ed219e19927453, type: 3}

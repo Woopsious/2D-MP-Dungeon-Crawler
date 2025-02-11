@@ -10,18 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
-  m_Name: Zombie
+  m_Name: ZombieWarrior
   m_EditorClassIdentifier: 
   entityName: Zombie
   sprite: {fileID: -1684659544, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 0
   humanoidType: 5
   enemySpawnChance: 0.25
-  canUseEquipment: 1
-  UniqueAttackWeapon: {fileID: 0}
-  expOnDeath: 40
-  maxDroppedGoldAmount: 12
-  minDroppedGoldAmount: 5
-  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 027fd21d6b99d8f49a878d8522f2a7f2, type: 2}
   maxHealth: 50
   damageDealtBaseModifier: 0.5
@@ -32,9 +27,21 @@ MonoBehaviour:
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 3
-  possibleClassesList:
-  - {fileID: 11400000, guid: 8c94f4824de128042acbaee3584c249c, type: 2}
+  entityClasses:
   - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  entityWeapons:
+  - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  entityHelmetArmours:
+  - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
+  entityChestArmours:
+  - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
+  entityLegArmours:
+  - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
+  expOnDeath: 40
+  maxDroppedGoldAmount: 12
+  minDroppedGoldAmount: 5
+  itemRarityChanceModifier: 0
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   deathSfx: {fileID: 8300000, guid: ec943fb6418b3c740a9500c6f565646d, type: 3}
   hurtSfx: {fileID: 8300000, guid: 350fb9bfa333c6f4dab6c0ef24f0fe47, type: 3}
   idleSfx: {fileID: 8300000, guid: 2564401129ef8c2479ae60eec54bbb29, type: 3}

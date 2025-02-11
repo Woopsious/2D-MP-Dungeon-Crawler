@@ -17,13 +17,6 @@ MonoBehaviour:
   isBossVersion: 0
   humanoidType: 4
   enemySpawnChance: 0.8
-  canUseEquipment: 0
-  UniqueAttackWeapon: {fileID: 11400000, guid: 9523948a17ff1e54884b27933e2aacdf, type: 2}
-  expOnDeath: 60
-  maxDroppedGoldAmount: 15
-  minDroppedGoldAmount: 8
-  itemRarityChanceModifier: 0
-  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 702a6b51e7de0ff4baa053da75e6d489, type: 2}
   maxHealth: 50
   damageDealtBaseModifier: 0.5
@@ -34,8 +27,18 @@ MonoBehaviour:
   maxMana: 100
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
-  possibleClassesList:
+  entityClasses:
   - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  entityWeapons:
+  - {fileID: 11400000, guid: 9523948a17ff1e54884b27933e2aacdf, type: 2}
+  entityHelmetArmours: []
+  entityChestArmours: []
+  entityLegArmours: []
+  expOnDeath: 60
+  maxDroppedGoldAmount: 15
+  minDroppedGoldAmount: 8
+  itemRarityChanceModifier: 0
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   deathSfx: {fileID: 8300000, guid: 4720698716e87f740aba4bc21013e5af, type: 3}
   hurtSfx: {fileID: 8300000, guid: 9aae51ef36e6afc44b36e2197f175fb6, type: 3}
   idleSfx: {fileID: 8300000, guid: 066ee69023e2b2a4da5039401f75b324, type: 3}

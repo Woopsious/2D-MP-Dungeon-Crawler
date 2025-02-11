@@ -10,20 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
-  m_Name: Goblin
+  m_Name: GoblinMage
   m_EditorClassIdentifier: 
   entityName: Goblin
   sprite: {fileID: 1727710949, guid: 76686699748622a48b566623ca98afc6, type: 3}
   isBossVersion: 0
   humanoidType: 1
   enemySpawnChance: 0.25
-  canUseEquipment: 1
-  UniqueAttackWeapon: {fileID: 0}
-  expOnDeath: 40
-  maxDroppedGoldAmount: 12
-  minDroppedGoldAmount: 5
-  itemRarityChanceModifier: 0
-  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   entityBehaviour: {fileID: 11400000, guid: 8dae4d17fab19df47892d0a38be71ea1, type: 2}
   maxHealth: 50
   damageDealtBaseModifier: 0.5
@@ -34,8 +27,23 @@ MonoBehaviour:
   maxMana: 50
   manaRegenPercentage: 0.05
   manaRegenCooldown: 2
-  possibleClassesList:
+  entityClasses:
   - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  entityWeapons:
+  - {fileID: 11400000, guid: e74a313aa604222478e2ff42f4f8c13b, type: 2}
+  - {fileID: 11400000, guid: 8e56fc403ea16df4d84ee3bafa1713ce, type: 2}
+  - {fileID: 11400000, guid: 17ffefcd104886b47903092608d77944, type: 2}
+  entityHelmetArmours:
+  - {fileID: 11400000, guid: fcca6b8390a71ab43ac651a10b41a9c0, type: 2}
+  entityChestArmours:
+  - {fileID: 11400000, guid: 941e6c1a3b9556d48a8d14cb51dd5aa8, type: 2}
+  entityLegArmours:
+  - {fileID: 11400000, guid: 820b16f51400afa418909af5e95b60cd, type: 2}
+  expOnDeath: 40
+  maxDroppedGoldAmount: 12
+  minDroppedGoldAmount: 5
+  itemRarityChanceModifier: 0
+  lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
   deathSfx: {fileID: 8300000, guid: 9771b0b29a5887b4bb5842c380bc522d, type: 3}
   hurtSfx: {fileID: 8300000, guid: 6274901710450704bac9a0b867987657, type: 3}
   idleSfx: {fileID: 8300000, guid: b00934f0ad1aa074793efb69a73d346e, type: 3}

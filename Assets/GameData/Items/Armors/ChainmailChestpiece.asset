@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15125d2e4ec8c9f4d9fdc521f4911922, type: 3}
-  m_Name: SteelPlateChespiece
+  m_Name: ChainmailChestpiece
   m_EditorClassIdentifier: 
-  itemName: Steel Plate Chestpiece
-  itemImage: {fileID: -1699967566, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
-  itemPrice: 300
+  itemName: Chainmail Chestpiece
+  itemImage: {fileID: -2078815287, guid: 13dc2a01e1134ec46b16ec201221b6cc, type: 3}
+  itemPrice: 225
   itemId: 0
   itemSpawnChance: 0.2
   itemType: 2
   isEquipable: 1
   isStackable: 0
   MaxStackCount: 1
-  equipItemSfx: {fileID: 8300000, guid: bbc615a123a5fb9418ab2946a13b8ea4, type: 3}
-  baseBonusHealth: 5
+  equipItemSfx: {fileID: 8300000, guid: 9d2beaa5f7db35744b3c2d31333bdc3d, type: 3}
+  baseBonusHealth: 3
   baseBonusMana: 0
-  classRestriction: 2
+  classRestriction: 1
   armorSlot: 1
-  bonusPhysicalResistance: 5
-  bonusPoisonResistance: 5
-  bonusFireResistance: 5
-  bonusIceResistance: 5
+  bonusPhysicalResistance: 4
+  bonusPoisonResistance: 4
+  bonusFireResistance: 4
+  bonusIceResistance: 4

@@ -10,38 +10,38 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b1b058091332614b995fa6592b58636, type: 3}
-  m_Name: BossGoblin
+  m_Name: ZombieKnight
   m_EditorClassIdentifier: 
-  entityName: Boss Goblin
-  sprite: {fileID: -1464768431, guid: 76686699748622a48b566623ca98afc6, type: 3}
-  isBossVersion: 1
-  humanoidType: 1
+  entityName: Zombie
+  sprite: {fileID: -1684659544, guid: 76686699748622a48b566623ca98afc6, type: 3}
+  isBossVersion: 0
+  humanoidType: 5
   enemySpawnChance: 0.25
-  entityBehaviour: {fileID: 11400000, guid: a9d7a6a162486d143acd0998313d689c, type: 2}
-  maxHealth: 250
+  entityBehaviour: {fileID: 11400000, guid: 027fd21d6b99d8f49a878d8522f2a7f2, type: 2}
+  maxHealth: 50
   damageDealtBaseModifier: 0.5
-  physicalDamageResistance: 8
+  physicalDamageResistance: 5
   poisonDamageResistance: 8
-  fireDamageResistance: 8
-  iceDamageResistance: 8
+  fireDamageResistance: 5
+  iceDamageResistance: 5
   maxMana: 50
   manaRegenPercentage: 0.05
-  manaRegenCooldown: 2
+  manaRegenCooldown: 3
   entityClasses:
-  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  - {fileID: 11400000, guid: 8c94f4824de128042acbaee3584c249c, type: 2}
   entityWeapons:
-  - {fileID: 11400000, guid: 3d3734054398be248bac2a8d0b37c4de, type: 2}
+  - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
   entityHelmetArmours:
   - {fileID: 11400000, guid: ab02335576639b84f80db35466e164be, type: 2}
   entityChestArmours:
   - {fileID: 11400000, guid: c2a88add94966a847abfa671aa5b73b7, type: 2}
   entityLegArmours:
   - {fileID: 11400000, guid: 008c5dcff48be264b89822fd0a6022bd, type: 2}
-  expOnDeath: 100
-  maxDroppedGoldAmount: 30
-  minDroppedGoldAmount: 15
-  itemRarityChanceModifier: 0.05
+  expOnDeath: 40
+  maxDroppedGoldAmount: 12
+  minDroppedGoldAmount: 5
+  itemRarityChanceModifier: 0
   lootPool: {fileID: 11400000, guid: 1b1f94444103c8b4a9eb429f5e4fb05a, type: 2}
-  deathSfx: {fileID: 8300000, guid: 9771b0b29a5887b4bb5842c380bc522d, type: 3}
-  hurtSfx: {fileID: 8300000, guid: 6274901710450704bac9a0b867987657, type: 3}
-  idleSfx: {fileID: 8300000, guid: b00934f0ad1aa074793efb69a73d346e, type: 3}
+  deathSfx: {fileID: 8300000, guid: ec943fb6418b3c740a9500c6f565646d, type: 3}
+  hurtSfx: {fileID: 8300000, guid: 350fb9bfa333c6f4dab6c0ef24f0fe47, type: 3}
+  idleSfx: {fileID: 8300000, guid: 2564401129ef8c2479ae60eec54bbb29, type: 3}

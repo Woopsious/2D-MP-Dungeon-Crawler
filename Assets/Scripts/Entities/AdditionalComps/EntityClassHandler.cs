@@ -30,7 +30,7 @@ public class EntityClassHandler : NetworkBehaviour
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		int classIndex = Utilities.GetRandomNumber(entityStats.statsRef.possibleClassesList.Count - 1);
+		int classIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityClasses.Count - 1);
 
 		if (MultiplayerManager.IsMultiplayer())
 			SyncEntityClassForClientsRPC(classIndex);
@@ -45,7 +45,7 @@ public class EntityClassHandler : NetworkBehaviour
 	}
 	private void SetEntityClass(int classIndex)
 	{
-		currentEntityClass = entityStats.statsRef.possibleClassesList[classIndex];
+		currentEntityClass = entityStats.statsRef.entityClasses[classIndex];
 
 		foreach (ClassStatUnlocks statBonuses in currentEntityClass.classStatBonusList)
 		{

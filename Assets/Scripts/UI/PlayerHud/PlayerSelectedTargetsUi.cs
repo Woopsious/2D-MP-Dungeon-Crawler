@@ -72,12 +72,10 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedTarget = entityStats;
 		selectedTargetUiImage.sprite = entityStats.statsRef.sprite;
 
-		string targetName;
-		if (selectedTarget.statsRef.canUseEquipment)
-			targetName = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
+		if (SelectedTargetHasUniqueName(selectedTarget.statsRef.isBossVersion, selectedTarget.statsRef.humanoidType))
+			selectedTargetUiName.text = entityStats.statsRef.entityName;
 		else
-			targetName = entityStats.statsRef.entityName;
-		selectedTargetUiName.text = targetName;
+			selectedTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
 
 		//new target event subs
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
@@ -111,6 +109,16 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
 
 		selectedTarget = null;
+	}
+
+	//bool check
+	private bool SelectedTargetHasUniqueName(bool isBoss, SOEntityStats.HumanoidTypes humanoidType)
+	{
+		if (isBoss)
+			return true;
+		else if (humanoidType == SOEntityStats.HumanoidTypes.isBat || humanoidType == SOEntityStats.HumanoidTypes.isSlime)
+			return true;
+		else return false;
 	}
 
 	//ui updates
