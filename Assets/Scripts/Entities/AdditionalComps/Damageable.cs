@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 using static IDamagable;
 
@@ -25,8 +27,8 @@ public class Damageable : MonoBehaviour
 	{
 		if (!DamageShouldBeApplied(damageSourceInfo)) return;
 
-		if (damageSourceInfo.collider != null)
-			ApplyHitForce(damageSourceInfo.collider, damageSourceInfo.knockBack);
+		if (damageSourceInfo.applyKnockback)
+			ApplyHitForce(damageSourceInfo.colliderPosition, damageSourceInfo.knockBack);
 
 		OnHit?.Invoke(damageSourceInfo, isDestroyedInOneHit);
 		//Debug.Log(gameObject.name + " was hit");
@@ -37,12 +39,63 @@ public class Damageable : MonoBehaviour
 		if (invincible || damageSourceInfo.hitBye == IDamagable.HitBye.entity && !CanOtherEntitiesDamageThis) return false;
 		return true;
 	}
-	private void ApplyHitForce(Collider2D other, float knockback)
+	private void ApplyHitForce(Vector3 originPosition, float knockback)
 	{
-		if (GetComponent<Rigidbody2D>() == null || other == null) return;
+		if (GetComponent<Rigidbody2D>() == null) return;
 
-		Vector2 direction = (transform.position - other.transform.position).normalized;
+		Vector2 direction = (transform.position - originPosition).normalized;
 		GetComponent<Rigidbody2D>().AddForce(100 * knockback * direction, ForceMode2D.Impulse);
+	}
+}
+
+public class DamageSourceMpInfo : INetworkSerializable
+{
+	//death message + refs
+	public DeathMessageType deathMessageType;
+	public enum DeathMessageType
+	{
+		entityWeapon, entityAbility, trap, trapProjectile, statusEffect, enviromental
+	}
+
+	//refs for death message
+	public int trapIndex;
+	public int weaponIndex;
+	public int abilityIndex;
+	public int statusEffectIndex;
+
+	//damage source info
+	public EntityStats entity;
+	public HitBye hitBye;
+
+	//damage type
+	public float damage;
+	public DamageType damageType;
+
+	//optional knockback info (shouldnt be needed as host applying knockback will change position of obj for all clients)
+	public bool applyKnockback;
+	public Vector3 colliderPosition;
+	public float knockBack;
+
+	//percentage damage
+	public bool isPercentage;
+	void INetworkSerializable.NetworkSerialize<T>(BufferSerializer<T> serializer)
+	{
+		serializer.SerializeValue(ref deathMessageType);
+
+		serializer.SerializeValue(ref trapIndex);
+		serializer.SerializeValue(ref weaponIndex);
+		serializer.SerializeValue(ref abilityIndex);
+		serializer.SerializeValue(ref statusEffectIndex);
+
+		//serializer.SerializeValue(ref entity);
+		serializer.SerializeValue(ref hitBye);
+
+		serializer.SerializeValue(ref damage);
+		serializer.SerializeValue(ref damageType);
+
+		serializer.SerializeValue(ref applyKnockback);
+		serializer.SerializeValue(ref colliderPosition);
+		serializer.SerializeValue(ref knockBack);
 	}
 }
 
@@ -55,22 +108,23 @@ public class DamageSourceInfo
 		entityWeapon, entityAbility, trap, trapProjectile, statusEffect, enviromental
 	}
 
-	//damage source info
-	public EntityStats entity;
-	public HitBye hitBye;
-
 	//refs for death message
 	public SOTraps trap;
 	public SOWeapons weapon;
 	public SOAbilities ability;
 	public SOStatusEffects statusEffect;
 
+	//damage source info
+	public EntityStats entity;
+	public HitBye hitBye;
+
 	//damage type
 	public float damage;
 	public DamageType damageType;
 
 	//optional knockback info
-	public Collider2D collider;
+	public bool applyKnockback;
+	public Vector3 colliderPosition;
 	public float knockBack;
 
 	//percentage damage
@@ -85,11 +139,13 @@ public class DamageSourceInfo
 		this.damage = damage;
 		this.damageType = damageType;
 		this.isPercentage = isPercentage;
+		this.applyKnockback = false;
 	}
 
-	public void AddKnockbackEffect(Collider2D collider, float knockBack)
+	public void AddKnockbackEffect(Vector3 colliderPosition, float knockBack)
 	{
-		this.collider = collider;
+		this.applyKnockback = true;
+		this.colliderPosition = colliderPosition;
 		this.knockBack = knockBack;
 	}
 

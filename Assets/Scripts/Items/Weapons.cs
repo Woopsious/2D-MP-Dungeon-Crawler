@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Weapons : Items
@@ -205,7 +206,7 @@ public class Weapons : Items
 		DamageSourceInfo damageSourceInfo = new(
 			weaponOwner, hitBye, damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, false);
 
-		damageSourceInfo.AddKnockbackEffect(boxCollider, weaponBaseRef.baseKnockback);
+		damageSourceInfo.AddKnockbackEffect(boxCollider.transform.position, weaponBaseRef.baseKnockback);
 		damageSourceInfo.SetDeathMessage(weaponBaseRef);
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 	}
@@ -227,6 +228,9 @@ public class Weapons : Items
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn();
 		}
 
 		projectile.transform.SetParent(null);

@@ -36,6 +36,79 @@ public class AbilityAOE : NetworkBehaviour
 	//SET DATA
 	public void Initilize(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
+		if (!MultiplayerManager.IsMultiplayer()) //fix ability owner ref as Network spawn manager wont exist in sp
+		{
+			InitilizeSinglePlayer(abilityOwner, abilityRef, targetPosition);
+			return;
+		}
+
+		ulong ownerId = abilityOwner.GetComponent<NetworkObject>().NetworkObjectId;
+		int abilityIndex = 0;
+
+		foreach (SOAbilities ability in AssetDatabase.Database.abilities)
+		{
+			if (abilityRef != ability)
+			{
+				abilityIndex++;
+				continue;
+			}
+
+			SyncAbilityAoeRpc(ownerId, abilityIndex, targetPosition);
+			break;
+		}
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SyncAbilityAoeRpc(ulong ownerId, int abilityIndex, Vector2 targetPosition)
+	{
+		SyncAbilityAoe(ownerId, abilityIndex, targetPosition);
+	}
+	private void SyncAbilityAoe(ulong ownerId, int abilityIndex, Vector2 targetPosition)
+	{
+		debugLockDamage = false;
+
+		abilityRef = AssetDatabase.Database.abilities[abilityIndex];
+		if (abilityRef is SOBossAbilities abilityBossRef)
+			this.abilityBossRef = abilityBossRef;
+
+		//grab owner of ability via list of spawned objs using its unique id
+		abilityOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].gameObject.GetComponent<EntityStats>();
+		casterPosition = abilityOwner.transform.position;
+		gameObject.name = abilityRef.Name + " Aoe";
+		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
+		aoeColliderIndicator.transform.localPosition = Vector3.zero;
+		entityStatsList.Clear();
+
+		if (abilityRef.aoeType == SOAbilities.AoeType.isBoxAoe)
+		{
+			SetBoxColliderDirection(targetPosition);
+			SetupBoxCollider();
+		}
+		else
+		{
+			SetCircleColliderPosition(targetPosition);
+			SetupCircleCollider();
+		}
+
+		SetDamage();
+		UpdateHitByeVariable(abilityOwner.playerRef);
+
+		aoeLingers = true;
+		abilityDurationTimer = abilityRef.aoeDuration;
+		if (abilityRef.aoeDuration == 0)
+		{
+			aoeLingers = false;
+			abilityDurationTimer = 0.1f;
+		}
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+	private void InitilizeSinglePlayer(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
+	{
 		debugLockDamage = false;
 
 		if (abilityRef is SOBossAbilities abilityBossRef)
