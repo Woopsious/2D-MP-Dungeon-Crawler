@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -470,12 +469,14 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void CastAbility(Abilities ability)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		EntityStats enemyTarget = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnQueuedAbilityClick(false);
 
 		if (ability.abilityBaseRef.isProjectile)
-			CastDirectionalAbility(ability);
+			CastDirectionalAbility(ability, GetAbilityTargetPosition(ability));
 		else if (ability.abilityBaseRef.isAOE)
-			CastAoeAbility(ability);
+			CastAoeAbility(ability, GetAbilityTargetPosition(ability));
 		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
 			CastEffect(ability, enemyTarget);
 		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)   //for MP add support for friendlies
@@ -487,9 +488,27 @@ public class PlayerController : NetworkBehaviour
 			return;
 		}
 	}
+	private Vector2 GetAbilityTargetPosition(Abilities ability)
+	{
+		if (ability.abilityBaseRef.isProjectile)
+		{
+			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else if (ability.abilityBaseRef.isAOE)
+		{
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else return new Vector2(0,0);
+	}
 
 	//types of casting
-	private void CastDirectionalAbility(Abilities ability)
+	private void CastDirectionalAbility(Abilities ability, Vector2 position)
 	{
 		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
@@ -497,18 +516,18 @@ public class PlayerController : NetworkBehaviour
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn();
 		}
 
 		projectile.transform.SetParent(null);
-		if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
-			projectile.SetPositionAndAttackDirection(transform.position, selectedEnemyTarget.transform.position);
-		else
-			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
+		projectile.SetPositionAndAttackDirection(transform.position, position);
 		projectile.Initilize(playerStats, ability.abilityBaseRef);
 
 		OnSuccessfulCast(ability);
 	}
-	private void CastAoeAbility(Abilities ability)
+	private void CastAoeAbility(Abilities ability, Vector2 position)
 	{
 		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
 		if (abilityAOE == null)
@@ -516,18 +535,14 @@ public class PlayerController : NetworkBehaviour
 			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
 			abilityAOE = go.GetComponent<AbilityAOE>();
 			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn();
 		}
 
 		//will need additional code here to handle supportive and offensive aoe abilities
-
-		Vector2 movePosition;
-		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
-			movePosition = selectedEnemyTarget.transform.position;
-		else
-			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
 		abilityAOE.transform.SetParent(null);
-		abilityAOE.Initilize(playerStats, ability.abilityBaseRef, movePosition);
+		abilityAOE.Initilize(playerStats, ability.abilityBaseRef, position);
 
 		OnSuccessfulCast(ability);
 	}
@@ -550,7 +565,7 @@ public class PlayerController : NetworkBehaviour
 		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
 		{
 			DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue * 
-				playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, false);
+				playerStats.levelModifier, ability.abilityBaseRef.damageType, false);
 
 			damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
 			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);

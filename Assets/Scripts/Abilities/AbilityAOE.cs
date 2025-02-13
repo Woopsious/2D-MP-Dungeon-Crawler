@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class AbilityAOE : MonoBehaviour
+public class AbilityAOE : NetworkBehaviour
 {
 	public SOBossAbilities abilityBossRef;
 	public SOAbilities abilityRef;
@@ -28,6 +29,7 @@ public class AbilityAOE : MonoBehaviour
 
 	private void Update()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
 		AbilityDurationTimer();
 	}
 
@@ -69,7 +71,10 @@ public class AbilityAOE : MonoBehaviour
 			abilityDurationTimer = 0.1f;
 		}
 
-		gameObject.SetActive(true);
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	private void SetDamage()
@@ -174,7 +179,10 @@ public class AbilityAOE : MonoBehaviour
 		{
 			if (debugLockDamage)
 			{
-				ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
+				if (MultiplayerManager.IsMultiplayer())
+					DisableObjectRpc();
+				else
+					DisableObject();
 				return;
 			}
 
@@ -185,8 +193,12 @@ public class AbilityAOE : MonoBehaviour
 				else
 					DamageAllCollidedEntities();
 			}
+
 			debugLockDamage = true;
-			ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
 		}
 	}
 
@@ -262,5 +274,27 @@ public class AbilityAOE : MonoBehaviour
 			return true;
 		else
 			return false;
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void EnableObjectRpc()
+	{
+		EnableObject();
+	}
+	private void EnableObject()
+	{
+		gameObject.SetActive(true);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void DisableObjectRpc()
+	{
+		DisableObject();
+	}
+	private void DisableObject()
+	{
+		gameObject.SetActive(false);
+		transform.position = Vector3.zero;
+		ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
 	}
 }

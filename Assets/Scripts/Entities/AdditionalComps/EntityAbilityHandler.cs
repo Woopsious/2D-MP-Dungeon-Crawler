@@ -275,9 +275,9 @@ public class EntityAbilityHandler : NetworkBehaviour
 	private void CastAbility(SOAbilities ability)
 	{
 		if (ability.isAOE)
-			CastAoeAbility(ability);
+			CastAoeAbility(ability, GetAbilityTargetPosition(ability));
 		else if (ability.isProjectile)
-			CastDirectionalAbility(ability);
+			CastDirectionalAbility(ability, GetAbilityTargetPosition(ability));
 		else if (ability.requiresTarget && ability.isOffensiveAbility)
 		{
 			if (behaviour.playerTarget == null && overriddenPlayerTarget == null)
@@ -297,8 +297,71 @@ public class EntityAbilityHandler : NetworkBehaviour
 		if (entityStats.statsRef.isBossVersion)
 			OnBossAbilityCast?.Invoke();
 	}
+	private Vector2 GetAbilityTargetPosition(SOAbilities ability)
+	{
+		if (ability.isProjectile)
+		{
+			if (overridePlayerTarget)
+			{
+				if (overriddenPlayerTarget != null)
+					return overriddenPlayerTarget.transform.position;
+				else
+					return overriddenTargetPosition;
+			}
+			else
+				return behaviour.playerTarget.transform.position;
+		}
+		else if (ability.isAOE)
+		{
+			if (overridePlayerTarget)
+			{
+				if (overriddenPlayerTarget != null)
+					return overriddenPlayerTarget.transform.position;
+				else
+					return overriddenTargetPosition;
+			}
+			else
+				return behaviour.playerTarget.transform.position;
+		}
+		else return new Vector2(0, 0);
+	}
 
 	//types of casting
+	private void CastDirectionalAbility(SOAbilities ability, Vector2 position)
+	{
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+			projectile.transform.SetParent(null);
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn();
+		}
+
+		projectile.SetPositionAndAttackDirection(transform.position, position);
+		projectile.Initilize(entityStats, ability);
+		OnSuccessfulCast(ability);
+	}
+	private void CastAoeAbility(SOAbilities ability, Vector2 position)
+	{
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+			abilityAOE.transform.SetParent(null);
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn();
+		}
+
+		abilityAOE.Initilize(entityStats, ability, position);
+		OnSuccessfulCast(ability);
+	}
 	private void CastEffect(SOAbilities ability)
 	{
 		if (ability.damageType == IDamagable.DamageType.isHealing)
@@ -333,53 +396,6 @@ public class EntityAbilityHandler : NetworkBehaviour
 			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
 				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
 		}
-
-		OnSuccessfulCast(ability);
-	}
-	private void CastDirectionalAbility(SOAbilities ability)
-	{
-		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
-		if (projectile == null)
-		{
-			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-			projectile.transform.SetParent(null);
-			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
-			else
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenTargetPosition);
-		}
-		else
-			projectile.SetPositionAndAttackDirection(transform.position, behaviour.playerTarget.transform.position);
-
-		projectile.Initilize(entityStats, ability);
-		OnSuccessfulCast(ability);
-	}
-	private void CastAoeAbility(SOAbilities ability)
-	{
-		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
-		if (abilityAOE == null)
-		{
-			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
-			abilityAOE = go.GetComponent<AbilityAOE>();
-			abilityAOE.transform.SetParent(null);
-			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				abilityAOE.Initilize(entityStats, ability, overriddenPlayerTarget.transform.position);
-			else
-				abilityAOE.Initilize(entityStats, ability, overriddenTargetPosition);
-		}
-		else
-			abilityAOE.Initilize(entityStats, ability, behaviour.playerTarget.transform.position);
 
 		OnSuccessfulCast(ability);
 	}

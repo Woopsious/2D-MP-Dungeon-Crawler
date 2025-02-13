@@ -308,7 +308,11 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//MP sync damage
-	//private void 
+	[Rpc(SendTo.Everyone)]
+	private void SyncDamageDeltBetweenClientsRPC(float oldHealthPercentage, float newHealthPercentage)
+	{
+
+	}
 
 	//death event
 	private void EntityDeath(DamageSourceInfo damageSourceInfo)

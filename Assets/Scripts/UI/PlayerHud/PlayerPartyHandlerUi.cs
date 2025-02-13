@@ -19,7 +19,6 @@ public class PlayerPartyHandlerUi : MonoBehaviour
 	public Image healthBarFiller;
 	public Image manaBarFiller;
 
-
 	public void UpdatePlayersInParty(Lobby lobby, int index)
 	{
 		if (lobby.Players.Count - 1 < index) //blank info if no player exists

@@ -9,6 +9,8 @@ public class AssetDatabase : MonoBehaviour
 	public List<SOEntityStats> entities = new List<SOEntityStats>();
 	public List<SOEntityStats> bossEntities = new List<SOEntityStats>();
 
+	public List<SOAbilities> abilities = new List<SOAbilities>();
+
 	private void Awake()
 	{
 		Database = GetComponent<AssetDatabase>();

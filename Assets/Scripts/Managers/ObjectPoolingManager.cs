@@ -145,8 +145,6 @@ public class ObjectPoolingManager : MonoBehaviour
 	public static void AddProjectileToInActivePool(Projectiles projectile)
 	{
 		if (Instance.inActiveProjectilesPool.Contains(projectile)) return;
-		projectile.gameObject.SetActive(false);
-		projectile.transform.position = Vector3.zero;
 		Instance.inActiveProjectilesPool.Add(projectile);
 	}
 

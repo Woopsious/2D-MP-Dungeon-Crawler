@@ -672,7 +672,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &-8675605542150125892
 MonoBehaviour:
@@ -686,8 +686,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 0}
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1931073568
+    DestinationState: -1319424928
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 581703520
+    DestinationState: -1319424928
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1319424928
+    DestinationState: 1931073568
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1319424928
+    DestinationState: 581703520
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  m_Animator: {fileID: 3956036049374441388}
 --- !u!61 &4057299729461720378
 BoxCollider2D:
   m_ObjectHideFlags: 0

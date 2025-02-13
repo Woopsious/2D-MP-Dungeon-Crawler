@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Projectiles : MonoBehaviour
+public class Projectiles : NetworkBehaviour
 {
 	public SOTraps trapBaseRef;
 	public SOWeapons weaponBaseRef;
@@ -44,7 +45,11 @@ public class Projectiles : MonoBehaviour
 		damageType = (DamageType)trapBaseRef.baseDamageType;
 		UpdateHitByeVariable(null);
 		isPercentageDamage = false;
-		gameObject.SetActive(true);
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
@@ -79,7 +84,11 @@ public class Projectiles : MonoBehaviour
 		damageType = (DamageType)abilityBaseRef.damageType;
 		UpdateHitByeVariable(projectileOwner.playerRef);
 		isPercentageDamage = abilityBaseRef.isDamagePercentageBased;
-		gameObject.SetActive(true);
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
@@ -103,7 +112,11 @@ public class Projectiles : MonoBehaviour
 		damageType = (DamageType)weaponBaseRef.baseDamageType;
 		UpdateHitByeVariable(projectileOwner.playerRef);
 		isPercentageDamage = false;
-		gameObject.SetActive(true);
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 	}
 
 	//helps with applying damage only to enemies
@@ -129,8 +142,15 @@ public class Projectiles : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-			ObjectPoolingManager.AddProjectileToInActivePool(this);
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
+		}
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
@@ -167,15 +187,48 @@ public class Projectiles : MonoBehaviour
 			damageSourceInfo.SetDeathMessage(weaponBaseRef);
 			other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
-		ObjectPoolingManager.AddProjectileToInActivePool(this);
+
+		if (MultiplayerManager.IsMultiplayer())
+			DisableObjectRpc();
+		else
+			DisableObject();
 	}
 	private void FixedUpdate()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
 		if (weaponBaseRef == null) return;
 
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
 		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
-			ObjectPoolingManager.AddProjectileToInActivePool(this);
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
+		}
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void EnableObjectRpc()
+	{
+		EnableObject();
+	}
+	private void EnableObject()
+	{
+		gameObject.SetActive(true);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void DisableObjectRpc()
+	{
+		DisableObject();
+	}
+	private void DisableObject()
+	{
+		gameObject.SetActive(false);
+		transform.position = Vector3.zero;
+		ObjectPoolingManager.AddProjectileToInActivePool(this);
 	}
 }

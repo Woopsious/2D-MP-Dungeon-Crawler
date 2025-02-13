@@ -256,8 +256,10 @@ public class MultiplayerManager : NetworkBehaviour
 				return false;
 			}
 		}
-
-		//Debug.LogError("CLIENT IS HOST/SP GAME");
-		return true;
+		else
+		{
+			//Debug.LogError("CLIENT IS HOST/SP GAME");
+			return true;
+		}
 	}
 }
