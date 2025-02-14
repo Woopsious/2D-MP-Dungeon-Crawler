@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class TrapHandler : MonoBehaviour, IInteractables
@@ -184,9 +185,11 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			GameObject go = Instantiate(projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(projectileSpawnPoint, entity.transform.position);
 		projectile.Initilize(trapBaseRef, trapDamage);
 	}

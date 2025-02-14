@@ -169,7 +169,7 @@ public class EntityStats : NetworkBehaviour
 		if (currentStatusEffects.Count != 0)//clear all status effects after death
 		{
 			for (int i = currentStatusEffects.Count - 1; i >= 0; i--)
-				currentStatusEffects[i].ClearEffect();
+				currentStatusEffects[i].ClearStatusEffect();
 		}
 
 		if (IsPlayerEntity())
@@ -384,6 +384,8 @@ public class EntityStats : NetworkBehaviour
 	//status effect functions
 	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
 			AbilityStatusEffect duplicateStatusEffect = IsStatusEffectAlreadyApplied(effect);
@@ -394,9 +396,13 @@ public class EntityStats : NetworkBehaviour
 				continue;
 			}
 
-			GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
+			GameObject go = Instantiate(statusEffectsPrefab);
 			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-			statusEffect.Initilize(casterInfo, effect, this);
+
+			if (MultiplayerManager.IsMultiplayer())
+				statusEffect.GetComponent<NetworkObject>().Spawn();
+
+			statusEffect.Initilize(casterInfo, this, effect);
 
 			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
 				damageDealtModifier.AddPercentageValue(effect.effectValue);
@@ -431,6 +437,8 @@ public class EntityStats : NetworkBehaviour
 	}
 	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
 
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
@@ -464,6 +472,9 @@ public class EntityStats : NetworkBehaviour
 
 		if (effect.isMarkedByBossEffect && IsPlayerEntity())
 			playerRef.UnMarkPlayer();
+
+		if (!MultiplayerManager.IsClientHost()) return;
+		Destroy(statusEffect.gameObject);
 	}
 	private AbilityStatusEffect IsStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{

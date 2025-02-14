@@ -518,10 +518,9 @@ public class PlayerController : NetworkBehaviour
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 
 			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
+				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(transform.position, position);
 		projectile.Initilize(playerStats, ability.abilityBaseRef);
 
@@ -537,11 +536,10 @@ public class PlayerController : NetworkBehaviour
 			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
 
 			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
+				abilityAOE.GetComponent<NetworkObject>().Spawn();
 		}
 
 		//will need additional code here to handle supportive and offensive aoe abilities
-		abilityAOE.transform.SetParent(null);
 		abilityAOE.Initilize(playerStats, ability.abilityBaseRef, position);
 
 		OnSuccessfulCast(ability);

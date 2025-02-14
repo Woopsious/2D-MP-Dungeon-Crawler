@@ -57,6 +57,7 @@ public class Projectiles : NetworkBehaviour
 	}
 	private void SyncTrap(int trapIndex, int trapDamage)
 	{
+		transform.SetParent(null);
 		trapRef = AssetDatabase.Database.traps[trapIndex];
 		weaponRef = null;
 		abilityRef = null;
@@ -84,7 +85,7 @@ public class Projectiles : NetworkBehaviour
 	//set ability projectile data
 	public void Initilize(EntityStats projectileOwner, SOAbilities abilityRef)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ability owner ref as Network spawn manager wont exist in sp
+		if (!MultiplayerManager.IsMultiplayer()) //fix ref as Network spawn manager wont exist in sp
 		{
 			InitilizeSinglePlayer(projectileOwner, abilityRef);
 			return;
@@ -113,6 +114,7 @@ public class Projectiles : NetworkBehaviour
 	}
 	private void SyncProjectile(ulong ownerId, int abilityIndex)
 	{
+		transform.SetParent(null);
 		trapRef = null;
 		weaponRef = null;
 		abilityRef = AssetDatabase.Database.abilities[abilityIndex];
@@ -151,6 +153,7 @@ public class Projectiles : NetworkBehaviour
 	}
 	private void InitilizeSinglePlayer(EntityStats projectileOwner, SOAbilities abilityRef)
 	{
+		transform.SetParent(null);
 		trapRef = null;
 		weaponRef = null;
 		this.abilityRef = abilityRef;
@@ -190,7 +193,7 @@ public class Projectiles : NetworkBehaviour
 	//set weapon projectile data
 	public void Initilize(EntityStats projectileOwner, SOWeapons weaponRef, int projectileDamage)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ability owner ref as Network spawn manager wont exist in sp
+		if (!MultiplayerManager.IsMultiplayer()) //fix ref as Network spawn manager wont exist in sp
 		{
 			InitilizeSinglePlayer(projectileOwner, weaponRef, projectileDamage);
 			return;
@@ -219,6 +222,7 @@ public class Projectiles : NetworkBehaviour
 	}
 	private void SyncProjectile(ulong ownerId, int weaponIndex, int projectileDamage)
 	{
+		transform.SetParent(null);
 		trapRef = null;
 		weaponRef = AssetDatabase.Database.weapons[weaponIndex];
 		abilityRef = null;
@@ -244,8 +248,9 @@ public class Projectiles : NetworkBehaviour
 			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	public void InitilizeSinglePlayer(EntityStats projectileOwner, SOWeapons weaponRef, int projectileDamage)
+	private void InitilizeSinglePlayer(EntityStats projectileOwner, SOWeapons weaponRef, int projectileDamage)
 	{
+		transform.SetParent(null);
 		trapRef = null;
 		this.weaponRef = weaponRef;
 		abilityRef = null;

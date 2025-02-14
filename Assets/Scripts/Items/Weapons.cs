@@ -230,7 +230,7 @@ public class Weapons : Items
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 
 			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
+				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
 		projectile.transform.SetParent(null);

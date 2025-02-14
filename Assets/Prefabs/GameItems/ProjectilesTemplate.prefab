@@ -57,7 +57,7 @@ MonoBehaviour:
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
+  AutoObjectParentSync: 0
 --- !u!114 &7872033143257718269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -101,9 +101,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 716fe59503b5a6544929ef8b772e3ec9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  trapBaseRef: {fileID: 0}
-  weaponBaseRef: {fileID: 0}
-  abilityBaseRef: {fileID: 0}
+  trapRef: {fileID: 0}
+  weaponRef: {fileID: 0}
+  abilityRef: {fileID: 0}
   projectileOwner: {fileID: 0}
   projectileDamage: 0
 --- !u!212 &7416781565138428768

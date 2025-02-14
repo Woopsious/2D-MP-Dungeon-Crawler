@@ -65,6 +65,7 @@ public class AbilityAOE : NetworkBehaviour
 	}
 	private void SyncAbilityAoe(ulong ownerId, int abilityIndex, Vector2 targetPosition)
 	{
+		transform.SetParent(null);
 		debugLockDamage = false;
 
 		abilityRef = AssetDatabase.Database.abilities[abilityIndex];
@@ -109,6 +110,7 @@ public class AbilityAOE : NetworkBehaviour
 	}
 	private void InitilizeSinglePlayer(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
+		transform.SetParent(null);
 		debugLockDamage = false;
 
 		if (abilityRef is SOBossAbilities abilityBossRef)
