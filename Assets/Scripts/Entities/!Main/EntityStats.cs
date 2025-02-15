@@ -6,6 +6,7 @@ using Unity.Services.Lobbies.Models;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static UnityEngine.Rendering.DebugUI;
 
 public class EntityStats : NetworkBehaviour
 {
@@ -123,6 +124,8 @@ public class EntityStats : NetworkBehaviour
 
 	protected virtual void Update()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		PassiveManaRegen();
 		PlayIdleSound();
 	}
@@ -349,34 +352,57 @@ public class EntityStats : NetworkBehaviour
 		{
 			manaRegenTimer = manaRegenCooldown;
 			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
+
 			if (!IsPlayerEntity()) return;
 			PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		}
 	}
-	public void IncreaseMana(float manaValue, bool isPercentageValue)
+	public void IncreaseMana(float value, bool isPercentageValue)
 	{
+		float manaValue = 0;
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue * manaValue;
+			manaValue = value;
+		else
+			manaValue = value / maxMana.finalValue;
 
-		currentMana = (int)(currentMana + manaValue);
-		if (currentMana > maxMana.finalValue)
-			currentMana = maxMana.finalValue;
+		float newManaPercentage = (float)currentMana / maxMana.finalValue + manaValue;
 
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-
-		if (!IsPlayerEntity()) return;
-		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
-		UpdatePlayerStatInfoUi();
+		if (MultiplayerManager.IsMultiplayer())
+			UpdateCurrentManaRpc(newManaPercentage);
+		else
+			UpdateCurrentMana(newManaPercentage);
 	}
-	public void DecreaseMana(float manaValue, bool isPercentageValue)
+	public void DecreaseMana(float value, bool isPercentageValue)
 	{
+		float manaValue = 0;
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue * manaValue;
+			manaValue = value;
+		else
+			manaValue = value / maxMana.finalValue;
 
-		currentMana = (int)(currentMana - manaValue);
+		float newManaPercentage = (float)currentMana / maxMana.finalValue - manaValue;
+
+		if (MultiplayerManager.IsMultiplayer())
+			UpdateCurrentManaRpc(newManaPercentage);
+		else
+			UpdateCurrentMana(newManaPercentage);
+	}
+
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void UpdateCurrentManaRpc(float newManaPercentage)
+	{
+		UpdateCurrentMana(newManaPercentage);
+	}
+	private void UpdateCurrentMana(float newManaPercentage)
+	{
+		if (newManaPercentage > 1)
+			currentMana = maxMana.finalValue;
+		else
+			currentMana = (int)(maxMana.finalValue * newManaPercentage);
+
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		if (!IsPlayerEntity()) return;
+		if (!IsPlayerEntity() || !IsLocalPlayer) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}

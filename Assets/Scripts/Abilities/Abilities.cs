@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -102,9 +103,10 @@ public class Abilities : MonoBehaviour
 
 			if (damage != 0) //optional instant damage info
 			{
-				info += $"\nDeals {damage} damage to enemies ";
-				if (abilityBaseRef.isAOE) //optional aoe info
-					info += "inside AoE";
+				if (abilityBaseRef.isAOE)
+					info += $"\nDeals {damage} damage to enemies inside AoE";
+				else
+					info += $"\nDeals {damage} damage to enemies ";
 			}
 
 			if (abilityBaseRef.hasAoeDuration) //optional aoe info
@@ -132,22 +134,22 @@ public class Abilities : MonoBehaviour
 	}
 	private string SetStatusEffectToolTips(EntityStats playerStats)
 	{
-		string info = "\n";
+		string info = "";
 
 		foreach (SOStatusEffects effect in abilityBaseRef.statusEffects) //list all effect info
 		{
 			if (effect.isDOT) //dot info
-				info += $"Deals {effect.effectValue * playerStats.levelModifier} damage every second";
+				info += $"\nDeals {effect.effectValue * playerStats.levelModifier} damage every second";
 			else //effect info
 			{
 				if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect) //effect type info
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
 
 				if (abilityBaseRef.canOnlyTargetSelf) //target info
 					info += "buff to yourself";

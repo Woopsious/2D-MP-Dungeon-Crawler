@@ -154,22 +154,22 @@ public class ClassTreeNodeUi : MonoBehaviour
 	}
 	private string SetStatusEffectToolTips(EntityStats playerStats)
 	{
-		string info = "\n";
+		string info = "";
 
 		foreach (SOStatusEffects effect in abilityUnlock.unlock.statusEffects) //list all effect info
 		{
 			if (effect.isDOT) //dot info
-				info += $"Deals {effect.effectValue * playerStats.levelModifier} damage every second";
+				info += $"\nDeals {effect.effectValue * playerStats.levelModifier} damage every second";
 			else //effect info
 			{
 				if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect) //effect type info
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
 
 				if (abilityUnlock.unlock.canOnlyTargetSelf) //target info
 					info += "buff to yourself";

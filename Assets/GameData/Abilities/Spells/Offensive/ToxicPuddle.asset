@@ -18,7 +18,7 @@ MonoBehaviour:
   nonPlayerLevelRequirement: 1
   isBossAbility: 0
   abilityCastingTimer: 0
-  abilityCooldown: 12
+  abilityCooldown: 15
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
@@ -30,14 +30,14 @@ MonoBehaviour:
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 1
   aoeDuration: 3
-  circleAoeRadius: 40
-  angle: 0
-  coneAoeRadius: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 30
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 0
   projectileSprite: {fileID: 0}
-  projectileSpeed: 0
+  projectileSpeed: 20
   isDamagePercentageBased: 0
   damageType: 1
   damageValue: 0
