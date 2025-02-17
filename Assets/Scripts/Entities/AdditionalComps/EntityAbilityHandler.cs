@@ -367,7 +367,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 		if (ability.damageType == IDamagable.DamageType.isHealing)
 		{
 			//eventually add support to heal friendlies
-			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
+			entityStats.RecieveHealing(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
 		}
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{

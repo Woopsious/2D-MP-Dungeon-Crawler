@@ -16,10 +16,10 @@ public static class PlayerEventManager
 
 	//player death events
 	public static event Action<GameObject> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject obj, DamageSourceInfo damageSourceInfo)
+	public static void PlayerDeath(GameObject obj, string deathMessage)
 	{
 		OnPlayerDeathEvent?.Invoke(obj);
-		GetPlayerDeathMessaage?.Invoke(Utilities.GetPlayerDeathMessage(damageSourceInfo));
+		GetPlayerDeathMessaage?.Invoke(deathMessage);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
 	public static event Action<string> GetPlayerDeathMessaage;

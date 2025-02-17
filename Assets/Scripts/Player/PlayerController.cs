@@ -216,7 +216,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (GameManager.Instance.currentlyLoadedScene.name != GameManager.Instance.hubScene) return;
 		if (playerStats.currentHealth < playerStats.maxHealth.finalValue)
-			playerStats.OnHeal(100, false, playerStats.healingPercentageModifier.finalPercentageValue);
+			playerStats.RecieveHealing(1f, true, playerStats.healingPercentageModifier.finalPercentageValue);
 	}
 
 	//player auto attack
@@ -550,7 +550,7 @@ public class PlayerController : NetworkBehaviour
 		{
 			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
 			{
-				playerStats.OnHeal(
+				playerStats.RecieveHealing(
 					ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
 			}
 			else
@@ -626,6 +626,8 @@ public class PlayerController : NetworkBehaviour
 	}
 	private bool IsCollidedObjectInteractable(Collider2D other)
 	{
+		if (GameManager.Localplayer != this) return false; //ignore if not local player
+
 		if (other.GetComponent<BossRoomHandler>() != null || other.GetComponent<PortalHandler>() != null ||
 			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null ||
 			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
@@ -756,15 +758,15 @@ public class PlayerController : NetworkBehaviour
 	private void OnConsumablesOne()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
+
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
+
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()

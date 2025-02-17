@@ -2,11 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static UnityEngine.Rendering.DebugUI;
 
 public class EntityStats : NetworkBehaviour
 {
@@ -27,6 +24,7 @@ public class EntityStats : NetworkBehaviour
 	public float levelModifier;
 
 	[Header("Health")]
+	private bool entityDead;
 	public Stat maxHealth;
 	public int currentHealth;
 
@@ -65,9 +63,6 @@ public class EntityStats : NetworkBehaviour
 	public event Action<SOStatusEffects> OnResetStatusEffectTimer;
 	public event Action<SOStatusEffects> OnRemoveStatusEffect;
 
-	public event Action<float, bool, float> OnRecieveHealingEvent;
-	public event Action<DamageSourceInfo> OnRecieveDamageEvent;
-
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
@@ -99,9 +94,7 @@ public class EntityStats : NetworkBehaviour
 	{
 		SceneManager.sceneLoaded += UpdateDungeonModifiersAppliedToPlayer;
 
-		GetComponent<Damageable>().OnHit += OnHit;
-		OnRecieveDamageEvent += RecieveDamage;
-		OnRecieveHealingEvent += RecieveHealing;
+		GetComponent<Damageable>().OnHit += RecieveDamage;
 
 		classHandler.OnStatUnlock += OnStatUnlock;
 		classHandler.OnStatRefund += OnStatRefund;
@@ -112,9 +105,7 @@ public class EntityStats : NetworkBehaviour
 	{
 		SceneManager.sceneLoaded -= UpdateDungeonModifiersAppliedToPlayer;
 
-		GetComponent<Damageable>().OnHit -= OnHit;
-		OnRecieveDamageEvent -= RecieveDamage;
-		OnRecieveHealingEvent -= RecieveHealing;
+		GetComponent<Damageable>().OnHit -= RecieveDamage;
 
 		classHandler.OnStatUnlock -= OnStatUnlock;
 		classHandler.OnStatRefund -= OnStatRefund;
@@ -148,6 +139,7 @@ public class EntityStats : NetworkBehaviour
 	{
 		SpriteRenderer.sprite = statsRef.sprite;
 		name = statsRef.entityName;
+		entityDead = false;
 		CalculateBaseStats();
 
 		if (playerRef == null)
@@ -167,6 +159,7 @@ public class EntityStats : NetworkBehaviour
 		StopAllCoroutines();
 		boxCollider2D.enabled = true;
 		SpriteRenderer.color = Color.white;
+		entityDead = false;
 		CalculateBaseStats();
 
 		if (currentStatusEffects.Count != 0)//clear all status effects after death
@@ -205,38 +198,79 @@ public class EntityStats : NetworkBehaviour
 
 	//HEALTH EVENTS
 	//healing recieve event
-	public void OnHeal(float healthValue, bool isPercentageValue, float healingModifierPercentage)
+	public void RecieveHealing(float value, bool isPercentageValue, float healingModifierPercentage)
 	{
-		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue, healingModifierPercentage);
-	}
-	private void RecieveHealing(float healthValue, bool isPercentageValue, float healingModifierPercentage)
-	{
+		float healingPercentage;
 		if (isPercentageValue)
-			healthValue = maxHealth.finalValue * healthValue;
+			healingPercentage = value;
+		else
+			healingPercentage = value / maxHealth.finalValue;
 
-		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
-		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
+		healingPercentage = (float)currentHealth / maxHealth.finalValue + healingPercentage * healingModifierPercentage;
 
-		if (currentHealth > maxHealth.finalValue)
+		if (MultiplayerManager.IsMultiplayer())
+			ApplyHealingRpc(healingPercentage);
+		else
+			ApplyHealing(healingPercentage);
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ApplyHealingRpc(float newHealthPercentage)
+	{
+		ApplyHealing(newHealthPercentage);
+	}
+	private void ApplyHealing(float newHealthPercentage)
+	{
+		UpdateCurrentHealth(newHealthPercentage);
+	}
+
+	//damage recieve event
+	public void RecieveDamage(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
+	{
+		damageSourceInfo = NegateEntityResistances(damageSourceInfo);
+
+		if (!IsPlayerEntity() && damageSourceInfo.hitBye == IDamagable.HitBye.player)
+			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
+
+		float newHealthPercentage = (float)currentHealth / maxHealth.finalValue - damageSourceInfo.damage / maxHealth.finalValue;
+
+		if (MultiplayerManager.IsMultiplayer())
+			ApplyDamageRpc(newHealthPercentage, damageSourceInfo.deathMessage);
+		else
+			ApplyDamage(newHealthPercentage, damageSourceInfo.deathMessage);
+	}
+
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ApplyDamageRpc(float newHealthPercentage, string deathMessage)
+	{
+		ApplyDamage(newHealthPercentage, deathMessage);
+	}
+	private void ApplyDamage(float newHealthPercentage, string deathMessage)
+	{
+		UpdateCurrentHealth(newHealthPercentage);
+
+		StartCoroutine(FlashRedOnRecieveDamage());
+		audioHandler.PlayAudio(statsRef.hurtSfx);
+
+		if (IsEntityDead())
+			EntityDeath(deathMessage);
+	}
+
+	//update health
+	private void UpdateCurrentHealth(float newHealthPercentage)
+	{
+		if (newHealthPercentage > 1)
 			currentHealth = maxHealth.finalValue;
+		else
+			currentHealth = (int)(maxHealth.finalValue * newHealthPercentage);
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		if (!IsPlayerEntity()) return;
+
+		if (!IsPlayerEntity() || !IsLocalPlayer) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
 
-	//damage recieve event
-	public void OnHit(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
-	{
-        if (isDestroyedInOneHit)
-        {
-			ObjectPoolingManager.EntityDeathEvent(gameObject);
-			return;
-		}
-		NegateEntityResistances(damageSourceInfo);
-		OnRecieveDamageEvent?.Invoke(damageSourceInfo);
-	}
+	//helpers
 	private DamageSourceInfo NegateEntityResistances(DamageSourceInfo damageSourceInfo)
 	{
 		//Debug.Log(gameObject.name + " recieved: " + damage);
@@ -279,62 +313,36 @@ public class EntityStats : NetworkBehaviour
 		//Debug.Log("FinalDmg: " + damage);
 		return damageSourceInfo;
 	}
-	private void RecieveDamage(DamageSourceInfo damageSourceInfo)
-	{
-		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
-		RedFlashOnRecieveDamage();
-		audioHandler.PlayAudio(statsRef.hurtSfx);
-
-		if (!IsPlayerEntity() && damageSourceInfo.hitBye == IDamagable.HitBye.player)
-			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
-
-		if (IsEntityDead())
-			EntityDeath(damageSourceInfo);
-
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-
-		if (!IsPlayerEntity()) return;
-
-		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
-		UpdatePlayerStatInfoUi();
-	}
-	private void RedFlashOnRecieveDamage()
+	private IEnumerator FlashRedOnRecieveDamage()
 	{
 		SpriteRenderer.color = Color.red;
-		StartCoroutine(ResetRedFlashOnRecieveDamage());
-	}
-	private IEnumerator ResetRedFlashOnRecieveDamage()
-	{
+
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
 
-	//MP sync damage
-	[Rpc(SendTo.Everyone)]
-	private void SyncDamageDeltBetweenClientsRPC(float oldHealthPercentage, float newHealthPercentage)
-	{
-
-	}
-
 	//death event
-	private void EntityDeath(DamageSourceInfo damageSourceInfo)
+	private void EntityDeath(string optionalDeathMessage)
 	{
+		if (entityDead) return;
+
+		entityDead = true;
 		audioHandler.PlayAudio(statsRef.deathSfx);
-		StartCoroutine(EntityDeathFinish(damageSourceInfo));
+		StartCoroutine(EntityDeathFinish(optionalDeathMessage));
 		animator.SetTrigger("DeathTrigger");
 		boxCollider2D.enabled = false;
 
 		if (IsPlayerEntity()) return;
 		entityBehaviour.navMeshAgent.isStopped = true;
 	}
-	private IEnumerator EntityDeathFinish(DamageSourceInfo damageSourceInfo)
+	private IEnumerator EntityDeathFinish(string deathMessage)
 	{
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
 		if (IsPlayerEntity())
-			PlayerEventManager.PlayerDeath(gameObject,damageSourceInfo);
+			PlayerEventManager.PlayerDeath(gameObject, deathMessage);
 		else
 			ObjectPoolingManager.EntityDeathEvent(gameObject);
 	}
@@ -359,13 +367,13 @@ public class EntityStats : NetworkBehaviour
 	}
 	public void IncreaseMana(float value, bool isPercentageValue)
 	{
-		float manaValue = 0;
+		float newManaPercentage;
 		if (isPercentageValue)
-			manaValue = value;
+			newManaPercentage = value;
 		else
-			manaValue = value / maxMana.finalValue;
+			newManaPercentage = value / maxMana.finalValue;
 
-		float newManaPercentage = (float)currentMana / maxMana.finalValue + manaValue;
+		newManaPercentage = (float)currentMana / maxMana.finalValue + newManaPercentage;
 
 		if (MultiplayerManager.IsMultiplayer())
 			UpdateCurrentManaRpc(newManaPercentage);
@@ -374,13 +382,13 @@ public class EntityStats : NetworkBehaviour
 	}
 	public void DecreaseMana(float value, bool isPercentageValue)
 	{
-		float manaValue = 0;
+		float newManaPercentage;
 		if (isPercentageValue)
-			manaValue = value;
+			newManaPercentage = value;
 		else
-			manaValue = value / maxMana.finalValue;
+			newManaPercentage = value / maxMana.finalValue;
 
-		float newManaPercentage = (float)currentMana / maxMana.finalValue - manaValue;
+		newManaPercentage = (float)currentMana / maxMana.finalValue - newManaPercentage;
 
 		if (MultiplayerManager.IsMultiplayer())
 			UpdateCurrentManaRpc(newManaPercentage);
@@ -388,6 +396,7 @@ public class EntityStats : NetworkBehaviour
 			UpdateCurrentMana(newManaPercentage);
 	}
 
+	//update mana
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	private void UpdateCurrentManaRpc(float newManaPercentage)
 	{

@@ -264,9 +264,9 @@ GameObject:
   - component: {fileID: 11892441030254905}
   - component: {fileID: 5970125703919304695}
   - component: {fileID: 3468300136831603170}
+  - component: {fileID: 1965868520373403594}
   - component: {fileID: 4193777512436036858}
   - component: {fileID: 4412705391860920891}
-  - component: {fileID: 1965868520373403594}
   - component: {fileID: 3812097260653837204}
   - component: {fileID: 120328194627084056}
   - component: {fileID: 5724620505289801652}
@@ -467,6 +467,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1965868520373403594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763340389273497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invincible: 0
+  isDestroyedInOneHit: 0
 --- !u!114 &4193777512436036858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -667,20 +681,6 @@ MonoBehaviour:
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 7651319034662892506}
   currentStatusEffects: []
---- !u!114 &1965868520373403594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405763340389273497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  invincible: 1
-  isDestroyedInOneHit: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0

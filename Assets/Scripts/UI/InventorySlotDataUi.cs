@@ -99,15 +99,6 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		CheckIfItemInEnchantmentSlot(item);
 		item.transform.SetParent(transform);
 
-		if (itemInSlot == null)
-		{
-			Debug.LogError("item in slot: " + itemInSlot);
-		}
-		else if (GameManager.Localplayer.playerStats == null)
-		{
-			Debug.LogError("player stats: " + GameManager.Localplayer.playerStats);
-		}
-
 		if (itemInSlot.abilityBaseRef != null)
 			itemInSlot.GetComponent<Abilities>().UpdateToolTip(GameManager.Localplayer.playerStats);
 		else
@@ -271,7 +262,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			else return false;
 		}
 
-		Debug.LogWarning("slot checks failed");
+		Debug.LogError("slot checks failed");
 		return false;
 	}
 	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
@@ -304,7 +295,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		if (slotType == SlotType.weaponMain || slotType == SlotType.weaponOffhand || 
 			slotType == SlotType.helmet || slotType == SlotType.chestpiece || slotType == SlotType.legs || 
 			slotType == SlotType.ringOne || slotType == SlotType.ringTwo || slotType == SlotType.necklace ||
-			slotType == SlotType.equippedAbilities)
+			slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			return true;
 		else return false;
 	}

@@ -5,41 +5,6 @@ using UnityEngine.SceneManagement;
 
 public class Utilities
 {
-	//generate player death message
-	public static string GetPlayerDeathMessage(DamageSourceInfo damageSourceInfo)
-	{
-		string deathMessage = string.Empty;
-
-		if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityWeapon)
-		{
-			if (damageSourceInfo.weapon.isRangedWeapon)
-				deathMessage = $"Died by arrow from {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.weapon.itemName}";
-			else
-				deathMessage = $"Died from swing of {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.weapon.itemName}";
-		}
-		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityAbility)
-		{
-			deathMessage = $"Died from {damageSourceInfo.entity.statsRef.entityName}'s {damageSourceInfo.ability.Name} ability";
-		}
-		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.trap)
-		{
-			deathMessage = $"Died from {damageSourceInfo.trap.trapName}";
-		}
-		else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.statusEffect)
-		{
-			if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isPhysicalDamage)
-				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} out";
-			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isPoisonDamage)
-				deathMessage = $"Died from being {damageSourceInfo.statusEffect.Name}";
-			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isFireDamage)
-				deathMessage = $"Died from {damageSourceInfo.statusEffect.Name} to death";
-			else if (damageSourceInfo.statusEffect.damageType == IDamagable.DamageType.isIceDamage)
-				deathMessage = $"Died from Freezing internally";
-		}
-
-		return deathMessage;
-	}
-
 	//return random number
 	public static int GetRandomNumber(int num) //returns num between 0 and num -1
 	{
