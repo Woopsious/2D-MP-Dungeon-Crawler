@@ -6,10 +6,11 @@ using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
-	[HideInInspector] public PlayerController player;
+	private PlayerController player;
 
 	private void Awake()
 	{
+		player = GetComponent<PlayerController>();
 		entityStats = GetComponent<EntityStats>();
 		isPlayerEquipment = true;
 	}
@@ -22,7 +23,9 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		InventorySlotDataUi.OnItemEquip -= EquipItem;
 	}
 
-	//player equip item event listner
+	//need to sync player class and stat boosts between clients for corrisponding player obj
+
+	//player equip item event listener
 	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it

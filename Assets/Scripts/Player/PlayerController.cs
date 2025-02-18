@@ -70,9 +70,7 @@ public class PlayerController : NetworkBehaviour
 		playerClassHandler = GetComponent<EntityClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
-		playerEquipmentHandler.player = this;
 		enemyDetection = GetComponentInChildren<EntityDetection>();
-		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 	}

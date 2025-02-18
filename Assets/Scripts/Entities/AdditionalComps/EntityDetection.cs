@@ -5,11 +5,17 @@ using UnityEngine;
 
 public class EntityDetection : MonoBehaviour
 {
-	//refs set in respected scripts on Initilize()
-	[HideInInspector] public EntityBehaviour entityBehaviour;
-	[HideInInspector] public PlayerController player;
+	//refs set in respected scripts on Initilize()#
+	private PlayerController player;
+	private EntityBehaviour entityBehaviour;
 
 	//in Mp will need to be modified to handle multiple players
+
+	private void Awake()
+	{
+		player = GetComponent<PlayerController>();
+		entityBehaviour = GetComponent<EntityBehaviour>();
+	}
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{

@@ -7,6 +7,7 @@ using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
+	PlayerController player;
 	private EntityStats playerStats;
 
 	public bool debugDisablePlayerLevelUp;
@@ -16,18 +17,17 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void Awake()
 	{
+		player = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
 	}
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += ReloadPlayerExp;
 		SaveManager.ReloadSaveGameData += ReloadPlayerExp;
 		ObjectPoolingManager.OnEntityDeathEvent += AddExperience;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= ReloadPlayerExp;
 		SaveManager.ReloadSaveGameData -= ReloadPlayerExp;
 		ObjectPoolingManager.OnEntityDeathEvent -= AddExperience;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
@@ -36,6 +36,14 @@ public class PlayerExperienceHandler : MonoBehaviour
 	{
 		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
+
+	/// <summary>
+	/// SYNCING PLAYER LEVELS BETWEEN CLIENTS PLAN:
+	/// once save game data is restored completely on joining clients side.
+	/// joining client calls rpc sending networked id of themselves + players current level.
+	/// host client recieves call then sends id + player level to all clients.
+	/// based on if this networked player objs owner id matches this id of player calling rpc. adjust level and stats of said player object
+	/// </summary>
 
 	//restore player exp data
 	public void ReloadPlayerExp()

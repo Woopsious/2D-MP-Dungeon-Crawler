@@ -80,6 +80,8 @@ public class EntityClassHandler : NetworkBehaviour
 		unlockedStatBoostList.Clear();
 		unlockedAbilitiesList.Clear();
 
+		Debug.LogError("new class: " + newClass.name);
+
 		currentEntityClass = newClass;
 	}
 

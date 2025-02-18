@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class PlayerInventoryHandler : MonoBehaviour
 {
-	public static PlayerInventoryHandler Instance;
+	private PlayerController player;
 
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
@@ -24,7 +24,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 	public void Awake()
 	{
-		Instance = this;
+		player = GetComponent<PlayerController>();
 		hasRecievedStartingItems = false;
 		hasRecievedKnightItems = false;
 		hasRecievedWarriorItems = false;
@@ -43,6 +43,8 @@ public class PlayerInventoryHandler : MonoBehaviour
 			//DebugSpawnStartingItems(playerClass);
 			//return;
 		}
+
+		if (GameManager.Localplayer != player) return;
 
 		if (SaveManager.Instance != null) //skip when in testing scene
 		{

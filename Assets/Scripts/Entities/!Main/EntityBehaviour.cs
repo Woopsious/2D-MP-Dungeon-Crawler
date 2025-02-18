@@ -145,10 +145,8 @@ public class EntityBehaviour : Tree
 	protected virtual void Initilize()
 	{
 		behaviourRef = entityStats.statsRef.entityBehaviour;
-		UpdateBounds(transform.position);
-
 		viewRangeCollider.radius = playerDetectionRange;
-		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;
+		UpdateBounds(transform.position);
 
 		navMeshAgent.speed = behaviourRef.navMeshMoveSpeed;
 		navMeshAgent.angularSpeed = behaviourRef.navMeshTurnSpeed;

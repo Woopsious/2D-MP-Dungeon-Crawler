@@ -5,8 +5,6 @@ using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
 {
-	private int abilitySlots;
-
 	private void OnEnable()
 	{
 		PlayerClassesUi.OnClassChanges += UpdateClass;
@@ -14,8 +12,6 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
 		PlayerClassesUi.OnRefundStatBonusUnlock += RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock += RefundAbility;
-
-		//PlayerEventManager.OnPlayerLevelUpEvent += UpdateAbilitySlotsOnLevelUp;
 	}
 	private void OnDisable()
 	{
@@ -24,15 +20,12 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnNewAbilityUnlock -= UnlockAbility;
 		PlayerClassesUi.OnRefundStatBonusUnlock -= RefundStatBoost;
 		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
-
-		//PlayerEventManager.OnPlayerLevelUpEvent -= UpdateAbilitySlotsOnLevelUp;
 	}
 
 	//player class events
 	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
 		base.UpdateClass(newPlayerClass);
-		//UpdateMaxAbilitySlots();
 		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
 	}
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
@@ -55,24 +48,6 @@ public class PlayerClassHandler : EntityClassHandler
 		base.RefundAbility(ability);
 		UpdateClassTreeUi();
 	}
-
-	/*
-	private void UpdateAbilitySlotsOnLevelUp(EntityStats playerStats)
-	{
-		UpdateMaxAbilitySlots();
-	}
-	protected void UpdateMaxAbilitySlots()
-	{
-		if (currentEntityClass == null) return;
-		abilitySlots = currentEntityClass.baseClassAbilitySlots;
-
-		foreach (AbilitySlots abilitySlot in currentEntityClass.spellSlotsPerLevel)
-		{
-			if (entityStats.entityLevel >= abilitySlot.LevelRequirement)
-				abilitySlots += abilitySlot.AbilitySlotsPerLevel;
-		}
-	}
-	*/
 
 	private void UpdateClassTreeUi()
 	{
