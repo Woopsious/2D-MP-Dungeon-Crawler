@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class ChestHandler : MonoBehaviour, IInteractables
+public class ChestHandler : NetworkBehaviour, IInteractables
 {
 	public Sprite chestClosedSprite;
 	public Sprite chestOpenedSprite;

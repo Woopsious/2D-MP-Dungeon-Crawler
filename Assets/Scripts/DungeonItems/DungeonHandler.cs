@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-public class DungeonHandler : MonoBehaviour
+public class DungeonHandler : NetworkBehaviour
 {
 	public static DungeonHandler Instance;
 
@@ -19,7 +20,7 @@ public class DungeonHandler : MonoBehaviour
 	private void Awake()
 	{
 		Instance = this;	
-		ActivateRandomChests();
+		//ActivateRandomChests();
 	}
 	private void Start()
 	{
@@ -27,13 +28,30 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += RestoreDungeonChestData;
+		SaveManager.ReloadDungeonData += RestorePlayerStorageChestData;
 		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= RestoreDungeonChestData;
+		SaveManager.ReloadDungeonData -= RestorePlayerStorageChestData;
 		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
+	}
+
+	private void ActivateRandomChests()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		foreach (ChestHandler chest in dungeonLootChestsList)
+		{
+			if (chest.isPlayerStorageChest) continue;
+
+			int chance = Utilities.GetRandomNumberBetween(0, 100);
+
+			if (chance > chanceForChestToActivate)
+				chest.ActivateChest();
+			else
+				chest.DeactivateChest();
+		}
 	}
 
 	//player respawns
@@ -60,14 +78,13 @@ public class DungeonHandler : MonoBehaviour
 	//DUNGEON SETUP
 	private void MovePlayersToEnterencePortal()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		GameObject portalSpawnPoint = dungeonPortalsList[Utilities.GetRandomNumber(dungeonPortalsList.Count - 1)];
 		dungeonEnterencePortal = portalSpawnPoint;
 
-		if (!MultiplayerManager.IsMultiplayer() || MultiplayerManager.IsClientHost())
-		{
-			foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
-				player.transform.position = dungeonEnterencePortal.transform.position;
-		}
+		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+			player.transform.position = dungeonEnterencePortal.transform.position;
 	}
 	public Vector2 GetDungeonEnterencePortal(GameObject player)
 	{
@@ -75,27 +92,25 @@ public class DungeonHandler : MonoBehaviour
 			return player.transform.position;
 		else return dungeonEnterencePortal.transform.position;
 	}
-	private void ActivateRandomChests()
-	{
-		foreach (ChestHandler chest in dungeonLootChestsList)
-		{
-			if (chest.isPlayerStorageChest) continue;
 
-			int chance = Utilities.GetRandomNumberBetween(0, 100);
-
-			if (chance > chanceForChestToActivate)
-				chest.ActivateChest();
-			else
-				chest.DeactivateChest();
-		}
-	}
-
-	//restore dungeon data
-	private void RestoreDungeonChestData()
+	//restore chest data
+	private void RestorePlayerStorageChestData()
 	{
 		if (playerStorageChest == null) return;
-		RestorePlayerStorageChestData();
 
+		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.playerStorageChestItems)
+		{
+			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, playerStorageChest.itemContainer.transform);
+			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
+
+			PlayerInventoryUi.Instance.ReloadItemData(newInventoryItem, itemData);
+			newInventoryItem.Initilize();
+			playerStorageChest.itemList.Add(newInventoryItem);
+		}
+	}
+	private void RestoreDungeonChestData()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
 		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
 			dungeonLootChestsList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
 
@@ -111,18 +126,6 @@ public class DungeonHandler : MonoBehaviour
 			else
 				dungeonLootChestsList[i].DeactivateChest();
 			i++;
-		}
-	}
-	private void RestorePlayerStorageChestData()
-	{
-		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.playerStorageChestItems)
-		{
-			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, playerStorageChest.itemContainer.transform);
-			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
-
-			PlayerInventoryUi.Instance.ReloadItemData(newInventoryItem, itemData);
-			newInventoryItem.Initilize();
-			playerStorageChest.itemList.Add(newInventoryItem);
 		}
 	}
 
