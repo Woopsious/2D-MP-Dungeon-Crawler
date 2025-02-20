@@ -47,7 +47,7 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		Initilize();
+		playerCollider = GetComponent<CircleCollider2D>();
 	}
 	private void OnEnable()
 	{
@@ -75,7 +75,10 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Start()
 	{
-		spawnerLevel = GameManager.Localplayer.playerStats.entityLevel;
+		if (GameManager.Localplayer != null)
+			spawnerLevel = GameManager.Localplayer.playerStats.entityLevel;
+
+		Initilize();
 		TrySpawnEntities();
 	}
 
@@ -114,7 +117,6 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Initilize()
 	{
-		playerCollider = GetComponent<CircleCollider2D>();
 		playerCollider.radius = maxSpawningDistance;
 		closestPlayerDistance = maxSpawningDistance;
 		spawningDisabled = false;

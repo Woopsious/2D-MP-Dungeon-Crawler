@@ -3,15 +3,20 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class ChestHandler : NetworkBehaviour, IInteractables
+public class ChestHandler : MonoBehaviour, IInteractables
 {
 	public Sprite chestClosedSprite;
 	public Sprite chestOpenedSprite;
 	private SpriteRenderer spriteRenderer;
+	private CircleCollider2D circleCollider;
 	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
-	[HideInInspector] public bool chestActive;
-	[HideInInspector] public bool chestStateOpened;
+
+	private ChestState chestState;
+	public enum ChestState
+	{
+		disabled, enabled, opened
+	}
 
 	[Header("Player Chest Info")]
 	public bool isPlayerStorageChest;
@@ -33,6 +38,7 @@ public class ChestHandler : NetworkBehaviour, IInteractables
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
+		circleCollider = GetComponent<CircleCollider2D>();
 		audioHandler = GetComponent<AudioHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 	}
@@ -45,30 +51,41 @@ public class ChestHandler : NetworkBehaviour, IInteractables
 	private void Initilize()
 	{
 		spriteRenderer.sprite = chestClosedSprite;
-		chestStateOpened = false;
 		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
 	}
 
 	//loot chest states
-	public void ActivateChest()
+	public ChestState GetChestState()
 	{
-		chestActive = true;
+		return chestState;
 	}
-	public void DeactivateChest()
+	public void DisableChest()
 	{
-		chestActive = false;
 		gameObject.SetActive(false);
+		chestState = ChestState.disabled;
 	}
-	public void ChangeChestStateToOpen(bool isPlayerInteraction)
+	public void EnableChest()
 	{
-		PlayerEventManager.DetectNewInteractedObject(gameObject, false);
-		chestStateOpened = true;
+		gameObject.SetActive(true);
+		chestState = ChestState.enabled;
+	}
+	public void OpenChest(bool isPlayerInteraction)
+	{
+		if (chestState == ChestState.opened) return;
+
+		gameObject.SetActive(true);
+		chestState = ChestState.opened;
 		spriteRenderer.sprite = chestOpenedSprite;
+		PlayerEventManager.DetectNewInteractedObject(gameObject, false);
+
 		if (isPlayerInteraction)
 		{
 			lootSpawnHandler.SpawnLoot();
 			lootSpawnHandler.AddGold();
 		}
+
+		if (MultiplayerManager.IsMultiplayer())
+			DungeonHandler.Instance.TrySyncChestState(this);
 	}
 
 	//player interactions
@@ -76,9 +93,9 @@ public class ChestHandler : NetworkBehaviour, IInteractables
 	{
 		if (!isPlayerStorageChest)
 		{
-			if (chestStateOpened == true) return;
+			if (chestState == ChestState.opened) return;
 			audioHandler.PlayAudio(chestOpenSfx);
-			ChangeChestStateToOpen(true);
+			OpenChest(true);
 		}
 		else
 		{

@@ -125,8 +125,7 @@ public class DungeonPortalUi : MonoBehaviour
 		{
 			DungeonChestData data = new DungeonChestData()
 			{
-				chestActive = chest.chestActive,
-				chestStateOpened = chest.chestStateOpened,
+				chestState = chest.GetChestState(),
 			};
 			chestData.Add(data);
 		}

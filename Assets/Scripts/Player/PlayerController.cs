@@ -660,7 +660,7 @@ public class PlayerController : NetworkBehaviour
 		}
 		if (other.GetComponent<ChestHandler>() != null)
 		{
-			if (other.GetComponent<ChestHandler>().chestStateOpened)
+			if (other.GetComponent<ChestHandler>().GetChestState() == ChestHandler.ChestState.opened)
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
 			else
 				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);

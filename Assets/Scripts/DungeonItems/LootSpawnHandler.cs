@@ -41,6 +41,7 @@ public class LootSpawnHandler : MonoBehaviour
 		lootPool = newLootPool;
 		this.itemRarityChanceModifier = itemRarityChanceModifier;
 
+		UpdateLootSpawnerLevel(GameManager.Localplayer.playerStats);
 		UpdateLootSpawnTable(PlayerClassesUi.Instance.currentPlayerClass);
 	}
 	private void UpdateLootSpawnTable(SOClasses playerClass)
@@ -145,14 +146,9 @@ public class LootSpawnHandler : MonoBehaviour
 
 	public void AddGold()
 	{
-		float goldModifier = levelModifier;
-
-		if (GameManager.Instance != null)   //add difficulty modifier to gold drops
-			goldModifier += GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
-		else
-			Debug.LogWarning("Game Manager not found whilst updating spawner level, ignore if scene testing");
-
+		float goldModifier = levelModifier + GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
 		int goldToAdd = Utilities.GetRandomNumberBetween((int)(minGold * goldModifier), (int)(maxGold * goldModifier));
+
 		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
 	}
 

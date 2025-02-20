@@ -199,6 +199,7 @@ public class MultiplayerManager : NetworkBehaviour
 					{
 						// Handle any server-side tasks here
 						Debug.LogError("loadEventCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+						DungeonHandler.Instance.TrySyncChestStates();
 					}
 					else
 					{

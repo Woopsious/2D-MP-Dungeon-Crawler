@@ -588,6 +588,5 @@ public class DungeonData
 [System.Serializable]
 public class DungeonChestData
 {
-	public bool chestActive;
-	public bool chestStateOpened;
+	public ChestHandler.ChestState chestState;
 }
