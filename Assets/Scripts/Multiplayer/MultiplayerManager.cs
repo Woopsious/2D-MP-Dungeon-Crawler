@@ -6,9 +6,7 @@ using System;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
 using TMPro;
-using UnityEngine.UI;
 
 public class MultiplayerManager : NetworkBehaviour
 {
@@ -109,7 +107,7 @@ public class MultiplayerManager : NetworkBehaviour
 	public void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
 		ulong clientId = sceneEvent.ClientId;
-		// Both client and server receive these notifications
+
 		switch (sceneEvent.SceneEventType)
 		{
 			// Handle server to client Load Notifications
@@ -120,13 +118,12 @@ public class MultiplayerManager : NetworkBehaviour
 				if (IsClient)
 					GameManager.Instance.UnloadSceneForConnectedClients();
 
-				SaveManager.Instance.AutoSaveData();
-
 				break;
 			}
 			// Handle client to server LoadComplete notifications
 			case SceneEventType.LoadComplete:
 			{
+				// Server Side: receives thisn'tification for both itself and all clients
 				if (IsServer)
 				{
 					Debug.LogError("loadCompleted for server ID: " + clientId + " | at: " + DateTime.Now.ToString());
@@ -134,6 +131,9 @@ public class MultiplayerManager : NetworkBehaviour
 				else // Clients generate thisn'tification locally
 				{
 					Debug.LogError("loadCompleted for client ID: " + clientId + " | at: " + DateTime.Now.ToString());
+
+					if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
+						SaveManager.Instance.ReloadSaveGameDataEvent();
 				}
 				break;
 			}
@@ -142,20 +142,16 @@ public class MultiplayerManager : NetworkBehaviour
 			{
 				foreach (var clientIdLoadComplete in sceneEvent.ClientsThatCompleted)
 				{
+					// Example of parsing through the clients that completed list
 					if (IsServer)
 					{
-						// Handle any server-side tasks here
 						Debug.LogError("loadEventCompleted for server ID: " + clientIdLoadComplete + " | at: " + DateTime.Now.ToString());
 
 						DungeonHandler.Instance.TrySyncChestStates();
 					}
 					else
 					{
-						// Handle any client-side tasks here
 						Debug.LogError("loadEventCompleted for client ID: " + clientIdLoadComplete + " | at: " + DateTime.Now.ToString());
-
-						if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
-							SaveManager.Instance.ReloadSaveGameDataEvent();
 					}
 				}
 				break;

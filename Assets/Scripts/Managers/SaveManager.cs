@@ -162,6 +162,8 @@ public class SaveManager : MonoBehaviour
 	public void AutoSaveData()
 	{
 		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
+
+		Debug.LogError("auto saving game data at: " + DateTime.Now.ToString());
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	public void AutoLoadData() //(redundent function, may reuse at some point)

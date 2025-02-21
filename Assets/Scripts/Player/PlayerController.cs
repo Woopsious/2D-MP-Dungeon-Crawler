@@ -127,6 +127,10 @@ public class PlayerController : NetworkBehaviour
 		if (IsLocalPlayerOrSinglePlayer())
 		{
 			UpdateLocalPlayerReferences();
+
+			//resync player class + stat/ability unlocks here +
+			//anything else that needs to be resynced due to player obj for joining clients not yet existing
+
 			PlayerInventoryUi.Instance.ReEquipPlayerEquipment();
 		}
 

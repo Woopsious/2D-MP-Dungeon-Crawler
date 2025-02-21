@@ -349,6 +349,12 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8e56fc403ea16df4d84ee3bafa1713ce, type: 2}
   - {fileID: 11400000, guid: 17ffefcd104886b47903092608d77944, type: 2}
   - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  classes:
+  - {fileID: 11400000, guid: 8c94f4824de128042acbaee3584c249c, type: 2}
+  - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
+  - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
+  - {fileID: 11400000, guid: 42ee38bbdb9a4f24eab27497a00bb1ec, type: 2}
+  - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
   abilities:
   - {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
   - {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}

@@ -11,6 +11,7 @@ public class AssetDatabase : MonoBehaviour
 
 	public List<SOWeapons> weapons = new List<SOWeapons>();
 
+	public List<SOClasses> classes = new List<SOClasses>();
 	public List<SOAbilities> abilities = new List<SOAbilities>();
 	public List<SOStatusEffects> statusEffects = new List<SOStatusEffects>();
 
