@@ -118,6 +118,7 @@ public class GameManager : MonoBehaviour
 	} 
 	public void LoadHubArea(bool isNewGame, GameDataReloadMode gameDataRestoreMode)
 	{
+		SaveManager.Instance.AutoSaveData();
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.game);
 		GameManager.isNewGame = isNewGame;
 		Instance.gameDataReloadMode = gameDataRestoreMode;
@@ -135,6 +136,7 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonOne()
 	{
+		SaveManager.Instance.AutoSaveData();
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -144,6 +146,7 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadDungeonTwo()
 	{
+		SaveManager.Instance.AutoSaveData();
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -153,6 +156,7 @@ public class GameManager : MonoBehaviour
 	}
 	public void LoadRandomBossDungeon()
 	{
+		SaveManager.Instance.AutoSaveData();
 		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.bossDungeon);
 		int bossDungeonIndex = Utilities.GetRandomNumber(bossSceneNamesList.Count - 1);
 

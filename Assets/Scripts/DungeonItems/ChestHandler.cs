@@ -8,7 +8,6 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	public Sprite chestClosedSprite;
 	public Sprite chestOpenedSprite;
 	private SpriteRenderer spriteRenderer;
-	private CircleCollider2D circleCollider;
 	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
 
@@ -38,7 +37,6 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	private void Awake()
 	{
 		spriteRenderer = GetComponent<SpriteRenderer>();
-		circleCollider = GetComponent<CircleCollider2D>();
 		audioHandler = GetComponent<AudioHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
 	}
@@ -100,7 +98,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		else
 		{
 			audioHandler.PlayAudio(chestOpenSfx);
-			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
+			PlayerInventoryUi.Instance.ShowPlayerStorageChest(0);
 			player.isInteractingWithInteractable = true;
 		}
 	}
@@ -108,7 +106,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	{
 		if (!isPlayerStorageChest) return;
 		audioHandler.PlayAudio(chestCloseSfx);
-		PlayerInventoryUi.Instance.HidePlayerStorageChest(this);
+		PlayerInventoryUi.Instance.HidePlayerStorageChest();
 		player.isInteractingWithInteractable = false;
 	}
 }

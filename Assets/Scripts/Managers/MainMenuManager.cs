@@ -177,7 +177,6 @@ public class MainMenuManager : MonoBehaviour
 	public void PlayMultiplayer()
 	{
 		mainMenuPanel.SetActive(false);
-
 		SaveManager.Instance.AutoSaveData();
 		MultiplayerMenuUi.Instance.ShowMpMenuUi();
 	}
@@ -187,7 +186,7 @@ public class MainMenuManager : MonoBehaviour
 	{
 		if (LobbyManager.Instance._Lobby != null)
 		{
-			MainMenuManager.Instance.HideMainMenu();
+			Instance.HideMainMenu();
 			LobbyUi.Instance.ShowLobbyUi();
 		}
 	}

@@ -30,12 +30,10 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		SaveManager.ReloadDungeonData += RestorePlayerStorageChestData;
 		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		SaveManager.ReloadDungeonData -= RestorePlayerStorageChestData;
 		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
 	}
 
@@ -96,21 +94,7 @@ public class DungeonHandler : MonoBehaviour
 		}
 	}
 
-	//restore chest data + states
-	private void RestorePlayerStorageChestData()
-	{
-		if (playerStorageChest == null) return;
-
-		foreach (InventoryItemData itemData in SaveManager.Instance.GameData.playerStorageChestItems)
-		{
-			GameObject go = Instantiate(PlayerInventoryUi.Instance.ItemUiPrefab, playerStorageChest.itemContainer.transform);
-			InventoryItemUi newInventoryItem = go.GetComponent<InventoryItemUi>();
-
-			PlayerInventoryUi.Instance.ReloadItemData(newInventoryItem, itemData);
-			newInventoryItem.Initilize();
-			playerStorageChest.itemList.Add(newInventoryItem);
-		}
-	}
+	//restore chest data
 	private void RestoreDungeonChestData()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;

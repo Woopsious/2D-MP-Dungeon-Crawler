@@ -144,7 +144,6 @@ public class DungeonPortalUi : MonoBehaviour
 		else
 			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
 
-		SaveManager.Instance.AutoSaveData();
 		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.noReload);
 	}
 

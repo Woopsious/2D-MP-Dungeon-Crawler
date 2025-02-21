@@ -249,7 +249,6 @@ public class DungeonDataUi : MonoBehaviour
 	//actions
 	public void EnterDungeon() //button click
 	{
-		SaveManager.Instance.AutoSaveData();
 		hasExploredDungeon = true;
 
 		GameManager.Instance.currentDungeonData.hasExploredDungeon = hasExploredDungeon;

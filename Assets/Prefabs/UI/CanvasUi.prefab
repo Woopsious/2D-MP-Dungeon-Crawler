@@ -1647,7 +1647,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6325284116477662222}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 540052012176181913}
+        m_TargetAssemblyTypeName: PlayerInventoryUi, Assembly-CSharp
+        m_MethodName: HidePlayerStorageChest
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &195460433224783780
 GameObject:
   m_ObjectHideFlags: 0
@@ -22785,6 +22797,7 @@ RectTransform:
   - {fileID: 6294020997414820723}
   - {fileID: 8532178587102294090}
   - {fileID: 1572505267128299450}
+  - {fileID: 3999451926113920796}
   - {fileID: 8843652871662493119}
   m_Father: {fileID: 5764492344290514191}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -22825,6 +22838,7 @@ MonoBehaviour:
   PlayerInfoAndInventoryPanelUi: {fileID: 8723896203290118981}
   LearntAbilitiesPanelUi: {fileID: 6689520822690051423}
   playerGoldAmount: 0
+  playerStoredItemsContainer: {fileID: 4621365120142840823}
   InventorySlots:
   - {fileID: 8120963306450090254}
   - {fileID: 2912993036983269959}
@@ -29211,6 +29225,41 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+--- !u!1 &4621365120142840823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3999451926113920796}
+  m_Layer: 5
+  m_Name: StoredItemsContainer
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!224 &3999451926113920796
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4621365120142840823}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3091877719613510580}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &4623928643594463385
 GameObject:
   m_ObjectHideFlags: 0

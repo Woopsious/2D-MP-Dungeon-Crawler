@@ -36,7 +36,7 @@ public class SaveManager : MonoBehaviour
 		else
 		{
 			Instance = this;
-			DontDestroyOnLoad(this.gameObject);
+			DontDestroyOnLoad(gameObject);
 		}
 	}
 
@@ -331,16 +331,11 @@ public class SaveManager : MonoBehaviour
 	}
 	private void SavePlayerStorageChestData()
 	{
-		if (DungeonHandler.Instance.playerStorageChest == null)
-		{
-			Debug.LogError("storage chest null");
-			return;
-		}
+		if (DungeonHandler.Instance.playerStorageChest == null) return;
 
 		Instance.GameData.playerStorageChestItems.Clear();
-		ChestHandler playerStorageChest = DungeonHandler.Instance.playerStorageChest;
 
-		foreach (InventoryItemUi item in playerStorageChest.itemList)
+		foreach (InventoryItemUi item in PlayerInventoryUi.Instance.GetPlayerStoredItemsList())
 		{
 			InventoryItemData itemData = new()
 			{

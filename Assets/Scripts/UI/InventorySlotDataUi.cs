@@ -135,7 +135,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		if (item != null)
 			item.PlayItemEquipSound();
 
-		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
+		if (IsHotbarSlot())
 			OnHotbarItemEquip?.Invoke(item, this);
 		else
 			OnItemEquip?.Invoke(item, this);
@@ -161,7 +161,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		else
 			return false;
 	}
-	public bool IsItemInSlotStackable()
+	private bool IsItemInSlotStackable()
 	{
 		InventoryItemUi itemInSlot = GetComponentInChildren<InventoryItemUi>();
 		if (itemInSlot.isStackable)
@@ -175,7 +175,7 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			return true;
 		else return false;
 	}
-	public bool IsCorrectSlotType(InventoryItemUi item)
+	private bool IsCorrectSlotType(InventoryItemUi item)
 	{
 		//enchanter checks
 		if (item.itemType != InventoryItemUi.ItemType.isConsumable && item.itemType != InventoryItemUi.ItemType.isAbility &&
@@ -265,22 +265,69 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		Debug.LogError("slot checks failed");
 		return false;
 	}
-	public bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
+	private bool IsNewSlotSameAsOldSlot(InventorySlotDataUi oldInventorySlot)
 	{
 		if (oldInventorySlot == this)
 			return true;
 		else
 			return false;
 	}
-	public bool IsNewSlotTypeSameAsOldSlotType(InventoryItemUi item)
+	private bool IsNewSlotTypeSameAsOldSlotType(InventoryItemUi item)
 	{
 		if (slotType == item.parentAfterDrag.GetComponent<InventorySlotDataUi>().slotType)
 			return true;
 		else return false;
 	}
-	public bool IsCorrectLevel(InventoryItemUi item)
+	private bool IsCorrectLevel(InventoryItemUi item)
 	{
 		if (GameManager.Localplayer.GetComponent<EntityStats>().entityLevel >= item.itemLevel)
+			return true;
+		else return false;
+	}
+	private bool IsCorrectStorageSlot(InventoryItemUi item)
+	{
+		if (item.itemType == InventoryItemUi.ItemType.isWeapon && slotType == SlotType.weaponStorage &&
+			item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+		{
+			return true;
+		}
+		else if (item.itemType == InventoryItemUi.ItemType.isArmor && slotType == SlotType.armourStorage &&
+			item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+		{
+			return true;
+		}
+		else if (item.itemType == InventoryItemUi.ItemType.isAccessory && slotType == SlotType.accessoryStorage &&
+			item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+		{
+			return true;
+		}
+		else if (item.itemType == InventoryItemUi.ItemType.isConsumable && slotType == SlotType.consumablesStorage &&
+			item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
+		{
+			return true;
+		}
+		else return false;
+	}
+	private bool CheckClassRestriction(int itemClassRestrictionNum)
+	{
+		int classRestrictionNum = (int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction;
+		if (classRestrictionNum >= itemClassRestrictionNum)
+			return true;
+		else
+			return false;
+	}
+
+	//slot type checks
+	public bool IsStorageSlot()
+	{
+		if (slotType == SlotType.weaponStorage || slotType == SlotType.armourStorage ||
+			slotType == SlotType.accessoryStorage || slotType == SlotType.consumablesStorage)
+			return true;
+		else return false;
+	}
+	public bool IsHotbarSlot()
+	{
+		if (slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			return true;
 		else return false;
 	}
@@ -299,35 +346,11 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 			return true;
 		else return false;
 	}
-	public bool IsCorrectStorageSlot(InventoryItemUi item)
-	{
-		if (item.itemType == InventoryItemUi.ItemType.isWeapon &&
-			slotType == SlotType.weaponStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isArmor &&
-			slotType == SlotType.armourStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isAccessory &&
-			slotType == SlotType.accessoryStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
-			return true;
-		else if (item.itemType == InventoryItemUi.ItemType.isConsumable &&
-			slotType == SlotType.consumablesStorage && item.parentAfterDrag.GetComponent<InventorySlotDataUi>().IsPlayerInventorySlot())
-			return true;
-		else return false;
-	}
 	public bool IsShopSlot()
 	{
 		if (slotType == SlotType.shopSlot)
 			return true;
 		else return false;
-	}
-	public bool CheckClassRestriction(int itemClassRestrictionNum)
-	{
-		int classRestrictionNum = (int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction;
-		if (classRestrictionNum >= itemClassRestrictionNum)
-			return true;
-		else
-			return false;
 	}
 }
 
