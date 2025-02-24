@@ -52,7 +52,6 @@ public class LobbyCardInfoHandler : MonoBehaviour
 	}
 	private void JoinLobbyButton(Lobby lobby)
 	{
-		LobbyUi.Instance.ShowJoiningLobbyUi();
 		ClientManager.Instance.StartClientAndJoinLobby(lobby);
 	}
 }

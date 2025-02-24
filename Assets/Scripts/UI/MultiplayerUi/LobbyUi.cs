@@ -36,12 +36,6 @@ public class LobbyUi : MonoBehaviour
 	public List<PlayerCardInfoHandler> playerCardInfoList = new List<PlayerCardInfoHandler>();
 	public Button LobbySettingsButton;
 
-	[Header("Creating Lobby Panel")]
-	public GameObject creatingLobbyPanel;
-
-	[Header("Joining Lobby Panel")]
-	public GameObject joiningLobbyPanel;
-
 	private void Awake()
 	{
 		Instance = this;
@@ -91,8 +85,6 @@ public class LobbyUi : MonoBehaviour
 				LobbyManager.Instance.CreateLobby(lobbyNameInput.text, lobbyPrivate);
 			else
 				LobbyManager.Instance.CreateLobbyWithPassword(lobbyNameInput.text, lobbyPrivate, lobbyPasswordInput.text);
-
-			ShowCreatingLobbyUi();
 		}
 	}
 	public void CancelLobbyCreation()
@@ -181,11 +173,6 @@ public class LobbyUi : MonoBehaviour
 
 	public void ShowLobbyUi()
 	{
-		if (creatingLobbyPanel.activeInHierarchy)
-			HideCreatingLobbyUi();
-		else if (joiningLobbyPanel.activeInHierarchy)
-			HideJoiningLobbyUi();
-
 		LobbyUiPanel.SetActive(true);
 		MultiplayerMenuUi.Instance.HideMpMenuUi();
 		LobbyListUi.Instance.HideLobbyListUi();
@@ -194,23 +181,5 @@ public class LobbyUi : MonoBehaviour
 	public void HideLobbyUi()
 	{
 		LobbyUiPanel.SetActive(false);
-	}
-
-	public void ShowCreatingLobbyUi()
-	{
-		creatingLobbyPanel.SetActive(true);
-	}
-	public void HideCreatingLobbyUi()
-	{
-		creatingLobbyPanel.SetActive(false);
-	}
-
-	public void ShowJoiningLobbyUi()
-	{
-		joiningLobbyPanel.SetActive(true);
-	}
-	public void HideJoiningLobbyUi()
-	{
-		joiningLobbyPanel.SetActive(false);
 	}
 }

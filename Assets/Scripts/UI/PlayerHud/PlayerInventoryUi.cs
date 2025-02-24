@@ -55,7 +55,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	[Header("Storage Chest Ui")]
 	public GameObject storageChestPanelUi;
 	public Button closeStorageChestPanelButton;
-	private ChestHandler interactedChest;
 
 	[Header("Interacted Slots Ui")]
 	public GameObject interactedInventorySlotsUi;

@@ -35,7 +35,7 @@ public class ClientManager : NetworkBehaviour
 	//START/STOP CLIENT
 	public void StartClientAndJoinLobby(Lobby lobby)
 	{
-		LoadingScreensManager.instance.ShowLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningGame);
+		LoadingScreensManager.instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningLobby);
 		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
@@ -105,6 +105,7 @@ public class ClientManager : NetworkBehaviour
 	{
 		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 
+		LoadingScreensManager.instance.HideLobbyLoadingScreen();
 		LobbyManager.Instance.UpdateJoiningClientsNetworkID();
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
@@ -114,31 +115,5 @@ public class ClientManager : NetworkBehaviour
 		MultiplayerMenuUi.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
 		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
 		StopClient();
-	}
-}
-
-//client data
-[Serializable]
-public struct ClientDataInfo : INetworkSerializable, IEquatable<ClientDataInfo>
-{
-	public FixedString64Bytes clientName;
-	public FixedString64Bytes clientId;
-	public ulong clientNetworkedId;
-
-	public ClientDataInfo(string playerName = "not set", string clientId = "No Id Token", ulong clientNetworkedId = 0)
-	{
-		this.clientName = playerName;
-		this.clientId = clientId;
-		this.clientNetworkedId = clientNetworkedId;
-	}
-	public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-	{
-		serializer.SerializeValue(ref clientName);
-		serializer.SerializeValue(ref clientId);
-		serializer.SerializeValue(ref clientNetworkedId);
-	}
-	public bool Equals(ClientDataInfo other)
-	{
-		return clientName == other.clientName && clientId == other.clientId && clientNetworkedId == other.clientNetworkedId;
 	}
 }

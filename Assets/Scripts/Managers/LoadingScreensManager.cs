@@ -7,19 +7,21 @@ public class LoadingScreensManager : MonoBehaviour
 {
 	public static LoadingScreensManager instance;
 
-	public GameObject Canvas;
+	public GameObject GameCanvas;
+	public GameObject LobbyCanvas;
 	public TMP_Text loadingMessage;
 
 	public enum LoadingScreenType
 	{
-		game, dungeon, bossDungeon, joiningGame, creatingLobby, 
+		game, dungeon, bossDungeon, joiningLobby, creatingLobby,
 	}
+
 	private void Awake()
 	{
 		instance = this;
 	}
 
-	public void ShowLoadingScreen(LoadingScreenType loadingScreenType)
+	public void ShowGameLoadingScreen(LoadingScreenType loadingScreenType)
 	{
 		if (loadingScreenType == LoadingScreenType.game)
 			loadingMessage.text = "Loading Game...";
@@ -27,15 +29,27 @@ public class LoadingScreensManager : MonoBehaviour
 			loadingMessage.text = "Loading Dungeon...";
 		else if (loadingScreenType == LoadingScreenType.bossDungeon)
 			loadingMessage.text = "Loading Boss Dungeon...";
-		else if (loadingScreenType == LoadingScreenType.joiningGame)
+
+		loadingMessage.transform.SetParent(GameCanvas.transform);
+		GameCanvas.SetActive(true);
+	}
+	public void HideGameLoadingScreen()
+	{
+		GameCanvas.SetActive(false);
+	}
+
+	public void ShowLobbyLoadingScreen(LoadingScreenType loadingScreenType)
+	{
+		if (loadingScreenType == LoadingScreenType.joiningLobby)
 			loadingMessage.text = "Joining Game...";
 		else if (loadingScreenType == LoadingScreenType.creatingLobby)
 			loadingMessage.text = "Creating Lobby...";
 
-		Canvas.SetActive(true);
+		loadingMessage.text = "Creating Lobby...";
+		LobbyCanvas.SetActive(true);
 	}
-	public void HideLoadingScreen()
+	public void HideLobbyLoadingScreen()
 	{
-		Canvas.SetActive(false);
+		LobbyCanvas.SetActive(false);
 	}
 }

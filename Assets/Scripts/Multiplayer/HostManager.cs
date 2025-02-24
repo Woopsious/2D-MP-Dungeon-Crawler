@@ -36,6 +36,9 @@ public class HostManager : NetworkBehaviour
 	//START/STOP HOST
 	public void StartHost()
 	{
+		LoadingScreensManager.instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.creatingLobby);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 		GameManager.Instance.PauseGame(false);
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		MultiplayerManager.Instance.SubToEvents();
@@ -48,6 +51,7 @@ public class HostManager : NetworkBehaviour
 
 		LobbyManager.Instance.DeleteLobby();
 		LobbyManager.Instance.ResetLobbyReferences();
+		NetworkManager.SceneManager.UnloadScene(GameManager.Instance.currentlyLoadedScene);
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(false);
 		NetworkManager.Singleton.Shutdown();
@@ -140,7 +144,10 @@ public class HostManager : NetworkBehaviour
 	public void HandleClientConnectsAsHost(ulong id)
 	{
 		if (id == 0)
+		{
 			SpawnClientRpcManager();
+			LoadingScreensManager.instance.HideLobbyLoadingScreen();
+		}
 
 		GameManager.Instance.SpawnPlayerPrefab(id);
 	}

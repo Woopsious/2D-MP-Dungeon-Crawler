@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
@@ -25,9 +26,31 @@ public class PlayerClassHandler : EntityClassHandler
 	//player class events
 	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
+		if (entityStats.playerRef != GameManager.Localplayer) return;
+
 		base.UpdateClass(newPlayerClass);
 		GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
+
+		if (!MultiplayerManager.IsMultiplayer()) return;
+
+		for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
+		{
+			if (newPlayerClass == AssetDatabase.Database.classes[i])
+				SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, i);
+		}
 	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncPlayerClassRpc(ulong OwnerClientIdToMatch, int newPlayerClassIndex)
+	{
+		SyncPlayerClass(OwnerClientIdToMatch, newPlayerClassIndex);
+	}
+	private void SyncPlayerClass(ulong OwnerClientIdToMatch, int newPlayerClassIndex)
+	{
+		if (OwnerClientIdToMatch != OwnerClientId) return;
+		base.UpdateClass(AssetDatabase.Database.classes[newPlayerClassIndex]);
+	}
+
+	//player stat/ability unlock events
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
 		base.UnlockStatBoost(statBoost);

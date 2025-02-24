@@ -115,6 +115,7 @@ public class MultiplayerManager : NetworkBehaviour
 			{
 				Debug.LogError("load for server ID: " + clientId + " | at: " + DateTime.Now.ToString());
 
+				if (IsHost) return;
 				if (IsClient)
 					GameManager.Instance.UnloadSceneForConnectedClients();
 
@@ -132,8 +133,8 @@ public class MultiplayerManager : NetworkBehaviour
 				{
 					Debug.LogError("loadCompleted for client ID: " + clientId + " | at: " + DateTime.Now.ToString());
 
-					if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
-						SaveManager.Instance.ReloadSaveGameDataEvent();
+					//if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
+						//SaveManager.Instance.ReloadSaveGameDataEvent();
 				}
 				break;
 			}

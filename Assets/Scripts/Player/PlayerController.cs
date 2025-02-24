@@ -20,6 +20,7 @@ public class PlayerController : NetworkBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
+	private NetworkObject networkObject;
 	private PlayerInput playerInput;
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -71,6 +72,7 @@ public class PlayerController : NetworkBehaviour
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
 		enemyDetection = GetComponentInChildren<EntityDetection>();
+		networkObject = GetComponent<NetworkObject>();
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 	}
@@ -131,7 +133,7 @@ public class PlayerController : NetworkBehaviour
 			//resync player class + stat/ability unlocks here +
 			//anything else that needs to be resynced due to player obj for joining clients not yet existing
 
-			PlayerInventoryUi.Instance.ReEquipPlayerEquipment();
+			//PlayerInventoryUi.Instance.ReEquipPlayerEquipment();
 		}
 
 		if (debugSetPlayerLevelOnStart)
@@ -144,7 +146,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void UpdateLocalPlayerReferences()
 	{
-		GameManager.Instance.UpdateLocalPlayerInstance(this);
+		GameManager.Instance.UpdateLocalPlayerInstanceAndReloadAllGameData(this);
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
 	}
