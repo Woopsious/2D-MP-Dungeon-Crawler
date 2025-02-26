@@ -104,4 +104,28 @@ public class EntityClassHandler : NetworkBehaviour
 		unlockedAbilitiesList.Remove(ability);
 		OnAbilityRefund?.Invoke(ability);
 	}
+
+	//helpers
+	protected int GetIndexOfClass(SOClasses entityClass)
+	{
+		for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
+		{
+			if (entityClass == AssetDatabase.Database.classes[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get class index");
+		return 0;
+	}
+	protected int GetIndexOfStatBoost(SOClassStatBonuses statBoost)
+	{
+		for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
+		{
+			if (statBoost == AssetDatabase.Database.classStatBoosts[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get stat boost index");
+		return 0;
+	}
 }

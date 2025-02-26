@@ -16,7 +16,7 @@ public class PlayerController : NetworkBehaviour
 	private Camera playerCamera;
 	public LayerMask includeMe;
 	[HideInInspector] public EntityStats playerStats;
-	[HideInInspector] public EntityClassHandler playerClassHandler;
+	[HideInInspector] public PlayerClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
@@ -68,7 +68,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		playerInput = GetComponent<PlayerInput>();
 		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerClassHandler = GetComponent<PlayerClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
 		enemyDetection = GetComponentInChildren<EntityDetection>();
@@ -130,10 +130,8 @@ public class PlayerController : NetworkBehaviour
 		{
 			UpdateLocalPlayerReferences();
 
-			//resync player class + stat/ability unlocks here +
-			//anything else that needs to be resynced due to player obj for joining clients not yet existing
-
-			//PlayerInventoryUi.Instance.ReEquipPlayerEquipment();
+			if (MultiplayerManager.IsMultiplayer())
+				RequestPlayerInfoOfOtherClients();
 		}
 
 		if (debugSetPlayerLevelOnStart)
@@ -149,6 +147,14 @@ public class PlayerController : NetworkBehaviour
 		GameManager.Instance.UpdateLocalPlayerInstanceAndReloadAllGameData(this);
 		playerCamera = GameManager.LocalPlayerCamera;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
+	}
+	private void RequestPlayerInfoOfOtherClients()
+	{
+		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+		{
+			if (player != this)
+				player.playerClassHandler.SyncInfoToNewlyJoinedClientRpc(ClientManager.Instance.clientNetworkedId);
+		}
 	}
 
 	//event up update info

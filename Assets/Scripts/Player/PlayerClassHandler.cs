@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
@@ -23,19 +24,25 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
 	}
 
+	//sync player obj info to newly joined clients
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	public void SyncInfoToNewlyJoinedClientRpc(ulong clientId)
+	{
+		SyncInfoToNewlyJoinedClientRpc(GetIndexOfClass(currentEntityClass), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+	}
+	[Rpc(SendTo.SpecifiedInParams)]
+	private void SyncInfoToNewlyJoinedClientRpc(int playerClassIndex, RpcParams rpcParams)
+	{
+		base.UpdateClass(AssetDatabase.Database.classes[playerClassIndex]);
+	}
+
 	//player class events
 	protected override void UpdateClass(SOClasses newPlayerClass)
 	{
 		if (entityStats.playerRef != GameManager.Localplayer) return;
 
 		if (MultiplayerManager.IsMultiplayer())
-		{
-			for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
-			{
-				if (newPlayerClass == AssetDatabase.Database.classes[i])
-					SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, i);
-			}
-		}
+			SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfClass(newPlayerClass));
 		else
 		{
 			base.UpdateClass(newPlayerClass);
@@ -59,13 +66,7 @@ public class PlayerClassHandler : EntityClassHandler
 		if (entityStats.playerRef != GameManager.Localplayer) return;
 
 		if (MultiplayerManager.IsMultiplayer())
-		{
-			for (int i = 0; i < AssetDatabase.Database.classStatBoosts.Count; i++)
-			{
-				if (statBoost == AssetDatabase.Database.classStatBoosts[i])
-					SyncUnlockStatBoostRpc(ClientManager.Instance.clientNetworkedId, i);
-			}
-		}
+			SyncUnlockStatBoostRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfStatBoost(statBoost));
 		else
 			base.UnlockStatBoost(statBoost);
 
@@ -88,13 +89,7 @@ public class PlayerClassHandler : EntityClassHandler
 		if (entityStats.playerRef != GameManager.Localplayer) return;
 
 		if (MultiplayerManager.IsMultiplayer())
-		{
-			for (int i = 0; i < AssetDatabase.Database.classStatBoosts.Count; i++)
-			{
-				if (statBoost == AssetDatabase.Database.classStatBoosts[i])
-					SyncRefundStatBoostRpc(ClientManager.Instance.clientNetworkedId, i);
-			}
-		}
+			SyncRefundStatBoostRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfStatBoost(statBoost));
 		else
 			base.RefundStatBoost(statBoost);
 
