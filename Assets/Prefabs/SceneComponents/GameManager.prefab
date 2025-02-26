@@ -533,6 +533,25 @@ MonoBehaviour:
   - {fileID: 11400000, guid: ecc1cdc37459e584599de8e6cb415baa, type: 2}
   - {fileID: 11400000, guid: 42ee38bbdb9a4f24eab27497a00bb1ec, type: 2}
   - {fileID: 11400000, guid: a04effeeee2f68c45984797926a1fa83, type: 2}
+  classStatBoosts:
+  - {fileID: 11400000, guid: 5587e93e67895274c9b452a637437400, type: 2}
+  - {fileID: 11400000, guid: cb56b08e86d564749beb673ac31ea81f, type: 2}
+  - {fileID: 11400000, guid: bc30f4cd035ab284e81258b3b22ae6ed, type: 2}
+  - {fileID: 11400000, guid: 8b4826107b2215144ae3dacc97ec0081, type: 2}
+  - {fileID: 11400000, guid: af3e112be8c3c0c47b3a47e42eb0c629, type: 2}
+  - {fileID: 11400000, guid: ffe7f21d2d04e604e8e36208d29526e6, type: 2}
+  - {fileID: 11400000, guid: b21041236c71ecc439e62003199395ba, type: 2}
+  - {fileID: 11400000, guid: e64163c3f17ad954b8d03fded76de99d, type: 2}
+  - {fileID: 11400000, guid: 418201aa761a220418ac449a214b0548, type: 2}
+  - {fileID: 11400000, guid: e034729ad8f9a9e4a8fe3f43f1c019d2, type: 2}
+  - {fileID: 11400000, guid: 2bd9a25c1eff06f4db223de9d5d45d3e, type: 2}
+  - {fileID: 11400000, guid: 649855e320627bb4b96b8964d7c7fb88, type: 2}
+  - {fileID: 11400000, guid: bded66c7822b7df458c1525dbb7ecd1e, type: 2}
+  - {fileID: 11400000, guid: 14e3cd426e6389e4fb0ccf4bf1b1cc80, type: 2}
+  - {fileID: 11400000, guid: 71a8aa61b4ca26343ba68d80e5377522, type: 2}
+  - {fileID: 11400000, guid: f36a5e1611688464992795250f7b7467, type: 2}
+  - {fileID: 11400000, guid: ef1882c597026754cb67219b18ec7c9c, type: 2}
+  - {fileID: 11400000, guid: 6cf19687ff0a8ea4fb67cc075bfac54c, type: 2}
   abilities:
   - {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
   - {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}
@@ -694,8 +713,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fb457562ce826d48a1b3abaf94fdbe3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  LobbyCanvas: {fileID: 1697691670076954510}
   GameCanvas: {fileID: 4176325808570439206}
+  LobbyCanvas: {fileID: 1697691670076954510}
   loadingMessage: {fileID: 4894662497238019239}
 --- !u!1 &7033138063955345154
 GameObject:

@@ -767,9 +767,9 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//update ui info if player
-	public void UpdatePlayerStatInfoUi()
+	private void UpdatePlayerStatInfoUi()
 	{
-		if (!IsPlayerEntity()) return;
+		if (!IsPlayerEntity() || GameManager.Localplayer != playerRef) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		PlayerEventManager.PlayerStatChange(this);

@@ -48,6 +48,7 @@ public class ClientManager : NetworkBehaviour
 			SaveManager.Instance.AutoSaveData();
 
 		LobbyManager.Instance.ResetLobbyReferences();
+		NetworkManager.SceneManager.UnloadScene(GameManager.Instance.currentlyLoadedScene);
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(false);
 		NetworkManager.Singleton.Shutdown();
