@@ -1,8 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Analytics;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
@@ -23,103 +25,144 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 		InventorySlotDataUi.OnItemEquip -= EquipItem;
 	}
 
-	//need to sync player class and stat boosts between clients for corrisponding player obj
-
 	//player equip item event listener
-	private void EquipItem(InventoryItemUi item, InventorySlotDataUi slot)
+	private void EquipItem(InventorySlotDataUi slot, InventoryItemUi item)
 	{
-		if (item == null) // when player unequips equipment without swapping/replacing it
-			HandleEmptySlots(slot);
-		else if (item.itemType == InventoryItemUi.ItemType.isWeapon) //when player first equips/swaps equipment
+		if (entityStats.playerRef != GameManager.Localplayer) return;
+
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			Weapons weapon = item.GetComponent<Weapons>();
-			if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
-				EquipWeapon(weapon, equippedWeapon, weaponSlotContainer);
+			if (item == null)
+				SyncHandleEmptySlotsRpc(GetSlotIndex(slot));
 			else
-				EquipWeapon(weapon, equippedOffhandWeapon, offhandWeaponSlotContainer);
+				SyncEquipItemsRpc((int)item.type, GetSlotIndex(slot), GetItemIndex(item), (int)item.rarity, item.level, item.enchantmentLevel);
 		}
-		else if (item.itemType == InventoryItemUi.ItemType.isArmor)
+		else
 		{
-			Armors armor = item.GetComponent<Armors>();
-			if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
-				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-
-			else if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
-				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-
-			else if (slot.slotType == InventorySlotDataUi.SlotType.legs)
-				EquipArmor(armor, equippedLegs, legsSlotContainer);
-		}
-		else if (item.itemType == InventoryItemUi.ItemType.isAccessory)
-		{
-			Accessories accessories = item.GetComponent<Accessories>();
-			if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
-				EquipAccessory(accessories, equippedNecklace, necklaceSlotContainer);
-
-			else if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
-				EquipAccessory(accessories, equippedRingOne, ringOneSlotContainer);
-
-			else if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
-				EquipAccessory(accessories, equippedRingTwo, ringTwoSlotContainer);
+			if (item == null)
+				HandleEmptySlots(slot);
+			else
+				EquipItem(slot, item.GetBaseItemClass(), (int)item.rarity, item.level, item.enchantmentLevel);
 		}
 	}
-	private void EquipWeapon(Weapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	//equipping items based on set args
+	private void EquipItem<T>(InventorySlotDataUi slot, T itemTemplate, int rarity, int level, int enchantmentLevel)
 	{
+		if (itemTemplate is SOWeapons)
+		{
+			SOWeapons weaponTemplate = itemTemplate as SOWeapons;
+
+            if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
+				EquipWeapon(weaponTemplate, rarity, level, enchantmentLevel, equippedWeapon, weaponSlotContainer);
+			else
+				EquipWeapon(weaponTemplate, rarity, level, enchantmentLevel, equippedOffhandWeapon, offhandWeaponSlotContainer);
+		}
+		else if (itemTemplate is SOArmors)
+		{
+			SOArmors armourTemplate = itemTemplate as SOArmors;
+
+			if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
+				EquipArmor(armourTemplate, rarity, level, enchantmentLevel, equippedHelmet, helmetSlotContainer);
+			else if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
+				EquipArmor(armourTemplate, rarity, level, enchantmentLevel, equippedChestpiece, chestpieceSlotContainer);
+			else if (slot.slotType == InventorySlotDataUi.SlotType.legs)
+				EquipArmor(armourTemplate, rarity, level, enchantmentLevel, equippedLegs, legsSlotContainer);
+		}
+		else if (itemTemplate is SOAccessories)
+		{
+			SOAccessories accessoryTemplate = itemTemplate as SOAccessories;
+
+			if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
+				EquipAccessory(accessoryTemplate, rarity, level, enchantmentLevel, equippedNecklace, necklaceSlotContainer);
+			else if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
+				EquipAccessory(accessoryTemplate, rarity, level, enchantmentLevel, equippedRingOne, ringOneSlotContainer);
+			else if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
+				EquipAccessory(accessoryTemplate, rarity, level, enchantmentLevel, equippedRingTwo, ringTwoSlotContainer);
+		}
+		else if (itemTemplate is SOConsumables)
+		{
+			return;
+		}
+		else
+		{
+			Debug.LogError("No item type match, type: " + itemTemplate.GetType());
+			return;
+		}
+	}
+
+	//sync equip in mp
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncEquipItemsRpc(int slotIndex, int itemType, int itemIndex, int rarity, int level, int enchantmentLevel)
+	{
+		SyncEquipItems(itemType, slotIndex, itemIndex, rarity, level, enchantmentLevel);
+	}
+	private void SyncEquipItems(int slotIndex, int itemType, int itemIndex, int rarity, int level, int enchantmentLevel)
+	{
+		if ((SOItems.ItemType)itemType == SOItems.ItemType.isWeapon)
+			EquipItem(equipmentSlots[slotIndex], AssetDatabase.Database.weapons[itemIndex], rarity, level, enchantmentLevel);
+		else if ((SOItems.ItemType)itemType == SOItems.ItemType.isArmor)
+			EquipItem(equipmentSlots[slotIndex], AssetDatabase.Database.armours[itemIndex], rarity, level, enchantmentLevel);
+		else if ((SOItems.ItemType)itemType == SOItems.ItemType.isAccessory)
+			EquipItem(equipmentSlots[slotIndex], AssetDatabase.Database.accessories[itemIndex], rarity, level, enchantmentLevel);
+		else if ((SOItems.ItemType)itemType == SOItems.ItemType.isConsumable)
+			EquipItem(equipmentSlots[slotIndex], AssetDatabase.Database.consumables[itemIndex], rarity, level, enchantmentLevel);
+	}
+
+	//sync empty in mp
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncHandleEmptySlotsRpc(int slotIndex)
+	{
+		SyncHandleEmptySlots(slotIndex);
+	}
+	private void SyncHandleEmptySlots(int slotIndex)
+	{
+		HandleEmptySlots(equipmentSlots[slotIndex]);
+	}
+
+	//EQUIP ENTITY ITEMS
+	private void EquipWeapon(SOWeapons weaponTemplate, int rarity, int level, int enchantLevel,
+		Weapons equippedWeaponRef, GameObject slotToSpawnIn)
+	{
+		GameObject go;
 		OnWeaponUnequip(equippedWeaponRef);
 
-		GameObject go = SpawnItemPrefab(slotToSpawnIn);
+		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedWeaponRef = go.AddComponent<Weapons>();
 
-		equippedWeaponRef.weaponBaseRef = weaponToEquip.weaponBaseRef;
-		equippedWeaponRef.Initilize(weaponToEquip.rarity, weaponToEquip.itemLevel, weaponToEquip.itemEnchantmentLevel);
+		equippedWeaponRef.weaponBaseRef = weaponTemplate;
+		equippedWeaponRef.Initilize((SOItems.Rarity)rarity, level, enchantLevel);
 
 		equippedWeaponRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnWeaponEquip(equippedWeaponRef, slotToSpawnIn);
 	}
-	private void EquipArmor(Armors armorToEquip, Armors equippedArmorRef, GameObject slotToSpawnIn)
+	private void EquipArmor(SOArmors armorTemplate, int rarity, int level, int enchantLevel, 
+		Armors equippedArmorRef, GameObject slotToSpawnIn)
 	{
+		GameObject go;
 		OnArmorUnequip(equippedArmorRef);
 
-		GameObject go = SpawnItemPrefab(slotToSpawnIn);
+		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedArmorRef = go.AddComponent<Armors>();
 
-		equippedArmorRef.armorBaseRef = armorToEquip.armorBaseRef;
-		equippedArmorRef.Initilize(armorToEquip.rarity, armorToEquip.itemLevel, armorToEquip.itemEnchantmentLevel);
+		equippedArmorRef.armorBaseRef = armorTemplate;
+		equippedArmorRef.Initilize((SOItems.Rarity)rarity, level, enchantLevel);
 
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
-	private void EquipAccessory(Accessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
+	private void EquipAccessory(SOAccessories accessoryTemplate, int rarity, int level, int enchantLevel, 
+		Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
 	{
+		GameObject go;
 		OnAccessoryUnequip(equippedAccessoryRef);
 
-		GameObject go = SpawnItemPrefab(slotToSpawnIn);
+		go = SpawnItemPrefab(slotToSpawnIn);
 		equippedAccessoryRef = go.AddComponent<Accessories>();
 
-		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip.accessoryBaseRef;
-		equippedAccessoryRef.Initilize(accessoryToEquip.rarity, accessoryToEquip.itemLevel, accessoryToEquip.itemEnchantmentLevel);
+		equippedAccessoryRef.accessoryBaseRef = accessoryTemplate;
+		equippedAccessoryRef.Initilize((SOItems.Rarity)rarity, level, enchantLevel);
 
 		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);
-	}
-
-	private void HandleEmptySlots(InventorySlotDataUi slot)
-	{
-		if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
-			OnWeaponUnequip(equippedWeapon);
-		if (slot.slotType == InventorySlotDataUi.SlotType.weaponOffhand)
-			OnWeaponUnequip(equippedOffhandWeapon);
-		if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
-			OnArmorUnequip(equippedHelmet);
-		if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
-			OnArmorUnequip(equippedChestpiece);
-		if (slot.slotType == InventorySlotDataUi.SlotType.legs)
-			OnArmorUnequip(equippedLegs);
-		if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
-			OnAccessoryUnequip(equippedNecklace);
-		if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
-			OnAccessoryUnequip(equippedRingOne);
-		if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
-			OnAccessoryUnequip(equippedRingTwo);
 	}
 }

@@ -196,10 +196,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.weaponBaseRef = itemData.weaponBaseRef;
 			Weapons weapon = inventoryItem.AddComponent<Weapons>();
 			weapon.weaponBaseRef = itemData.weaponBaseRef;
-			weapon.itemLevel = itemData.itemLevel;
-			weapon.itemEnchantmentLevel = itemData.enchantmentLevel;
-			weapon.rarity = (Items.Rarity)itemData.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
+			weapon.level = itemData.level;
+			weapon.enchantmentLevel = itemData.enchantmentLevel;
+			weapon.rarity = itemData.rarity;
+			weapon.Initilize(weapon.rarity, weapon.level, weapon.enchantmentLevel);
 			weapon.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		else if (itemData.armorBaseRef != null)
@@ -207,10 +207,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.armorBaseRef = itemData.armorBaseRef;
 			Armors armor = inventoryItem.AddComponent<Armors>();
 			armor.armorBaseRef = itemData.armorBaseRef;
-			armor.itemLevel = itemData.itemLevel;
-			armor.itemEnchantmentLevel = itemData.enchantmentLevel;
-			armor.rarity = (Items.Rarity)itemData.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
+			armor.level = itemData.level;
+			armor.enchantmentLevel = itemData.enchantmentLevel;
+			armor.rarity = itemData.rarity;
+			armor.Initilize(armor.rarity, armor.level, armor.enchantmentLevel);
 			armor.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		else if (itemData.accessoryBaseRef != null)
@@ -218,10 +218,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.accessoryBaseRef = itemData.accessoryBaseRef;
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = itemData.accessoryBaseRef;
-			accessory.itemLevel = itemData.itemLevel;
-			accessory.itemEnchantmentLevel = itemData.enchantmentLevel;
-			accessory.rarity = (Items.Rarity)itemData.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
+			accessory.level = itemData.level;
+			accessory.enchantmentLevel = itemData.enchantmentLevel;
+			accessory.rarity = itemData.rarity;
+			accessory.Initilize(accessory.rarity, accessory.level, accessory.enchantmentLevel);
 			accessory.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		else if (itemData.consumableBaseRef != null)
@@ -229,10 +229,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.consumableBaseRef = itemData.consumableBaseRef;
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
 			consumable.consumableBaseRef = itemData.consumableBaseRef;
-			consumable.itemLevel = itemData.itemLevel;
-			consumable.itemEnchantmentLevel = itemData.enchantmentLevel;
-			consumable.rarity = (Items.Rarity)itemData.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
+			consumable.level = itemData.level;
+			consumable.enchantmentLevel = itemData.enchantmentLevel;
+			consumable.rarity = itemData.rarity;
+			consumable.Initilize(consumable.rarity, consumable.level, consumable.enchantmentLevel);
 			consumable.SetCurrentStackCount(itemData.currentStackCount);
 		}
 		else if (itemData.abilityBaseRef != null)
@@ -270,7 +270,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	//buying/selling items
 	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
-		float goldFromItemSelling = item.itemPrice * item.currentStackCount;
+		float goldFromItemSelling = item.price * item.currentStackCount;
 		Math.Round(goldFromItemSelling *= 0.9f, 0);
 		UpdateGoldAmount((int)goldFromItemSelling);
 
@@ -280,19 +280,19 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	public void OnItemTryBuy(InventoryItemUi item, InventorySlotDataUi newSlot, InventorySlotDataUi oldSlot)
 	{
-		if (item.itemPrice * item.currentStackCount > playerGoldAmount)
+		if (item.price * item.currentStackCount > playerGoldAmount)
 			OnItemCancelBuy(item, oldSlot, "Cant Afford Item");
 		else
 		{
 			OnItemConfirmBuy(item, newSlot);
 
-			int goldFromItemBuying = -item.itemPrice * item.currentStackCount;
+			int goldFromItemBuying = -item.price * item.currentStackCount;
 			UpdateGoldAmount(goldFromItemBuying);
 		}
 	}
 	public void OnItemConfirmBuy(InventoryItemUi item, InventorySlotDataUi newSlot)
 	{
-		int goldFromItemBuying = -item.itemPrice * item.currentStackCount;
+		int goldFromItemBuying = -item.price * item.currentStackCount;
 		transactionTrackerText.text = $"Gold: {goldFromItemBuying}";
 		transactionInfoText.text = "Item Brought";
 
@@ -343,10 +343,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.weaponBaseRef = item.weaponBaseRef;
 			Weapons weapon = inventoryItem.AddComponent<Weapons>();
 			weapon.weaponBaseRef = item.weaponBaseRef;
-			weapon.itemLevel = item.itemLevel;
-			weapon.itemEnchantmentLevel = item.itemEnchantmentLevel;
+			weapon.level = item.level;
+			weapon.enchantmentLevel = item.enchantmentLevel;
 			weapon.rarity = item.rarity;
-			weapon.Initilize(weapon.rarity, weapon.itemLevel, weapon.itemEnchantmentLevel);
+			weapon.Initilize(weapon.rarity, weapon.level, weapon.enchantmentLevel);
 			weapon.SetCurrentStackCount(item.currentStackCount);
 		}
 		else if (item.armorBaseRef != null)
@@ -354,10 +354,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.armorBaseRef = item.armorBaseRef;
 			Armors armor = inventoryItem.AddComponent<Armors>();
 			armor.armorBaseRef = item.armorBaseRef;
-			armor.itemLevel = item.itemLevel;
-			armor.itemEnchantmentLevel = item.itemEnchantmentLevel;
+			armor.level = item.level;
+			armor.enchantmentLevel = item.enchantmentLevel;
 			armor.rarity = item.rarity;
-			armor.Initilize(armor.rarity, armor.itemLevel, armor.itemEnchantmentLevel);
+			armor.Initilize(armor.rarity, armor.level, armor.enchantmentLevel);
 			armor.SetCurrentStackCount(item.currentStackCount);
 		}
 		else if (item.accessoryBaseRef != null)
@@ -365,10 +365,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.accessoryBaseRef = item.accessoryBaseRef;
 			Accessories accessory = inventoryItem.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = item.accessoryBaseRef;
-			accessory.itemLevel = item.itemLevel;
-			accessory.itemEnchantmentLevel = item.itemEnchantmentLevel;
+			accessory.level = item.level;
+			accessory.enchantmentLevel = item.enchantmentLevel;
 			accessory.rarity = item.rarity;
-			accessory.Initilize(accessory.rarity, accessory.itemLevel, accessory.itemEnchantmentLevel);
+			accessory.Initilize(accessory.rarity, accessory.level, accessory.enchantmentLevel);
 			accessory.SetCurrentStackCount(item.currentStackCount);
 		}
 		else if (item.consumableBaseRef != null)
@@ -376,10 +376,10 @@ public class PlayerInventoryUi : MonoBehaviour
 			inventoryItem.consumableBaseRef = item.consumableBaseRef;
 			Consumables consumable = inventoryItem.AddComponent<Consumables>();
 			consumable.consumableBaseRef = item.consumableBaseRef;
-			consumable.itemLevel = item.itemLevel;
-			consumable.itemEnchantmentLevel = item.itemEnchantmentLevel;
+			consumable.level = item.level;
+			consumable.enchantmentLevel = item.enchantmentLevel;
 			consumable.rarity = item.rarity;
-			consumable.Initilize(consumable.rarity, consumable.itemLevel, consumable.itemEnchantmentLevel);
+			consumable.Initilize(consumable.rarity, consumable.level, consumable.enchantmentLevel);
 			consumable.SetCurrentStackCount(item.currentStackCount);
 		}
 		else
@@ -467,30 +467,6 @@ public class PlayerInventoryUi : MonoBehaviour
 				slotData.RemoveItemFromSlot();
 			}
 		}
-	}
-
-	//EQUIPMENT RE-EQUIPPING
-	public void ReEquipPlayerEquipment()
-	{
-		ReEquipEquipmentInSlot(weaponEquipmentSlot);
-		ReEquipEquipmentInSlot(offHandEquipmentSlot);
-		ReEquipEquipmentInSlot(helmetEquipmentSlot);
-		ReEquipEquipmentInSlot(chestpieceEquipmentSlot);
-		ReEquipEquipmentInSlot(legsEquipmentSlot);
-
-		ReEquipEquipmentInSlot(artifactSlot);
-		ReEquipEquipmentInSlot(necklassEquipmentSlot);
-		ReEquipEquipmentInSlot(ringEquipmentSlotOne);
-		ReEquipEquipmentInSlot(ringEquipmentSlotTwo);
-	}
-	private void ReEquipEquipmentInSlot(GameObject equipmentSlotObj)
-	{
-		InventorySlotDataUi inventorySlotData = equipmentSlotObj.GetComponent<InventorySlotDataUi>();
-
-		if (inventorySlotData.itemInSlot == null) return;
-
-		InventoryItemUi inventoryItemUi = inventorySlotData.itemInSlot;
-		inventorySlotData.AddItemToSlot(inventoryItemUi);
 	}
 
 	//UI CHANGES
@@ -702,14 +678,14 @@ public class PlayerInventoryUi : MonoBehaviour
 			enchanterSlotText.text = "Drag enchantable item here to enchant";
 			return;
 		}
-		else if (item.itemEnchantmentLevel >= 3)
+		else if (item.enchantmentLevel >= 3)
 		{
 			enchantItemButton.SetActive(false);
 			enchanterSlotText.text = $"Cant Enchant {item.itemName}, already max enchantment level";
 		}
 		else
 		{
-			int goldCostToEnchant = item.itemPrice * (item.itemEnchantmentLevel + 1);
+			int goldCostToEnchant = item.price * (item.enchantmentLevel + 1);
 
 			if (playerGoldAmount >= goldCostToEnchant)
 			{
@@ -725,7 +701,7 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 	public void EnchantItemButton()
 	{
-		int goldCost = enchanterSlot.itemInSlot.itemPrice * (enchanterSlot.itemInSlot.itemEnchantmentLevel + 1);
+		int goldCost = enchanterSlot.itemInSlot.price * (enchanterSlot.itemInSlot.enchantmentLevel + 1);
 		UpdateGoldAmount(-goldCost);
 		enchanterSlot.EnchantItemInSlot();
 		UpdateEnchantItemUiInfo(enchanterSlot.itemInSlot);

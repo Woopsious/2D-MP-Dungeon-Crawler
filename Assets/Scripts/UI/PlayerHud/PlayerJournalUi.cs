@@ -108,7 +108,7 @@ public class PlayerJournalUi : MonoBehaviour
 			QuestDataUi quest = go.GetComponent<QuestDataUi>();
 
 			quest.isCurrentlyActiveQuest = questData[i].isCurrentlyActiveQuest;
-			quest.questType = (QuestDataUi.QuestType)questData[i].questType;
+			quest.questType = questData[i].questType;
 			quest.amount = questData[i].amount;
 			quest.currentAmount = questData[i].currentAmount;
 			quest.entityToKill = questData[i].entityToKill;
@@ -116,8 +116,8 @@ public class PlayerJournalUi : MonoBehaviour
 			quest.armorToHandIn = questData[i].armorToHandIn;
 			quest.accessoryToHandIn = questData[i].accessoryToHandIn;
 			quest.consumableToHandIn = questData[i].consumableToHandIn;
-			quest.itemTypeToHandIn = (QuestDataUi.ItemType)questData[i].itemTypeToHandIn;
-			quest.questRewardType = (QuestDataUi.RewardType)questData[i].questRewardType;
+			quest.itemTypeToHandIn = questData[i].itemTypeToHandIn;
+			quest.questRewardType = questData[i].questRewardType;
 			quest.rewardToAdd = questData[i].rewardToAdd;
 
 			quest.InitilizeText();

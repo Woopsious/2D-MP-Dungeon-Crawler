@@ -7,6 +7,7 @@ using UnityEngine;
 public class EntityEquipmentHandler : NetworkBehaviour
 {
 	public GameObject itemPrefab;
+	public List<InventorySlotDataUi> equipmentSlots;
 
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityClassHandler entityClassHandler;
@@ -107,7 +108,7 @@ public class EntityEquipmentHandler : NetworkBehaviour
 		//Accessory functions here if/when i decide to add it
 	}
 
-	//equip items visibly to player sprite (armor currently not supported visualy)
+	//EQUIP ENTITY ITEMS
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
@@ -136,8 +137,22 @@ public class EntityEquipmentHandler : NetworkBehaviour
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
+	private void EquipAccessory(SOAccessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
+	{
+		GameObject go;
+		OnAccessoryUnequip(equippedAccessoryRef);
 
-	//equipment changes events
+		go = SpawnItemPrefab(slotToSpawnIn);
+		equippedAccessoryRef = go.AddComponent<Accessories>();
+
+		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip;
+		equippedAccessoryRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
+
+		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);
+	}
+
+	//equipment change events
 	protected void OnWeaponUnequip(Weapons weapon)
 	{
 		if (weapon == null) return;
@@ -159,7 +174,7 @@ public class EntityEquipmentHandler : NetworkBehaviour
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
 	{
-		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+		if (weapon.isShield)	//shield is a unique, use damage value to store bonus health and resists it adds
 		{
 			equipmentHealth += weapon.damage;
 			equipmentPhysicalResistance += weapon.damage;
@@ -247,7 +262,7 @@ public class EntityEquipmentHandler : NetworkBehaviour
 		OnEquipmentChanges?.Invoke(this);
 	}
 
-	//physically spawned on entites
+	//spawn prefabs for equipped items
 	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
 	{
 		GameObject go = Instantiate(itemPrefab, slotToSpawnIn.transform);
@@ -273,5 +288,77 @@ public class EntityEquipmentHandler : NetworkBehaviour
 			equippedRingTwo = (Accessories)itemToAssign;
 		else
 			Debug.LogError("item doesnt match any equipment slot");
+	}
+
+	//handle player entity equipment being unequipped
+	protected void HandleEmptySlots(InventorySlotDataUi slot)
+	{
+		if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
+			OnWeaponUnequip(equippedWeapon);
+		if (slot.slotType == InventorySlotDataUi.SlotType.weaponOffhand)
+			OnWeaponUnequip(equippedOffhandWeapon);
+		if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
+			OnArmorUnequip(equippedHelmet);
+		if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
+			OnArmorUnequip(equippedChestpiece);
+		if (slot.slotType == InventorySlotDataUi.SlotType.legs)
+			OnArmorUnequip(equippedLegs);
+		if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
+			OnAccessoryUnequip(equippedNecklace);
+		if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
+			OnAccessoryUnequip(equippedRingOne);
+		if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
+			OnAccessoryUnequip(equippedRingTwo);
+	}
+
+	//helpers
+	protected int GetItemIndex(InventoryItemUi item)
+	{
+		if (item.weaponBaseRef != null)
+		{
+			for (int i = 0; i < AssetDatabase.Database.weapons.Count; i++)
+			{
+				if (item.weaponBaseRef == AssetDatabase.Database.weapons[i])
+					return i;
+			}
+		}
+		else if (item.armorBaseRef != null)
+		{
+			for (int i = 0; i < AssetDatabase.Database.armours.Count; i++)
+			{
+				if (item.armorBaseRef == AssetDatabase.Database.armours[i])
+					return i;
+			}
+		}
+		else if (item.accessoryBaseRef != null)
+		{
+			for (int i = 0; i < AssetDatabase.Database.accessories.Count; i++)
+			{
+				if (item.accessoryBaseRef == AssetDatabase.Database.accessories[i])
+					return i;
+			}
+		}
+		else if (item.consumableBaseRef != null)
+		{
+			for (int i = 0; i < AssetDatabase.Database.consumables.Count; i++)
+			{
+				if (item.consumableBaseRef == AssetDatabase.Database.consumables[i])
+					return i;
+			}
+		}
+
+		Debug.LogError("Failed to get item index");
+		return 0;
+	}
+	protected int GetSlotIndex(InventorySlotDataUi slot)
+	{
+		for (int i = 0; i < equipmentSlots.Count; i++)
+		{
+			if (slot == equipmentSlots[i])
+				return i;
+		}
+
+		Debug.LogError("Failed to get slot index");
+		return 0;
 	}
 }

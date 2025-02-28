@@ -46,17 +46,17 @@ public class Accessories : Items
 	}
 
 	//set accessory data
-	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public override void Initilize(SOItems.Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
-		if (rarity == Rarity.isCommon)
+		if (rarity == SOItems.Rarity.isCommon)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[0];
-		else if (rarity == Rarity.isRare)
+		else if (rarity == SOItems.Rarity.isRare)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[1];
-		else if (rarity == Rarity.isEpic)
+		else if (rarity == SOItems.Rarity.isEpic)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[2];
-		else if (rarity == Rarity.isLegendary)
+		else if (rarity == SOItems.Rarity.isLegendary)
 			bonusPercentageValue = accessoryBaseRef.bonusPercentageValue[3];
 
 		bonusHealth = (int)(accessoryBaseRef.baseBonusHealth * levelModifier);
@@ -74,20 +74,20 @@ public class Accessories : Items
 	public override void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
 		string rarity;
-		if (this.rarity == Rarity.isLegendary)
-			rarity = "<color=orange>Legendary</color>";
-		else if (this.rarity == Rarity.isEpic)
-			rarity = "<color=purple>Epic</color>";
-		else if (this.rarity == Rarity.isRare)
-			rarity = "<color=blue>Rare</color>";
-		else
+		if (this.rarity == SOItems.Rarity.isCommon)
 			rarity = "Common";
+		else if (this.rarity == SOItems.Rarity.isRare)
+			rarity = "<color=blue>Rare</color>";
+		else if (this.rarity == SOItems.Rarity.isEpic)
+			rarity = "<color=purple>Epic</color>";
+		else
+			rarity = "<color=orange>Legendary</color>";
 
 		string info;
-		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price";
+		if (enchantmentLevel == 0)
+			info = $"{rarity} Level {level} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price";
 		else
-			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price";
+			info = $"{rarity} Level {level} Enchanted {itemName} +{enchantmentLevel}\n{price} Price";
 
 		string extraInfo;
 
@@ -118,7 +118,7 @@ public class Accessories : Items
 				$"\n{Utilities.ConvertFloatToUiPercentage(bonusPercentageValue)}% Extra Healing";
 
 		string equipInfo;
-		if (playerStats.entityLevel < itemLevel)
+		if (playerStats.entityLevel < level)
 			equipInfo = "<color=red>Cant Equip Accessory \n Level Too High</color>";
 		else
 			equipInfo = "<color=green>Can Equip Accessory</color>";

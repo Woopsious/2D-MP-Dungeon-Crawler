@@ -193,8 +193,8 @@ public class LootSpawnHandler : MonoBehaviour
 		Items item = go.GetComponent<Items>();
 		item.gameObject.name = lootPool.lootPoolList[index].name;
 		item.itemName = lootPool.lootPoolList[index].name;
-		item.itemSprite = lootPool.lootPoolList[index].itemImage;
-		item.itemPrice = lootPool.lootPoolList[index].itemPrice;
+		item.sprite = lootPool.lootPoolList[index].itemImage;
+		item.price = lootPool.lootPoolList[index].itemPrice;
 		ObjectPoolingManager.AddItemsToObjectPooling(item);
 	}
 	private void SetUpWeaponItem(GameObject go, int index)

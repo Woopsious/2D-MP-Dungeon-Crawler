@@ -27,7 +27,7 @@ public class Weapons : Items
 	}
 
 	//set weapon data
-	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public override void Initilize(SOItems.Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
@@ -47,11 +47,11 @@ public class Weapons : Items
 		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
 
 		string rarity;
-		if (this.rarity == Rarity.isLegendary)
+		if (this.rarity == SOItems.Rarity.isLegendary)
 			rarity = "<color=orange>Legendary</color>";
-		else if (this.rarity == Rarity.isEpic)
+		else if (this.rarity == SOItems.Rarity.isEpic)
 			rarity = "<color=purple>Epic</color>";
-		else if (this.rarity == Rarity.isRare)
+		else if (this.rarity == SOItems.Rarity.isRare)
 			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
@@ -65,10 +65,10 @@ public class Weapons : Items
 			weightClass = "Light Weight Restriction";
 
 		string info;
-		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
+		if (enchantmentLevel == 0)
+			info = $"{rarity} Level {level} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
 		else
-			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
+			info = $"{rarity} Level {level} Enchanted {itemName} +{enchantmentLevel}\n{price} Price \n{weightClass}";
 
 		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 			info += "\n Main hand ";
@@ -98,7 +98,7 @@ public class Weapons : Items
 		}
 
 		string equipInfo;
-		if (playerStats.entityLevel < itemLevel)
+		if (playerStats.entityLevel < level)
 			equipInfo = "<color=red>Cant Equip Weapon \n Level Too High</color>";
 		else if (PlayerClassesUi.Instance.currentPlayerClass == null)
 		{

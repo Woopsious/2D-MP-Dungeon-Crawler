@@ -347,8 +347,8 @@ public class SaveManager : MonoBehaviour
 				consumableBaseRef = item.consumableBaseRef,
 				abilityBaseRef = item.abilityBaseRef,
 
-				itemLevel = item.itemLevel,
-				rarity = (InventoryItemData.Rarity)item.rarity,
+				level = item.level,
+				rarity = item.rarity,
 
 				inventorySlotIndex = item.inventorySlotIndex,
 				isStackable = item.isStackable,
@@ -386,9 +386,9 @@ public class SaveManager : MonoBehaviour
 					consumableBaseRef = inventoryItem.consumableBaseRef,
 					abilityBaseRef = inventoryItem.abilityBaseRef,
 
-					itemLevel = inventoryItem.itemLevel,
-					enchantmentLevel = inventoryItem.itemEnchantmentLevel,
-					rarity = (InventoryItemData.Rarity)inventoryItem.rarity,
+					level = inventoryItem.level,
+					enchantmentLevel = inventoryItem.enchantmentLevel,
+					rarity = inventoryItem.rarity,
 
 					inventorySlotIndex = inventoryItem.inventorySlotIndex,
 					isStackable = inventoryItem.isStackable,
@@ -408,7 +408,7 @@ public class SaveManager : MonoBehaviour
 			QuestItemData questData = new()
 			{
 				isCurrentlyActiveQuest = quest.isCurrentlyActiveQuest,
-				questType = (QuestItemData.QuestType)quest.questType,
+				questType = quest.questType,
 				amount = quest.amount,
 				currentAmount = quest.currentAmount,
 				entityToKill = quest.entityToKill,
@@ -416,8 +416,8 @@ public class SaveManager : MonoBehaviour
 				armorToHandIn = quest.armorToHandIn,
 				accessoryToHandIn = quest.accessoryToHandIn,
 				consumableToHandIn = quest.consumableToHandIn,
-				itemTypeToHandIn = (QuestItemData.ItemType)quest.itemTypeToHandIn,
-				questRewardType = (QuestItemData.RewardType)quest.questRewardType,
+				itemTypeToHandIn = quest.itemTypeToHandIn,
+				questRewardType = quest.questRewardType,
 				rewardToAdd = quest.rewardToAdd
 			};
 			questDataList.Add(questData);
@@ -513,13 +513,9 @@ public class InventoryItemData
 	public SOAbilities abilityBaseRef;
 
 	[Header("Item Info")]
-	public int itemLevel;
+	public int level;
 	public int enchantmentLevel;
-	public Rarity rarity;
-	public enum Rarity
-	{
-		isCommon, isRare, isEpic, isLegendary
-	}
+	public SOItems.Rarity rarity;
 
 	[Header("Item Dynamic Info")]
 	public int inventorySlotIndex;
@@ -540,11 +536,7 @@ public class QuestItemData
 	public bool isCurrentlyActiveQuest;
 
 	[Header("Quest Info")]
-	public QuestType questType;
-	public enum QuestType
-	{
-		isBossKillQuest, isKillQuest, isItemHandInQuest
-	}
+	public QuestDataUi.QuestType questType;
 	public int amount;
 	public int currentAmount;
 
@@ -557,18 +549,10 @@ public class QuestItemData
 	public SOAccessories accessoryToHandIn;
 	public SOConsumables consumableToHandIn;
 
-	public ItemType itemTypeToHandIn;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public SOItems.ItemType itemTypeToHandIn;
 
 	[Header("Quest Reward")]
-	public RewardType questRewardType;
-	public enum RewardType
-	{
-		isExpReward, isGoldReward
-	}
+	public QuestDataUi.RewardType questRewardType;
 	public int rewardToAdd;
 }
 [System.Serializable]

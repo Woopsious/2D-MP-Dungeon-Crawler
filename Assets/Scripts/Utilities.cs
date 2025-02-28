@@ -22,7 +22,7 @@ public class Utilities
 	}
 
 	//return random rarity
-	public static Items.Rarity SetRarity(float rarityChanceModifier)
+	public static SOItems.Rarity SetRarity(float rarityChanceModifier)
 	{
 		float percentage = GetRandomNumber(100); //0.5% for legendary | 5% for epic | 10% for rare | 84.5% for common (Normal Difficulty)
 
@@ -43,38 +43,38 @@ public class Utilities
 		}
 	}
 	//modify chances based on dungeon difficulty
-	private static Items.Rarity HellDifficultyRarity(float percentage, float rarityChanceModifier)
+	private static SOItems.Rarity HellDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
 		if (percentage >= 97.5 - rarityChanceModifier) //2.5%
-			return Items.Rarity.isLegendary;
+			return SOItems.Rarity.isLegendary;
 		else if (percentage >= 87.5 - rarityChanceModifier && percentage < 97.5 - rarityChanceModifier) //10%
-			return Items.Rarity.isEpic;
+			return SOItems.Rarity.isEpic;
 		else if (percentage >= 67.5 - rarityChanceModifier && percentage < 87.5 - rarityChanceModifier) //20%
-			return Items.Rarity.isRare;
+			return SOItems.Rarity.isRare;
 		else
-			return Items.Rarity.isCommon;
+			return SOItems.Rarity.isCommon;
 	}
-	private static Items.Rarity HardDifficultyRarity(float percentage, float rarityChanceModifier)
+	private static SOItems.Rarity HardDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
 		if (percentage >= 99 - rarityChanceModifier) //1%
-			return Items.Rarity.isLegendary;
+			return SOItems.Rarity.isLegendary;
 		else if (percentage >= 91.5 - rarityChanceModifier && percentage < 99 - rarityChanceModifier) //7.5%
-			return Items.Rarity.isEpic;
+			return SOItems.Rarity.isEpic;
 		else if (percentage >= 76.5 - rarityChanceModifier && percentage < 91.5 - rarityChanceModifier) //15%
-			return Items.Rarity.isRare;
+			return SOItems.Rarity.isRare;
 		else
-			return Items.Rarity.isCommon;
+			return SOItems.Rarity.isCommon;
 	}
-	private static Items.Rarity NormalDifficultyRarity(float percentage, float rarityChanceModifier)
+	private static SOItems.Rarity NormalDifficultyRarity(float percentage, float rarityChanceModifier)
 	{
 		if (percentage >= 99.5 - rarityChanceModifier) //0.5%
-			return Items.Rarity.isLegendary;
+			return SOItems.Rarity.isLegendary;
 		else if (percentage >= 94.5 - rarityChanceModifier && percentage < 99.5 - rarityChanceModifier) //5%
-			return Items.Rarity.isEpic;
+			return SOItems.Rarity.isEpic;
 		else if (percentage >= 84.5 - rarityChanceModifier && percentage < 94.5 - rarityChanceModifier) //10%
-			return Items.Rarity.isRare;
+			return SOItems.Rarity.isRare;
 		else
-			return Items.Rarity.isCommon;
+			return SOItems.Rarity.isCommon;
 	}
 
 	//return random item lvl in range of player lvl +/- a max of 4

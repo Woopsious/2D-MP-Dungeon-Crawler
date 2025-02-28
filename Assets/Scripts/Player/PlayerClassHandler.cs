@@ -77,6 +77,7 @@ public class PlayerClassHandler : EntityClassHandler
 		UpdateClassTreeUi();
 	}
 
+	//sync unlocks
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	private void SyncUnlockStatBoostRpc(ulong OwnerClientIdToMatch, int newStatBoostIndex)
 	{
@@ -100,6 +101,7 @@ public class PlayerClassHandler : EntityClassHandler
 		UpdateClassTreeUi();
 	}
 
+	//sync refunds
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	private void SyncRefundStatBoostRpc(ulong OwnerClientIdToMatch, int refundStatBoostIndex)
 	{

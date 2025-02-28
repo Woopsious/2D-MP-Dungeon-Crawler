@@ -28,7 +28,7 @@ public class Armors : Items
 	}
 
 	//set armor data
-	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public override void Initilize(SOItems.Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
@@ -46,11 +46,11 @@ public class Armors : Items
 	public override void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
 		string rarity;
-		if (this.rarity == Rarity.isLegendary)
+		if (this.rarity == SOItems.Rarity.isLegendary)
 			rarity = "<color=orange>Legendary</color>";
-		else if (this.rarity == Rarity.isEpic)
+		else if (this.rarity == SOItems.Rarity.isEpic)
 			rarity = "<color=purple>Epic</color>";
-		else if (this.rarity == Rarity.isRare)
+		else if (this.rarity == SOItems.Rarity.isRare)
 			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
@@ -64,10 +64,10 @@ public class Armors : Items
 			weightClass = "Light Weight Restriction";
 
 		string info;
-		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
+		if (enchantmentLevel == 0)
+			info = $"{rarity} Level {level} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
 		else
-			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
+			info = $"{rarity} Level {level} Enchanted {itemName} +{enchantmentLevel}\n{price} Price \n{weightClass}";
 
 		string resInfo = $"{(int)(bonusHealth * playerStats.maxHealth.GetPercentageModifiers())} Extra Health\n" +
 			$"{(int)(bonusMana * playerStats.maxMana.GetPercentageModifiers())} Extra Mana\n" +
@@ -77,7 +77,7 @@ public class Armors : Items
 			$"{(int)(bonusIceResistance * playerStats.iceResistance.GetPercentageModifiers())} Ice Res";
 
 		string equipInfo;
-		if (playerStats.entityLevel < itemLevel)
+		if (playerStats.entityLevel < level)
 			equipInfo = "<color=red>Cant Equip Armor \n Level Too High</color>";
 		else if (PlayerClassesUi.Instance.currentPlayerClass == null)
 		{

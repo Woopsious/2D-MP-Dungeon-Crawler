@@ -36,6 +36,7 @@ public class EntityClassHandler : NetworkBehaviour
 			SetEntityClass(classIndex);
 	}
 
+	//sync entity classes
 	[Rpc(SendTo.Everyone)]
 	private void SyncEntityClassForClientsRPC(int classIndex)
 	{

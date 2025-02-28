@@ -17,25 +17,16 @@ public class Items : MonoBehaviour
 	[Header("Item Info")]
 	protected ToolTipUi toolTip;
 	public string itemName;
-	public Sprite itemSprite;
-	public int itemPrice;
-	public int itemId;
+	public Sprite sprite;
+	public int price;
 
-	public ItemType itemType;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public SOItems.ItemType type;
 
-	public int itemLevel;
-	public int itemEnchantmentLevel;
+	public int level;
+	public int enchantmentLevel;
 	public float levelModifier;
 
-	public Rarity rarity;
-	public enum Rarity
-	{
-		isCommon, isRare, isEpic, isLegendary
-	}
+	public SOItems.Rarity rarity;
 
 	[Header("Inventory Dynamic Info")]
 	public bool isStackable;
@@ -43,22 +34,22 @@ public class Items : MonoBehaviour
 	public int inventroySlot;
 
 	//set item data
-	public virtual void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public virtual void Initilize(SOItems.Rarity rarity, int level, int enchantmentLevel)
 	{
-		rarity = setRarity;
-		itemLevel = setLevel;
-		itemEnchantmentLevel = setEnchantmentLevel;
+		this.rarity = rarity;
+		this.level = level;
+		this.enchantmentLevel = enchantmentLevel;
 		toolTip = GetComponent<ToolTipUi>();
-		GetStatModifier(itemLevel, (IGetStatModifier.Rarity)rarity, setEnchantmentLevel);
+		GetStatModifier(level, (IGetStatModifier.Rarity)rarity, enchantmentLevel);
 
 		itemName = GetItemName();
 		name = itemName;
-		itemSprite = GetItemImage();
-		itemPrice = GetItemPrice();
-		itemType = GetItemType();
+		sprite = GetItemImage();
+		price = GetItemPrice();
+		type = GetItemType();
 
 		if (GetComponent<InventoryItemUi>() != null) return; //is inventoryItem so doesnt need this ref
-		GetComponent<SpriteRenderer>().sprite = itemSprite;
+		GetComponent<SpriteRenderer>().sprite = sprite;
 	}
 	private void GetStatModifier(int level, IGetStatModifier.Rarity rarity, int enchantmentLevel)
 	{
@@ -100,12 +91,12 @@ public class Items : MonoBehaviour
 		else if (accessoryBaseRef != null) return (int)(accessoryBaseRef.itemPrice * levelModifier);
 		else return consumableBaseRef.itemPrice;
 	}
-	private ItemType GetItemType()
+	private SOItems.ItemType GetItemType()
 	{
-		if (weaponBaseRef != null) return (ItemType)weaponBaseRef.itemType;
-		else if (armorBaseRef != null) return (ItemType)armorBaseRef.itemType;
-		else if (accessoryBaseRef != null) return (ItemType)accessoryBaseRef.itemType;
-		else return (ItemType)consumableBaseRef.itemType;
+		if (weaponBaseRef != null) return weaponBaseRef.itemType;
+		else if (armorBaseRef != null) return armorBaseRef.itemType;
+		else if (accessoryBaseRef != null) return accessoryBaseRef.itemType;
+		else return consumableBaseRef.itemType;
 	}
 	public void SetCurrentStackCount(int count)
 	{
@@ -149,15 +140,15 @@ public class Items : MonoBehaviour
 	protected int AdjustItemPriceDisplay(bool itemInShopSlot)
 	{
 		if (itemInShopSlot) //items not sold at full price
-			return itemPrice;
+			return price;
 		else
-			return (int)Math.Round(itemPrice * 0.9f, 0);
+			return (int)Math.Round(price * 0.9f, 0);
 	}
 
 	//Debug functions
 	public void GenerateStatsOnStart()
 	{
-		Initilize(rarity, itemLevel, 0);
+		Initilize(rarity, level, 0);
 		BoxCollider2D collider2D = gameObject.AddComponent<BoxCollider2D>();
 		collider2D.isTrigger = true;
 	}

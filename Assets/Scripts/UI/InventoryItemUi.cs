@@ -30,24 +30,16 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	public SOArmors armorBaseRef;
 	public SOAccessories accessoryBaseRef;
 	public SOConsumables consumableBaseRef;
-	public ItemType itemType;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public SOItems.ItemType type;
 
 	[Header("Item Info")]
 	public string itemName;
 	public Sprite itemSprite;
 	private AudioHandler audioHandler;
-	public int itemPrice;
-	public int itemLevel;
-	public int itemEnchantmentLevel;
-	public Rarity rarity;
-	public enum Rarity
-	{
-		isCommon, isRare, isEpic, isLegendary
-	}
+	public int price;
+	public int level;
+	public int enchantmentLevel;
+	public SOItems.Rarity rarity;
 
 	[Header("Class Restriction")]
 	public ClassRestriction classRestriction;
@@ -91,12 +83,12 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		name = item.itemName;
 		itemName = item.itemName;
-		itemSprite = item.itemSprite;
-		itemPrice = item.itemPrice;
-		itemLevel = item.itemLevel;
-		itemEnchantmentLevel = item.itemEnchantmentLevel;
-		rarity = (Rarity)item.rarity;
-		itemType = (ItemType)item.itemType;
+		itemSprite = item.sprite;
+		price = item.price;
+		level = item.level;
+		enchantmentLevel = item.enchantmentLevel;
+		rarity = item.rarity;
+		type = item.type;
 		classRestriction = GetClassRestriction();
 
 		isStackable = IsStackable();
@@ -117,7 +109,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		name = ability.abilityName;
 		itemName = ability.abilityName;
 		itemSprite = ability.abilitySprite;
-		itemType = ItemType.isAbility;
+		type = SOItems.ItemType.isAbility;
 
 		isStackable = false;
 		maxStackCount = 1;
@@ -158,25 +150,25 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	{
 		gameObject.name = itemName;
 		uiItemName.text = itemName;
-		if (itemEnchantmentLevel == 0 || itemType == ItemType.isConsumable)
+		if (enchantmentLevel == 0 || type == SOItems.ItemType.isConsumable)
 		{
 			uiItemName.text = itemName;
-			uiItemLevel.text = $"LVL: {itemLevel}";
+			uiItemLevel.text = $"LVL: {level}";
 		}
 		else
 		{
 			uiItemName.text = $"Enchanted {itemName}";
-			uiItemLevel.text = $"LVL: {itemLevel} +{itemEnchantmentLevel}";
+			uiItemLevel.text = $"LVL: {level} +{enchantmentLevel}";
 		}
 
 		uiItemImage.sprite = itemSprite;
 		uiItemStackCount.text = currentStackCount.ToString();
 
-		if (rarity == Rarity.isRare)
+		if (rarity == SOItems.Rarity.isRare)
 			SetColour(Color.blue);
-		else if (rarity == Rarity.isEpic)
+		else if (rarity == SOItems.Rarity.isEpic)
 			SetColour(Color.magenta);
-		else if (rarity == Rarity.isLegendary)
+		else if (rarity == SOItems.Rarity.isLegendary)
 			SetColour(new Color(1f, 0.4f, 0f));
 		else
 			SetColour(Color.white);
@@ -221,19 +213,19 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 	//update data + event listners
 	public void CheckIfCanEquipItem()
 	{
-		if (itemType == ItemType.isAbility || itemType == ItemType.isConsumable) return;
+		if (type == SOItems.ItemType.isAbility || type == SOItems.ItemType.isConsumable) return;
 		uiCantUtilizeItemNotif.gameObject.SetActive(true);
 
-		if (GameManager.Localplayer.GetComponent<EntityStats>().entityLevel < itemLevel)
+		if (GameManager.Localplayer.GetComponent<EntityStats>().entityLevel < level)
 			uiCantUtilizeItemNotif.text = "Cant Equip \n low level";
-		else if (itemType == ItemType.isWeapon)
+		else if (type == SOItems.ItemType.isWeapon)
 		{
 			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)weaponBaseRef.classRestriction)
 				uiCantUtilizeItemNotif.text = "Cant Equip \n too heavy";
 			else
 				uiCantUtilizeItemNotif.gameObject.SetActive(false);
 		}
-		else if (itemType == ItemType.isArmor)
+		else if (type == SOItems.ItemType.isArmor)
 		{
 			if ((int)PlayerClassesUi.Instance.currentPlayerClass.classRestriction < (int)armorBaseRef.classRestriction)
 				uiCantUtilizeItemNotif.text = "Cant Equip \n too heavy";
@@ -304,6 +296,23 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
 		if (currentStackCount <= 0)
 			Destroy(gameObject);
+	}
+
+	public SOItems GetBaseItemClass()
+	{
+		if (weaponBaseRef != null)
+			return weaponBaseRef;
+		else if (armorBaseRef != null)
+			return armorBaseRef;
+		else if (accessoryBaseRef != null)
+			return accessoryBaseRef;
+		else if (consumableBaseRef != null)
+			return consumableBaseRef;
+		else
+		{
+			Debug.LogError("no base class found");
+			return null;
+		}
 	}
 
 	//Debug functions

@@ -9,12 +9,15 @@ public class AssetDatabase : MonoBehaviour
 	public List<SOEntityStats> entities = new List<SOEntityStats>();
 	public List<SOEntityStats> bossEntities = new List<SOEntityStats>();
 
-	public List<SOWeapons> weapons = new List<SOWeapons>();
-
 	public List<SOClasses> classes = new List<SOClasses>();
 	public List<SOClassStatBonuses> classStatBoosts = new List<SOClassStatBonuses>();
 	public List<SOAbilities> abilities = new List<SOAbilities>();
 	public List<SOStatusEffects> statusEffects = new List<SOStatusEffects>();
+
+	public List<SOWeapons> weapons = new List<SOWeapons>();
+	public List<SOArmors> armours = new List<SOArmors>();
+	public List<SOAccessories> accessories = new List<SOAccessories>();
+	public List<SOConsumables> consumables = new List<SOConsumables>();
 
 	public List<SOTraps> traps = new List<SOTraps>();
 

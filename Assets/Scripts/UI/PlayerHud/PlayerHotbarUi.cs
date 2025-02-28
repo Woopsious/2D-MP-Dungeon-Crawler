@@ -147,14 +147,14 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 
 	//Equipping/Unequipping Consumables/Abilities to hotbar Ui slots events
-	private void EquipHotbarItem(InventoryItemUi item, InventorySlotDataUi slot)
+	private void EquipHotbarItem(InventorySlotDataUi slot, InventoryItemUi item)
 	{
 		if (item == null) // when player unequips equipment without swapping/replacing it
 			HandleEmptySlots(slot);
 
-		else if (item.itemType == InventoryItemUi.ItemType.isConsumable)
+		else if (item.type == SOItems.ItemType.isConsumable)
 			EquipConsumables(item.GetComponent<Consumables>(), slot);
-		else if (item.itemType == InventoryItemUi.ItemType.isAbility)
+		else if (item.type == SOItems.ItemType.isAbility)
 			EquipAbility(item.abilityBaseRef, slot);
 	}
 	private void EquipConsumables(Consumables consumableToEquip, InventorySlotDataUi slotEquippedTo)
