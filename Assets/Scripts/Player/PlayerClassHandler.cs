@@ -28,12 +28,15 @@ public class PlayerClassHandler : EntityClassHandler
 	[Rpc(SendTo.Server, RequireOwnership = false)]
 	public void SyncInfoToNewlyJoinedClientRpc(ulong clientId)
 	{
-		SyncInfoToNewlyJoinedClientRpc(GetIndexOfClass(currentEntityClass), RpcTarget.Single(clientId, RpcTargetUse.Temp));
+		SyncInfoToNewlyJoinedClientRpc(GetIndexOfClass(currentEntityClass), GetIndexesOfStatBoosts(), RpcTarget.Single(clientId, RpcTargetUse.Temp));
 	}
 	[Rpc(SendTo.SpecifiedInParams)]
-	private void SyncInfoToNewlyJoinedClientRpc(int playerClassIndex, RpcParams rpcParams)
+	private void SyncInfoToNewlyJoinedClientRpc(int playerClassIndex, int[] playerStatBoostIndexs, RpcParams rpcParams)
 	{
 		base.UpdateClass(AssetDatabase.Database.classes[playerClassIndex]);
+
+		foreach (int statBoostIndex in playerStatBoostIndexs)
+			base.UnlockStatBoost(AssetDatabase.Database.classStatBoosts[statBoostIndex]);
 	}
 
 	//player class events
@@ -49,6 +52,7 @@ public class PlayerClassHandler : EntityClassHandler
 			GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
 		}
 	}
+
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	private void SyncPlayerClassRpc(ulong OwnerClientIdToMatch, int newPlayerClassIndex)
 	{

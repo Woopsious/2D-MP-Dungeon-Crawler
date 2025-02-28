@@ -23,9 +23,7 @@ public class EntityClassHandler : NetworkBehaviour
 		entityStats = GetComponent<EntityStats>();
 	}
 
-	//set classes + abilities of non players
-
-	//set class
+	//set entity classes (non players)
 	public void AssignEntityRandomClass()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
@@ -83,21 +81,23 @@ public class EntityClassHandler : NetworkBehaviour
 		currentEntityClass = newClass;
 	}
 
-	//entity stat bonuses + ability event updates
+	//entity stat unlock/refund events
 	protected virtual void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
 		unlockedStatBoostList.Add(statBoost);
 		OnStatUnlock?.Invoke(statBoost);
 	}
-	protected virtual void UnlockAbility(SOAbilities ability)
-	{
-		unlockedAbilitiesList.Add(ability);
-		OnAbilityUnlock?.Invoke(ability);
-	}
 	protected virtual void RefundStatBoost(SOClassStatBonuses statBoost)
 	{
 		unlockedStatBoostList.Remove(statBoost);
 		OnStatRefund?.Invoke(statBoost);
+	}
+
+	//entity ability unlock/refund events
+	protected virtual void UnlockAbility(SOAbilities ability)
+	{
+		unlockedAbilitiesList.Add(ability);
+		OnAbilityUnlock?.Invoke(ability);
 	}
 	protected virtual void RefundAbility(SOAbilities ability)
 	{
@@ -117,9 +117,18 @@ public class EntityClassHandler : NetworkBehaviour
 		Debug.LogError("failed to get class index");
 		return 0;
 	}
+	protected int[] GetIndexesOfStatBoosts()
+	{
+		int[] playerStatBoostIndexs = new int[unlockedStatBoostList.Count];
+
+		for (int i = 0; i < unlockedStatBoostList.Count; i++)
+			playerStatBoostIndexs[i] = GetIndexOfStatBoost(unlockedStatBoostList[i]);
+
+		return playerStatBoostIndexs;
+	}
 	protected int GetIndexOfStatBoost(SOClassStatBonuses statBoost)
 	{
-		for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
+		for (int i = 0; i < AssetDatabase.Database.classStatBoosts.Count; i++)
 		{
 			if (statBoost == AssetDatabase.Database.classStatBoosts[i])
 				return i;
