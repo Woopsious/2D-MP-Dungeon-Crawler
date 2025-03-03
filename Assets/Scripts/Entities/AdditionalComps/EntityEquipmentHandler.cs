@@ -7,7 +7,7 @@ using UnityEngine;
 public class EntityEquipmentHandler : NetworkBehaviour
 {
 	public GameObject itemPrefab;
-	public List<InventorySlotDataUi> equipmentSlots;
+	public List<GameObject> equipmentSlots;
 
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityClassHandler entityClassHandler;
@@ -288,77 +288,5 @@ public class EntityEquipmentHandler : NetworkBehaviour
 			equippedRingTwo = (Accessories)itemToAssign;
 		else
 			Debug.LogError("item doesnt match any equipment slot");
-	}
-
-	//handle player entity equipment being unequipped
-	protected void HandleEmptySlots(InventorySlotDataUi slot)
-	{
-		if (slot.slotType == InventorySlotDataUi.SlotType.weaponMain)
-			OnWeaponUnequip(equippedWeapon);
-		if (slot.slotType == InventorySlotDataUi.SlotType.weaponOffhand)
-			OnWeaponUnequip(equippedOffhandWeapon);
-		if (slot.slotType == InventorySlotDataUi.SlotType.helmet)
-			OnArmorUnequip(equippedHelmet);
-		if (slot.slotType == InventorySlotDataUi.SlotType.chestpiece)
-			OnArmorUnequip(equippedChestpiece);
-		if (slot.slotType == InventorySlotDataUi.SlotType.legs)
-			OnArmorUnequip(equippedLegs);
-		if (slot.slotType == InventorySlotDataUi.SlotType.necklace)
-			OnAccessoryUnequip(equippedNecklace);
-		if (slot.slotType == InventorySlotDataUi.SlotType.ringOne)
-			OnAccessoryUnequip(equippedRingOne);
-		if (slot.slotType == InventorySlotDataUi.SlotType.ringTwo)
-			OnAccessoryUnequip(equippedRingTwo);
-	}
-
-	//helpers
-	protected int GetItemIndex(InventoryItemUi item)
-	{
-		if (item.weaponBaseRef != null)
-		{
-			for (int i = 0; i < AssetDatabase.Database.weapons.Count; i++)
-			{
-				if (item.weaponBaseRef == AssetDatabase.Database.weapons[i])
-					return i;
-			}
-		}
-		else if (item.armorBaseRef != null)
-		{
-			for (int i = 0; i < AssetDatabase.Database.armours.Count; i++)
-			{
-				if (item.armorBaseRef == AssetDatabase.Database.armours[i])
-					return i;
-			}
-		}
-		else if (item.accessoryBaseRef != null)
-		{
-			for (int i = 0; i < AssetDatabase.Database.accessories.Count; i++)
-			{
-				if (item.accessoryBaseRef == AssetDatabase.Database.accessories[i])
-					return i;
-			}
-		}
-		else if (item.consumableBaseRef != null)
-		{
-			for (int i = 0; i < AssetDatabase.Database.consumables.Count; i++)
-			{
-				if (item.consumableBaseRef == AssetDatabase.Database.consumables[i])
-					return i;
-			}
-		}
-
-		Debug.LogError("Failed to get item index");
-		return 0;
-	}
-	protected int GetSlotIndex(InventorySlotDataUi slot)
-	{
-		for (int i = 0; i < equipmentSlots.Count; i++)
-		{
-			if (slot == equipmentSlots[i])
-				return i;
-		}
-
-		Debug.LogError("Failed to get slot index");
-		return 0;
 	}
 }

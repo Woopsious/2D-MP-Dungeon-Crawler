@@ -24,7 +24,7 @@ public class PlayerClassHandler : EntityClassHandler
 		PlayerClassesUi.OnRefundAbilityUnlock -= RefundAbility;
 	}
 
-	//sync player obj info to newly joined clients
+	//sync pre-existing player obj info to newly joined clients
 	[Rpc(SendTo.Server, RequireOwnership = false)]
 	public void SyncInfoToNewlyJoinedClientRpc(ulong clientId)
 	{
@@ -130,5 +130,38 @@ public class PlayerClassHandler : EntityClassHandler
 		if (MultiplayerManager.IsMultiplayer() && OwnerClientId != ClientManager.Instance.clientNetworkedId) return;
 
 		PlayerClassesUi.Instance.UpdateNodesInClassTree(entityStats);
+	}
+
+	//helpers
+	protected int GetIndexOfClass(SOClasses entityClass)
+	{
+		for (int i = 0; i < AssetDatabase.Database.classes.Count; i++)
+		{
+			if (entityClass == AssetDatabase.Database.classes[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get class index");
+		return 0;
+	}
+	protected int[] GetIndexesOfStatBoosts()
+	{
+		int[] playerStatBoostIndexs = new int[unlockedStatBoostList.Count];
+
+		for (int i = 0; i < unlockedStatBoostList.Count; i++)
+			playerStatBoostIndexs[i] = GetIndexOfStatBoost(unlockedStatBoostList[i]);
+
+		return playerStatBoostIndexs;
+	}
+	protected int GetIndexOfStatBoost(SOClassStatBonuses statBoost)
+	{
+		for (int i = 0; i < AssetDatabase.Database.classStatBoosts.Count; i++)
+		{
+			if (statBoost == AssetDatabase.Database.classStatBoosts[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get stat boost index");
+		return 0;
 	}
 }

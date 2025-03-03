@@ -340,8 +340,8 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public bool IsPlayerEquipmentSlot()
 	{
 		if (slotType == SlotType.weaponMain || slotType == SlotType.weaponOffhand || 
-			slotType == SlotType.helmet || slotType == SlotType.chestpiece || slotType == SlotType.legs || 
-			slotType == SlotType.ringOne || slotType == SlotType.ringTwo || slotType == SlotType.necklace ||
+			slotType == SlotType.helmet || slotType == SlotType.chestpiece || slotType == SlotType.legs ||
+			slotType == SlotType.necklace || slotType == SlotType.ringOne || slotType == SlotType.ringTwo ||
 			slotType == SlotType.consumables || slotType == SlotType.equippedAbilities)
 			return true;
 		else return false;
@@ -351,6 +351,31 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 		if (slotType == SlotType.shopSlot)
 			return true;
 		else return false;
+	}
+
+	public int GetEquipmentSlotIndex()
+	{
+		if (slotType == SlotType.weaponMain)
+			return 0;
+		if (slotType == SlotType.weaponOffhand)
+			return 1;
+		if (slotType == SlotType.helmet)
+			return 2;
+		if (slotType == SlotType.chestpiece)
+			return 3;
+		if (slotType == SlotType.legs)
+			return 4;
+		if (slotType == SlotType.necklace)
+			return 5;
+		if (slotType == SlotType.ringOne)
+			return 6;
+		if (slotType == SlotType.ringTwo)
+			return 7;
+		if (slotType == SlotType.consumables)
+			return 8;
+
+		Debug.LogError("failed to find correct equipment slot type to match with index");
+		return -1;
 	}
 }
 

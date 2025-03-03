@@ -298,7 +298,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			Destroy(gameObject);
 	}
 
-	public SOItems GetBaseItemClass()
+	public SOItems GetClassType()
 	{
 		if (weaponBaseRef != null)
 			return weaponBaseRef;
@@ -310,7 +310,7 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 			return consumableBaseRef;
 		else
 		{
-			Debug.LogError("no base class found");
+			Debug.LogError("no base class type found");
 			return null;
 		}
 	}

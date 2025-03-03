@@ -185,15 +185,6 @@ public class GameManager : MonoBehaviour
 	}
 	private void ReloadAllScenes() //when loading a save file whilst already in a game scene
 	{
-		/*
-		for (int i = SceneManager.sceneCount - 1; i >= 0; i--)
-		{
-			string sceneName = SceneManager.GetSceneAt(i).name;
-			if (sceneName == mainScene) continue;
-			StartCoroutine(TryUnLoadSceneAsync(SceneManager.GetSceneAt(i).name));
-		}
-		*/
-
 		StartCoroutine(TryUnLoadSceneAsync(uiScene));
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 

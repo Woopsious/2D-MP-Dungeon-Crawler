@@ -153,7 +153,10 @@ public class PlayerController : NetworkBehaviour
 		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
 		{
 			if (player != this)
+			{
 				player.playerClassHandler.SyncInfoToNewlyJoinedClientRpc(ClientManager.Instance.clientNetworkedId);
+				player.playerEquipmentHandler.SyncInfoToNewlyJoinedClientRpc(ClientManager.Instance.clientNetworkedId);
+			}
 		}
 	}
 
