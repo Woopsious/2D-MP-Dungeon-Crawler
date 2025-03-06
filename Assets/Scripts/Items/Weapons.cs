@@ -210,22 +210,23 @@ public class Weapons : Items
 		damageSourceInfo.SetDeathMessage(weaponBaseRef);
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 	}
-	public void MeleeAttack(Vector3 positionOfThingToAttack)
+	public void Attack(Vector3 positionOfThingToAttack)
 	{
 		if (!canAttackAgain) return;
+
+        if (weaponBaseRef.isRangedWeapon && MultiplayerManager.IsClientHost()) //only sp or hosts can set up projectile
+			SetUpProjectile(positionOfThingToAttack);
 
 		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
-	public void RangedAttack(Vector3 positionOfThingToAttack, GameObject projectilePrefab)
+	private void SetUpProjectile(Vector3 positionOfThingToAttack)
 	{
-		if (!canAttackAgain) return;
-
 		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
-			GameObject go = Instantiate(projectilePrefab, transform, true);
+			GameObject go = Instantiate(ObjectPoolingManager.Instance.projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
 			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
 
@@ -236,10 +237,6 @@ public class Weapons : Items
 		projectile.transform.SetParent(null);
 		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
 		projectile.Initilize(weaponOwner, weaponBaseRef, damage);
-
-		AttackInDirection(positionOfThingToAttack);
-		OnWeaponAttack();
-		StartCoroutine(WeaponCooldown());
 	}
 	private IEnumerator WeaponCooldown()
 	{

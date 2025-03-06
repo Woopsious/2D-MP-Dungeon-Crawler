@@ -215,7 +215,7 @@ public class EntityBehaviour : Tree
 			navMeshAgent.speed *= speedModifier;
 	}
 
-	//player visible Checks + timer
+	//PLAYER VISIBLE CHECKS + TIMER
 	private void IsPlayerTargetVisibleTimer() //0.1s timer
 	{
 		playerDetectionTimer -= Time.deltaTime;
@@ -268,20 +268,8 @@ public class EntityBehaviour : Tree
 		else return false;
 	}
 
-	//set destination
-	public void SetNewDestination(Vector2 destination)
-	{
-		navMeshAgent.SetDestination(destination);
-	}
-
-	//global attack timer
-	private void GlobalAttackTimer()
-	{
-		if (globalAttackTimer >= 0)
-			globalAttackTimer -= Time.deltaTime;
-	}
-
-	//AGGRO LIST
+	//ENTITY AGGRO LIST
+	//update list
 	private void UpdateAggroRatingTimer()
 	{
 		if (playerAggroList.Count <= 0)
@@ -309,6 +297,8 @@ public class EntityBehaviour : Tree
 		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
 		SetCurrentPlayerTarget();
 	}
+
+	//update target based on aggro list rating
 	private void SetCurrentPlayerTarget()
 	{
 		for (int i = 0; i < playerAggroList.Count; i++)
@@ -322,7 +312,7 @@ public class EntityBehaviour : Tree
 		playerTarget = null;
 	}
 
-	//update values
+	//update specific aggro values
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
 	{
 		bool playerAlreadyInAggroList = false;
@@ -384,6 +374,21 @@ public class EntityBehaviour : Tree
 				playerAggroList.RemoveAt(i);
 		}
 	}
+
+	//set destination
+	public void SetNewDestination(Vector2 destination)
+	{
+		navMeshAgent.SetDestination(destination);
+	}
+
+	//global attack timer
+	private void GlobalAttackTimer()
+	{
+		if (globalAttackTimer >= 0)
+			globalAttackTimer -= Time.deltaTime;
+	}
+
+	//ENTITY MAIN WEAPON ATTACKS
 
 	//utility
 	public void OnDrawGizmos()

@@ -7,11 +7,8 @@ using UnityEngine;
 
 public class PlayerEquipmentHandler : EntityEquipmentHandler
 {
-	private PlayerController player;
-
 	private void Awake()
 	{
-		player = GetComponent<PlayerController>();
 		entityStats = GetComponent<EntityStats>();
 		isPlayerEquipment = true;
 	}

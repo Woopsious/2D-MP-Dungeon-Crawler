@@ -20,7 +20,6 @@ public class PlayerController : NetworkBehaviour
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
-	private NetworkObject networkObject;
 	private PlayerInput playerInput;
 	private Rigidbody2D rb;
 	private Animator animator;
@@ -72,7 +71,6 @@ public class PlayerController : NetworkBehaviour
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
 		enemyDetection = GetComponentInChildren<EntityDetection>();
-		networkObject = GetComponent<NetworkObject>();
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 	}
@@ -232,61 +230,6 @@ public class PlayerController : NetworkBehaviour
 			playerStats.RecieveHealing(1f, true, playerStats.healingPercentageModifier.finalPercentageValue);
 	}
 
-	//player auto attack
-	private void AutoAttackTimer()
-	{
-		if (!PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
-		if (EnemyTargetList.Count == 0) return;
-		if (playerEquipmentHandler.equippedWeapon == null) return;
-
-		mainAttackAutoAttackTimer -= Time.deltaTime;
-		if (mainAttackAutoAttackTimer < 0)
-		{
-			//reset cooldown timer + extra 0.25s delay, making manual attack better
-			AutoAttackWithMainWeapon();
-		}
-	}
-	private void AutoAttackWithMainWeapon()
-	{
-		//auto attack with main weapon, aiming for players selected target, if too close or out of range, attack closest target instead
-		//if no selected target aim for closest enemy (ranged weapon aim for closest enemy outside of min attack range if possible)
-
-		Weapons weapon = playerEquipmentHandler.equippedWeapon;
-		EntityStats entityToAttack = EnemyTargetList[0].entity; //grab closest enemy as default
-		mainAttackAutoAttackTimer = weapon.weaponBaseRef.baseAttackSpeed + mainAttackAutoAttackCooldown;
-
-		if (weapon.weaponBaseRef.isRangedWeapon)	//ranged weapon logic
-		{
-			if (selectedEnemyTarget != null)
-			{
-				weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
-			}
-			else	//if player selected target null, try find one within min and max attack range
-			{
-				foreach (EnemyDistance enemy in EnemyTargetList)
-				{
-					if (enemy.distance > weapon.weaponBaseRef.minAttackRange && enemy.distance < weapon.weaponBaseRef.maxAttackRange)
-						entityToAttack = enemy.entity;
-				}
-
-				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
-					weapon.RangedAttack(entityToAttack.transform.position, projectilePrefab);
-			}
-		}
-		else	//melee weapon logic
-		{
-			if (selectedEnemyTarget != null && GrabDistanceToEntity(selectedEnemyTarget) < weapon.weaponBaseRef.maxAttackRange)
-			{
-				weapon.MeleeAttack(selectedEnemyTarget.transform.position);
-			}
-			else    //if player selected target null && out of range, attack closest enemy set at start of func
-			{
-				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
-					weapon.MeleeAttack(entityToAttack.transform.position);
-			}
-		}
-	}
-
 	//PLAYER TARGETING OPTIONS
 	//mouse select targeting
 	private void CheckForSelectableTarget()
@@ -424,6 +367,90 @@ public class PlayerController : NetworkBehaviour
 				return true;
 		}
 		return false;
+	}
+
+	//PLAYER MAIN WEAPON ATTACKS
+	//player auto attack
+	private void AutoAttackTimer()
+	{
+		if (!PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
+		if (EnemyTargetList.Count == 0) return;
+		if (playerEquipmentHandler.equippedWeapon == null) return;
+
+		mainAttackAutoAttackTimer -= Time.deltaTime;
+		if (mainAttackAutoAttackTimer < 0)
+		{
+			//reset cooldown timer + extra 0.25s delay, making manual attack better
+			AutoAttackWithMainWeapon();
+		}
+	}
+	private void AutoAttackWithMainWeapon()
+	{
+		//auto attack with main weapon, aiming for players selected target, if too close or out of range, attack closest target instead
+		//if no selected target aim for closest enemy (ranged weapon aim for closest enemy outside of min attack range if possible)
+
+		Weapons weapon = playerEquipmentHandler.equippedWeapon;
+		EntityStats entityToAttack = EnemyTargetList[0].entity; //grab closest enemy as default
+		mainAttackAutoAttackTimer = weapon.weaponBaseRef.baseAttackSpeed + mainAttackAutoAttackCooldown;
+
+		if (selectedEnemyTarget != null)
+
+			if (weapon.weaponBaseRef.isRangedWeapon)    //ranged weapon logic
+			{
+				if (selectedEnemyTarget != null)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+				else    //if player selected target null, try find one within min and max attack range
+				{
+					foreach (EnemyDistance enemy in EnemyTargetList)
+					{
+						if (enemy.distance > weapon.weaponBaseRef.minAttackRange && enemy.distance < weapon.weaponBaseRef.maxAttackRange)
+							entityToAttack = enemy.entity;
+					}
+
+					if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+					{
+						if (MultiplayerManager.IsMultiplayer())
+							SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+						else
+							MainWeaponAttack(selectedEnemyTarget.transform.position);
+					}
+				}
+			}
+			else    //melee weapon logic
+			{
+				if (selectedEnemyTarget != null && GrabDistanceToEntity(selectedEnemyTarget) < weapon.weaponBaseRef.maxAttackRange)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+				//if player selected target null && out of range, attack closest enemy set at start of func
+				else if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+			}
+	}
+
+	//initiate player attacks
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncMainWeaponAttackRpc(Vector2 attackPos)
+	{
+		MainWeaponAttack(attackPos);
+	}
+	private void MainWeaponAttack(Vector2 attackPos)
+	{
+		Weapons weapon = playerEquipmentHandler.equippedWeapon;
+		weapon.Attack(attackPos);
 	}
 
 	//PLAYER ABILITY CASTING
@@ -699,30 +726,28 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
-		if (queuedAbility == null)
+		if (queuedAbility != null)
+			CastAbility();
+		else
 		{
-			if (PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
-			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
-				return;
-			Weapons weapon = playerEquipmentHandler.equippedWeapon;
+			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf 
+				|| PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
 
-			if (weapon.weaponBaseRef.isRangedWeapon)
+			if (MultiplayerManager.IsMultiplayer())
 			{
 				if (!debugUseSelectedTargetForAttackDirection)
-					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
+					SyncMainWeaponAttackRpc(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 				else
-					weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
+					SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
 			}
 			else
 			{
 				if (!debugUseSelectedTargetForAttackDirection)
-					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+					MainWeaponAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 				else
-					weapon.MeleeAttack(selectedEnemyTarget.transform.position);
+					MainWeaponAttack(selectedEnemyTarget.transform.position);
 			}
 		}
-		else
-			CastAbility();
 	}
 	private void OnRightClick()
 	{

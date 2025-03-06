@@ -8,6 +8,8 @@ using UnityEngine.SceneManagement;
 
 public class ObjectPoolingManager : MonoBehaviour
 {
+	public GameObject projectilePrefab;
+
 	public static ObjectPoolingManager Instance;
 
 	public List<PlayerController> playersPool = new List<PlayerController>();
