@@ -257,7 +257,7 @@ public class EntityBehaviour : Tree
 		if (!CurrentPlayerTargetVisible()) return;
 
 		playersLastKnownPosition = playerTarget.transform.position;
-		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
+		distanceToPlayerTarget = Vector2.Distance(transform.position, playerTarget.transform.position);
 	}
 	private bool CurrentPlayerTargetVisible()
 	{
