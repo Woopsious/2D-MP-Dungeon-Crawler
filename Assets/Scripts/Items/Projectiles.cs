@@ -29,36 +29,31 @@ public class Projectiles : NetworkBehaviour
 	float distanceTraveled;
 
 	//set trap projectile data
-	public void Initilize(SOTraps trap, int trapDamage)
+	public void Initilize(SOTraps trap, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
 	{
-		int trapIndex = 0;
-
-		foreach (SOTraps trapX in AssetDatabase.Database.traps)
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			if (trap != trapX)
+			for (int i = 0; i < AssetDatabase.Database.traps.Count; i++)
 			{
-				trapIndex++;
-				continue;
+				if (trapRef == AssetDatabase.Database.traps[i])
+					SetUpTrapProjectileRpc(i, trapDamage, trapPosition, attackPos);
 			}
-
-			if (MultiplayerManager.IsMultiplayer())
-				SyncTrapRpc(trapIndex, trapDamage);
-			else
-				SyncTrapRpc(trapIndex, trapDamage);
-
-			break;
 		}
+		else
+			SetUpTrapProjectile(trap, trapDamage, trapPosition, attackPos);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncTrapRpc(int trapIndex, int trapDamage)
+	private void SetUpTrapProjectileRpc(int trapIndex, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
 	{
-		SyncTrap(trapIndex, trapDamage);
+		SOTraps trapRef = AssetDatabase.Database.traps[trapIndex];
+		SetUpTrapProjectile(trapRef, trapDamage, trapPosition, attackPos);
 	}
-	private void SyncTrap(int trapIndex, int trapDamage)
+	private void SetUpTrapProjectile(SOTraps trapRef, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
 	{
 		transform.SetParent(null);
-		trapRef = AssetDatabase.Database.traps[trapIndex];
+		SetPositionAndAttackDirection(trapPosition, attackPos);
+		this.trapRef = trapRef;
 		weaponRef = null;
 		abilityRef = null;
 		gameObject.name = trapRef.name + "Projectile";
@@ -83,81 +78,37 @@ public class Projectiles : NetworkBehaviour
 	}
 
 	//set ability projectile data
-	public void Initilize(EntityStats projectileOwner, SOAbilities abilityRef)
+	public void Initilize(EntityStats ownerStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ref as Network spawn manager wont exist in sp
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			InitilizeSinglePlayer(projectileOwner, abilityRef);
-			return;
-		}
+			ulong ownerId = ownerStats.GetComponent<NetworkObject>().NetworkObjectId;
 
-		ulong ownerId = projectileOwner.GetComponent<NetworkObject>().NetworkObjectId;
-		int abilityIndex = 0;
-
-		foreach (SOAbilities ability in AssetDatabase.Database.abilities)
-		{
-			if (abilityRef != ability)
+			for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
 			{
-				abilityIndex++;
-				continue;
+				if (abilityRef == AssetDatabase.Database.abilities[i])
+					SetUpAbilityProjectileRpc(ownerId, i, attackPos);
 			}
-
-			SyncProjectileRpc(ownerId, abilityIndex);
-			break;
 		}
+		else
+			SetUpAbilityProjectile(ownerStats, abilityRef, attackPos);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncProjectileRpc(ulong ownerId, int abilityIndex)
+	private void SetUpAbilityProjectileRpc(ulong ownerId, int abilityIndex, Vector2 attackPos)
 	{
-		SyncProjectile(ownerId, abilityIndex);
+		EntityStats ownerStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOAbilities abilityRef = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAbilityProjectile(ownerStats, abilityRef, attackPos);
 	}
-	private void SyncProjectile(ulong ownerId, int abilityIndex)
+	private void SetUpAbilityProjectile(EntityStats ownerStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
 		transform.SetParent(null);
-		trapRef = null;
-		weaponRef = null;
-		abilityRef = AssetDatabase.Database.abilities[abilityIndex];
-		//grab owner of ability via list of spawned objs using its unique id
-		projectileOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].gameObject.GetComponent<EntityStats>();
-
-		gameObject.name = abilityRef.Name + "Projectile";
-		boxCollider = GetComponent<BoxCollider2D>();
-		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = abilityRef.projectileSprite;
-		boxCollider.size = projectileSprite.size;
-		boxCollider.offset = new Vector2(0, 0);
-
-		projectileSpeed = abilityRef.projectileSpeed;
-		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(projectileOwner.entityLevel));
-
-		if (damageType == DamageType.isPhysicalDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.iceDamagePercentageModifier.finalPercentageValue);
-
-		projectileDamage *= (int)projectileOwner.damageDealtModifier.finalPercentageValue;
-		damageType = (DamageType)abilityRef.damageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
-		isPercentageDamage = abilityRef.isDamagePercentageBased;
-
-		if (MultiplayerManager.IsMultiplayer())
-			EnableObjectRpc();
-		else
-			EnableObject();
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
-	}
-	private void InitilizeSinglePlayer(EntityStats projectileOwner, SOAbilities abilityRef)
-	{
-		transform.SetParent(null);
+		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
 		trapRef = null;
 		weaponRef = null;
 		this.abilityRef = abilityRef;
-		this.projectileOwner = projectileOwner;
+		projectileOwner = ownerStats;
 
 		gameObject.name = abilityRef.Name + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -191,43 +142,38 @@ public class Projectiles : NetworkBehaviour
 	}
 
 	//set weapon projectile data
-	public void Initilize(EntityStats projectileOwner, SOWeapons weaponRef, int projectileDamage)
+	public void Initilize(EntityStats ownerStats, SOWeapons weaponRef, int projectileDamage, Vector2 attackPos)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ref as Network spawn manager wont exist in sp
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			InitilizeSinglePlayer(projectileOwner, weaponRef, projectileDamage);
-			return;
-		}
+			ulong ownerId = ownerStats.GetComponent<NetworkObject>().NetworkObjectId;
 
-		ulong ownerId = projectileOwner.GetComponent<NetworkObject>().NetworkObjectId;
-		int weaponIndex = 0;
-
-		foreach (SOWeapons weapon in AssetDatabase.Database.weapons)
-		{
-			if (weaponRef != weapon)
+			for (int i = 0; i < AssetDatabase.Database.weapons.Count; i++)
 			{
-				weaponIndex++;
-				continue;
+				if (weaponRef == AssetDatabase.Database.weapons[i])
+					SetUpWeaponProjectileRpc(ownerId, i, projectileDamage, attackPos);
 			}
-
-			SyncProjectileRpc(ownerId, weaponIndex, projectileDamage);
-			break;
 		}
+		else
+			SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncProjectileRpc(ulong ownerId, int weaponIndex, int projectileDamahe)
+	private void SetUpWeaponProjectileRpc(ulong ownerId, int weaponIndex, int projectileDamage, Vector2 attackPos)
 	{
-		SyncProjectile(ownerId, weaponIndex, projectileDamahe);
+		EntityStats ownerStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOWeapons weaponRef = AssetDatabase.Database.weapons[weaponIndex];
+		SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);
 	}
-	private void SyncProjectile(ulong ownerId, int weaponIndex, int projectileDamage)
+	private void SetUpWeaponProjectile(EntityStats ownerStats, SOWeapons weaponRef, int projectileDamage, Vector2 attackPos)
 	{
 		transform.SetParent(null);
+		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
 		trapRef = null;
-		weaponRef = AssetDatabase.Database.weapons[weaponIndex];
+		this.weaponRef = weaponRef;
 		abilityRef = null;
 		//grab owner of ability via list of spawned objs using its unique id
-		projectileOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].gameObject.GetComponent<EntityStats>();
+		projectileOwner = ownerStats;
 
 		gameObject.name = weaponRef.itemName + "Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
@@ -248,31 +194,15 @@ public class Projectiles : NetworkBehaviour
 			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	private void InitilizeSinglePlayer(EntityStats projectileOwner, SOWeapons weaponRef, int projectileDamage)
+
+	//set projectile position, rotation and target position
+	private void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
 	{
-		transform.SetParent(null);
-		trapRef = null;
-		this.weaponRef = weaponRef;
-		abilityRef = null;
-		this.projectileOwner = projectileOwner;
-
-		gameObject.name = weaponRef.itemName + "Projectile";
-		boxCollider = GetComponent<BoxCollider2D>();
-		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = weaponRef.projectileSprite;
-		boxCollider.size = projectileSprite.size;
-		boxCollider.offset = new Vector2(0, 0);
-
-		projectileSpeed = weaponRef.projectileSpeed;
-		this.projectileDamage = projectileDamage;
-		damageType = (DamageType)weaponRef.baseDamageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
-		isPercentageDamage = false;
-
-		if (MultiplayerManager.IsMultiplayer())
-			EnableObjectRpc();
-		else
-			EnableObject();
+		transform.position = OriginPosition;
+		projectileOrigin = OriginPosition;
+		Vector3 rotation = positionOfThingToAttack - OriginPosition;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		transform.SetPositionAndRotation(OriginPosition, Quaternion.Euler(0, 0, rotz - 90));
 	}
 
 	//helps with applying damage only to enemies
@@ -285,15 +215,6 @@ public class Projectiles : NetworkBehaviour
 
 		if (trapRef != null) //if ref not null overwrite hitbye
 			hitBye = IDamagable.HitBye.enviroment;
-	}
-
-	//set projectile position, rotation and target position
-	public void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
-	{
-		projectileOrigin = OriginPosition;
-		Vector3 rotation = positionOfThingToAttack - OriginPosition;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		transform.SetPositionAndRotation(OriginPosition, Quaternion.Euler(0, 0, rotz - 90));
 	}
 
 	private void OnTriggerEnter2D(Collider2D other)

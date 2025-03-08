@@ -234,9 +234,8 @@ public class Weapons : Items
 				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		projectile.transform.SetParent(null);
-		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
-		projectile.Initilize(weaponOwner, weaponBaseRef, damage);
+		//projectile.transform.SetParent(null);
+		projectile.Initilize(weaponOwner, weaponBaseRef, damage, positionOfThingToAttack);
 	}
 	private IEnumerator WeaponCooldown()
 	{

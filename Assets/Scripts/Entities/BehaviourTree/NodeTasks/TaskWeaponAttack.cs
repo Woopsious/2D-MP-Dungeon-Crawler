@@ -33,21 +33,12 @@ public class TaskWeaponAttack : BTNode
 		if (equipmentHandler.equippedWeapon == null || behaviour.playerTarget == null) return;
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncMainWeaponAttackRpc(behaviour.playerTarget.transform.position);
+			behaviour.SyncMainWeaponAttackRpc(behaviour.playerTarget.transform.position);
 		else
-			MainWeaponAttack(behaviour.playerTarget.transform.position);
-	}
-	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	private void SyncMainWeaponAttackRpc(Vector3 attackPos)
-	{
-		MainWeaponAttack(attackPos);
-	}
-	private void MainWeaponAttack(Vector3 attackPos)
-	{
-		equipmentHandler.equippedWeapon.Attack(attackPos);
+			behaviour.MainWeaponAttack(behaviour.playerTarget.transform.position);
 	}
 
-	public bool WeaponAttackOnCooldown(Weapons weapon)
+	private bool WeaponAttackOnCooldown(Weapons weapon)
 	{
 		if (behaviour.globalAttackTimer > 0 || !weapon.canAttackAgain)
 			return true;

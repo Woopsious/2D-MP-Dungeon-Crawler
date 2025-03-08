@@ -73,7 +73,7 @@ public class AbilityAOE : NetworkBehaviour
 			this.abilityBossRef = abilityBossRef;
 
 		//grab owner of ability via list of spawned objs using its unique id
-		abilityOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].gameObject.GetComponent<EntityStats>();
+		abilityOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
 		casterPosition = abilityOwner.transform.position;
 		gameObject.name = abilityRef.Name + " Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;

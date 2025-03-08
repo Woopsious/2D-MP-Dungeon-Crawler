@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -389,6 +390,15 @@ public class EntityBehaviour : Tree
 	}
 
 	//ENTITY MAIN WEAPON ATTACKS
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	public void SyncMainWeaponAttackRpc(Vector3 attackPos)
+	{
+		MainWeaponAttack(attackPos);
+	}
+	public void MainWeaponAttack(Vector3 attackPos)
+	{
+		equipmentHandler.equippedWeapon.Attack(attackPos);
+	}
 
 	//utility
 	public void OnDrawGizmos()

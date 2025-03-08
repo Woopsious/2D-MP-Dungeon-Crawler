@@ -190,8 +190,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		projectile.SetPositionAndAttackDirection(projectileSpawnPoint, entity.transform.position);
-		projectile.Initilize(trapBaseRef, trapDamage);
+		projectile.Initilize(trapBaseRef, trapDamage, transform.position, entity.transform.position);
 	}
 
 	//trap detection

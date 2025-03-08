@@ -274,10 +274,13 @@ public class EntityAbilityHandler : NetworkBehaviour
 	//cast ability
 	private void CastAbility(SOAbilities ability)
 	{
-		if (ability.isAOE)
-			CastAoeAbility(ability, GetAbilityTargetPosition(ability));
-		else if (ability.isProjectile)
-			CastDirectionalAbility(ability, GetAbilityTargetPosition(ability));
+		if (ability.isProjectile || ability.isAOE)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				SyncSetUpAbilitiesRpc(entityStats.NetworkObjectId, GetAbilityIndex(ability), GetAbilityTargetPosition(ability));
+			else
+				SetUpAbilities(entityStats, ability, GetAbilityTargetPosition(ability));
+		}
 		else if (ability.requiresTarget && ability.isOffensiveAbility)
 		{
 			if (behaviour.playerTarget == null && overriddenPlayerTarget == null)
@@ -325,43 +328,22 @@ public class EntityAbilityHandler : NetworkBehaviour
 		}
 		else return new Vector2(0, 0);
 	}
-
-	//types of casting
-	private void CastDirectionalAbility(SOAbilities ability, Vector2 position)
+	private void OnSuccessfulCast(SOAbilities ability)
 	{
-		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
-		if (projectile == null)
+		if (ability.isSpell)
 		{
-			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-			projectile.transform.SetParent(null);
-			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
-
-			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
+			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
+			entityStats.DecreaseMana(totalManaCost, false);
 		}
 
-		projectile.SetPositionAndAttackDirection(transform.position, position);
-		projectile.Initilize(entityStats, ability);
-		OnSuccessfulCast(ability);
-	}
-	private void CastAoeAbility(SOAbilities ability, Vector2 position)
-	{
-		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
-		if (abilityAOE == null)
-		{
-			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
-			abilityAOE = go.GetComponent<AbilityAOE>();
-			abilityAOE.transform.SetParent(null);
-			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
+		ResetOverridenPlayerTarget();
+		abilityBeingCasted = null;
 
-			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
-		}
-
-		abilityAOE.Initilize(entityStats, ability, position);
-		OnSuccessfulCast(ability);
+		if (entityStats.statsRef.isBossVersion)
+			abilityIndicators.HideAoeIndicators();
 	}
+
+	//set up ability casts
 	private void CastEffect(SOAbilities ability)
 	{
 		if (ability.damageType == IDamagable.DamageType.isHealing)
@@ -371,7 +353,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 		}
 		if (ability.damageValue != 0)    //apply damage for insta damage abilities
 		{
-			DamageSourceInfo damageSourceInfo = new(entityStats, IDamagable.HitBye.entity, 
+			DamageSourceInfo damageSourceInfo = new(entityStats, IDamagable.HitBye.entity,
 				ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, false);
 			damageSourceInfo.SetDeathMessage(ability);
 
@@ -399,19 +381,63 @@ public class EntityAbilityHandler : NetworkBehaviour
 
 		OnSuccessfulCast(ability);
 	}
-	private void OnSuccessfulCast(SOAbilities ability)
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	private void SyncSetUpAbilitiesRpc(ulong casterId, int abilityIndex, Vector2 attackPos)
 	{
-		if (ability.isSpell)
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAbilities(casterStats, ability, attackPos);
+	}
+	private void SetUpAbilities(EntityStats casterStats, SOAbilities ability, Vector2 attackPos)
+	{
+		if (ability.isProjectile)
+			SetUpProjectileAbility(casterStats, ability, attackPos);
+		else if (ability.isAOE)
+			SetUpAoeAbility(casterStats, ability, attackPos);
+	}
+	private void SetUpProjectileAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
+		if (projectile == null)
 		{
-			int totalManaCost = (int)(ability.manaCost * entityStats.levelModifier);
-			entityStats.DecreaseMana(totalManaCost, false);
+			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		ResetOverridenPlayerTarget();
-		abilityBeingCasted = null;
+		projectile.Initilize(casterStats, abilityRef, attackPos);
+	}
+	private void SetUpAoeAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
 
-		if (entityStats.statsRef.isBossVersion)
-			abilityIndicators.HideAoeIndicators();
+			if (MultiplayerManager.IsMultiplayer())
+				abilityAOE.GetComponent<NetworkObject>().Spawn();
+		}
+
+		//will need additional code here to handle supportive and offensive aoe abilities
+		abilityAOE.Initilize(casterStats, abilityRef, attackPos);
+	}
+
+	//casting helper funcs
+	private int GetAbilityIndex(SOAbilities ability)
+	{
+		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+		{
+			if (ability == AssetDatabase.Database.abilities[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get class index");
+		return 0;
 	}
 
 	//override current PlayerTarget

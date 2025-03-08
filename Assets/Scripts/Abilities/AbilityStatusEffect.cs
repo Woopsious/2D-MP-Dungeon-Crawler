@@ -56,8 +56,8 @@ public class AbilityStatusEffect : NetworkBehaviour
 	}
 	public void SyncStatusEffect(ulong casterId, ulong entityIdEffectIsAppliedTo, int statusEffectIndex)
 	{
-		casterInfo = NetworkManager.SpawnManager.SpawnedObjects[casterId].gameObject.GetComponent<EntityStats>();
-		entityEffectIsAppliedTo = NetworkManager.SpawnManager.SpawnedObjects[entityIdEffectIsAppliedTo].gameObject.GetComponent<EntityStats>();
+		casterInfo = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		entityEffectIsAppliedTo = NetworkManager.SpawnManager.SpawnedObjects[entityIdEffectIsAppliedTo].GetComponent<EntityStats>();
 		statusEffect = AssetDatabase.Database.statusEffects[statusEffectIndex];
 
 		SetParentObjectRpc();
