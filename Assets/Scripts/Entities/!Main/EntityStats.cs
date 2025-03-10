@@ -417,7 +417,27 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//status effect functions
-	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
+	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterStats)
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncSetUpStatusEffectRpc(GetStatusEffectsIndexes(effectsToApply), casterStats.NetworkObjectId);
+		else
+			SetUpStatusEffect(effectsToApply, casterStats);
+	}
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	private void SyncSetUpStatusEffectRpc(int[] statusEffectsIndexes, ulong casterId)
+	{
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		List<SOStatusEffects> effectsToApply = new();
+		
+		foreach (int effectIndex in statusEffectsIndexes)
+			effectsToApply.Add(AssetDatabase.Database.statusEffects[effectIndex]);
+
+		SetUpStatusEffect(effectsToApply, casterStats);
+	}
+	private void SetUpStatusEffect(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
@@ -430,14 +450,14 @@ public class EntityStats : NetworkBehaviour
 			}
 
 			GameObject go = Instantiate(statusEffectsPrefab);
-			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-
 			if (MultiplayerManager.IsMultiplayer())
-				statusEffect.GetComponent<NetworkObject>().Spawn();
+				go.GetComponent<NetworkObject>().Spawn();
 
+			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
 			statusEffect.Initilize(casterInfo, this, effect);
 		}
 	}
+
 	public void AddStatusEffectValues(AbilityStatusEffect statusEffect)
 	{
 		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
@@ -508,6 +528,8 @@ public class EntityStats : NetworkBehaviour
 		if (effect.isMarkedByBossEffect && IsPlayerEntity())
 			playerRef.UnMarkPlayer();
 	}
+
+	//status effects helpers
 	private AbilityStatusEffect IsStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{
 		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
@@ -516,6 +538,19 @@ public class EntityStats : NetworkBehaviour
 				return statusEffect;
 		}
 		return null;
+	}
+	private int[] GetStatusEffectsIndexes(List<SOStatusEffects> effectsToApply)
+	{
+		int[] statusEffectIndexes = new int[effectsToApply.Count];
+		for (int i = 0; i < effectsToApply.Count; i++)
+		{
+			for (int effectIndex = 0; effectIndex < AssetDatabase.Database.statusEffects.Count; effectIndex++)
+			{
+				if (effectsToApply[i] == AssetDatabase.Database.statusEffects[effectIndex])
+					statusEffectIndexes[i] = effectIndex;
+			}
+		}
+		return statusEffectIndexes;
 	}
 
 	//set base stats

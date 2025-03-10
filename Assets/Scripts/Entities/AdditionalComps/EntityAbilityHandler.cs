@@ -296,9 +296,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			Debug.LogError("failed to find ability type and cast, shouldnt happen");
 			return;
 		}
-
-		if (entityStats.statsRef.isBossVersion)
-			OnBossAbilityCast?.Invoke();
+		OnSuccessfulCast(ability);
 	}
 	private Vector2 GetAbilityTargetPosition(SOAbilities ability)
 	{
@@ -340,7 +338,10 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityBeingCasted = null;
 
 		if (entityStats.statsRef.isBossVersion)
+		{
 			abilityIndicators.HideAoeIndicators();
+			OnBossAbilityCast?.Invoke();
+		}
 	}
 
 	//set up ability casts

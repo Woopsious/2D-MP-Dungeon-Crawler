@@ -63,7 +63,7 @@ public class AbilityStatusEffect : NetworkBehaviour
 		damage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 		timerTillNextDamage = 0f;
 
-		entityEffectIsAppliedTo.AddStatusEffectValues(this);
+		this.entityEffectIsAppliedTo.AddStatusEffectValues(this);
 
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
@@ -71,7 +71,21 @@ public class AbilityStatusEffect : NetworkBehaviour
 	//clear effect sync
 	public void ClearStatusEffect()
 	{
+		if (MultiplayerManager.IsMultiplayer())
+			ClearStatusEffectRpc();
+		else
+			ClearStatusEffectAndDestroy();
+	}
+	[Rpc(SendTo.Everyone)]
+	private void ClearStatusEffectRpc()
+	{
+		ClearStatusEffectAndDestroy();
+	}
+	private void ClearStatusEffectAndDestroy()
+	{
 		entityEffectIsAppliedTo.RemoveStatusEffectValues(this);
+		if (MultiplayerManager.IsClientHost())
+			Destroy(gameObject);
 	}
 
 	//timers
