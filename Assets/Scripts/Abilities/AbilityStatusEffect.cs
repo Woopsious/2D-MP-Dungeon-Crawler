@@ -24,51 +24,33 @@ public class AbilityStatusEffect : NetworkBehaviour
 	}
 
 	//set data
-	public void Initilize(EntityStats casterInfo, EntityStats entityEffectIsAppliedTo, SOStatusEffects statusEffect)
+	public void Initilize(EntityStats casterStats, EntityStats entityEffectIsAppliedTo, SOStatusEffects statusEffect)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ref as Network spawn manager wont exist in sp
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			InitilizeSinglePlayer(casterInfo, entityEffectIsAppliedTo, statusEffect);
-			return;
-		}
+			ulong casterId = casterStats.GetComponent<NetworkObject>().NetworkObjectId;
+			ulong entityIdEffectIsAppliedTo = entityEffectIsAppliedTo.GetComponent<NetworkObject>().NetworkObjectId;
 
-		ulong casterId = casterInfo.GetComponent<NetworkObject>().NetworkObjectId;
-		ulong entityIdEffectIsAppliedTo = entityEffectIsAppliedTo.GetComponent<NetworkObject>().NetworkObjectId;
-		int statusEffectIndex = 0;
-
-		foreach (SOStatusEffects effect in AssetDatabase.Database.statusEffects)
-		{
-			if (statusEffect != effect)
+			for (int i = 0; i < AssetDatabase.Database.statusEffects.Count; i++)
 			{
-				statusEffectIndex++;
-				continue;
+				if (statusEffect == AssetDatabase.Database.statusEffects[i])
+					SyncSetUpStatusEffectRpc(casterId, entityIdEffectIsAppliedTo, i);
 			}
-
-			SyncStatusEffectRpc(casterId, entityIdEffectIsAppliedTo, statusEffectIndex);
-			break;
 		}
+		else
+			SetUpStatusEffect(casterStats, entityEffectIsAppliedTo, statusEffect);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	public void SyncStatusEffectRpc(ulong casterId, ulong entityIdEffectIsAppliedTo, int statusEffectIndex)
+	private void SyncSetUpStatusEffectRpc(ulong casterId, ulong entityIdEffectIsAppliedTo, int statusEffectIndex)
 	{
-		SyncStatusEffect(casterId, entityIdEffectIsAppliedTo, statusEffectIndex);
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		EntityStats entityEffectIsAppliedTo = NetworkManager.SpawnManager.SpawnedObjects[entityIdEffectIsAppliedTo].GetComponent<EntityStats>();
+		SOStatusEffects statusEffect = AssetDatabase.Database.statusEffects[statusEffectIndex];
+
+		SetUpStatusEffect(casterStats, entityEffectIsAppliedTo, statusEffect);
 	}
-	public void SyncStatusEffect(ulong casterId, ulong entityIdEffectIsAppliedTo, int statusEffectIndex)
-	{
-		casterInfo = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
-		entityEffectIsAppliedTo = NetworkManager.SpawnManager.SpawnedObjects[entityIdEffectIsAppliedTo].GetComponent<EntityStats>();
-		statusEffect = AssetDatabase.Database.statusEffects[statusEffectIndex];
-
-		SetParentObjectRpc();
-
-		gameObject.name = statusEffect.Name + "Effect";
-		damage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
-		timerTillNextDamage = 0f;
-
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
-	}
-	private void InitilizeSinglePlayer(EntityStats casterInfo, EntityStats entityEffectIsAppliedTo, SOStatusEffects statusEffect)
+	private void SetUpStatusEffect(EntityStats casterInfo, EntityStats entityEffectIsAppliedTo, SOStatusEffects statusEffect)
 	{
 		this.casterInfo = casterInfo;
 		this.entityEffectIsAppliedTo = entityEffectIsAppliedTo;
@@ -81,25 +63,15 @@ public class AbilityStatusEffect : NetworkBehaviour
 		damage = (int)(statusEffect.effectValue * Utilities.GetLevelModifier(casterInfo.entityLevel));
 		timerTillNextDamage = 0f;
 
+		entityEffectIsAppliedTo.AddStatusEffectValues(this);
+
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
-	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	private void SetParentObjectRpc()
-	{
-		transform.SetParent(entityEffectIsAppliedTo.transform);
-		transform.localPosition = Vector3.zero;
-	}
-
 	//clear effect sync
-	[Rpc(SendTo.Everyone)]
-	public void ClearStatusEffectRpc()
-	{
-		ClearStatusEffect();
-	}
 	public void ClearStatusEffect()
 	{
-		entityEffectIsAppliedTo.UnApplyStatusEffect(this);
+		entityEffectIsAppliedTo.RemoveStatusEffectValues(this);
 	}
 
 	//timers
@@ -108,7 +80,7 @@ public class AbilityStatusEffect : NetworkBehaviour
 		abilityDurationTimer += Time.deltaTime;
 
 		if (abilityDurationTimer >= statusEffect.abilityDuration)
-			entityEffectIsAppliedTo.UnApplyStatusEffect(this);
+			ClearStatusEffect();
 	}
 	//dot effect if it has one
 	private void DamageOverTimeEffect()

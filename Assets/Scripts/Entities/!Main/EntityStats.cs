@@ -419,8 +419,6 @@ public class EntityStats : NetworkBehaviour
 	//status effect functions
 	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
-		if (!MultiplayerManager.IsClientHost()) return;
-
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
 			AbilityStatusEffect duplicateStatusEffect = IsStatusEffectAlreadyApplied(effect);
@@ -438,42 +436,44 @@ public class EntityStats : NetworkBehaviour
 				statusEffect.GetComponent<NetworkObject>().Spawn();
 
 			statusEffect.Initilize(casterInfo, this, effect);
-
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-				damageDealtModifier.AddPercentageValue(effect.effectValue);
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
-			{
-				physicalResistance.AddPercentageValue(effect.effectValue);
-				poisonResistance.AddPercentageValue(effect.effectValue);
-				fireResistance.AddPercentageValue(effect.effectValue);
-				iceResistance.AddPercentageValue(effect.effectValue);
-			}
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
-			{
-				physicalDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				poisonDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				fireDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				iceDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-			}
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-			{
-				if (IsPlayerEntity())
-					playerRef.UpdateMovementSpeed(effect.effectValue, false);
-				else
-					entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
-			}
-
-			OnNewStatusEffect?.Invoke(statusEffect);
-			currentStatusEffects.Add(statusEffect);
-
-			if (effect.isMarkedByBossEffect && IsPlayerEntity())
-				playerRef.MarkPlayer();
 		}
 	}
-	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect)
+	public void AddStatusEffectValues(AbilityStatusEffect statusEffect)
 	{
-		if (!MultiplayerManager.IsClientHost()) return;
+		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
 
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+			damageDealtModifier.AddPercentageValue(effect.effectValue);
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+		{
+			physicalResistance.AddPercentageValue(effect.effectValue);
+			poisonResistance.AddPercentageValue(effect.effectValue);
+			fireResistance.AddPercentageValue(effect.effectValue);
+			iceResistance.AddPercentageValue(effect.effectValue);
+		}
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
+		{
+			physicalDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			poisonDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			fireDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			iceDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+		}
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+		{
+			if (IsPlayerEntity())
+				playerRef.UpdateMovementSpeed(effect.effectValue, false);
+			else
+				entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
+		}
+
+		OnNewStatusEffect?.Invoke(statusEffect);
+		currentStatusEffects.Add(statusEffect);
+
+		if (effect.isMarkedByBossEffect && IsPlayerEntity())
+			playerRef.MarkPlayer();
+	}
+	public void RemoveStatusEffectValues(AbilityStatusEffect statusEffect)
+	{
 		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
 
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
@@ -507,9 +507,6 @@ public class EntityStats : NetworkBehaviour
 
 		if (effect.isMarkedByBossEffect && IsPlayerEntity())
 			playerRef.UnMarkPlayer();
-
-		if (!MultiplayerManager.IsClientHost()) return;
-		Destroy(statusEffect.gameObject);
 	}
 	private AbilityStatusEffect IsStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{

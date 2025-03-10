@@ -231,7 +231,13 @@ public class Projectiles : NetworkBehaviour
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
+		/*
 		if (hitBye == IDamagable.HitBye.player && other.gameObject.layer == LayerMask.NameToLayer("Player") ||
+			hitBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
+			return;
+		*/
+
+		if (hitBye == IDamagable.HitBye.player && projectileOwner == other.GetComponent<EntityStats>() ||
 			hitBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
 			return;
 
