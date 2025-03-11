@@ -94,6 +94,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerEventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
 		PlayerEventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
 		PlayerEventManager.OnPlayerManaChangeEvent += UpdatePlayerManaBar;
+		PlayerEventManager.OnPlayerStatusEffectChange += UpdatePlayerDisplayedStatusEffects;
 
 		PlayerController.OnPlayerUseAbility += PlayerQueueAbility;
 		PlayerController.OnPlayerCastAbility += PlayerCastAbility;
@@ -110,6 +111,7 @@ public class PlayerHotbarUi : MonoBehaviour
 		PlayerEventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
 		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
 		PlayerEventManager.OnPlayerManaChangeEvent -= UpdatePlayerManaBar;
+		PlayerEventManager.OnPlayerStatusEffectChange -= UpdatePlayerDisplayedStatusEffects;
 
 		PlayerController.OnPlayerUseAbility -= PlayerQueueAbility;
 		PlayerController.OnPlayerCastAbility -= PlayerCastAbility;
@@ -283,34 +285,35 @@ public class PlayerHotbarUi : MonoBehaviour
 		manaBarFiller.fillAmount = percentage;
 		manaBarText.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	public void OnNewStatusEffectsForPlayer(AbilityStatusEffect statusEffect)
+	private void UpdatePlayerDisplayedStatusEffects(AbilityStatusEffect statusEffect)
 	{
+		bool createNewUiTimer = true;
+
+		//check for dup effect timers, if found reset effect timer
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
-			if (!playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
+
+			if (playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
 			{
-				Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetAbilityDuration());
-				ability.gameObject.SetActive(true);
-				return;
+				if (ability.effectBaseRef == statusEffect.GetBaseStatusEffect())
+				{
+					ability.ResetEffectTimer();
+					createNewUiTimer = false;
+				}
 			}
 		}
-	}
-	public void OnResetStatusEffectTimerForPlayer(SOStatusEffects effect)
-	{
+
+		//if none found set up new timer for said effect
+		if (!createNewUiTimer) return;
 		for (int i = 0; i < playerStatusEffectsParentObj.transform.childCount; i++)
 		{
-			if (!playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy)
-				continue;
+			if (playerStatusEffectsParentObj.transform.GetChild(i).gameObject.activeInHierarchy) continue;
 
 			Abilities ability = playerStatusEffectsParentObj.transform.GetChild(i).GetComponent<Abilities>();
-			if (ability.effectBaseRef != effect)
-				continue;
-			else
-			{
-				ability.ResetEffectTimer();
-				return;
-			}
+			ability.InitilizeStatusEffectUiTimer(statusEffect.GetBaseStatusEffect(), statusEffect.GetAbilityDuration());
+			ability.gameObject.SetActive(true);
+			return;
 		}
 	}
 

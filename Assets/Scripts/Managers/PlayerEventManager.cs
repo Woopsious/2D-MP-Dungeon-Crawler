@@ -34,6 +34,12 @@ public static class PlayerEventManager
 		OnGoldAmountChange?.Invoke(gold);
 	}
 
+	public static event Action<int, int> OnPlayerExpChangeEvent;
+	public static void PlayerExpChange(int max, int current)
+	{
+		OnPlayerExpChangeEvent?.Invoke(max, current);
+	}
+
 	public static event Action<int, int> OnPlayerHealthChangeEvent;
 	public static void PlayerHealthChange(int max, int current)
 	{
@@ -46,16 +52,15 @@ public static class PlayerEventManager
 		OnPlayerManaChangeEvent?.Invoke(max, current);
 	}
 
-	public static event Action<int, int> OnPlayerExpChangeEvent;
-	public static void PlayerExpChange(int max, int current)
-	{
-		OnPlayerExpChangeEvent?.Invoke(max, current);
-	}
-
 	public static event Action<EntityStats> OnPlayerStatChangeEvent;
 	public static void PlayerStatChange(EntityStats playerStats)
 	{
 		OnPlayerStatChangeEvent?.Invoke(playerStats);
+	}
+	public static event Action<AbilityStatusEffect> OnPlayerStatusEffectChange;
+	public static void PlayerStatusEffectChange(AbilityStatusEffect statusEffect)
+	{
+		OnPlayerStatusEffectChange?.Invoke(statusEffect);
 	}
 
 	//player ui
@@ -73,20 +78,9 @@ public static class PlayerEventManager
 	public static event Action OnShowPlayerClassSelectionEvent;
 	public static void ShowPlayerClassSelection()
 	{
-		if (Application.isEditor) //allow class swapping in all scenes when open in editor
-		{
+		//allow class changes in editor when ever
+		if (Application.isEditor || Utilities.SceneIsActive(GameManager.Instance.hubScene))
 			OnShowPlayerClassSelectionEvent?.Invoke();
-
-			if (GameManager.Instance == null)
-				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
-		}
-		else //allow class swapping only in hub area
-		{
-			if (GameManager.Instance != null && Utilities.SceneIsActive(GameManager.Instance.hubScene))
-				OnShowPlayerClassSelectionEvent?.Invoke();
-			else
-				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
-		}
 	}
 	public static event Action OnShowPlayerSkillTreeEvent;
 	public static void ShowPlayerSkillTree()

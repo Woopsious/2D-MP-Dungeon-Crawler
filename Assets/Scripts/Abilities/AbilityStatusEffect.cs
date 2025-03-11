@@ -120,7 +120,7 @@ public class AbilityStatusEffect : NetworkBehaviour
 	{
 		return abilityDurationTimer;
 	}
-	public SOStatusEffects GrabAbilityBaseRef()
+	public SOStatusEffects GetBaseStatusEffect()
 	{
 		return statusEffect;
 	}

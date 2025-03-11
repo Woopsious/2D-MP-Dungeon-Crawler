@@ -148,7 +148,6 @@ public class LootSpawnHandler : MonoBehaviour
 	{
 		float goldModifier = levelModifier + GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
 		int goldToAdd = Utilities.GetRandomNumberBetween((int)(minGold * goldModifier), (int)(maxGold * goldModifier));
-
 		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
 	}
 

@@ -79,9 +79,6 @@ public class PlayerController : NetworkBehaviour
 		Initilize();
 
 		OnNewTargetSelected += PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
-
-		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer += PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void OnEnable()
@@ -97,9 +94,6 @@ public class PlayerController : NetworkBehaviour
 		ObjectPoolingManager.RemovePlayerFromList(this);
 
 		OnNewTargetSelected -= PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
-
-		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void Update()
@@ -124,7 +118,7 @@ public class PlayerController : NetworkBehaviour
 	//set player data
 	private void Initilize()
 	{
-		if (IsLocalPlayerOrSinglePlayer())
+		if (IsLocalPlayerOrSp())
 		{
 			UpdateLocalPlayerReferences();
 
@@ -682,7 +676,7 @@ public class PlayerController : NetworkBehaviour
 			return true;
 		else return false;
 	}
-	private bool IsLocalPlayerOrSinglePlayer()
+	public bool IsLocalPlayerOrSp()
 	{
 		if (!MultiplayerManager.IsMultiplayer())
 			return true;

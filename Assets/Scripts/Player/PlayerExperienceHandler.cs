@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ using WebSocketSharp;
 
 public class PlayerExperienceHandler : MonoBehaviour
 {
-	PlayerController player;
+	PlayerController playerRef;
 	private EntityStats playerStats;
 
 	public bool debugDisablePlayerLevelUp;
@@ -17,24 +18,20 @@ public class PlayerExperienceHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		player = GetComponent<PlayerController>();
+		playerRef = GetComponent<PlayerController>();
 		playerStats = GetComponent<EntityStats>();
 	}
 	private void OnEnable()
 	{
 		SaveManager.ReloadSaveGameData += ReloadPlayerExp;
-		ObjectPoolingManager.OnEntityDeathEvent += AddExperience;
+		ObjectPoolingManager.OnEntityDeathEvent += OnNonPlayerEntityDeaths;
 		PlayerJournalUi.OnQuestComplete += OnQuestComplete;
 	}
 	private void OnDisable()
 	{
 		SaveManager.ReloadSaveGameData -= ReloadPlayerExp;
-		ObjectPoolingManager.OnEntityDeathEvent -= AddExperience;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnNonPlayerEntityDeaths;
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
-	}
-	private void Start()
-	{
-		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
 	/// <summary>
@@ -45,65 +42,91 @@ public class PlayerExperienceHandler : MonoBehaviour
 	/// based on if this networked player objs owner id matches this id of player calling rpc. adjust level and stats of said player object
 	/// </summary>
 
+	//set player exp
+	public void Start()
+	{
+		currentExp = 0;
+		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
+	}
+
 	//restore player exp data
 	public void ReloadPlayerExp()
 	{
+		if (!playerRef.IsLocalPlayerOrSp()) return;
+
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
 		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 	}
 
-	//add exp to player
+	//ways of adding exp to local player
+	public void DebugAddExp(int expToAdd)
+	{
+		AddExperience(expToAdd);
+	}
 	private void OnQuestComplete(QuestDataUi quest)
 	{
+		if (!playerRef.IsLocalPlayerOrSp()) return;
+
 		if (quest.questRewardType == QuestDataUi.RewardType.isExpReward)
-			AddExperience(quest.gameObject);
+			AddExperience(quest.rewardToAdd);
 	}
-	private void AddExperience(GameObject Obj)
+	private void OnNonPlayerEntityDeaths(GameObject Obj)
 	{
-		if (Obj.GetComponent<QuestDataUi>() != null)
-			currentExp += Obj.GetComponent<QuestDataUi>().rewardToAdd;
-		else if (Obj.GetComponent<PlayerController>() == null && Obj.GetComponent<EntityStats>() != null)
+		if (!playerRef.IsLocalPlayerOrSp()) return;
+
+		EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
+		int expToAdd = otherEntityStats.statsRef.expOnDeath;
+
+		//reduce exp given based on level difference (should rarely happen as entities scale to player)
+		int levelDifference = playerStats.entityLevel - otherEntityStats.entityLevel;
+		if (levelDifference == 3)
+			expToAdd = (int)(expToAdd * 0.75f);
+		if (levelDifference == 4)
+			expToAdd = (int)(expToAdd * 0.5f);
+		if (levelDifference >= 5)
+			expToAdd = (int)(expToAdd * 0.25f);
+
+		AddExperience(expToAdd);
+	}
+
+	//apply exp to local player
+	private void AddExperience(int expToAdd)
+	{
+		if (!playerRef.IsLocalPlayerOrSp()) return;
+
+		if (playerStats.entityLevel >= maxLevel && currentExp >= 1000)
 		{
-			EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
-			int expToAdd = otherEntityStats.statsRef.expOnDeath;
-
-			//reduce exp given based on level difference (should rarely happen as entities scale to player)
-			int levelDifference = playerStats.entityLevel - otherEntityStats.entityLevel;
-			if (levelDifference == 3)
-				expToAdd = (int)(expToAdd * 0.75f);
-			if (levelDifference == 4)
-				expToAdd = (int)(expToAdd * 0.5f);
-			if (levelDifference >= 5)
-				expToAdd = (int)(expToAdd * 0.25f);
-
-			currentExp += expToAdd;
+			currentExp = 1000;
+			playerStats.entityLevel = maxLevel;
+			return;
 		}
-		else
-			Debug.LogError("Error no components match for adding exp");
 
+		currentExp += expToAdd;
 		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
 
-		if (CheckIfPLayerCanLevelUp()) return;
-		OnPlayerLevelUp();
+		TryLevelUpPlayer();
 	}
-
-	//level up player
-	private void OnPlayerLevelUp()
+	private void TryLevelUpPlayer()
 	{
-		int r = currentExp % maxExp;
-		currentExp = r;
-
-		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
-		PlayerEventManager.PlayerLevelUp(playerStats);
-	}
-	private bool CheckIfPLayerCanLevelUp()
-	{
-		if (debugDisablePlayerLevelUp) return false;
-		if (playerStats.entityLevel >= maxLevel ) return false;
-
+		if (debugDisablePlayerLevelUp) return;
 		if (currentExp >= maxExp)
-			return true;
-		else
-			return false;
+		{
+			if (playerStats.entityLevel < maxLevel)
+			{
+				int r = currentExp % maxExp;
+				currentExp = r;
+
+				playerStats.entityLevel++;
+				playerStats.CalculateBaseStats();
+
+				PlayerEventManager.PlayerExpChange(maxExp, currentExp);
+				PlayerEventManager.PlayerLevelUp(playerStats);
+			}
+			else
+			{
+				currentExp = maxExp;
+				PlayerEventManager.PlayerExpChange(maxExp, maxExp);
+			}
+		}
 	}
 }

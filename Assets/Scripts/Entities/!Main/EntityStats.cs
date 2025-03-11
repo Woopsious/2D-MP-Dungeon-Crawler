@@ -59,10 +59,7 @@ public class EntityStats : NetworkBehaviour
 	public List<AbilityStatusEffect> currentStatusEffects;
 
 	//events
-	public event Action<AbilityStatusEffect> OnNewStatusEffect;
-	public event Action<SOStatusEffects> OnResetStatusEffectTimer;
-	public event Action<SOStatusEffects> OnRemoveStatusEffect;
-
+	public event Action<AbilityStatusEffect> OnStatusEffectAppliedEvent;
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
@@ -265,7 +262,7 @@ public class EntityStats : NetworkBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
-		if (!IsPlayerEntity() || !IsLocalPlayer) return;
+		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
@@ -360,9 +357,6 @@ public class EntityStats : NetworkBehaviour
 		{
 			manaRegenTimer = manaRegenCooldown;
 			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
-
-			if (!IsPlayerEntity()) return;
-			PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		}
 	}
 	public void IncreaseMana(float value, bool isPercentageValue)
@@ -411,7 +405,7 @@ public class EntityStats : NetworkBehaviour
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		if (!IsPlayerEntity() || !IsLocalPlayer) return;
+		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}
@@ -445,22 +439,28 @@ public class EntityStats : NetworkBehaviour
 			if (duplicateStatusEffect != null)
 			{
 				duplicateStatusEffect.ResetAbilityTimer();
-				OnResetStatusEffectTimer?.Invoke(effect);
+
+				if (MultiplayerManager.IsMultiplayer())
+					ResetStatusEffectTimerForUiRpc(duplicateStatusEffect.NetworkObjectId);
+				else
+					ResetStatusEffectTimerForUi(duplicateStatusEffect);
 				continue;
 			}
+			else
+			{
+				GameObject go = Instantiate(statusEffectsPrefab);
+				if (MultiplayerManager.IsMultiplayer())
+					go.GetComponent<NetworkObject>().Spawn();
 
-			GameObject go = Instantiate(statusEffectsPrefab);
-			if (MultiplayerManager.IsMultiplayer())
-				go.GetComponent<NetworkObject>().Spawn();
-
-			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-			statusEffect.Initilize(casterInfo, this, effect);
+				AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
+				statusEffect.Initilize(casterInfo, this, effect);
+			}
 		}
 	}
 
 	public void AddStatusEffectValues(AbilityStatusEffect statusEffect)
 	{
-		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
+		SOStatusEffects effect = statusEffect.GetBaseStatusEffect();
 
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
 			damageDealtModifier.AddPercentageValue(effect.effectValue);
@@ -486,15 +486,20 @@ public class EntityStats : NetworkBehaviour
 				entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
 		}
 
-		OnNewStatusEffect?.Invoke(statusEffect);
+		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
 		currentStatusEffects.Add(statusEffect);
 
-		if (effect.isMarkedByBossEffect && IsPlayerEntity())
+		if (IsPlayerEntity()) return;
+
+		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
 			playerRef.MarkPlayer();
+
+		if (playerRef.IsLocalPlayerOrSp())
+			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
 	}
 	public void RemoveStatusEffectValues(AbilityStatusEffect statusEffect)
 	{
-		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
+		SOStatusEffects effect = statusEffect.GetBaseStatusEffect();
 
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
 			damageDealtModifier.RemovePercentageValue(effect.effectValue);
@@ -522,11 +527,29 @@ public class EntityStats : NetworkBehaviour
 		}
 
 		currentStatusEffects.Remove(statusEffect);
-		OnRemoveStatusEffect?.Invoke(effect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
 
-		if (effect.isMarkedByBossEffect && IsPlayerEntity())
+		if (IsPlayerEntity() && effect.isMarkedByBossEffect)
 			playerRef.UnMarkPlayer();
+	}
+
+	//timer ui resets for reapplied status effects
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ResetStatusEffectTimerForUiRpc(ulong statusEffectid)
+	{
+		ResetStatusEffectTimerForUi(NetworkManager.SpawnManager.SpawnedObjects[statusEffectid].GetComponent<AbilityStatusEffect>());
+	}
+	private void ResetStatusEffectTimerForUi(AbilityStatusEffect statusEffect)
+	{
+		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
+
+		if (IsPlayerEntity()) return;
+
+		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
+			playerRef.MarkPlayer();
+
+		if (playerRef.IsLocalPlayerOrSp())
+			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
 	}
 
 	//status effects helpers
@@ -534,7 +557,7 @@ public class EntityStats : NetworkBehaviour
 	{
 		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
 		{
-			if (statusEffect.GrabAbilityBaseRef() == newStatusEffect)
+			if (statusEffect.GetBaseStatusEffect() == newStatusEffect)
 				return statusEffect;
 		}
 		return null;
@@ -801,7 +824,7 @@ public class EntityStats : NetworkBehaviour
 	//update ui info if player
 	private void UpdatePlayerStatInfoUi()
 	{
-		if (!IsPlayerEntity() || GameManager.Localplayer != playerRef) return;
+		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		PlayerEventManager.PlayerStatChange(this);

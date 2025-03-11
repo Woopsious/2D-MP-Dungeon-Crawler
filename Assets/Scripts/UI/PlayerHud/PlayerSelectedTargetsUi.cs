@@ -59,8 +59,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		{
 			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
 			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-			selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
-			selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
+			selectedTarget.OnStatusEffectAppliedEvent -= OnStatusEffectAppliedToEnemyTarget;
 		}
 
 		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
@@ -80,15 +79,14 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		//new target event subs
 		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
-		selectedTarget.OnNewStatusEffect += OnNewStatusEffectsForSelectedTarget;
-		selectedTarget.OnResetStatusEffectTimer += OnResetStatusEffectTimerForSelectedTarget;
+		selectedTarget.OnStatusEffectAppliedEvent += OnStatusEffectAppliedToEnemyTarget;
 
 		//initial setting data for ui
 		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
 		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
 
 		foreach (AbilityStatusEffect statusEffect in selectedTarget.currentStatusEffects)
-			OnNewStatusEffectsForSelectedTarget(statusEffect);
+			OnStatusEffectAppliedToEnemyTarget(statusEffect);
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
@@ -105,8 +103,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 
 		selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
 		selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-		selectedTarget.OnNewStatusEffect -= OnNewStatusEffectsForSelectedTarget;
-		selectedTarget.OnResetStatusEffectTimer -= OnResetStatusEffectTimerForSelectedTarget;
+		selectedTarget.OnStatusEffectAppliedEvent -= OnStatusEffectAppliedToEnemyTarget;
 
 		selectedTarget = null;
 	}
@@ -142,34 +139,35 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedTargetManaBarFiller.fillAmount = percentage;
 		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	private void OnNewStatusEffectsForSelectedTarget(AbilityStatusEffect statusEffect)
+	private void OnStatusEffectAppliedToEnemyTarget(AbilityStatusEffect statusEffect)
 	{
+		bool createNewUiTimer = true;
+
+		//check for dup effect timers, if found reset effect timer
 		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
 		{
-			if (!selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+
+			if (selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
 			{
-				Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
-				ability.InitilizeStatusEffectUiTimer(statusEffect.GrabAbilityBaseRef(), statusEffect.GetAbilityDuration());
-				ability.gameObject.SetActive(true);
-				return;
+				if (ability.effectBaseRef == statusEffect.GetBaseStatusEffect())
+				{
+					ability.ResetEffectTimer();
+					createNewUiTimer = false;
+				}
 			}
 		}
-	}
-	private void OnResetStatusEffectTimerForSelectedTarget(SOStatusEffects effect)
-	{
+
+		//if none found set up new timer for said effect
+		if (!createNewUiTimer) return;
 		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
 		{
-			if (!selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
-				continue;
+			if (selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy) continue;
 
 			Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
-			if (ability.effectBaseRef != effect)
-				continue;
-			else
-			{
-				ability.ResetEffectTimer();
-				return;
-			}
+			ability.InitilizeStatusEffectUiTimer(statusEffect.GetBaseStatusEffect(), statusEffect.GetAbilityDuration());
+			ability.gameObject.SetActive(true);
+			return;
 		}
 	}
 }

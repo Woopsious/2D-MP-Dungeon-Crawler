@@ -20,6 +20,6 @@ MonoBehaviour:
   effectValue: 5
   damageType: 2
   hasDuration: 1
-  abilityDuration: 3
+  abilityDuration: 20
   hasParticleEffect: 1
   particleColour: {r: 0, g: 0, b: 0, a: 0}
