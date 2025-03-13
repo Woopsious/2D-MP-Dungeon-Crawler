@@ -52,7 +52,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	//restore player exp data
 	public void ReloadPlayerExp()
 	{
-		if (!playerRef.IsLocalPlayerOrSp()) return;
+		if (!playerRef.PlayerIsLocalPlayer()) return;
 
 		currentExp = SaveManager.Instance.GameData.playerCurrentExp;
 		PlayerEventManager.PlayerExpChange(maxExp, currentExp);
@@ -65,14 +65,14 @@ public class PlayerExperienceHandler : MonoBehaviour
 	}
 	private void OnQuestComplete(QuestDataUi quest)
 	{
-		if (!playerRef.IsLocalPlayerOrSp()) return;
+		if (!playerRef.PlayerIsLocalPlayer()) return;
 
 		if (quest.questRewardType == QuestDataUi.RewardType.isExpReward)
 			AddExperience(quest.rewardToAdd);
 	}
 	private void OnNonPlayerEntityDeaths(GameObject Obj)
 	{
-		if (!playerRef.IsLocalPlayerOrSp()) return;
+		if (!playerRef.PlayerIsLocalPlayer()) return;
 
 		EntityStats otherEntityStats = Obj.GetComponent<EntityStats>();
 		int expToAdd = otherEntityStats.statsRef.expOnDeath;
@@ -92,7 +92,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 	//apply exp to local player
 	private void AddExperience(int expToAdd)
 	{
-		if (!playerRef.IsLocalPlayerOrSp()) return;
+		if (!playerRef.PlayerIsLocalPlayer()) return;
 
 		if (playerStats.entityLevel >= maxLevel && currentExp >= 1000)
 		{

@@ -74,7 +74,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 50}
   m_MaxSize: {x: 16192, y: 8096}
   vertical: 0
-  controlID: 128
+  controlID: 125
   draggingID: 0
 --- !u!114 &4
 MonoBehaviour:
@@ -93,7 +93,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 0
     y: 0
-    width: 1113
+    width: 985
     height: 628
   m_MinSize: {x: 202, y: 221}
   m_MaxSize: {x: 4002, y: 4021}
@@ -180,7 +180,7 @@ MonoBehaviour:
   m_MinSize: {x: 200, y: 100}
   m_MaxSize: {x: 16192, y: 16192}
   vertical: 1
-  controlID: 127
+  controlID: 68
   draggingID: 0
 --- !u!114 &8
 MonoBehaviour:
@@ -278,7 +278,7 @@ MonoBehaviour:
   m_MinSize: {x: 400, y: 100}
   m_MaxSize: {x: 32384, y: 16192}
   vertical: 0
-  controlID: 164
+  controlID: 67
   draggingID: 0
 --- !u!114 &12
 MonoBehaviour:
@@ -321,9 +321,9 @@ MonoBehaviour:
   m_Children: []
   m_Position:
     serializedVersion: 2
-    x: 1113
+    x: 985
     y: 0
-    width: 192
+    width: 320
     height: 628
   m_MinSize: {x: 202, y: 221}
   m_MaxSize: {x: 4002, y: 4021}
@@ -542,9 +542,9 @@ MonoBehaviour:
       e32: 0
       e33: 1
   m_PreviewAnimator: {fileID: 0}
-  m_AnimatorController: {fileID: 9100000, guid: 9575a60f04405e042897257d62ffbacb, type: 2}
+  m_AnimatorController: {fileID: 9100000, guid: d84278b7bde20254e9f4d3df2772899c, type: 2}
   m_BreadCrumbs:
-  - m_Target: {fileID: -5557600793995250170, guid: 9575a60f04405e042897257d62ffbacb, type: 2}
+  - m_Target: {fileID: 735012235990902304, guid: d84278b7bde20254e9f4d3df2772899c, type: 2}
     m_ScrollPosition: {x: 0, y: 0}
   stateMachineGraph: {fileID: 0}
   stateMachineGraphGUI: {fileID: 0}
@@ -593,7 +593,7 @@ MonoBehaviour:
     m_OverlaysVisible: 1
   m_LockTracker:
     m_IsLocked: 0
-  m_LastSelectedObjectID: -108448
+  m_LastSelectedObjectID: -1491462
 --- !u!114 &20
 MonoBehaviour:
   m_ObjectHideFlags: 52
@@ -639,7 +639,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Abilities
+    - Assets/Prefabs/UI
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -647,15 +647,15 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts/Abilities
+  - Assets/Prefabs/UI
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Unity\Unity Projects\2D MP Dungeon Crawler
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 526}
-    m_SelectedIDs: 828d0000
-    m_LastClickedID: 36226
+    scrollPos: {x: 0, y: 534}
+    m_SelectedIDs: 7c8d0000
+    m_LastClickedID: 36220
     m_ExpandedIDs: 000000004c8b00004e8b0000508b0000528b0000548b0000568b0000588b00005a8b00005c8b00005e8b0000608b0000628b0000648b0000668b0000688b00006a8b00006c8b00006e8b0000708b0000728b0000748b0000768b0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
@@ -777,9 +777,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: 0c22e8ff
       m_LastClickedID: 0
-      m_ExpandedIDs: 2abdf4ff8cbdf4ffe2c2f4ff34cbf4ff38ccf4ffb2f0f4ffb6f0f4ff2af1f4ff02dbf5ff64dbf5ffbae0f5ff0ce9f5ff10eaf5ff8a0ef6ff8e0ef6ff020ff6ff2085f7ff9485f7ffea8af7ff3c93f7ff4094f7ffbab8f7ffbeb8f7ff32b9f7fff069f8ff526af8ffa86ff8fffa77f8fffe78f8ff789df8ff7c9df8fff09df8ff26cafbff9ccafbfff2cffbff44d8fbff48d9fbffc2fdfbffc6fdfbff3afefbff92b5fcff08b6fcff5ebbfcffb0c3fcffb4c4fcff2ee9fcff32e9fcffa6e9fcff6a15ffffd815ffff2e1bffff8023ffff8424fffffe48ffff0249ffff7649fffffefaffff
+      m_ExpandedIDs: 3c2eebffb0cdebff9af1ebffacf1ebff0212ecff0c12ecff5612ecff4036ecff5236ecfff67ff6ff9680f6ffc89af8ff069ef8ff2498faff4a36fbff10f5fcff72f5fcffc8fafcff1a03fdff1e04fdff9828fdff9c28fdff1029fdfffefafffff4ffffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -823,9 +823,9 @@ MonoBehaviour:
     m_Tooltip: 
   m_Pos:
     serializedVersion: 2
-    x: 3299
+    x: 3171
     y: 73
-    width: 190
+    width: 318
     height: 607
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1166,7 +1166,7 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: -109, y: -226}
+      snapOffset: {x: -216, y: -226}
       snapOffsetDelta: {x: 0, y: 0}
       snapCorner: 3
       id: AINavigationOverlay
@@ -1299,7 +1299,7 @@ MonoBehaviour:
     serializedVersion: 2
     x: 2186
     y: 73
-    width: 1111
+    width: 983
     height: 607
   m_SerializedDataModeController:
     m_DataMode: 0
@@ -1353,23 +1353,23 @@ MonoBehaviour:
       serializedVersion: 2
       x: 0
       y: 21
-      width: 1111
+      width: 983
       height: 586
-    m_Scale: {x: 0.5425926, y: 0.5425926}
-    m_Translation: {x: 555.5, y: 293}
+    m_Scale: {x: 0.51197916, y: 0.51197916}
+    m_Translation: {x: 491.5, y: 293}
     m_MarginLeft: 0
     m_MarginRight: 0
     m_MarginTop: 0
     m_MarginBottom: 0
     m_LastShownAreaInsideMargins:
       serializedVersion: 2
-      x: -1023.7884
-      y: -540
-      width: 2047.5768
-      height: 1080
+      x: -960
+      y: -572.28894
+      width: 1920
+      height: 1144.5779
     m_MinimalGUI: 1
-  m_defaultScale: 0.5425926
-  m_LastWindowPixelSize: {x: 1111, y: 607}
+  m_defaultScale: 0.51197916
+  m_LastWindowPixelSize: {x: 983, y: 607}
   m_ClearInEditMode: 1
   m_NoCameraWarning: 1
   m_LowResolutionForAspectRatios: 01000000000000000000

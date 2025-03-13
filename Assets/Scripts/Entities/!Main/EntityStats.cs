@@ -262,7 +262,7 @@ public class EntityStats : NetworkBehaviour
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
 
-		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
@@ -405,7 +405,7 @@ public class EntityStats : NetworkBehaviour
 
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}
@@ -489,12 +489,12 @@ public class EntityStats : NetworkBehaviour
 		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
 		currentStatusEffects.Add(statusEffect);
 
-		if (IsPlayerEntity()) return;
+		if (!IsPlayerEntity()) return;
 
 		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
 			playerRef.MarkPlayer();
 
-		if (playerRef.IsLocalPlayerOrSp())
+		if (EntityIsLocalPlayer())
 			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
 	}
 	public void RemoveStatusEffectValues(AbilityStatusEffect statusEffect)
@@ -543,12 +543,12 @@ public class EntityStats : NetworkBehaviour
 	{
 		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
 
-		if (IsPlayerEntity()) return;
+		if (!IsPlayerEntity()) return;
 
 		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
 			playerRef.MarkPlayer();
 
-		if (playerRef.IsLocalPlayerOrSp())
+		if (EntityIsLocalPlayer())
 			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
 	}
 
@@ -824,7 +824,7 @@ public class EntityStats : NetworkBehaviour
 	//update ui info if player
 	private void UpdatePlayerStatInfoUi()
 	{
-		if (!IsPlayerEntity() && !playerRef.IsLocalPlayerOrSp()) return;
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		PlayerEventManager.PlayerStatChange(this);
@@ -842,5 +842,10 @@ public class EntityStats : NetworkBehaviour
 		if (playerRef != null && statsRef.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
 			return true;
 		else return false;
+	}
+	public bool EntityIsLocalPlayer()
+	{
+		if (playerRef == null) return false;
+		return playerRef.PlayerIsLocalPlayer();
 	}
 }

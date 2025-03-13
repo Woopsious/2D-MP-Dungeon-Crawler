@@ -40,10 +40,12 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		PlayerController.OnNewTargetSelected += OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent += OnTargetDeathUnSelect;
 	}
 	private void OnDisable()
 	{
+		PlayerController.OnNewTargetSelected -= OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 	}
 

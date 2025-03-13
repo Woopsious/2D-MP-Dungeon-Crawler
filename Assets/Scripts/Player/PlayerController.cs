@@ -36,7 +36,7 @@ public class PlayerController : NetworkBehaviour
 	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
 
 	//target selected event
-	public event Action<EntityStats> OnNewTargetSelected;
+	public static event Action<EntityStats> OnNewTargetSelected;
 
 	//targetlist update timer
 	private readonly float updateTargetListCooldown = 0.5f;
@@ -77,8 +77,6 @@ public class PlayerController : NetworkBehaviour
 	private void Start()
 	{
 		Initilize();
-
-		OnNewTargetSelected += PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
 	}
 
 	private void OnEnable()
@@ -92,8 +90,6 @@ public class PlayerController : NetworkBehaviour
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 		ObjectPoolingManager.RemovePlayerFromList(this);
-
-		OnNewTargetSelected -= PlayerSelectedTargetsUi.Instance.OnNewTargetSelected;
 	}
 
 	private void Update()
@@ -118,7 +114,7 @@ public class PlayerController : NetworkBehaviour
 	//set player data
 	private void Initilize()
 	{
-		if (IsLocalPlayerOrSp())
+		if (PlayerIsLocalPlayer())
 		{
 			UpdateLocalPlayerReferences();
 
@@ -670,17 +666,17 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//bool checks
-	private bool IsPlayerInteracting()
-	{
-		if (isInteractingWithInteractable)
-			return true;
-		else return false;
-	}
-	public bool IsLocalPlayerOrSp()
+	public bool PlayerIsLocalPlayer()
 	{
 		if (!MultiplayerManager.IsMultiplayer())
 			return true;
 		else if (IsLocalPlayer)
+			return true;
+		else return false;
+	}
+	private bool IsPlayerInteracting()
+	{
+		if (isInteractingWithInteractable)
 			return true;
 		else return false;
 	}
