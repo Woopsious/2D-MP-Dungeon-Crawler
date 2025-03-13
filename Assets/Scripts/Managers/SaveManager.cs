@@ -95,6 +95,8 @@ public class SaveManager : MonoBehaviour
 	//SAVING PLAYER DATA
 	public void SavePlayerData()
 	{
+		Debug.LogError("SAVE PLAYER DATA");
+
 		DeletePlayerData();
 
 		string directory = Application.persistentDataPath + "/PlayerData";
@@ -114,7 +116,8 @@ public class SaveManager : MonoBehaviour
 			autoSelectNewTarget = PlayerSettingsManager.Instance.autoSelectNewTarget,
 			autoCastDirectionalAbilitiesAtTarget = PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget,
 			autoCastAoeAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget,
-			autoCastEffectAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget,
+			autoCastEffectAbilitiesOnEnemyTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnEnemyTarget,
+			autoCastEffectAbilitiesOnFriendlyTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnFriendlyTarget,
 			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
 			musicVolume = AudioManager.Instance.musicVolume,
 			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
@@ -127,6 +130,8 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadPlayerData()
 	{
+		Debug.LogError("LOAD PLAYER DATA");
+
 		string directory = Application.persistentDataPath + "/PlayerData";
 		string filePath = Application.persistentDataPath + "/PlayerData/data.json";
 
@@ -141,7 +146,7 @@ public class SaveManager : MonoBehaviour
 
 		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.mainAttackIsAutomatic, playerData.autoSelectNewTarget,
 			playerData.autoCastDirectionalAbilitiesAtTarget, playerData.autoCastAoeAbilitiesOnTarget, 
-			playerData.autoCastEffectAbilitiesOnTarget);
+			playerData.autoCastEffectAbilitiesOnEnemyTarget, playerData.autoCastEffectAbilitiesOnFriendlyTarget);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -449,7 +454,8 @@ public class PlayerData
 	public bool autoSelectNewTarget;
 	public bool autoCastDirectionalAbilitiesAtTarget;
 	public bool autoCastAoeAbilitiesOnTarget;
-	public bool autoCastEffectAbilitiesOnTarget;
+	public bool autoCastEffectAbilitiesOnEnemyTarget;
+	public bool autoCastEffectAbilitiesOnFriendlyTarget;
 
 	public string keybindsData;
 

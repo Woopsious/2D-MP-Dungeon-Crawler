@@ -30,10 +30,13 @@ public class PlayerController : NetworkBehaviour
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
 	private float mainAttackAutoAttackTimer;
 
-	[Header("Player Targeting")] // +info
+	[Header("Player Enemy Targeting")] // +info
 	public EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
 	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+
+	[Header("Player Friendly Targeting")] // +info
+	public EntityStats selectedFriendlyTarget;
 
 	//target selected event
 	public static event Action<EntityStats> OnNewTargetSelected;
@@ -456,7 +459,7 @@ public class PlayerController : NetworkBehaviour
 		abilityCastingTimer = queuedAbility.abilityBaseRef.abilityCastingTimer;
 		OnPlayerCastAbility?.Invoke();
 	}
-	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
+	private EntityStats TryGrabNewEntityOnEffectCasting(bool lookingForFriendly)	//add support/option to handle friendly targets
 	{
 		EntityStats newEntity;
 		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
@@ -486,7 +489,7 @@ public class PlayerController : NetworkBehaviour
 		abilityCastingTimer = 0;
 	}
 
-	//casting timer
+	//casting timer + casting of ability
 	private void AbilityCastingTimer()
 	{
 		if (abilityBeingCasted != null)
@@ -499,20 +502,15 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void CastAbility(Abilities ability)
 	{
-		//do final targeting checks here before casting anything
-		EntityStats enemyTarget = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnQueuedAbilityClick(false);
-
 		if (ability.abilityBaseRef.isProjectile || ability.abilityBaseRef.isAOE)
 		{
 			if (MultiplayerManager.IsMultiplayer())
-				SyncSetUpAbilitiesRpc(playerStats.NetworkObjectId, GetAbilityIndex(ability.abilityBaseRef), GetAbilityAttackPos(ability));
+				SyncSetUpAndCastAbilitiesRpc(playerStats.NetworkObjectId, GetAbilityIndex(ability.abilityBaseRef), GetAbilityAttackPos(ability));
 			else
-				SetUpAbilities(playerStats, ability.abilityBaseRef, GetAbilityAttackPos(ability));
+				SetUpAndCastAbilities(playerStats, ability.abilityBaseRef, GetAbilityAttackPos(ability));
 		}
-		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
-			CastEffect(ability, enemyTarget);
-		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)   //for MP add support for friendlies
-			CastEffect(ability, playerStats);
+		else if (ability.abilityBaseRef.requiresTarget)
+			CastEffectAbilities(ability);
 		else
 		{
 			CancelAbility();
@@ -521,24 +519,6 @@ public class PlayerController : NetworkBehaviour
 		}
 
 		OnSuccessfulCast(ability);
-	}
-	private Vector2 GetAbilityAttackPos(Abilities ability)
-	{
-		if (ability.abilityBaseRef.isProjectile)
-		{
-			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
-				return selectedEnemyTarget.transform.position;
-			else
-				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		}
-		else if (ability.abilityBaseRef.isAOE)
-		{
-			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
-				return selectedEnemyTarget.transform.position;
-			else
-				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
-		}
-		else return new Vector2(0,0);
 	}
 	private void OnSuccessfulCast(Abilities ability)
 	{
@@ -552,65 +532,22 @@ public class PlayerController : NetworkBehaviour
 		abilityBeingCasted = null;
 	}
 
-	//set up ability casts
-	private void CastEffect(Abilities ability, EntityStats enemyTarget)
-	{
-		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing) //healing
-		{
-			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
-			{
-				playerStats.RecieveHealing(
-					ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
-			}
-			else
-			{
-				CancelAbility();     //add support/option to heal other players for MP
-				return;
-			}
-		}
-
-		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
-		{
-			DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue * 
-				playerStats.levelModifier, ability.abilityBaseRef.damageType, false);
-
-			damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
-			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
-		}
-
-		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects (if has any) based on what type it is.
-		{
-			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (!ability.abilityBaseRef.isOffensiveAbility)         //add support/option to buff other players for MP
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else
-			{
-				Debug.LogError("failed to cast status effect");
-				CancelAbility();
-				return;
-			}
-		}
-
-		OnSuccessfulCast(ability);
-	}
+	//set up and cast projectile/aoe ability types
 	[Rpc(SendTo.Server, RequireOwnership = false)]
-	private void SyncSetUpAbilitiesRpc(ulong casterId, int abilityIndex, Vector2 attackPos)
+	private void SyncSetUpAndCastAbilitiesRpc(ulong casterId, int abilityIndex, Vector2 attackPos)
 	{
 		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
 		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
-		SetUpAbilities(casterStats, ability, attackPos);
+		SetUpAndCastAbilities(casterStats, ability, attackPos);
 	}
-	private void SetUpAbilities(EntityStats casterStats, SOAbilities ability, Vector2 attackPos)
+	private void SetUpAndCastAbilities(EntityStats casterStats, SOAbilities ability, Vector2 attackPos)
 	{
 		if (ability.isProjectile)
-			SetUpProjectileAbility(casterStats, ability, attackPos);
+			SetUpAndCastProjectileAbility(casterStats, ability, attackPos);
 		else if (ability.isAOE)
-			SetUpAoeAbility(casterStats, ability, attackPos);
+			SetUpAndCastAoeAbility(casterStats, ability, attackPos);
 	}
-	private void SetUpProjectileAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	private void SetUpAndCastProjectileAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
 		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
@@ -625,7 +562,7 @@ public class PlayerController : NetworkBehaviour
 
 		projectile.Initilize(casterStats, abilityRef,attackPos);
 	}
-	private void SetUpAoeAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	private void SetUpAndCastAoeAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
 		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
 		if (abilityAOE == null)
@@ -642,7 +579,65 @@ public class PlayerController : NetworkBehaviour
 		abilityAOE.Initilize(casterStats, abilityRef, attackPos);
 	}
 
+	//set up and cast effect types
+	private void CastEffectAbilities(Abilities ability)
+	{
+		EntityStats target;
+
+		if (ability.abilityBaseRef.isOffensiveAbility)
+			target = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnEffectCasting(false);
+		else
+			target = playerStats; //update to include support for friendlies
+
+		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing)
+			CastHealingEffect(ability, target);
+		else if (ability.abilityBaseRef.damageValue != 0)
+			CastDamageEffect(ability, target);
+
+		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects if any
+			target.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+	}
+	private void CastHealingEffect(Abilities ability, EntityStats target)
+	{
+		if (target.currentHealth < target.maxHealth.finalValue) //cancel heal if player at full health
+		{
+			target.RecieveHealing(
+				ability.abilityBaseRef.damageValuePercentage, true, target.healingPercentageModifier.finalPercentageValue);
+		}
+		else
+		{
+			CancelAbility();     //add support/option to heal other players for MP
+			return;
+		}
+	}
+	private void CastDamageEffect(Abilities ability, EntityStats target)
+	{
+		DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue *
+			playerStats.levelModifier, ability.abilityBaseRef.damageType, false);
+
+		damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
+		target.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
+	}
+
 	//casting helper funcs
+	private Vector2 GetAbilityAttackPos(Abilities ability)
+	{
+		if (ability.abilityBaseRef.isProjectile)
+		{
+			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else if (ability.abilityBaseRef.isAOE)
+		{
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else return new Vector2(0, 0);
+	}
 	private int GetAbilityIndex(SOAbilities ability)
 	{
 		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)

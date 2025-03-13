@@ -233,11 +233,16 @@ public class Abilities : MonoBehaviour
 		{
 			if (abilityBaseRef.isOffensiveAbility)
 			{
-				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget && PlayerHasSelectedEnemy())
+				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnEnemyTarget && PlayerHasSelectedEnemy())
 					return true;
 				else return false;
 			}
-			else return true; //always possible to insta cast positive buffs on self
+			else
+			{
+				if (PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnFriendlyTarget && PlayerHasSelectedFriendly())
+					return true;
+				else return false;
+			}
 		}
 
 		Debug.LogError("failed to figure out if ability can be insta casted");
@@ -246,6 +251,12 @@ public class Abilities : MonoBehaviour
 	private bool PlayerHasSelectedEnemy()
 	{
 		if (GameManager.Localplayer.selectedEnemyTarget != null)
+			return true;
+		else return false;
+	}
+	private bool PlayerHasSelectedFriendly()
+	{
+		if (GameManager.Localplayer.selectedFriendlyTarget != null)
 			return true;
 		else return false;
 	}

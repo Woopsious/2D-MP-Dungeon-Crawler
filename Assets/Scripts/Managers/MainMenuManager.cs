@@ -206,9 +206,6 @@ public class MainMenuManager : MonoBehaviour
 	{
 		SetActionForPlayMpButton();
 		HideSaveSlotsMenu();
-		HideKeybindsMenu();
-		HidePlayerSettingsMenu();
-		HideAudioMenu();
 		mainMenuPanel.SetActive(true);
 		GameManager.Instance.PauseGame(true);
 	}

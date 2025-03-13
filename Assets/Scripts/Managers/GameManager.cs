@@ -68,6 +68,11 @@ public class GameManager : MonoBehaviour
 			LoadMainMenu(); //starting scene = MainScene
 	}
 
+	private void Start()
+	{
+		SaveManager.Instance.LoadPlayerData();
+	}
+
 	private void OnEnable()
 	{
 		SceneManager.sceneLoaded += OnLoadSceneFinish;
