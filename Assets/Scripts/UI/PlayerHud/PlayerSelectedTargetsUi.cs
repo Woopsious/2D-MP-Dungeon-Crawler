@@ -8,35 +8,58 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 {
 	public static PlayerSelectedTargetsUi Instance;
 
-	public GameObject selectedTargetPanelUi;
-	private EntityStats selectedTarget;
+	private EntityStats selectedEnemyTarget;
+	private EntityStats selectedFriendlyTarget;
 
-	[Header("Selected Target Uis")]
-	public GameObject selectedTargetTrackerUi;
-	public GameObject unSelectedTargetUi;
-	public GameObject selectedTargetUi;
+	[Header("Selected Enemy Target Uis")]
+	public GameObject selectedEnemyTargetPanelUi;
+	public GameObject unSelectedEnemyTargetUi;
+	public GameObject selectedEnemyTargetTrackerUi;
+	public GameObject selectedEnemyTargetUi;
 
-	[Header("Selected Target Ui comps")]
-	public TMP_Text selectedTargetUiName;
-	public Image selectedTargetUiImage;
-	public Image selectedTargetHealthBarFiller;
-	public TMP_Text selectedTargetHealth;
-	public Image selectedTargetManaBarFiller;
-	public TMP_Text selectedTargetMana;
+	[Header("Selected Enemy Target Ui comps")]
+	public TMP_Text selectedEnemyTargetUiName;
+	public Image selectedEnemyTargetUiImage;
+	public Image selectedEnemyTargetHealthBarFiller;
+	public TMP_Text selectedEnemyTargetHealth;
+	public Image selectedEnemyTargetManaBarFiller;
+	public TMP_Text selectedEnemyTargetMana;
 
-	[Header("Selected Target Status Effects Ui")]
-	public GameObject selectedTargetEffectsContentObj;
+	[Header("Selected Enemy Target Status Effects Ui")]
+	public GameObject selectedEnemyTargetEffectsContentObj;
+
+	[Header("Selected Friendly Target Uis")]
+	public GameObject selectedFriendlyTargetPanelUi;
+	public GameObject unSelectedFriendlyTargetUi;
+	public GameObject selectedFriendlyTargetTrackerUi;
+	public GameObject selectedFriendlyTargetUi;
+
+	[Header("Selected Friendly Target Ui comps")]
+	public TMP_Text selectedFriendlyTargetUiName;
+	public Image selectedFriendlyTargetUiImage;
+	public Image selectedFriendlyTargetHealthBarFiller;
+	public TMP_Text selectedFriendlyTargetHealth;
+	public Image selectedFriendlyTargetManaBarFiller;
+	public TMP_Text selectedFriendlyTargetMana;
+
+	[Header("Selected Friendly Target Status Effects Ui")]
+	public GameObject selectedFriendlyTargetEffectsContentObj;
 
 	public void Awake()
 	{
 		Instance = this;
-		selectedTargetTrackerUi.SetActive(false);
-		unSelectedTargetUi.SetActive(false);
-		selectedTargetUi.SetActive(false);
+		selectedEnemyTargetTrackerUi.SetActive(false);
+		selectedEnemyTargetUi.SetActive(false);
+		unSelectedEnemyTargetUi.SetActive(false);
+
+		selectedFriendlyTargetTrackerUi.SetActive(false);
+		selectedFriendlyTargetUi.SetActive(false);
+		unSelectedFriendlyTargetUi.SetActive(false);
 	}
 	private void Update()
 	{
-		UpdateSelectedTargetTrackerUi();
+		UpdateSelectedEnemyTargetTrackerUi();
+		//UpdateSelectedFriendlyTargetTrackerUi();
 	}
 	private void OnEnable()
 	{
@@ -53,61 +76,131 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	//events
 	public void OnNewTargetSelected(EntityStats entityStats)
 	{
-		selectedTargetTrackerUi.SetActive(true);
-		selectedTargetUi.SetActive(true);
-		unSelectedTargetUi.SetActive(false);
-
-		if (selectedTarget != null) //unsub from old target
-		{
-			selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-			selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-			selectedTarget.OnStatusEffectAppliedEvent -= OnStatusEffectAppliedToEnemyTarget;
-		}
-
-		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
-		{
-			Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
-			ability.gameObject.SetActive(false);
-		}
-
-		selectedTarget = entityStats;
-		selectedTargetUiImage.sprite = entityStats.statsRef.sprite;
-
-		if (SelectedTargetHasUniqueName(selectedTarget.statsRef.isBossVersion, selectedTarget.statsRef.humanoidType))
-			selectedTargetUiName.text = entityStats.statsRef.entityName;
+		if (!entityStats.IsPlayerEntity())
+			SelectEnemyTarget(entityStats);
 		else
-			selectedTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
-
-		//new target event subs
-		selectedTarget.OnHealthChangeEvent += OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent += OnTargetManaChange;
-		selectedTarget.OnStatusEffectAppliedEvent += OnStatusEffectAppliedToEnemyTarget;
-
-		//initial setting data for ui
-		OnTargetHealthChange(selectedTarget.maxHealth.finalValue, selectedTarget.currentHealth);
-		OnTargetManaChange(selectedTarget.maxMana.finalValue, selectedTarget.currentMana);
-
-		foreach (AbilityStatusEffect statusEffect in selectedTarget.currentStatusEffects)
-			OnStatusEffectAppliedToEnemyTarget(statusEffect);
+			SelectFriendlyTarget(entityStats);
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
-		ClearSelectedTarget();
+		EntityStats entityStats = obj.GetComponent<EntityStats>();
+
+		if (!entityStats.IsPlayerEntity())
+			ClearSelectedEnemyTarget();
+		else
+			ClearSelectedFriendlyTarget();
 	}
-	public void ClearSelectedTarget()
+
+	//target select types
+	private void SelectEnemyTarget(EntityStats entityStats)
 	{
-		selectedTargetTrackerUi.SetActive(false);
-		selectedTargetUi.SetActive(false);
-		unSelectedTargetUi.SetActive(true);
+		selectedEnemyTargetTrackerUi.SetActive(true);
+		selectedEnemyTargetUi.SetActive(true);
+		unSelectedEnemyTargetUi.SetActive(false);
+
+		if (selectedEnemyTarget != null) //unsub from old target
+		{
+			selectedEnemyTarget.OnHealthChangeEvent -= OnEnemyTargetHealthChange;
+			selectedEnemyTarget.OnManaChangeEvent -= OnEnemyTargetManaChange;
+			selectedEnemyTarget.OnStatusEffectAppliedEvent -= OnEnemyTargetStatusEffectApplied;
+		}
+
+		for (int i = 0; i < selectedEnemyTargetEffectsContentObj.transform.childCount; i++)
+		{
+			Abilities ability = selectedEnemyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+			ability.gameObject.SetActive(false);
+		}
+
+		selectedEnemyTarget = entityStats;
+		selectedEnemyTargetUiImage.sprite = entityStats.statsRef.sprite;
+
+		if (SelectedTargetHasUniqueName(selectedEnemyTarget.statsRef.isBossVersion, selectedEnemyTarget.statsRef.humanoidType))
+			selectedEnemyTargetUiName.text = entityStats.statsRef.entityName;
+		else
+			selectedEnemyTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
+
+		//new target event subs
+		selectedEnemyTarget.OnHealthChangeEvent -= OnEnemyTargetHealthChange;
+		selectedEnemyTarget.OnManaChangeEvent -= OnEnemyTargetManaChange;
+		selectedEnemyTarget.OnStatusEffectAppliedEvent -= OnEnemyTargetStatusEffectApplied;
+
+		//initial setting data for ui
+		OnEnemyTargetHealthChange(selectedEnemyTarget.maxHealth.finalValue, selectedEnemyTarget.currentHealth);
+		OnEnemyTargetManaChange(selectedEnemyTarget.maxMana.finalValue, selectedEnemyTarget.currentMana);
+
+		foreach (AbilityStatusEffect statusEffect in selectedEnemyTarget.currentStatusEffects)
+			OnEnemyTargetStatusEffectApplied(statusEffect);
+	}
+	private void SelectFriendlyTarget(EntityStats entityStats)
+	{
+		selectedFriendlyTargetTrackerUi.SetActive(true);
+		selectedFriendlyTargetUi.SetActive(true);
+		unSelectedFriendlyTargetUi.SetActive(false);
+
+		if (selectedFriendlyTarget != null) //unsub from old target
+		{
+			selectedFriendlyTarget.OnHealthChangeEvent -= OnFriendlyTargetHealthChange;
+			selectedFriendlyTarget.OnManaChangeEvent -= OnFriendlyTargetManaChange;
+			selectedFriendlyTarget.OnStatusEffectAppliedEvent -= OnFriendlyTargetStatusEffectApplied;
+		}
+
+		for (int i = 0; i < selectedFriendlyTargetEffectsContentObj.transform.childCount; i++)
+		{
+			Abilities ability = selectedFriendlyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+			ability.gameObject.SetActive(false);
+		}
+
+		selectedFriendlyTarget = entityStats;
+		selectedFriendlyTargetUiImage.sprite = entityStats.statsRef.sprite;
+
+		if (SelectedTargetHasUniqueName(selectedFriendlyTarget.statsRef.isBossVersion, selectedFriendlyTarget.statsRef.humanoidType))
+			selectedFriendlyTargetUiName.text = entityStats.statsRef.entityName;
+		else
+			selectedFriendlyTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
+
+		//new target event subs
+		selectedFriendlyTarget.OnHealthChangeEvent -= OnFriendlyTargetHealthChange;
+		selectedFriendlyTarget.OnManaChangeEvent -= OnFriendlyTargetManaChange;
+		selectedFriendlyTarget.OnStatusEffectAppliedEvent -= OnFriendlyTargetStatusEffectApplied;
+
+		//initial setting data for ui
+		OnFriendlyTargetHealthChange(selectedFriendlyTarget.maxHealth.finalValue, selectedFriendlyTarget.currentHealth);
+		OnFriendlyTargetManaChange(selectedFriendlyTarget.maxMana.finalValue, selectedFriendlyTarget.currentMana);
+
+		foreach (AbilityStatusEffect statusEffect in selectedFriendlyTarget.currentStatusEffects)
+			OnFriendlyTargetStatusEffectApplied(statusEffect);
+	}
+
+	//clear targets
+	public void ClearSelectedEnemyTarget()
+	{
+		selectedEnemyTargetTrackerUi.SetActive(false);
+		selectedEnemyTargetUi.SetActive(false);
+		unSelectedEnemyTargetUi.SetActive(true);
 		GameManager.Localplayer.ClearSelectedTarget();
 
-		if (selectedTarget == null) return;
+		if (selectedEnemyTarget == null) return;
 
-		selectedTarget.OnHealthChangeEvent -= OnTargetHealthChange;
-		selectedTarget.OnManaChangeEvent -= OnTargetManaChange;
-		selectedTarget.OnStatusEffectAppliedEvent -= OnStatusEffectAppliedToEnemyTarget;
+		selectedEnemyTarget.OnHealthChangeEvent -= OnEnemyTargetHealthChange;
+		selectedEnemyTarget.OnManaChangeEvent -= OnEnemyTargetManaChange;
+		selectedEnemyTarget.OnStatusEffectAppliedEvent -= OnEnemyTargetStatusEffectApplied;
 
-		selectedTarget = null;
+		selectedEnemyTarget = null;
+	}
+	public void ClearSelectedFriendlyTarget()
+	{
+		selectedFriendlyTargetTrackerUi.SetActive(false);
+		selectedFriendlyTargetUi.SetActive(false);
+		unSelectedFriendlyTargetUi.SetActive(true);
+		GameManager.Localplayer.ClearSelectedTarget();
+
+		if (selectedFriendlyTarget == null) return;
+
+		selectedFriendlyTarget.OnHealthChangeEvent -= OnFriendlyTargetHealthChange;
+		selectedFriendlyTarget.OnManaChangeEvent -= OnFriendlyTargetManaChange;
+		selectedFriendlyTarget.OnStatusEffectAppliedEvent -= OnFriendlyTargetStatusEffectApplied;
+
+		selectedFriendlyTarget = null;
 	}
 
 	//bool check
@@ -121,36 +214,36 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	}
 
 	//ui updates
-	private void UpdateSelectedTargetTrackerUi()
+	private void UpdateSelectedEnemyTargetTrackerUi()
 	{
-		if (selectedTarget == null || !selectedTargetTrackerUi.activeInHierarchy) return;
-		Vector2 position = Camera.main.WorldToScreenPoint(selectedTarget.transform.position);
-		selectedTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
+		if (selectedEnemyTarget == null || !selectedEnemyTargetTrackerUi.activeInHierarchy) return;
+		Vector2 position = Camera.main.WorldToScreenPoint(selectedEnemyTarget.transform.position);
+		selectedEnemyTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
 	}
 
-	//ui event updates
-	private void OnTargetHealthChange(int MaxValue, int currentValue)
+	//ui enemy event updates
+	private void OnEnemyTargetHealthChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
-		selectedTargetHealthBarFiller.fillAmount = percentage;
-		selectedTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
+		selectedEnemyTargetHealthBarFiller.fillAmount = percentage;
+		selectedEnemyTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	private void OnTargetManaChange(int MaxValue, int currentValue)
+	private void OnEnemyTargetManaChange(int MaxValue, int currentValue)
 	{
 		float percentage = (float)currentValue / MaxValue;
-		selectedTargetManaBarFiller.fillAmount = percentage;
-		selectedTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
+		selectedEnemyTargetManaBarFiller.fillAmount = percentage;
+		selectedEnemyTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
 	}
-	private void OnStatusEffectAppliedToEnemyTarget(AbilityStatusEffect statusEffect)
+	private void OnEnemyTargetStatusEffectApplied(AbilityStatusEffect statusEffect)
 	{
 		bool createNewUiTimer = true;
 
 		//check for dup effect timers, if found reset effect timer
-		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
+		for (int i = 0; i < selectedEnemyTargetEffectsContentObj.transform.childCount; i++)
 		{
-			Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+			Abilities ability = selectedEnemyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
 
-			if (selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			if (selectedEnemyTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
 			{
 				if (ability.effectBaseRef == statusEffect.GetBaseStatusEffect())
 				{
@@ -162,11 +255,56 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 
 		//if none found set up new timer for said effect
 		if (!createNewUiTimer) return;
-		for (int i = 0; i < selectedTargetEffectsContentObj.transform.childCount; i++)
+		for (int i = 0; i < selectedEnemyTargetEffectsContentObj.transform.childCount; i++)
 		{
-			if (selectedTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy) continue;
+			if (selectedEnemyTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy) continue;
 
-			Abilities ability = selectedTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+			Abilities ability = selectedEnemyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+			ability.InitilizeStatusEffectUiTimer(statusEffect.GetBaseStatusEffect(), statusEffect.GetAbilityDuration());
+			ability.gameObject.SetActive(true);
+			return;
+		}
+	}
+
+	//ui friendly event updates
+	private void OnFriendlyTargetHealthChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedFriendlyTargetHealthBarFiller.fillAmount = percentage;
+		selectedFriendlyTargetHealth.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	private void OnFriendlyTargetManaChange(int MaxValue, int currentValue)
+	{
+		float percentage = (float)currentValue / MaxValue;
+		selectedFriendlyTargetManaBarFiller.fillAmount = percentage;
+		selectedFriendlyTargetMana.text = currentValue.ToString() + "/" + MaxValue.ToString();
+	}
+	private void OnFriendlyTargetStatusEffectApplied(AbilityStatusEffect statusEffect)
+	{
+		bool createNewUiTimer = true;
+
+		//check for dup effect timers, if found reset effect timer
+		for (int i = 0; i < selectedFriendlyTargetEffectsContentObj.transform.childCount; i++)
+		{
+			Abilities ability = selectedFriendlyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
+
+			if (selectedFriendlyTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy)
+			{
+				if (ability.effectBaseRef == statusEffect.GetBaseStatusEffect())
+				{
+					ability.ResetEffectTimer();
+					createNewUiTimer = false;
+				}
+			}
+		}
+
+		//if none found set up new timer for said effect
+		if (!createNewUiTimer) return;
+		for (int i = 0; i < selectedFriendlyTargetEffectsContentObj.transform.childCount; i++)
+		{
+			if (selectedFriendlyTargetEffectsContentObj.transform.GetChild(i).gameObject.activeInHierarchy) continue;
+
+			Abilities ability = selectedFriendlyTargetEffectsContentObj.transform.GetChild(i).GetComponent<Abilities>();
 			ability.InitilizeStatusEffectUiTimer(statusEffect.GetBaseStatusEffect(), statusEffect.GetAbilityDuration());
 			ability.gameObject.SetActive(true);
 			return;

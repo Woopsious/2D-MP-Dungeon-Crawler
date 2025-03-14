@@ -55,7 +55,8 @@ public class MainMenuManager : MonoBehaviour
 		{
 			Instance.ShowMainMenu();
 			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
-			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -64,7 +65,8 @@ public class MainMenuManager : MonoBehaviour
 		{
 			Instance.HideMainMenu();
 			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
-			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);
@@ -95,7 +97,8 @@ public class MainMenuManager : MonoBehaviour
 		{
 			Instance.ShowMainMenu();
 			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
-			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(false);
 
 			quitGameButton.SetActive(true);
 			startNewGameButton.SetActive(true);
@@ -104,7 +107,8 @@ public class MainMenuManager : MonoBehaviour
 		{
 			Instance.HideMainMenu();
 			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
-			PlayerSelectedTargetsUi.Instance.selectedTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(true);
 
 			quitGameButton.SetActive(false);
 			startNewGameButton.SetActive(false);

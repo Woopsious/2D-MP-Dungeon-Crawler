@@ -86,6 +86,17 @@ public class MultiplayerManager : NetworkBehaviour
 	//UPDATE MP MODE
 	public static void UpdateIsMultiplayer(bool isMultiplayer)
 	{
+		if (isMultiplayer)
+		{
+			PlayerPartyUi.Instance.playerPartyPanelUi.SetActive(true);
+			PlayerPartyUi.Instance.partyMessagesPanelUi.SetActive(true);
+		}
+		else
+		{
+			PlayerPartyUi.Instance.playerPartyPanelUi.SetActive(false);
+			PlayerPartyUi.Instance.partyMessagesPanelUi.SetActive(false);
+		}
+
 		Instance.isMultiplayer = isMultiplayer;
 	}
 
