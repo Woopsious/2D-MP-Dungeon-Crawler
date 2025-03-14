@@ -499,7 +499,7 @@ MonoBehaviour:
   debugPlayerLevel: 15
   includeMe:
     serializedVersion: 2
-    m_Bits: 576
+    m_Bits: 832
   playerStats: {fileID: 0}
   playerClassHandler: {fileID: 0}
   playerEquipmentHandler: {fileID: 0}
@@ -507,6 +507,7 @@ MonoBehaviour:
   enemyDetection: {fileID: 0}
   speed: 12
   selectedEnemyTarget: {fileID: 0}
+  selectedFriendlyTarget: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   PlayerBossMarker: {fileID: 4405649885330172717}

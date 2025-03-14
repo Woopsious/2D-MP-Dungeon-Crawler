@@ -59,7 +59,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	private void Update()
 	{
 		UpdateSelectedEnemyTargetTrackerUi();
-		//UpdateSelectedFriendlyTargetTrackerUi();
+		UpdateSelectedFriendlyTargetTrackerUi();
 	}
 	private void OnEnable()
 	{
@@ -74,7 +74,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 
 	//SELECTED TARGET UI
 	//events
-	public void OnNewTargetSelected(EntityStats entityStats)
+	private void OnNewTargetSelected(EntityStats entityStats)
 	{
 		if (!entityStats.IsPlayerEntity())
 			SelectEnemyTarget(entityStats);
@@ -171,13 +171,14 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 			OnFriendlyTargetStatusEffectApplied(statusEffect);
 	}
 
-	//clear targets
+	//clear targets + on button click
 	public void ClearSelectedEnemyTarget()
 	{
 		selectedEnemyTargetTrackerUi.SetActive(false);
 		selectedEnemyTargetUi.SetActive(false);
 		unSelectedEnemyTargetUi.SetActive(true);
-		GameManager.Localplayer.ClearSelectedTarget();
+
+		GameManager.Localplayer.ClearSelectedTarget(false);
 
 		if (selectedEnemyTarget == null) return;
 
@@ -192,7 +193,8 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedFriendlyTargetTrackerUi.SetActive(false);
 		selectedFriendlyTargetUi.SetActive(false);
 		unSelectedFriendlyTargetUi.SetActive(true);
-		GameManager.Localplayer.ClearSelectedTarget();
+
+		GameManager.Localplayer.ClearSelectedTarget(true);
 
 		if (selectedFriendlyTarget == null) return;
 
@@ -219,6 +221,12 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		if (selectedEnemyTarget == null || !selectedEnemyTargetTrackerUi.activeInHierarchy) return;
 		Vector2 position = Camera.main.WorldToScreenPoint(selectedEnemyTarget.transform.position);
 		selectedEnemyTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
+	}
+	private void UpdateSelectedFriendlyTargetTrackerUi()
+	{
+		if (selectedFriendlyTarget == null || !selectedFriendlyTargetTrackerUi.activeInHierarchy) return;
+		Vector2 position = Camera.main.WorldToScreenPoint(selectedFriendlyTarget.transform.position);
+		selectedFriendlyTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
 	}
 
 	//ui enemy event updates

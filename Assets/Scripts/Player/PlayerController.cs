@@ -227,14 +227,19 @@ public class PlayerController : NetworkBehaviour
 	//mouse select targeting
 	private void CheckForSelectableTarget()
 	{
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 100, includeMe);
 		if (hit.collider == null)
 			return;
 		if (hit.collider.GetComponent<EntityStats>() == null)
 			return;
 
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
-		if (!entityStats.IsPlayerEntity())
+		if (entityStats.IsPlayerEntity())
+		{
+			SetNewFriendlySelectedTarget(entityStats);
+			return;
+		}
+		else
 		{
 			for (int i = 0; i < EnemyTargetList.Count; i++)
 			{
@@ -250,15 +255,21 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		if (selectedEnemyTarget == null) return;
-		if (selectedEnemyTarget.gameObject != obj) return;
-
-		ClearSelectedTarget();
-	}
-	public void ClearSelectedTarget()
+		EntityStats entityStats = obj.GetComponent<EntityStats>();
+		if (entityStats.IsPlayerEntity() && entityStats == selectedFriendlyTarget)
+			ClearSelectedTarget(true);
+		else if (!entityStats.IsPlayerEntity() && entityStats == selectedEnemyTarget)
+			ClearSelectedTarget(false);
+    }
+	public void ClearSelectedTarget(bool targetFriendly)
 	{
-		selectedEnemyTarget = null;
-		selectedEnemyTargetIndex = 0;
+        if (targetFriendly)
+			selectedFriendlyTarget = null;
+		else
+		{
+			selectedEnemyTarget = null;
+			selectedEnemyTargetIndex = 0;
+		}
 	}
 
 	//tab targeting
@@ -290,11 +301,18 @@ public class PlayerController : NetworkBehaviour
 			break;
 		}
 	}
-	private void SetNewSelectedEnemyTarget(int index)
+	private void SetNewSelectedEnemyTarget(int entityIndex)
 	{
-		OnNewTargetSelected?.Invoke(EnemyTargetList[index].entity);
-		selectedEnemyTarget = EnemyTargetList[index].entity;
-		selectedEnemyTargetIndex = index;
+		OnNewTargetSelected?.Invoke(EnemyTargetList[entityIndex].entity);
+		selectedEnemyTarget = EnemyTargetList[entityIndex].entity;
+		selectedEnemyTargetIndex = entityIndex;
+	}
+
+	//set friendly target
+	private void SetNewFriendlySelectedTarget(EntityStats entity)
+	{
+		OnNewTargetSelected?.Invoke(entity);
+		selectedFriendlyTarget = entity;
 	}
 
 	//targeting updates
@@ -462,7 +480,7 @@ public class PlayerController : NetworkBehaviour
 	private EntityStats TryGrabNewEntityOnEffectCasting(bool lookingForFriendly)	//add support/option to handle friendly targets
 	{
 		EntityStats newEntity;
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 100, includeMe);
 
 		if (hit.transform == null || hit.transform.gameObject.GetComponent<EntityStats>() == null)
 		{
