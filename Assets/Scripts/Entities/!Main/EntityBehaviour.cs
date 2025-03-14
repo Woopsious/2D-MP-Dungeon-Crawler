@@ -389,15 +389,23 @@ public class EntityBehaviour : Tree
 			globalAttackTimer -= Time.deltaTime;
 	}
 
-	//ENTITY MAIN WEAPON ATTACKS
+	//ENTITY MAIN WEAPON ATTACK
+	public void MainEntityWeaponAttack(Vector2 attackPos)
+	{
+		if (MultiplayerManager.IsMultiplayer())
+			SyncMainWeaponAttackRpc(attackPos);
+		else
+			MainWeaponAttack(attackPos);
+	}
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	public void SyncMainWeaponAttackRpc(Vector3 attackPos)
+	private void SyncMainWeaponAttackRpc(Vector2 attackPos)
 	{
 		MainWeaponAttack(attackPos);
 	}
-	public void MainWeaponAttack(Vector3 attackPos)
+	private void MainWeaponAttack(Vector2 attackPos)
 	{
-		equipmentHandler.equippedWeapon.Attack(attackPos);
+		Weapons weapon = equipmentHandler.equippedWeapon;
+		weapon.Attack(attackPos);
 	}
 
 	//utility

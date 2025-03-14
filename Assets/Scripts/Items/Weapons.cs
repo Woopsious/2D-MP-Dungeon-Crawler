@@ -212,7 +212,8 @@ public class Weapons : Items
 	}
 	public void Attack(Vector3 positionOfThingToAttack)
 	{
-		if (!canAttackAgain) return;
+		if (MultiplayerManager.IsClientHost())
+			if (!canAttackAgain) return;
 
         if (weaponBaseRef.isRangedWeapon && MultiplayerManager.IsClientHost()) //only sp or hosts can set up projectile
 			SetUpProjectile(positionOfThingToAttack);
@@ -256,6 +257,14 @@ public class Weapons : Items
 		canAttackAgain = true;
 	}
 
+	//visuals
+	//set direction of melee swings + direction ranged weapons point
+	private void AttackInDirection(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
+	}
 	//sound + animation
 	private void OnWeaponAttack()
 	{
@@ -270,6 +279,7 @@ public class Weapons : Items
 		idleWeaponSprite.enabled = false;
 		attackWeaponSprite.enabled = true;
 		audioHandler.PlayAudio(weaponBaseRef.attackSfx);
+
 		canAttackAgain = false;
 	}
 	private void OnWeaponCooldown()
@@ -280,13 +290,5 @@ public class Weapons : Items
 		boxCollider.enabled = false;
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;
-	}
-
-	//set direction of melee swings + direction ranged weapons point
-	private void AttackInDirection(Vector3 positionOfThingToAttack)
-	{
-		Vector3 rotation = positionOfThingToAttack - transform.position;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
 	}
 }

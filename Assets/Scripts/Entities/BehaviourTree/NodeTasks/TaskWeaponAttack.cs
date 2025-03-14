@@ -31,11 +31,7 @@ public class TaskWeaponAttack : BTNode
 	private void TryMainWeaponAttack()
 	{
 		if (equipmentHandler.equippedWeapon == null || behaviour.playerTarget == null) return;
-
-		if (MultiplayerManager.IsMultiplayer())
-			behaviour.SyncMainWeaponAttackRpc(behaviour.playerTarget.transform.position);
-		else
-			behaviour.MainWeaponAttack(behaviour.playerTarget.transform.position);
+		behaviour.MainEntityWeaponAttack(behaviour.playerTarget.transform.position);
 	}
 
 	private bool WeaponAttackOnCooldown(Weapons weapon)

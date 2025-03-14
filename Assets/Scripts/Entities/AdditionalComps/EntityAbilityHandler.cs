@@ -72,6 +72,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 	//SET ENTITY ABILITIES
 	public void AssignEntityRandomAbilities()
 	{
+		return;
 		if (!MultiplayerManager.IsClientHost()) return;
 
 		int offensiiveAbilityIndex = FindRandomAbilityIndex(true);
