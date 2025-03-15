@@ -15,7 +15,7 @@ MonoBehaviour:
   entityName: Slime
   sprite: {fileID: -1190363721, guid: 76686699748622a48b566623ca98afc6, type: 3}
   isBossVersion: 0
-  humanoidType: 4
+  humanoidType: 6
   enemySpawnChance: 0.8
   entityBehaviour: {fileID: 11400000, guid: 702a6b51e7de0ff4baa053da75e6d489, type: 2}
   maxHealth: 50

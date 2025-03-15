@@ -72,97 +72,79 @@ public class EntityAbilityHandler : NetworkBehaviour
 	//SET ENTITY ABILITIES
 	public void AssignEntityRandomAbilities()
 	{
-		return;
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		int offensiiveAbilityIndex = FindRandomAbilityIndex(true);
-		int healingbilityIndex = FindRandomAbilityIndex(false);
+		SOAbilities offensiiveAbility = PickRandomAbilityFromClass(true);
+		SOAbilities healingbility = PickRandomAbilityFromClass(false);
+
+		this.offensiveAbility = offensiiveAbility;
+		this.healingAbility = healingbility;
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncEntityClassForClientsRPC(offensiiveAbilityIndex, healingbilityIndex);
-		else
-			SetEntityAbilities(offensiiveAbilityIndex, healingbilityIndex);
+			SyncEntityAbilitiesForClientsRPC(FindAbilityIndex(offensiiveAbility), FindAbilityIndex(healingbility));
 	}
-
-	[Rpc(SendTo.Everyone)]
-	private void SyncEntityClassForClientsRPC(int offensiiveAbilityIndex, int healingbilityIndex)
-	{
-		SetEntityAbilities(offensiiveAbilityIndex, healingbilityIndex);
-	}
-	private void SetEntityAbilities(int offensiiveAbilityIndex, int healingbilityIndex)
-	{
-		if (offensiiveAbilityIndex == -1)
-			offensiveAbility = null;
-		else
-			offensiveAbility = GetChosenAbility(true, offensiiveAbilityIndex);
-
-		if (healingbilityIndex == -1)
-			healingAbility = null;
-		else
-			healingAbility = GetChosenAbility(false, healingbilityIndex);
-	}
-
-	//set entity abilities helper funcs
-	private int FindRandomAbilityIndex(bool offensiveAbility)
+	private SOAbilities PickRandomAbilityFromClass(bool offensiveAbility)
 	{
 		if (offensiveAbility == true)
 		{
 			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
-			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			//entityStats.classHandler.unlockedAbilitiesList
+			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
 				if (ability.damageType != IDamagable.DamageType.isHealing)
 					offensiveAbilities.Add(ability);
 			}
 
 			if (offensiveAbilities.Count == 0)
-				return -1;
-			else return Utilities.GetRandomNumber(offensiveAbilities.Count - 1);
+				return null;
+			else
+				return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
 		}
 		else
 		{
 			List<SOAbilities> healingAbilities = new List<SOAbilities>();
-			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
+			//entityStats.classHandler.unlockedAbilitiesList
+			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
 				if (ability.damageType == IDamagable.DamageType.isHealing)
 					healingAbilities.Add(ability);
 			}
 
 			if (healingAbilities.Count == 0)
-				return -1;
-			else return Utilities.GetRandomNumber(healingAbilities.Count - 1);
+				return null;
+			else
+				return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
 		}
 	}
-	private SOAbilities GetChosenAbility(bool offensiveAbility, int indexOfAbility)
+
+	//sync abilities for mp
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityAbilitiesForClientsRPC(int offensiiveAbilityIndex, int healingbilityIndex)
 	{
-		if (offensiveAbility == true)
-		{
-			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
-			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
-			{
-				if (ability.damageType != IDamagable.DamageType.isHealing)
-					offensiveAbilities.Add(ability);
-			}
-
-			//"world level" of client different and cant always sync ability reliably so return null if it happens
-			if (indexOfAbility > offensiveAbilities.Count) return null;
-
-			return offensiveAbilities[indexOfAbility];
-		}
+		if (offensiiveAbilityIndex == -1)
+			offensiveAbility = null;
 		else
-		{
-			List<SOAbilities> healingAbilities = new List<SOAbilities>();
-			foreach (SOAbilities ability in entityStats.classHandler.unlockedAbilitiesList)
-			{
-				if (ability.damageType == IDamagable.DamageType.isHealing)
-					healingAbilities.Add(ability);
-			}
+			offensiveAbility = AssetDatabase.Database.abilities[offensiiveAbilityIndex];
 
-			//"world level" of client different and cant always sync ability reliably so return null if it happens
-			if (indexOfAbility > healingAbilities.Count) return null;
-
-			return healingAbilities[indexOfAbility];
-		}
+		if (healingbilityIndex == -1)
+			healingAbility = null;
+		else
+			healingAbility = AssetDatabase.Database.abilities[healingbilityIndex];
 	}
+	private int FindAbilityIndex(SOAbilities abilityToMatch)
+	{
+		if (abilityToMatch == null) return -1; //no ability equipped
+
+		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+		{
+			if (AssetDatabase.Database.abilities[i] == abilityToMatch)
+				return i;
+		}
+
+		Debug.LogError("no matching ability found for entity abilities");
+		return -1; //no match
+	}
+
 	//duplicate ability check
 	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
 	{
@@ -435,7 +417,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 				return i;
 		}
 
-		Debug.LogError("failed to get class index");
+		Debug.LogError("failed to get ability index");
 		return 0;
 	}
 

@@ -15,7 +15,7 @@ MonoBehaviour:
   entityName: Zombie
   sprite: {fileID: -1684659544, guid: 76686699748622a48b566623ca98afc6, type: 3}
   isBossVersion: 0
-  humanoidType: 5
+  humanoidType: 7
   enemySpawnChance: 0.25
   entityBehaviour: {fileID: 11400000, guid: 027fd21d6b99d8f49a878d8522f2a7f2, type: 2}
   maxHealth: 50

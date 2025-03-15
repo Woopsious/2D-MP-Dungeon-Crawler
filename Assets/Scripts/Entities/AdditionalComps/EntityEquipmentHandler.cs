@@ -82,17 +82,17 @@ public class EntityEquipmentHandler : NetworkBehaviour
 			legsIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityLegArmours.Count - 1);
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncEntityEquipmentForClientsNewRPC(weaponIndex, helmetIndex, chestIndex, legsIndex);
+			SyncEntityEquipmentForClientsRPC(weaponIndex, helmetIndex, chestIndex, legsIndex);
 		else
-			EquipEntityEquipmentNew(weaponIndex, helmetIndex, chestIndex, legsIndex);
+			EquipEntityEquipment(weaponIndex, helmetIndex, chestIndex, legsIndex);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncEntityEquipmentForClientsNewRPC(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
+	private void SyncEntityEquipmentForClientsRPC(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
 	{
-		EquipEntityEquipmentNew(weaponIndex, helmetIndex, chestIndex, legsIndex);
+		EquipEntityEquipment(weaponIndex, helmetIndex, chestIndex, legsIndex);
 	}
-	private void EquipEntityEquipmentNew(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
+	private void EquipEntityEquipment(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
 	{
 		//check index, skipping equipment thats left blank
 		if (weaponIndex != -1)

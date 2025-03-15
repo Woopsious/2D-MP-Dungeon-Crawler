@@ -36,8 +36,12 @@ public class Projectiles : NetworkBehaviour
 			for (int i = 0; i < AssetDatabase.Database.traps.Count; i++)
 			{
 				if (trapRef == AssetDatabase.Database.traps[i])
+				{
 					SetUpTrapProjectileRpc(i, trapDamage, trapPosition, attackPos);
+					return;
+				}
 			}
+			Debug.LogError("projectile set up failed");
 		}
 		else
 			SetUpTrapProjectile(trap, trapDamage, trapPosition, attackPos);
@@ -87,8 +91,12 @@ public class Projectiles : NetworkBehaviour
 			for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
 			{
 				if (abilityRef == AssetDatabase.Database.abilities[i])
+				{
 					SetUpAbilityProjectileRpc(ownerId, i, attackPos);
+					return;
+				}
 			}
+			Debug.LogError("projectile set up failed");
 		}
 		else
 			SetUpAbilityProjectile(ownerStats, abilityRef, attackPos);
@@ -151,8 +159,12 @@ public class Projectiles : NetworkBehaviour
 			for (int i = 0; i < AssetDatabase.Database.weapons.Count; i++)
 			{
 				if (weaponRef == AssetDatabase.Database.weapons[i])
+				{
 					SetUpWeaponProjectileRpc(ownerId, i, projectileDamage, attackPos);
+					return;
+				}
 			}
+			Debug.LogError("projectile set up failed");
 		}
 		else
 			SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);

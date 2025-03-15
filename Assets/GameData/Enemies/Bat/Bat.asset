@@ -15,7 +15,7 @@ MonoBehaviour:
   entityName: Bat
   sprite: {fileID: -1099789057, guid: 76686699748622a48b566623ca98afc6, type: 3}
   isBossVersion: 0
-  humanoidType: 3
+  humanoidType: 5
   enemySpawnChance: 0.1
   entityBehaviour: {fileID: 11400000, guid: 4d7d320eb5c9bba47aac464f8851ba4c, type: 2}
   maxHealth: 25

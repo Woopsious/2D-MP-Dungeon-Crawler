@@ -526,7 +526,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entities:
+  - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
   - {fileID: 11400000, guid: 15c3b47ee5836cb4f8f751252561b1c5, type: 2}
+  - {fileID: 11400000, guid: e2c2d49d869a56944b1758bed4a68b39, type: 2}
+  - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
+  - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
+  - {fileID: 11400000, guid: 05b087a09324fc948975f97d1bc67389, type: 2}
+  - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
+  - {fileID: 11400000, guid: 84db3693dff5d0c49bc22a22fbd42f97, type: 2}
+  - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
   bossEntities:
   - {fileID: 11400000, guid: 8bd1f8d3151add04a83bb1c081de4b56, type: 2}
   - {fileID: 11400000, guid: ba9e0e514cd645d48a919eca75198f71, type: 2}
@@ -614,6 +622,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 8e56fc403ea16df4d84ee3bafa1713ce, type: 2}
   - {fileID: 11400000, guid: 17ffefcd104886b47903092608d77944, type: 2}
   - {fileID: 11400000, guid: 701709c1a4fa8b74da0722ab043ed0a8, type: 2}
+  - {fileID: 11400000, guid: a9db01ee02432424db8fe2628146aa85, type: 2}
+  - {fileID: 11400000, guid: 9523948a17ff1e54884b27933e2aacdf, type: 2}
+  - {fileID: 11400000, guid: c94ba793105b4324092539712fc977b7, type: 2}
   armours:
   - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
