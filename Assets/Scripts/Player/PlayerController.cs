@@ -605,7 +605,13 @@ public class PlayerController : NetworkBehaviour
 		if (ability.abilityBaseRef.isOffensiveAbility)
 			target = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnEffectCasting(false);
 		else
-			target = playerStats; //update to include support for friendlies
+		{
+			if (!MultiplayerManager.IsMultiplayer()) //apply to self in sp
+				target = playerStats;
+			else
+				target = selectedFriendlyTarget != null ? selectedFriendlyTarget : TryGrabNewEntityOnEffectCasting(true);
+
+		}
 
 		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing)
 			CastHealingEffect(ability, target);
