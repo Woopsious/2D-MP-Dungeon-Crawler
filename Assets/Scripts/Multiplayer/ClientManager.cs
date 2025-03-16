@@ -35,7 +35,7 @@ public class ClientManager : NetworkBehaviour
 	//START/STOP CLIENT
 	public void StartClientAndJoinLobby(Lobby lobby)
 	{
-		LoadingScreensManager.instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningLobby);
+		LoadingScreensManager.Instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningLobby);
 		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
@@ -48,9 +48,9 @@ public class ClientManager : NetworkBehaviour
 			SaveManager.Instance.AutoSaveData();
 
 		LobbyManager.Instance.ResetLobbyReferences();
-		GameManager.Instance.UnloadSceneForConnectedClients();
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(false);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		NetworkManager.Singleton.Shutdown();
 	}
 
@@ -97,8 +97,8 @@ public class ClientManager : NetworkBehaviour
 	public void ClientLeaveRelayAndLobby(string disconnectReason)
 	{
 		Instance.StopClient();
-		MultiplayerMenuUi.Instance.SetDisconnectReason(disconnectReason);
-		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
 	}
 
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
@@ -106,15 +106,15 @@ public class ClientManager : NetworkBehaviour
 	{
 		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 
-		LoadingScreensManager.instance.HideLobbyLoadingScreen();
+		LoadingScreensManager.Instance.HideLobbyLoadingScreen();
 		LobbyManager.Instance.UpdateJoiningClientsNetworkID();
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
 	{
 		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 
-		MultiplayerMenuUi.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
-		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+		LoadingScreensManager.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
 		StopClient();
 	}
 }

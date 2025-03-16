@@ -10,6 +10,7 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WebSocketSharp;
 
 public class HostManager : NetworkBehaviour
@@ -36,7 +37,7 @@ public class HostManager : NetworkBehaviour
 	//START/STOP HOST
 	public void StartHost()
 	{
-		LoadingScreensManager.instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.creatingLobby);
+		LoadingScreensManager.Instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.creatingLobby);
 		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 		GameManager.Instance.PauseGame(false);
@@ -51,9 +52,9 @@ public class HostManager : NetworkBehaviour
 
 		LobbyManager.Instance.DeleteLobby();
 		LobbyManager.Instance.ResetLobbyReferences();
-		NetworkManager.SceneManager.UnloadScene(GameManager.Instance.currentlyLoadedScene);
 		MultiplayerManager.Instance.UnsubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(false);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		NetworkManager.Singleton.Shutdown();
 	}
 
@@ -120,8 +121,8 @@ public class HostManager : NetworkBehaviour
 		}
 
 		StopHost();
-		MultiplayerMenuUi.Instance.SetDisconnectReason(disconnectReason);
-		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
+		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
 	}
 	//kick client
 	public void KickClientFromRelay(string networkedStringId, string disconnectReason)
@@ -146,7 +147,7 @@ public class HostManager : NetworkBehaviour
 		if (id == 0)
 		{
 			SpawnClientRpcManager();
-			LoadingScreensManager.instance.HideLobbyLoadingScreen();
+			LoadingScreensManager.Instance.HideLobbyLoadingScreen();
 		}
 
 		GameManager.Instance.SpawnPlayerPrefab(id);

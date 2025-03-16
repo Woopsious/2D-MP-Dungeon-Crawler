@@ -12,32 +12,17 @@ public class PlayerInventoryHandler : MonoBehaviour
 	[Header("Player Starting Items")]
 	public GameObject droppedItemPrefab;
 
-	public bool hasRecievedStartingItems;
-	public bool hasRecievedKnightItems;
-	public bool hasRecievedWarriorItems;
-	public bool hasRecievedRogueItems;
-	public bool hasRecievedRangerItems;
-	public bool hasRecievedMageItems;
-
 	[Header("Player Starting Gold")]
 	private readonly int startingGold = 500;
 
 	public void Awake()
 	{
 		player = GetComponent<PlayerController>();
-		hasRecievedStartingItems = false;
-		hasRecievedKnightItems = false;
-		hasRecievedWarriorItems = false;
-		hasRecievedRogueItems = false;
-		hasRecievedRangerItems = false;
-		hasRecievedMageItems = false;
 	}
 
 	//spawn starting items based on starting class + if already receieved them
 	public void TrySpawnStartingItems(SOClasses playerClass)
 	{
-		RestorePlayerStartingItemsState();
-
 		if (Application.isEditor)
 		{
 			//DebugSpawnStartingItems(playerClass);
@@ -46,52 +31,29 @@ public class PlayerInventoryHandler : MonoBehaviour
 
 		if (GameManager.Localplayer != player) return;
 
-		if (SaveManager.Instance != null) //skip when in testing scene
-		{
-			if (playerClass == PlayerClassesUi.Instance.knightClass && !hasRecievedKnightItems)
-			{
-				SpawnClassStartingItems(playerClass);
-				hasRecievedKnightItems = true;
-			}
-			else if (playerClass == PlayerClassesUi.Instance.warriorClass && !hasRecievedWarriorItems)
-			{
-				SpawnClassStartingItems(playerClass);
-				hasRecievedWarriorItems = true;
-			}
-			else if (playerClass == PlayerClassesUi.Instance.rogueClass && !hasRecievedRogueItems)
-			{
-				SpawnClassStartingItems(playerClass);
-				hasRecievedRogueItems = true;
-			}
-			else if (playerClass == PlayerClassesUi.Instance.rangerClass && !hasRecievedRangerItems)
-			{
-				SpawnClassStartingItems(playerClass);
-				hasRecievedRangerItems = true;
-			}
-			else if (playerClass == PlayerClassesUi.Instance.mageClass && !hasRecievedMageItems)
-			{
-				SpawnClassStartingItems(playerClass);
-				hasRecievedMageItems = true;
-			}
+		if (playerClass == PlayerClassesUi.Instance.knightClass && !PlayerClassesUi.Instance.hasRecievedKnightItems)
+			SpawnClassStartingItems(playerClass);
+		else if (playerClass == PlayerClassesUi.Instance.warriorClass && !PlayerClassesUi.Instance.hasRecievedWarriorItems)
+			SpawnClassStartingItems(playerClass);
+		else if (playerClass == PlayerClassesUi.Instance.rogueClass && !PlayerClassesUi.Instance.hasRecievedRogueItems)
+			SpawnClassStartingItems(playerClass);
+		else if (playerClass == PlayerClassesUi.Instance.rangerClass && !PlayerClassesUi.Instance.hasRecievedRangerItems)
+			SpawnClassStartingItems(playerClass);
+		else if (playerClass == PlayerClassesUi.Instance.mageClass && !PlayerClassesUi.Instance.hasRecievedMageItems)
+			SpawnClassStartingItems(playerClass);
 
-			if (!SaveManager.Instance.GameData.hasRecievedStartingItems)
-			{
-				GameManager.isNewGame = false;
-				SaveManager.Instance.GameData.hasRecievedStartingItems = true;
-				hasRecievedStartingItems = true;
-				SpawnSharedStartingItems(playerClass);
-			}
+		if (!PlayerClassesUi.Instance.hasRecievedStartingItems)
+		{
+			GameManager.isNewGame = false;
+			SpawnSharedStartingItems(playerClass);
 		}
-	}
-	private void RestorePlayerStartingItemsState()
-	{
-		if (SaveManager.Instance == null) return;
-		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
-		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
-		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;
-		hasRecievedRogueItems = SaveManager.Instance.GameData.hasRecievedRogueItems;
-		hasRecievedRangerItems = SaveManager.Instance.GameData.hasRecievedRangerItems;
-		hasRecievedMageItems = SaveManager.Instance.GameData.hasRecievedMageItems;
+
+		PlayerClassesUi.Instance.hasRecievedKnightItems = true;
+		PlayerClassesUi.Instance.hasRecievedWarriorItems = true;
+		PlayerClassesUi.Instance.hasRecievedRogueItems = true;
+		PlayerClassesUi.Instance.hasRecievedRangerItems = true;
+		PlayerClassesUi.Instance.hasRecievedMageItems = true;
+		PlayerClassesUi.Instance.hasRecievedStartingItems = true;
 	}
 
 	//spawning starting items

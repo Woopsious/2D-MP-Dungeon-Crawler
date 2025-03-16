@@ -306,17 +306,17 @@ public class SaveManager : MonoBehaviour
 		Instance.GameData.playerCurrenthealth = playerStats.currentHealth;
 		Instance.GameData.playerCurrentMana = playerStats.currentMana;
 		Instance.GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
-		Instance.GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
-		Instance.GameData.hasRecievedKnightItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedKnightItems;
-		Instance.GameData.hasRecievedWarriorItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedWarriorItems;
-		Instance.GameData.hasRecievedRogueItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRogueItems;
-		Instance.GameData.hasRecievedRangerItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRangerItems;
-		Instance.GameData.hasRecievedMageItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedMageItems;
 	}
 	private void SavePlayerClassData()
 	{
 		//need reworking for mp
 		Instance.GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
+		Instance.GameData.hasRecievedStartingItems = PlayerClassesUi.Instance.hasRecievedStartingItems;
+		Instance.GameData.hasRecievedKnightItems = PlayerClassesUi.Instance.hasRecievedKnightItems;
+		Instance.GameData.hasRecievedWarriorItems = PlayerClassesUi.Instance.hasRecievedWarriorItems;
+		Instance.GameData.hasRecievedRogueItems = PlayerClassesUi.Instance.hasRecievedRogueItems;
+		Instance.GameData.hasRecievedRangerItems = PlayerClassesUi.Instance.hasRecievedRangerItems;
+		Instance.GameData.hasRecievedMageItems = PlayerClassesUi.Instance.hasRecievedMageItems;
 		Instance.GameData.unlockedClassNodeIndexesList.Clear();
 
 		bool isNodeStatBoost;

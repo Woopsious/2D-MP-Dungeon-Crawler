@@ -34,7 +34,6 @@ public class DebugUi : MonoBehaviour
 		}
 		PlayerInventoryUi.Instance.UpdateGoldAmount(moneyToAdd);
 	}
-
 	public void AddExp()
 	{
 		int expToAdd = 0;
@@ -52,7 +51,6 @@ public class DebugUi : MonoBehaviour
 		else
 			GameManager.Localplayer.playerExperienceHandler.DebugAddExp(expToAdd);
 	}
-
 	private void ShowDebugUi()
 	{
 		DebugUiPanel.SetActive(true);

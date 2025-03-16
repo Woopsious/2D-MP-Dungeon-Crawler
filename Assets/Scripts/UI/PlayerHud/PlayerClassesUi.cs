@@ -66,6 +66,14 @@ public class PlayerClassesUi : MonoBehaviour
 	public int maxAbilitySlots;
 	public int abilitySlotsUsed;
 
+	[Header("Recieved Starting items bools")]
+	public bool hasRecievedStartingItems;
+	public bool hasRecievedKnightItems;
+	public bool hasRecievedWarriorItems;
+	public bool hasRecievedRogueItems;
+	public bool hasRecievedRangerItems;
+	public bool hasRecievedMageItems;
+
 	public static event Action<SOClasses> OnClassChanges;
 	public static event Action<EntityStats> OnClassNodeUnlocks;
 
@@ -571,6 +579,13 @@ public class PlayerClassesUi : MonoBehaviour
 	//reload player class + unlocked nodes
 	public void ReloadPlayerClass()
 	{
+		hasRecievedKnightItems = SaveManager.Instance.GameData.hasRecievedKnightItems;
+		hasRecievedWarriorItems = SaveManager.Instance.GameData.hasRecievedWarriorItems;
+		hasRecievedRogueItems = SaveManager.Instance.GameData.hasRecievedRogueItems;
+		hasRecievedRangerItems = SaveManager.Instance.GameData.hasRecievedRangerItems;
+		hasRecievedMageItems = SaveManager.Instance.GameData.hasRecievedMageItems;
+		hasRecievedStartingItems = SaveManager.Instance.GameData.hasRecievedStartingItems;
+
 		if (SaveManager.Instance.GameData.currentPlayerClass == null) return;
 		SetPlayerClass(SaveManager.Instance.GameData.currentPlayerClass, false);
 
@@ -613,6 +628,7 @@ public class PlayerClassesUi : MonoBehaviour
 			SaveManager.Instance.GameData.hasRecievedStartingItems = false;
 
 		currentPlayerClass = newClass;
+		GameManager.Localplayer.playerInventoryHandler.TrySpawnStartingItems(newClass);
 		UpdatePlayerClass();
 
 		if (displayClassSkillTree)

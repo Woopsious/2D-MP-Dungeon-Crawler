@@ -19,6 +19,7 @@ public class PlayerController : NetworkBehaviour
 	[HideInInspector] public PlayerClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
+	[HideInInspector] public PlayerInventoryHandler playerInventoryHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
 	private PlayerInput playerInput;
 	private Rigidbody2D rb;
@@ -73,6 +74,7 @@ public class PlayerController : NetworkBehaviour
 		playerClassHandler = GetComponent<PlayerClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
+		playerInventoryHandler = GetComponent<PlayerInventoryHandler>();
 		enemyDetection = GetComponentInChildren<EntityDetection>();
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();

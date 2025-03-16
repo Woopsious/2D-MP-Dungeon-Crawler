@@ -47,10 +47,7 @@ public class PlayerClassHandler : EntityClassHandler
 		if (MultiplayerManager.IsMultiplayer())
 			SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfClass(newPlayerClass));
 		else
-		{
 			base.UpdateClass(newPlayerClass);
-			GetComponent<PlayerInventoryHandler>().TrySpawnStartingItems(newPlayerClass);
-		}
 	}
 
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]

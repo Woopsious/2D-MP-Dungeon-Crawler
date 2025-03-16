@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2434591378
+  GlobalObjectIdHash: 1397728006
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -68,6 +68,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   PlayerPrefab: {fileID: 1405763340389273497, guid: 4ad8167d666d66843878d1850533ffa3, type: 3}
   localPlayer: {fileID: 0}
-  ListOfplayers: []
   HostClientManagerObj: {fileID: 3875705029506628446, guid: c612be426932f114da7a58fc5142d448, type: 3}
-  isMultiplayer: 0
+  disconnectUiPanel: {fileID: 0}
+  disconnectReasonText: {fileID: 0}

@@ -19,6 +19,20 @@ public class PlayerPartyUi : MonoBehaviour
 		Instance = this;
 	}
 
+	private void Start()
+	{
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			Instance.playerPartyPanelUi.SetActive(true);
+			Instance.partyMessagesPanelUi.SetActive(true);
+		}
+		else
+		{
+			Instance.playerPartyPanelUi.SetActive(false);
+			Instance.partyMessagesPanelUi.SetActive(false);
+		}
+	}
+
 	public void SyncPlayerListforPartyUi(Lobby lobby)
 	{
 		int index = 0;
@@ -37,7 +51,7 @@ public class PlayerPartyUi : MonoBehaviour
 		PartyMessagesUi partyMessage = go.GetComponent<PartyMessagesUi>();
 
 		string newMessage = "Player" + playerName + " joined the party";
-		partyMessage.SetMessage(newMessage, 100);
+		partyMessage.SetMessage(newMessage, 10);
 	}
 	public void SendPlayerLeftMessage(string playerName)
 	{
@@ -47,6 +61,6 @@ public class PlayerPartyUi : MonoBehaviour
 		PartyMessagesUi partyMessage = go.GetComponent<PartyMessagesUi>();
 
 		string newMessage = "Player" + playerName + " left the party";
-		partyMessage.SetMessage(newMessage, 100);
+		partyMessage.SetMessage(newMessage, 10);
 	}
 }

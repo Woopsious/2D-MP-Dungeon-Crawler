@@ -88,28 +88,4 @@ public class MultiplayerMenuUi : MonoBehaviour
 	{
 		MpMenuUiPanel.SetActive(false);
 	}
-
-	//DISCONNECT PANEL + Actions
-	public void SetDisconnectReason(string reason)
-	{
-		disconnectReasonText.text = "DISCONNECTED\n" + reason;
-	}
-	public void ShowDisconnectUiPanel()
-	{
-		disconnectUiPanel.SetActive(true);
-		HideMpMenuUi();
-		LobbyListUi.Instance.HideLobbyListUi();
-		LobbyUi.Instance.HideLobbyUi();
-		LobbyUi.Instance.HideLobbySettingsUi();
-	}
-	public void HideDisconnectUiPanel()
-	{
-		disconnectUiPanel.SetActive(false);
-		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.reloadAllScenesAndData);
-	}
-
-	public void ConfirmDisconnectReason()
-	{
-		HideDisconnectUiPanel();
-	}
 }

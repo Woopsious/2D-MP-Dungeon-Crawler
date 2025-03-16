@@ -5,11 +5,20 @@ using UnityEngine;
 
 public class LoadingScreensManager : MonoBehaviour
 {
-	public static LoadingScreensManager instance;
+	public static LoadingScreensManager Instance;
 
-	public GameObject GameCanvas;
-	public GameObject LobbyCanvas;
-	public TMP_Text loadingMessage;
+	[Header("Game Loading Menu")]
+	public GameObject GameLoadingScreenCanvas;
+	public TMP_Text gameLoadingMessage;
+
+	[Header("Lobby Loading Menu")]
+	public GameObject LobbyLoadingScreenCanvas;
+	public TMP_Text lobbyLoadingMessage;
+
+	[Header("Disconnect Menu")]
+	public GameObject DisconnectScreenCanvas;
+	public TMP_Text disconnectMessage;
+	public string disconnectReason;
 
 	public enum LoadingScreenType
 	{
@@ -18,38 +27,56 @@ public class LoadingScreensManager : MonoBehaviour
 
 	private void Awake()
 	{
-		instance = this;
+		Instance = this;
 	}
 
 	public void ShowGameLoadingScreen(LoadingScreenType loadingScreenType)
 	{
 		if (loadingScreenType == LoadingScreenType.game)
-			loadingMessage.text = "Loading Game...";
+			gameLoadingMessage.text = "Loading Game...";
 		else if (loadingScreenType == LoadingScreenType.dungeon)
-			loadingMessage.text = "Loading Dungeon...";
+			gameLoadingMessage.text = "Loading Dungeon...";
 		else if (loadingScreenType == LoadingScreenType.bossDungeon)
-			loadingMessage.text = "Loading Boss Dungeon...";
+			gameLoadingMessage.text = "Loading Boss Dungeon...";
 
-		loadingMessage.transform.SetParent(GameCanvas.transform);
-		GameCanvas.SetActive(true);
+		GameLoadingScreenCanvas.SetActive(true);
 	}
 	public void HideGameLoadingScreen()
 	{
-		GameCanvas.SetActive(false);
+		GameLoadingScreenCanvas.SetActive(false);
 	}
 
 	public void ShowLobbyLoadingScreen(LoadingScreenType loadingScreenType)
 	{
 		if (loadingScreenType == LoadingScreenType.joiningLobby)
-			loadingMessage.text = "Joining Game...";
+			lobbyLoadingMessage.text = "Joining Game...";
 		else if (loadingScreenType == LoadingScreenType.creatingLobby)
-			loadingMessage.text = "Creating Lobby...";
+			lobbyLoadingMessage.text = "Creating Lobby...";
 
-		loadingMessage.text = "Creating Lobby...";
-		LobbyCanvas.SetActive(true);
+		LobbyLoadingScreenCanvas.SetActive(true);
 	}
 	public void HideLobbyLoadingScreen()
 	{
-		LobbyCanvas.SetActive(false);
+		LobbyLoadingScreenCanvas.SetActive(false);
+	}
+
+	//DISCONNECT PANEL + Actions
+	public void SetDisconnectReason(string reason)
+	{
+		disconnectReason = "DISCONNECTED\n" + reason;
+	}
+	public void ShowDisconnectScreen()
+	{
+		disconnectMessage.text = disconnectReason;
+		DisconnectScreenCanvas.SetActive(true);
+	}
+	public void ConfirmDisconnectReason()
+	{
+		HideDisconnectScreen();
+	}
+	private void HideDisconnectScreen()
+	{
+		DisconnectScreenCanvas.SetActive(false);
+		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 	}
 }
