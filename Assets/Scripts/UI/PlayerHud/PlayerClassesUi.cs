@@ -100,7 +100,6 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += ReloadPlayerClass;
 		SceneManager.sceneLoaded += OnSceneChange;
 		SaveManager.ReloadSaveGameData += ReloadPlayerClass;
 
@@ -122,7 +121,6 @@ public class PlayerClassesUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= ReloadPlayerClass;
 		SceneManager.sceneLoaded -= OnSceneChange;
 		SaveManager.ReloadSaveGameData -= ReloadPlayerClass;
 
@@ -159,7 +157,6 @@ public class PlayerClassesUi : MonoBehaviour
 		SetUpRangerClassTree();
 		SetUpMageClassTree();
 	}
-
 	private void OnSceneChange(Scene newLoadedScene, LoadSceneMode mode)
 	{
 		if (newLoadedScene.name == GameManager.Instance.hubScene && GameManager.isNewGame)

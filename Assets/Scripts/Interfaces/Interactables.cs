@@ -29,6 +29,8 @@ public class Interactables : MonoBehaviour
 			trapHandler.Interact(player);
         else if (portalHandler != null)
 		{
+			if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsClientHost()) return; //joined clients cant interact
+
 			if (DungeonPortalUi.instance.portalPanelUi.activeInHierarchy)
 				portalHandler.UnInteract(player);
             else

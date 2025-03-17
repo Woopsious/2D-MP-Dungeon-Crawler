@@ -916,7 +916,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void TryReacquireNewTarget()
 	{
-		if (PlayerSettingsManager.Instance.autoSelectNewTarget)
+		if (selectedEnemyTarget == null && PlayerSettingsManager.Instance.autoSelectNewTarget)
 			CycleTargetsForwards(0);
 		else return;
 	}

@@ -19,6 +19,8 @@ public class SOAbilities : SOClassUnlocks
 	public float abilityCastingTimer;
 	public float abilityCooldown;
 	public bool isOffensiveAbility;
+	[Tooltip("if ticked damage and effects can be applied to friendlies based on who casted it")]
+	public bool abilityEnviromental;
 	[Tooltip("forces ability to need specific target to be applied to. EG: healing spells/skills")]
 	public bool requiresTarget;
 	[Tooltip("EG: Knight/Warrior healing skills")]

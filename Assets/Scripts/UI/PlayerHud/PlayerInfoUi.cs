@@ -12,20 +12,20 @@ public class PlayerInfoUi : MonoBehaviour
 	public static PlayerInfoUi Instance;
 	public TMP_Text playerInfo;
 
-	public GameObject interactWithText;
-	public GameObject interactWithTextPrefab;
+	public TMP_Text interactWithText;
 	public GameObject currentPlayerInteractedObj;
 
 	private void Awake()
 	{
 		Instance = this;
-		Instance.interactWithText.SetActive(false);
+		Instance.interactWithText.gameObject.SetActive(false);
 	}
 	private void Update()
 	{
-		if (currentPlayerInteractedObj != null && interactWithText.activeInHierarchy)
-			interactWithText.transform.position = GameManager.LocalPlayerCamera.WorldToScreenPoint(new Vector3(
-				currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
+		if (currentPlayerInteractedObj == null && !interactWithText.gameObject.activeInHierarchy) return;
+
+		interactWithText.transform.position = GameManager.LocalPlayerCamera.WorldToScreenPoint(new Vector3(
+			currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
 	}
 
 	private void OnEnable()
@@ -43,9 +43,20 @@ public class PlayerInfoUi : MonoBehaviour
 	private void ShowHideInteractWithText(GameObject obj, bool showText)
 	{
         if (showText)
-			Instance.interactWithText.SetActive(true);
+			Instance.interactWithText.gameObject.SetActive(true);
 		else
-			Instance.interactWithText.SetActive(false);
+			Instance.interactWithText.gameObject.SetActive(false);
+
+		if (obj.GetComponent<PortalHandler>() != null)
+		{
+			if (!MultiplayerManager.IsClientHost())
+				interactWithText.text = "Not Host";
+			else
+				interactWithText.text = "Interact";
+		}
+		else
+			interactWithText.text = "Interact";
+
 		currentPlayerInteractedObj = obj;
 	}
 	//update text info in player inventory screen

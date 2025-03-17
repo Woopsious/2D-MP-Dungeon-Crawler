@@ -120,9 +120,9 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 			selectedEnemyTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
 
 		//new target event subs
-		selectedEnemyTarget.OnHealthChangeEvent -= OnEnemyTargetHealthChange;
-		selectedEnemyTarget.OnManaChangeEvent -= OnEnemyTargetManaChange;
-		selectedEnemyTarget.OnStatusEffectAppliedEvent -= OnEnemyTargetStatusEffectApplied;
+		selectedEnemyTarget.OnHealthChangeEvent += OnEnemyTargetHealthChange;
+		selectedEnemyTarget.OnManaChangeEvent += OnEnemyTargetManaChange;
+		selectedEnemyTarget.OnStatusEffectAppliedEvent += OnEnemyTargetStatusEffectApplied;
 
 		//initial setting data for ui
 		OnEnemyTargetHealthChange(selectedEnemyTarget.maxHealth.finalValue, selectedEnemyTarget.currentHealth);
@@ -159,9 +159,9 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 			selectedFriendlyTargetUiName.text = entityStats.classHandler.currentEntityClass.className + " " + entityStats.statsRef.entityName;
 
 		//new target event subs
-		selectedFriendlyTarget.OnHealthChangeEvent -= OnFriendlyTargetHealthChange;
-		selectedFriendlyTarget.OnManaChangeEvent -= OnFriendlyTargetManaChange;
-		selectedFriendlyTarget.OnStatusEffectAppliedEvent -= OnFriendlyTargetStatusEffectApplied;
+		selectedFriendlyTarget.OnHealthChangeEvent += OnFriendlyTargetHealthChange;
+		selectedFriendlyTarget.OnManaChangeEvent += OnFriendlyTargetManaChange;
+		selectedFriendlyTarget.OnStatusEffectAppliedEvent += OnFriendlyTargetStatusEffectApplied;
 
 		//initial setting data for ui
 		OnFriendlyTargetHealthChange(selectedFriendlyTarget.maxHealth.finalValue, selectedFriendlyTarget.currentHealth);

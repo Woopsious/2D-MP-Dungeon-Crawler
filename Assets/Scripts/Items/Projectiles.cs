@@ -60,8 +60,9 @@ public class Projectiles : NetworkBehaviour
 		this.trapRef = trapRef;
 		weaponRef = null;
 		abilityRef = null;
-		gameObject.name = trapRef.name + "Projectile";
+		UpdateHitByeVariable();
 
+		gameObject.name = trapRef.name + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
 		projectileSprite.sprite = trapRef.projectileSprite;
@@ -71,7 +72,6 @@ public class Projectiles : NetworkBehaviour
 		projectileSpeed = trapRef.projectileSpeed;
 		projectileDamage = trapDamage;
 		damageType = (DamageType)trapRef.baseDamageType;
-		UpdateHitByeVariable(null);
 		isPercentageDamage = false;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -117,8 +117,9 @@ public class Projectiles : NetworkBehaviour
 		weaponRef = null;
 		this.abilityRef = abilityRef;
 		projectileOwner = ownerStats;
+		UpdateHitByeVariable();
 
-		gameObject.name = abilityRef.Name + "Projectile";
+		gameObject.name = abilityRef.Name + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
 		projectileSprite.sprite = abilityRef.projectileSprite;
@@ -139,7 +140,6 @@ public class Projectiles : NetworkBehaviour
 
 		projectileDamage *= (int)projectileOwner.damageDealtModifier.finalPercentageValue;
 		damageType = (DamageType)abilityRef.damageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
 		isPercentageDamage = abilityRef.isDamagePercentageBased;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -184,10 +184,10 @@ public class Projectiles : NetworkBehaviour
 		trapRef = null;
 		this.weaponRef = weaponRef;
 		abilityRef = null;
-		//grab owner of ability via list of spawned objs using its unique id
 		projectileOwner = ownerStats;
+		UpdateHitByeVariable();
 
-		gameObject.name = weaponRef.itemName + "Projectile";
+		gameObject.name = weaponRef.itemName + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
 		projectileSprite.sprite = weaponRef.projectileSprite;
@@ -197,7 +197,6 @@ public class Projectiles : NetworkBehaviour
 		projectileSpeed = weaponRef.projectileSpeed;
 		this.projectileDamage = projectileDamage;
 		damageType = (DamageType)weaponRef.baseDamageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
 		isPercentageDamage = false;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -218,14 +217,18 @@ public class Projectiles : NetworkBehaviour
 	}
 
 	//helps with applying damage only to enemies
-	private void UpdateHitByeVariable(PlayerController player)
+	private void UpdateHitByeVariable()
 	{
-		if (player != null)
+		if (projectileOwner.IsPlayerEntity())
 			hitBye = IDamagable.HitBye.player;
 		else
 			hitBye = IDamagable.HitBye.entity;
 
-		if (trapRef != null) //if ref not null overwrite hitbye
+		//overwrites
+		if (trapRef != null)
+			hitBye = IDamagable.HitBye.enviroment;
+
+		if (abilityRef != null && abilityRef.abilityEnviromental)
 			hitBye = IDamagable.HitBye.enviroment;
 	}
 
@@ -243,13 +246,7 @@ public class Projectiles : NetworkBehaviour
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
-		/*
 		if (hitBye == IDamagable.HitBye.player && other.gameObject.layer == LayerMask.NameToLayer("Player") ||
-			hitBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
-			return;
-		*/
-
-		if (hitBye == IDamagable.HitBye.player && projectileOwner == other.GetComponent<EntityStats>() ||
 			hitBye == IDamagable.HitBye.entity && other.gameObject.layer == LayerMask.NameToLayer("Enemies"))
 			return;
 

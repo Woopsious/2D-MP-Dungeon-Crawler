@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class AbilityAOE : NetworkBehaviour
 {
@@ -36,79 +37,30 @@ public class AbilityAOE : NetworkBehaviour
 	//SET DATA
 	public void Initilize(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
-		if (!MultiplayerManager.IsMultiplayer()) //fix ability owner ref as Network spawn manager wont exist in sp
+		if (MultiplayerManager.IsMultiplayer())
 		{
-			InitilizeSinglePlayer(abilityOwner, abilityRef, targetPosition);
-			return;
-		}
-
-		ulong ownerId = abilityOwner.GetComponent<NetworkObject>().NetworkObjectId;
-		int abilityIndex = 0;
-
-		foreach (SOAbilities ability in AssetDatabase.Database.abilities)
-		{
-			if (abilityRef != ability)
+			for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
 			{
-				abilityIndex++;
-				continue;
+				if (abilityRef == AssetDatabase.Database.abilities[i])
+				{
+					SetUpAoeAbilityRpc(abilityOwner.GetComponent<NetworkObject>().NetworkObjectId, i, targetPosition);
+					return;
+				}
 			}
-
-			SyncAbilityAoeRpc(ownerId, abilityIndex, targetPosition);
-			break;
+			Debug.LogError("aoe set up failed");
 		}
+		else
+			SetUpAoeAbility(abilityOwner, abilityRef, targetPosition);
 	}
 
 	[Rpc(SendTo.Everyone)]
-	private void SyncAbilityAoeRpc(ulong ownerId, int abilityIndex, Vector2 targetPosition)
+	private void SetUpAoeAbilityRpc(ulong ownerId, int abilityIndex, Vector2 targetPosition)
 	{
-		SyncAbilityAoe(ownerId, abilityIndex, targetPosition);
+		EntityStats entityStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAoeAbility(entityStats, ability, targetPosition);
 	}
-	private void SyncAbilityAoe(ulong ownerId, int abilityIndex, Vector2 targetPosition)
-	{
-		transform.SetParent(null);
-		debugLockDamage = false;
-
-		abilityRef = AssetDatabase.Database.abilities[abilityIndex];
-		if (abilityRef is SOBossAbilities abilityBossRef)
-			this.abilityBossRef = abilityBossRef;
-
-		//grab owner of ability via list of spawned objs using its unique id
-		abilityOwner = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
-		casterPosition = abilityOwner.transform.position;
-		gameObject.name = abilityRef.Name + " Aoe";
-		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
-		aoeColliderIndicator.transform.localPosition = Vector3.zero;
-		entityStatsList.Clear();
-
-		if (abilityRef.aoeType == SOAbilities.AoeType.isBoxAoe)
-		{
-			SetBoxColliderDirection(targetPosition);
-			SetupBoxCollider();
-		}
-		else
-		{
-			SetCircleColliderPosition(targetPosition);
-			SetupCircleCollider();
-		}
-
-		SetDamage();
-		UpdateHitByeVariable(abilityOwner.playerRef);
-
-		aoeLingers = true;
-		abilityDurationTimer = abilityRef.aoeDuration;
-		if (abilityRef.aoeDuration == 0)
-		{
-			aoeLingers = false;
-			abilityDurationTimer = 0.1f;
-		}
-
-		if (MultiplayerManager.IsMultiplayer())
-			EnableObjectRpc();
-		else
-			EnableObject();
-		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
-	}
-	private void InitilizeSinglePlayer(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
+	private void SetUpAoeAbility(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
 		transform.SetParent(null);
 		debugLockDamage = false;
@@ -116,9 +68,10 @@ public class AbilityAOE : NetworkBehaviour
 		if (abilityRef is SOBossAbilities abilityBossRef)
 			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
-
 		this.abilityOwner = abilityOwner;
 		casterPosition = abilityOwner.transform.position;
+		UpdateHitByeVariable();
+
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
@@ -136,7 +89,6 @@ public class AbilityAOE : NetworkBehaviour
 		}
 
 		SetDamage();
-		UpdateHitByeVariable(abilityOwner.playerRef);
 
 		aoeLingers = true;
 		abilityDurationTimer = abilityRef.aoeDuration;
@@ -170,14 +122,15 @@ public class AbilityAOE : NetworkBehaviour
 	}
 
 	//helps with applying damage only to enemies
-	private void UpdateHitByeVariable(PlayerController player)
+	private void UpdateHitByeVariable()
 	{
-		if (player != null)
+		if (abilityOwner.IsPlayerEntity())
 			hitBye = IDamagable.HitBye.player;
 		else
 			hitBye = IDamagable.HitBye.entity;
 
-		if (aoeLingers) //lingering aoes damage everyone
+		//overwrites
+		if (abilityRef != null && abilityRef.abilityEnviromental)
 			hitBye = IDamagable.HitBye.enviroment;
 	}
 

@@ -91,7 +91,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			//entityStats.classHandler.unlockedAbilitiesList
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
-				if (ability.damageType != IDamagable.DamageType.isHealing)
+				if (ability.isOffensiveAbility && ability.damageType != IDamagable.DamageType.isHealing)
 					offensiveAbilities.Add(ability);
 			}
 
