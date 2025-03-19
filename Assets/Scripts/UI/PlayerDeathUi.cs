@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static PlayerEventManager;
 
 public class PlayerDeathUi : MonoBehaviour
 {
@@ -30,21 +31,20 @@ public class PlayerDeathUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnShowPlayerDeathUiEvent += ShowPlayerDeathUi;
-		PlayerEventManager.GetPlayerDeathMessaage += SetPlayerDeathMessage;
+		PlayerEventManager.OnPlayerDeathEvent += ShowPlayerDeathUi;
 	}
 
 	private void OnDisable()
 	{
-		PlayerEventManager.OnShowPlayerDeathUiEvent -= ShowPlayerDeathUi;
-		PlayerEventManager.GetPlayerDeathMessaage -= SetPlayerDeathMessage;
+		PlayerEventManager.OnPlayerDeathEvent -= ShowPlayerDeathUi;
 	}
 
-	private void ShowPlayerDeathUi()
+	private void ShowPlayerDeathUi(GameObject playerObj, PlayerDeathType playerDeathType, string deathMessage)
 	{
-		//possiby get a reason for there death at some point. eg:
-		//died while fighting x enemy / died from x trap / burned/poisoned to death in lava/posion pit etc...
+		if (playerDeathType == PlayerDeathType.dungeonMpDeath || playerDeathType == PlayerDeathType.bossDungeonMpDeath)
+			if (playerObj != GameManager.Localplayer.gameObject) return; //this player didnt die so ingnore ui
 
+		PlayerDeathText.text = deathMessage;
 		PlayerDeathPanelUi.SetActive(true);
 
 		if (Application.isEditor) //allow all respawning types whilst in editor

@@ -20,6 +20,7 @@ MonoBehaviour:
   abilityCastingTimer: 0
   abilityCooldown: 15
   isOffensiveAbility: 1
+  abilityEnviromental: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
   hasStatusEffects: 1

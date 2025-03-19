@@ -315,6 +315,93 @@ public class LobbyManager : NetworkBehaviour
 		}
 	}
 
+	//FETCHING LOBBY PLAYER DATA
+	//fetch player based join order
+	public string GetPlayerName(int index)
+	{
+		if (!_Lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
+			Debug.LogError("player Name Key not found");
+
+		return playerName.Value.ToString();
+	}
+	public string GetPlayerLevel(int index)
+	{
+		if (!_Lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject playerLevel))
+			Debug.LogError("player level Key not found");
+
+		return playerLevel.Value.ToString();
+	}
+	public string GetPlayerClass(int index)
+	{
+		if (!_Lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject playerClass))
+			Debug.LogError("player Class Key not found");
+
+		return playerClass.Value.ToString();
+	}
+	public ulong GetPlayerNetworkId(int index)
+	{
+		if (!_Lobby.Players[index].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
+			Debug.LogError("player Name Key not found");
+
+		return Convert.ToUInt64(playerNetworkId.Value);
+	}
+
+	//fetch specific player
+	public string GetSpecificPlayerName(ulong clientId)
+	{
+		string playerName = "";
+
+		foreach (Player player in _Lobby.Players)
+		{
+			if (!player.Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
+			{
+				Debug.LogError("Player With Network ID Not Found");
+				break;
+			}
+
+			if (clientId != Convert.ToUInt64(playerNetworkId.Value)) continue;
+			else
+				playerName = player.Data["PlayerName"].Value;
+		}
+		return playerName;
+	}
+	public string GetSpecificPlayerLevel(ulong clientId)
+	{
+		string playerLevel = "";
+
+		foreach (Player player in _Lobby.Players)
+		{
+			if (!player.Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
+			{
+				Debug.LogError("Player With Network ID Not Found");
+				break;
+			}
+
+			if (clientId != Convert.ToUInt64(playerNetworkId.Value)) continue;
+			else
+				playerLevel = player.Data["PlayerLevel"].Value;
+		}
+		return playerLevel;
+	}
+	public string GetSpecificPlayerClass(ulong clientId)
+	{
+		string playerClass = "";
+
+		foreach (Player player in _Lobby.Players)
+		{
+			if (!player.Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
+			{
+				Debug.LogError("Player With Network ID Not Found");
+				break;
+			}
+
+			if (clientId != Convert.ToUInt64(playerNetworkId.Value)) continue;
+			else
+				playerClass = player.Data["PlayerClass"].Value;
+		}
+		return playerClass;
+	}
+
 	//lobby hearbeat
 	private async void LobbyHeartBeat()
 	{

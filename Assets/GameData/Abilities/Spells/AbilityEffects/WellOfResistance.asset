@@ -21,6 +21,7 @@ MonoBehaviour:
   abilityCastingTimer: 0
   abilityCooldown: 30
   isOffensiveAbility: 0
+  abilityEnviromental: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
   hasStatusEffects: 1
@@ -31,11 +32,11 @@ MonoBehaviour:
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 1
   aoeDuration: 10
-  circleAoeRadius: 0
-  angle: 0
-  coneAoeRadius: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 20
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 0
   projectileSprite: {fileID: 0}
   projectileSpeed: 20

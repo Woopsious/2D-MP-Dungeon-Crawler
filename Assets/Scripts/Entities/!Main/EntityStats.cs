@@ -339,9 +339,24 @@ public class EntityStats : NetworkBehaviour
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
 		if (IsPlayerEntity())
-			PlayerEventManager.PlayerDeath(gameObject, deathMessage);
+		{
+			if (MultiplayerManager.IsMultiplayer())
+			{
+				if (GameManager.Instance.SceneIsBossDungeonScene(GameManager.Instance.currentlyLoadedScene.name)) //player death in mp + boss dungeon
+					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.dungeonMpDeath, deathMessage);
+				else																							//player death in mp + basic dungeon
+					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.bossDungeonMpDeath, deathMessage);
+			}
+			else
+			{
+				if (GameManager.Instance.SceneIsBossDungeonScene(GameManager.Instance.currentlyLoadedScene.name)) //player death in sp + boss dungeon
+					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.dungeonSpDeath, deathMessage);
+				else																							//player death in sp + basic dungeon
+					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.bossDungeonSpDeath, deathMessage);
+			}
+		}
 		else
-			ObjectPoolingManager.EntityDeathEvent(gameObject);
+			ObjectPoolingManager.EntityDeathEvent(gameObject); //entity death
 	}
 
 	//MANA EVENTS

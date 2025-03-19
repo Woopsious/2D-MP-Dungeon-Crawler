@@ -25,9 +25,9 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		else
 		{
 			SetHostText(index);
-			playerNameText.text = GetPlayerName(lobby, index);
-			PlayerInfoText.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
-			clientNetworkId = GetPlayerNetworkId(lobby, index);
+			playerNameText.text = LobbyManager.Instance.GetPlayerName(index);
+			PlayerInfoText.text = $"Level {LobbyManager.Instance.GetPlayerLevel(index)} {LobbyManager.Instance.GetPlayerClass(index)}";
+			clientNetworkId = LobbyManager.Instance.GetPlayerNetworkId(index);
 			UpdatePlayerActionButton(index);
 		}
 	}
@@ -48,34 +48,6 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			hostText.text = "Player 3";
 		else if (index == 3)
 			hostText.text = "Player 4";
-	}
-	private string GetPlayerName(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
-			Debug.LogError("player Name Key not found");
-
-		return playerName.Value.ToString();
-	}
-	private string GetPlayerLevel(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject playerLevel))
-			Debug.LogError("player level Key not found");
-
-		return playerLevel.Value.ToString();
-	}
-	private string GetPlayerClass(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject playerClass))
-			Debug.LogError("player Class Key not found");
-
-		return playerClass.Value.ToString();
-	}
-	private ulong GetPlayerNetworkId(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-			Debug.LogError("player Name Key not found");
-
-		return Convert.ToUInt64(playerNetworkId.Value);
 	}
 
 	public void LogPlayerInfo()

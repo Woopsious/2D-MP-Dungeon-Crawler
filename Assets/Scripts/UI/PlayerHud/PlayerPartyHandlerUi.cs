@@ -25,20 +25,20 @@ public class PlayerPartyHandlerUi : MonoBehaviour
 			ClearUiInfo();
 		else
 		{
-			LinkToClientPlayerObject(lobby, index);
+			LinkToClientPlayerObject(index);
 
 			if (playerClientNetworkId == NetworkManager.Singleton.LocalClientId)
-				playerName.text = "(YOU)" + GetPlayerName(lobby, index);
+				playerName.text = "(YOU)" + LobbyManager.Instance.GetPlayerName(index);
 			else
-				playerName.text = GetPlayerName(lobby, index);
+				playerName.text = LobbyManager.Instance.GetPlayerName(index);
 
-			playerInfo.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
+			playerInfo.text = $"Level {LobbyManager.Instance.GetPlayerLevel(index)} {LobbyManager.Instance.GetPlayerClass(index)}";
 			gameObject.SetActive(true);
 		}
 	}
-	private void LinkToClientPlayerObject(Lobby lobby, int index)
+	private void LinkToClientPlayerObject(int index)
 	{
-		playerClientNetworkId = GetPlayerNetworkId(lobby, index);
+		playerClientNetworkId = LobbyManager.Instance.GetPlayerNetworkId(index);
 
 		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
 		{
@@ -86,34 +86,5 @@ public class PlayerPartyHandlerUi : MonoBehaviour
 	{
 		float percentage = (float)currentValue / MaxValue;
 		manaBarFiller.fillAmount = percentage;
-	}
-
-	private string GetPlayerName(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
-			Debug.LogError("player Name Key not found");
-
-		return playerName.Value.ToString();
-	}
-	private string GetPlayerLevel(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject playerLevel))
-			Debug.LogError("player level Key not found");
-
-		return playerLevel.Value.ToString();
-	}
-	private string GetPlayerClass(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject playerClass))
-			Debug.LogError("player Class Key not found");
-
-		return playerClass.Value.ToString();
-	}
-	private ulong GetPlayerNetworkId(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerNetworkID", out PlayerDataObject playerNetworkId))
-			Debug.LogError("player Name Key not found");
-
-		return Convert.ToUInt64(playerNetworkId.Value);
 	}
 }

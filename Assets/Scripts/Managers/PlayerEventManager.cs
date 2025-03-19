@@ -15,14 +15,17 @@ public static class PlayerEventManager
 	}
 
 	//player death events
-	public static event Action<GameObject> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject obj, string deathMessage)
+	public enum PlayerDeathType
 	{
-		OnPlayerDeathEvent?.Invoke(obj);
-		GetPlayerDeathMessaage?.Invoke(deathMessage);
+		dungeonSpDeath, bossDungeonSpDeath, dungeonMpDeath, bossDungeonMpDeath
+	}
+
+	public static event Action<GameObject, PlayerDeathType, string> OnPlayerDeathEvent;
+	public static void PlayerDeath(GameObject playerObj, PlayerDeathType playerDeathType, string deathMessage)
+	{
+		OnPlayerDeathEvent?.Invoke(playerObj, playerDeathType, deathMessage);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
-	public static event Action<string> GetPlayerDeathMessaage;
 	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath()
 
 	/// <summary>

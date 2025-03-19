@@ -68,7 +68,6 @@ public class GameManager : MonoBehaviour
 		if (SceneHandler.Instance == null) //if != null starting scene = different scene
 			LoadMainMenu(); //starting scene = MainScene
 	}
-
 	private void Start()
 	{
 		SaveManager.Instance.LoadPlayerData();
@@ -291,10 +290,17 @@ public class GameManager : MonoBehaviour
 		else
 			currentlyLoadedScene = newLoadedScene;
 	}
-	public bool SceneIsHubOrDungeonScene(string newLoadedSceneName)
+	public bool SceneIsHubOrDungeonScene(string sceneName)
 	{
-		if (newLoadedSceneName.IsNullOrEmpty()) return false;
-		if (newLoadedSceneName.Contains("Dungeon") || newLoadedSceneName.Contains("Hub"))
+		if (sceneName.IsNullOrEmpty()) return false;
+		if (sceneName.Contains("Dungeon") || sceneName.Contains("Hub"))
+			return true;
+		else return false;
+	}
+	public bool SceneIsBossDungeonScene(string sceneName)
+	{
+		if (sceneName.IsNullOrEmpty()) return false;
+		if (sceneName.Contains("Boss"))
 			return true;
 		else return false;
 	}

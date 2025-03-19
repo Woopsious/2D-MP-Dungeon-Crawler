@@ -43,6 +43,15 @@ public class PlayerPartyUi : MonoBehaviour
 		}
 	}
 
+	public void SendPlayerDiedMessage(ulong idOfDeadPlayer)
+	{
+		GameObject go = Instantiate(partyMessagePrefab, partyMessagesContent.transform);
+		PartyMessagesUi partyMessage = go.GetComponent<PartyMessagesUi>();
+
+		string newMessage = LobbyManager.Instance.GetSpecificPlayerName(idOfDeadPlayer) + " Died";
+		partyMessage.SetMessage(newMessage);
+	}
+
 	public void SendPlayerJoinedMessage(string playerName)
 	{
 		if (LobbyManager.Instance._Lobby == null) return;
