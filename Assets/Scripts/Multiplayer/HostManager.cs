@@ -155,6 +155,7 @@ public class HostManager : NetworkBehaviour
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{
 		RemoveDisconnectedClientsFromLobby(id);
+		PlayerDeathUi.Instance.CheckDeadPlayersOnClientDisconnect();
 	}
 
 	//auto remove disconnected clients from lobby for what ever reason

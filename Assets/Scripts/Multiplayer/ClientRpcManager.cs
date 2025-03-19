@@ -23,4 +23,10 @@ public class ClientRpcManager : NetworkBehaviour
 	{
 		DungeonHandler.Instance.SyncChestState(chestIndex, newState);
 	}
+
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	public void ReviveAllPlayersRpc()
+	{
+		PlayerDeathUi.Instance.CallReviveAllPlayersEvent();
+	}
 }

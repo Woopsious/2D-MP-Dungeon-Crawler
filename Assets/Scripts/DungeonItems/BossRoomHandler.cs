@@ -35,20 +35,29 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 
 	private void OnEnable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent += RevivePlayersAtPortal;
+		PlayerEventManager.OnReviveAllPlayersEvent += ResetRoom;
 		BossEntityStats.OnBossDeath += OnBossDeath;
 	}
 	private void OnDisable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent -= RevivePlayersAtPortal;
+		PlayerEventManager.OnReviveAllPlayersEvent -= ResetRoom;
 		BossEntityStats.OnBossDeath -= OnBossDeath;
 	}
 
 	//respawning players
-	public void RespawnPlayerAtPortal(GameObject playerObj)
+	private void RevivePlayersAtPortal()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (respawnPortalUnlocked)
-			playerObj.transform.position = roomRespawnPortal.transform.position;
+		{
+			foreach(PlayerController player in ObjectPoolingManager.Instance.playersPool)
+				player.transform.position = roomRespawnPortal.transform.position;
+		}
 		else
-			DungeonHandler.Instance.RespawnPlayerAtClosestPortal(playerObj);
+			DungeonHandler.Instance.RespawnPlayersAtClosestPortal();
 	}
 
 	//boss room states
@@ -67,7 +76,7 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		roomBarrier.SetActive(false);
 		roomExitPortal.gameObject.SetActive(true);
 	}
-	public void ResetRoom()
+	private void ResetRoom()
 	{
 		bossFightStarted = false;
 		bossFightCompleted = false;

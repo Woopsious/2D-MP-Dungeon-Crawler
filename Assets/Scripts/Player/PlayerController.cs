@@ -86,12 +86,14 @@ public class PlayerController : NetworkBehaviour
 
 	private void OnEnable()
 	{
+		PlayerEventManager.OnRevivePlayerEvent += ReviveDeadPlayer;
 		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
 		ObjectPoolingManager.AddPlayerToList(this);
 	}
 	private void OnDisable()
 	{
+		PlayerEventManager.OnRevivePlayerEvent -= ReviveDeadPlayer;
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 		ObjectPoolingManager.RemovePlayerFromList(this);
@@ -674,6 +676,13 @@ public class PlayerController : NetworkBehaviour
 
 		Debug.LogError("failed to get class index");
 		return 0;
+	}
+
+	//REVIVE DEAD PLAYERS LISTENER
+	private void ReviveDeadPlayer(GameObject playerObj)
+	{
+		if (playerObj != gameObject) return;
+		playerStats.ResetEntityStats();
 	}
 
 	//PLAYER MARKING FOR BOSS ABILITIES

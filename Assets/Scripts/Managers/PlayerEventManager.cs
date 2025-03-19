@@ -26,7 +26,19 @@ public static class PlayerEventManager
 		OnPlayerDeathEvent?.Invoke(playerObj, playerDeathType, deathMessage);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
-	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath()
+	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath() used to hide all other ui elements
+
+	public static event Action<GameObject> OnRevivePlayerEvent;
+	public static void RevivePlayer(GameObject playerObj)
+	{
+		OnRevivePlayerEvent?.Invoke(playerObj);
+	}
+
+	public static event Action OnReviveAllPlayersEvent;
+	public static void ReviveAllPlayers()
+	{
+		OnReviveAllPlayersEvent?.Invoke();
+	}
 
 	/// <summary>
 	/// UI EVENTS

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static ChestHandler;
@@ -30,15 +31,34 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent += RespawnPlayersAtClosestPortal;
 		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent -= RespawnPlayersAtClosestPortal;
 		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
 	}
 
 	//player respawns
-	public void RespawnPlayerAtClosestPortal(GameObject playerObj)
+	public void RespawnPlayersAtClosestPortal()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		//respawn all players at hosts closest portal for simplicity + keeping players together
+		Vector2 positionToRespawnAt = GetClosestPortalToPlayer(GameManager.Localplayer.gameObject);
+
+		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+			player.transform.position = positionToRespawnAt;
+	}
+	private void RespawnPlayerAtClosestPortal(GameObject playerObj)
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		playerObj.transform.position = GetClosestPortalToPlayer(playerObj);
+	}
+
+	private Vector2 GetClosestPortalToPlayer(GameObject playerObj)
 	{
 		List<float> portalDistances = new();
 		Vector2 positionToRespawnAt = Vector2.zero;
@@ -55,7 +75,7 @@ public class DungeonHandler : MonoBehaviour
 				distance = newDistance;
 			}
 		}
-		playerObj.transform.position = positionToRespawnAt;
+		return positionToRespawnAt;
 	}
 
 	//DUNGEON SETUP

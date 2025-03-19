@@ -270,7 +270,7 @@ public class EntityStats : NetworkBehaviour
 	//helpers
 	private DamageSourceInfo NegateEntityResistances(DamageSourceInfo damageSourceInfo)
 	{
-		//Debug.Log(gameObject.name + " recieved: " + damage);
+		//Debug.Log(gameObject.name + " recieved: " + damageSourceInfo.damage);
 		if (damageSourceInfo.damageType == IDamagable.DamageType.isPoisonDamage)
 		{
 			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
@@ -307,7 +307,7 @@ public class EntityStats : NetworkBehaviour
 		if (damageSourceInfo.damage < 3) //always deal 3 damage
 			damageSourceInfo.damage = 3;
 
-		//Debug.Log("FinalDmg: " + damage);
+		//Debug.Log("FinalDmg: " + damageSourceInfo.damage);
 		return damageSourceInfo;
 	}
 	private IEnumerator FlashRedOnRecieveDamage()

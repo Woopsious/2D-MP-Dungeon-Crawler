@@ -1,9 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static PlayerEventManager;
 
 public class PlayerDeathUi : MonoBehaviour
 {
@@ -22,89 +22,107 @@ public class PlayerDeathUi : MonoBehaviour
 	public void Awake()
 	{
 		Instance = this;
-		Initilize();
-	}
-	private void Initilize()
-	{
-		HidePlayerDeathUi();
 	}
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnPlayerDeathEvent += ShowPlayerDeathUi;
+		PlayerEventManager.OnPlayerDeathEvent += OnPlayerDeath;
+		PlayerEventManager.OnRevivePlayerEvent += HidePlayerDeathUi;
 	}
 
 	private void OnDisable()
 	{
-		PlayerEventManager.OnPlayerDeathEvent -= ShowPlayerDeathUi;
+		PlayerEventManager.OnPlayerDeathEvent -= OnPlayerDeath;
+		PlayerEventManager.OnRevivePlayerEvent -= HidePlayerDeathUi;
+
+	}
+	private void OnPlayerDeath(GameObject playerObj, PlayerEventManager.PlayerDeathType playerDeathType, string deathMessage)
+	{
+		if (PlayerPartyWiped()) //show respawn screen on player party wipe (all players dead in sp/mp)
+			ShowPlayerRespawnUi();
+
+		if (playerObj != GameManager.Localplayer.gameObject) return; //this player didnt die so ingnore ui
+		ShowDeathAndSpectatorPanelUi(deathMessage);
 	}
 
-	private void ShowPlayerDeathUi(GameObject playerObj, PlayerDeathType playerDeathType, string deathMessage)
+	public void CheckDeadPlayersOnClientDisconnect()
 	{
-		if (playerDeathType == PlayerDeathType.dungeonMpDeath || playerDeathType == PlayerDeathType.bossDungeonMpDeath)
-			if (playerObj != GameManager.Localplayer.gameObject) return; //this player didnt die so ingnore ui
-
-		PlayerDeathText.text = deathMessage;
-		PlayerDeathPanelUi.SetActive(true);
-
-		if (Application.isEditor) //allow all respawning types whilst in editor
+		if (PlayerPartyWiped() && MultiplayerManager.IsClientHost())
 		{
-			if (GameManager.Instance == null)
-				Debug.LogWarning("Game Manager instance not found, some respawn types hidden, ignore if testing scene");
-			else
-				respawnInHubAreaButton.SetActive(true);
-
-			respawnInDungeonButton.SetActive(true);
-			return;
+			ShowPlayerRespawnUi();
+			ShowDeathAndSpectatorPanelUi("Last player alive left");
 		}
+	}
 
-		if (GameManager.Instance == null)
+	//bool checks
+	private bool PlayerPartyWiped()
+	{
+		if (MultiplayerManager.IsClientHost()) //show respawn screen only for host/sp to respawn
 		{
-			Debug.LogError("Game Manager instance not found");
-			return;
+			int playersDeadCount = 0;
+			foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+			{
+				if (player.playerStats.IsEntityDead())
+					playersDeadCount++;
+			}
+
+			if (playersDeadCount == ObjectPoolingManager.Instance.playersPool.Count)
+				return true;
+			else return false;
 		}
+		else return false;
+	}
+
+	//ui updates
+	private void ShowPlayerRespawnUi()
+	{
+		respawnInDungeonButton.SetActive(false);
+		respawnInHubAreaButton.SetActive(false);
 
 		respawnInHubAreaButton.SetActive(true);
 
 		if (BossRoomHandler.Instance != null)
+		{
 			respawnInDungeonButton.SetActive(true);
+		}
 	}
-	private void SetPlayerDeathMessage(string deathMessage)
+	private void ShowDeathAndSpectatorPanelUi(string deathMessage)
 	{
 		PlayerDeathText.text = deathMessage;
+		PlayerDeathPanelUi.SetActive(true);
 	}
-
-	private void HidePlayerDeathUi()
+	private void HidePlayerDeathUi(GameObject playerObj)
 	{
+		if (playerObj != GameManager.Localplayer.gameObject) return;
+
 		PlayerDeathPanelUi.SetActive(false);
-		respawnInHubAreaButton.SetActive(false);
 		respawnInDungeonButton.SetActive(false);
+		respawnInHubAreaButton.SetActive(false);
 	}
 
-	//button actions
-	public void RespawnPlayerInHubArea()
+	//BUTTON ACTIONS
+	//sp/mp host client actions
+	public void RespawnPlayersInHubArea()
 	{
 		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.noReload);
 
-		HidePlayerDeathUi();
-	}
-	public void RespawnPlayerInDungeon()
-	{
-		//revive/reset player stats, send to closest portal
-		if (BossRoomHandler.Instance != null)
-		{
-			BossRoomHandler.Instance.RespawnPlayerAtPortal(GameManager.Localplayer.gameObject);
-			BossRoomHandler.Instance.ResetRoom();
-		}
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.ReviveAllPlayersRpc();
 		else
-		{
-			DungeonHandler.Instance.RespawnPlayerAtClosestPortal(GameManager.Localplayer.gameObject);
-		}
-
-		GameManager.Localplayer.playerStats.ResetEntityStats();
-
-		HidePlayerDeathUi();
+			CallReviveAllPlayersEvent();
+	}
+	public void RespawnPlayersInDungeon()
+	{
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.ReviveAllPlayersRpc();
+		else
+			CallReviveAllPlayersEvent();
 	}
 
-	//MP funcs for respawning player
+	//revive players events (own func so mp works)
+	public void CallReviveAllPlayersEvent()
+	{
+		PlayerEventManager.ReviveAllPlayers();
+		PlayerEventManager.RevivePlayer(GameManager.Localplayer.gameObject);
+	}
 }
