@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 public class PlayerInputHandler : MonoBehaviour
 {
@@ -157,7 +158,20 @@ public class PlayerInputHandler : MonoBehaviour
 		moveInput = MovementInput;
 		MainAttackInput = _MainAttackAction.WasPressedThisFrame();
 		RightClickInput = _RightClickAction.WasPressedThisFrame();
+
 		InteractInput = _InteractAction.WasPressedThisFrame();
+
+		_InteractAction.performed += context =>
+		{
+			if (context.interaction is PressInteraction)
+				Debug.LogError("interact action press performed");
+		};
+		_InteractAction.canceled += context =>
+		{
+			if (context.interaction is PressInteraction)
+				Debug.LogError("interact action press canceled");
+		};
+
 		TabTargetingForwardsInput = _TabTargetingForwards.WasPressedThisFrame();
 		TabTargetingBackwardsInput = _TabTargetingBackwards.WasPressedThisFrame();
 		

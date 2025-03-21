@@ -54,7 +54,7 @@
                     "name": "RightClick",
                     "type": "Button",
                     "id": "cefd9ca7-7dda-45fe-8826-300afca2cd25",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -63,7 +63,7 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "23ef1617-a567-4225-9809-90a9d0a5e36f",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -72,7 +72,7 @@
                     "name": "TabTargetingForwards",
                     "type": "Button",
                     "id": "aed5c3fd-530b-4dc6-9630-e9d8ab6c9249",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -198,7 +198,7 @@
                     "name": "LearntAbilities",
                     "type": "Button",
                     "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -286,7 +286,7 @@
                     "name": "",
                     "id": "d0dfce21-05b9-439f-913d-c13fef6b5cff",
                     "path": "<Keyboard>/f",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
                     "action": "Interact",

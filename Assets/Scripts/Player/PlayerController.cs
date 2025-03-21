@@ -863,6 +863,10 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void OnInteract()
 	{
+		Debug.LogError("interact");
+
+		return;
+
 		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (currentInteractedObject == null) return;
 		currentInteractedObject.Interact(this);

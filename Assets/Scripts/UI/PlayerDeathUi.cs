@@ -111,6 +111,7 @@ public class PlayerDeathUi : MonoBehaviour
 	//update spectate player text
 	public void UpdateSpectatingPlayer(ulong idOfPlayer)
 	{
+		if (LobbyManager.Instance == null) return;
 		spectatingPlayerName.text = "Spectating player " + LobbyManager.Instance.GetSpecificPlayerName(idOfPlayer);
 	}
 
