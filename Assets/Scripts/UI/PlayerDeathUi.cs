@@ -9,7 +9,7 @@ public class PlayerDeathUi : MonoBehaviour
 {
 	public static PlayerDeathUi Instance;
 
-	[Header("Panel Ui")]
+	[Header("Death Panel Ui")]
 	public GameObject PlayerDeathPanelUi;
 
 	[Header("Text")]
@@ -19,6 +19,10 @@ public class PlayerDeathUi : MonoBehaviour
 	public GameObject respawnInHubAreaButton;
 	public GameObject respawnInDungeonButton;
 
+	[Header("Spectate Panel Ui")]
+	public GameObject PlayerSpectatePanelUi;
+	public TMP_Text spectatingPlayerName;
+
 	public void Awake()
 	{
 		Instance = this;
@@ -27,13 +31,13 @@ public class PlayerDeathUi : MonoBehaviour
 	private void OnEnable()
 	{
 		PlayerEventManager.OnPlayerDeathEvent += OnPlayerDeath;
-		PlayerEventManager.OnRevivePlayerEvent += HidePlayerDeathUi;
+		PlayerEventManager.OnRevivePlayerEvent += HideDeathAndSpectatorPanelUi;
 	}
 
 	private void OnDisable()
 	{
 		PlayerEventManager.OnPlayerDeathEvent -= OnPlayerDeath;
-		PlayerEventManager.OnRevivePlayerEvent -= HidePlayerDeathUi;
+		PlayerEventManager.OnRevivePlayerEvent -= HideDeathAndSpectatorPanelUi;
 
 	}
 	private void OnPlayerDeath(GameObject playerObj, PlayerEventManager.PlayerDeathType playerDeathType, string deathMessage)
@@ -90,14 +94,24 @@ public class PlayerDeathUi : MonoBehaviour
 	{
 		PlayerDeathText.text = deathMessage;
 		PlayerDeathPanelUi.SetActive(true);
+
+		if (!MultiplayerManager.IsMultiplayer()) return; //no one to spectate in sp
+		PlayerSpectatePanelUi.SetActive(true);
 	}
-	private void HidePlayerDeathUi(GameObject playerObj)
+	private void HideDeathAndSpectatorPanelUi(GameObject playerObj)
 	{
 		if (playerObj != GameManager.Localplayer.gameObject) return;
 
 		PlayerDeathPanelUi.SetActive(false);
 		respawnInDungeonButton.SetActive(false);
 		respawnInHubAreaButton.SetActive(false);
+		PlayerSpectatePanelUi.SetActive(false);
+	}
+
+	//update spectate player text
+	public void UpdateSpectatingPlayer(ulong idOfPlayer)
+	{
+		spectatingPlayerName.text = "Spectating player " + LobbyManager.Instance.GetSpecificPlayerName(idOfPlayer);
 	}
 
 	//BUTTON ACTIONS

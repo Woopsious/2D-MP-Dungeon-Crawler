@@ -15,6 +15,24 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "SpectateNextPlayer",
+                    "type": "Button",
+                    "id": "99e1ff45-b075-42e3-b636-e490349a78ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpectatePreviousPlayer",
+                    "type": "Button",
+                    "id": "d653151e-3e02-485c-aad8-e777823a8d9e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Movement",
                     "type": "PassThrough",
                     "id": "400db62a-d32f-4b17-b984-c4f6855fbd45",
@@ -27,7 +45,7 @@
                     "name": "MainAttack",
                     "type": "Button",
                     "id": "16166011-ddb9-4174-9835-69e38d841ba8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -448,6 +466,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "TabTargetingBackwards",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5ad92fcd-3472-4971-ac08-0c174ae4ce3e",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpectateNextPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b11bc5e9-911f-429e-8329-c844620f8577",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpectatePreviousPlayer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

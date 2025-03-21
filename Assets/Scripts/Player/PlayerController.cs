@@ -14,6 +14,7 @@ public class PlayerController : NetworkBehaviour
 
 	[Header("Player Info")]
 	private Camera playerCamera;
+	private GameObject objectCameraTracks;
 	public LayerMask includeMe;
 	[HideInInspector] public EntityStats playerStats;
 	[HideInInspector] public PlayerClassHandler playerClassHandler;
@@ -38,6 +39,9 @@ public class PlayerController : NetworkBehaviour
 
 	[Header("Player Friendly Targeting")] // +info
 	public EntityStats selectedFriendlyTarget;
+
+	//current player spectating index
+	private int playerSpectatorIndex;
 
 	//target selected event
 	public static event Action<EntityStats> OnNewTargetSelected;
@@ -102,7 +106,8 @@ public class PlayerController : NetworkBehaviour
 	private void Update()
 	{
 		if (GameManager.Localplayer == this)
-			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+			playerCamera.transform.position = new Vector3(
+				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
 
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
@@ -123,6 +128,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (PlayerIsLocalPlayer())
 		{
+			playerSpectatorIndex = 0;
 			UpdateLocalPlayerReferences();
 
 			if (MultiplayerManager.IsMultiplayer())
@@ -141,6 +147,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		GameManager.Instance.UpdateLocalPlayerInstanceAndReloadAllGameData(this);
 		playerCamera = GameManager.LocalPlayerCamera;
+		objectCameraTracks = gameObject;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
 	}
 	private void RequestPlayerInfoOfOtherClients()
@@ -178,19 +185,19 @@ public class PlayerController : NetworkBehaviour
 		else if (IsHost && IsLocalPlayer)
 		{
 			//Debug.LogError("host | move input: " + moveInput);
-			MoveServerRPC(moveInput);
+			MoveRpc(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
 			//Debug.LogError("client | move input: " + moveInput);
-			MoveServerRPC(moveInput);
+			MoveRpc(moveInput);
 		}
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
-	[ServerRpc]
-	private void MoveServerRPC(Vector2 moveInput)
+	[Rpc(SendTo.Server)]
+	private void MoveRpc(Vector2 moveInput)
 	{
 		Move(moveInput);
 	}
@@ -240,7 +247,7 @@ public class PlayerController : NetworkBehaviour
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
 		if (entityStats.IsPlayerEntity())
 		{
-			SetNewFriendlySelectedTarget(entityStats);
+			SetNewSelectedFriendlyTarget(entityStats);
 			return;
 		}
 		else
@@ -276,7 +283,7 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
-	//tab targeting
+	//cycle targeting
 	private void CycleTargetsForwards(int startingIndex)
 	{
 		//for next target in target list, if can see that target (with raycast) select that enemy as new target, if not ++
@@ -305,21 +312,21 @@ public class PlayerController : NetworkBehaviour
 			break;
 		}
 	}
+
+	//setting new target
 	private void SetNewSelectedEnemyTarget(int entityIndex)
 	{
 		OnNewTargetSelected?.Invoke(EnemyTargetList[entityIndex].entity);
 		selectedEnemyTarget = EnemyTargetList[entityIndex].entity;
 		selectedEnemyTargetIndex = entityIndex;
 	}
-
-	//set friendly target
-	private void SetNewFriendlySelectedTarget(EntityStats entity)
+	private void SetNewSelectedFriendlyTarget(EntityStats entity)
 	{
 		OnNewTargetSelected?.Invoke(entity);
 		selectedFriendlyTarget = entity;
 	}
 
-	//targeting updates
+	//enemy target list updates
 	public void AddNewEnemyTargetToList(EntityStats entity)
 	{
 		//add new enemy to list, then update targets
@@ -382,6 +389,33 @@ public class PlayerController : NetworkBehaviour
 				return true;
 		}
 		return false;
+	}
+
+	//PLAYER SPECTATING
+	//spectate new players
+	private void SpectateNextAlivePlayer()
+	{
+		if (playerSpectatorIndex + 1 <= ObjectPoolingManager.Instance.playersPool.Count - 1)
+			UpdateSpectatedPlayer(playerSpectatorIndex + 1);
+		else
+			UpdateSpectatedPlayer(0);
+	}
+	private void SpecatePreviousAlivePlayer()
+	{
+		if (playerSpectatorIndex - 1 >= 0)
+			UpdateSpectatedPlayer(playerSpectatorIndex - 1);
+		else
+			UpdateSpectatedPlayer(ObjectPoolingManager.Instance.playersPool.Count - 1);
+	}
+
+	//set new spectated target
+	private void UpdateSpectatedPlayer(int playerIndex)
+	{
+		PlayerController player = ObjectPoolingManager.Instance.playersPool[playerIndex];
+
+		objectCameraTracks = player.gameObject;
+		playerSpectatorIndex = playerIndex;
+		PlayerDeathUi.Instance.UpdateSpectatingPlayer(player.OwnerClientId);
 	}
 
 	//PLAYER MAIN WEAPON ATTACKS
@@ -682,6 +716,8 @@ public class PlayerController : NetworkBehaviour
 	private void ReviveDeadPlayer(GameObject playerObj)
 	{
 		if (playerObj != gameObject) return;
+
+		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
 	}
 
@@ -768,6 +804,27 @@ public class PlayerController : NetworkBehaviour
 	/// </summary>
 
 	//in game actions
+	private void OnCameraZoom()
+	{
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+
+		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
+		float value = PlayerInputHandler.Instance.CameraZoomInput;
+		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
+			playerCamera.orthographicSize -= value / 480;
+	}
+	private void OnSpectateNextPlayer()
+	{
+		//if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
+		SpectateNextAlivePlayer();
+	}
+	private void OnSpectatePreviousPlayer()
+	{
+		//if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
+		SpecatePreviousAlivePlayer();
+	}
 	private void OnMainAttack()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
@@ -803,15 +860,6 @@ public class PlayerController : NetworkBehaviour
 			CancelAbility();
 
 		CheckForSelectableTarget();
-	}
-	private void OnCameraZoom()
-	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
-		//limit min and max zoom size to x, stop camera from zooming in/out based on value grabbed from scroll wheel input
-		float value = PlayerInputHandler.Instance.CameraZoomInput;
-		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
-			playerCamera.orthographicSize -= value / 480;
 	}
 	private void OnInteract()
 	{

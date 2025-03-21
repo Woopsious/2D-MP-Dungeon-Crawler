@@ -16,6 +16,8 @@ public class PlayerInputHandler : MonoBehaviour
 	[Header("Input Action Name Refs")]
 	//game actions
 	[SerializeField] private string CameraZoom = "CameraZoom";
+	[SerializeField] private string SpectateNextPlayer = "SpectateNextPlayer";
+	[SerializeField] private string SpectatePreviousPlayer = "SpectatePreviousPlayer";
 	[SerializeField] private string Movement = "Movement";
 	[SerializeField] private string MainAttack = "MainAttack";
 	[SerializeField] private string RightClick = "RightClick";
@@ -45,6 +47,8 @@ public class PlayerInputHandler : MonoBehaviour
 
 	//game actions
 	public InputAction _CameraZoomAction;
+	public InputAction _SpectateNextPlayer;
+	public InputAction _SpectatePreviousPlayer;
 	public InputAction _MovementAction;
 	public InputAction _MainAttackAction;
 	public InputAction _RightClickAction;
@@ -72,6 +76,8 @@ public class PlayerInputHandler : MonoBehaviour
 	//game inputs
 	public float zoomInput;
 	public float CameraZoomInput {  get; private set; }
+	public bool SpectateNextPlayerInput { get; private set; }
+	public bool SpectatePreviousPlayerInput { get; private set; }
 
 	public Vector2 moveInput;
 	public Vector2 MovementInput { get; private set; }
@@ -114,6 +120,8 @@ public class PlayerInputHandler : MonoBehaviour
 	{
 		//game actions
 		_CameraZoomAction = playerControls.FindActionMap(actionMapName).FindAction(CameraZoom);
+		_SpectateNextPlayer = playerControls.FindActionMap(actionMapName).FindAction(SpectateNextPlayer);
+		_SpectatePreviousPlayer = playerControls.FindActionMap(actionMapName).FindAction(SpectatePreviousPlayer);
 		_MovementAction = playerControls.FindActionMap(actionMapName).FindAction(Movement);
 		_MainAttackAction = playerControls.FindActionMap(actionMapName).FindAction(MainAttack);
 		_RightClickAction = playerControls.FindActionMap(actionMapName).FindAction(RightClick);
@@ -143,6 +151,8 @@ public class PlayerInputHandler : MonoBehaviour
 		//game inputs
 		CameraZoomInput = _CameraZoomAction.ReadValue<float>();
 		zoomInput = CameraZoomInput;
+		SpectateNextPlayerInput = _SpectateNextPlayer.WasPressedThisFrame();
+		SpectatePreviousPlayerInput = _SpectatePreviousPlayer.WasPressedThisFrame();
 		MovementInput = _MovementAction.ReadValue<Vector2>();
 		moveInput = MovementInput;
 		MainAttackInput = _MainAttackAction.WasPressedThisFrame();
