@@ -21,6 +21,16 @@ public class DebugUi : MonoBehaviour
 		}
 	}
 
+	public void KillLocalPlayer()
+	{
+		DamageSourceInfo damageSourceInfo = new DamageSourceInfo(
+			GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, 1000000, IDamagable.DamageType.isPhysicalDamage, false);
+
+		damageSourceInfo.SetDebugDeathMessage();
+
+		GameManager.Localplayer.playerStats.RecieveDamage(damageSourceInfo, false);
+	}
+
 	public void AddMoney()
 	{
 		int moneyToAdd = 0;

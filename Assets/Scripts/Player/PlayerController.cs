@@ -32,6 +32,17 @@ public class PlayerController : NetworkBehaviour
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
 	private float mainAttackAutoAttackTimer;
 
+	[Header("Player Respawn Info")]
+	private bool beingRespawned;
+	private float respawnTimerCooldown = 20f;
+	private float respawnTimer;
+
+	[Header("Player Revive Info")]
+	private bool beingRevived;
+	private PlayerController playerReviving;
+	private float reviveTimerCooldown = 3f;
+	private float reviveTimer;
+
 	[Header("Player Enemy Targeting")] // +info
 	public EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
@@ -90,6 +101,7 @@ public class PlayerController : NetworkBehaviour
 
 	private void OnEnable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent += ReviveAllDeadPlayer;
 		PlayerEventManager.OnRevivePlayerEvent += ReviveDeadPlayer;
 		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
@@ -97,6 +109,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void OnDisable()
 	{
+		PlayerEventManager.OnReviveAllPlayersEvent -= ReviveAllDeadPlayer;
 		PlayerEventManager.OnRevivePlayerEvent -= ReviveDeadPlayer;
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
@@ -109,6 +122,8 @@ public class PlayerController : NetworkBehaviour
 			playerCamera.transform.position = new Vector3(
 				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
 
+		ReviveTimer();
+
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		UpdateTargetsInList();
@@ -120,6 +135,9 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		PlayerMovement();
+
+		return;
+
 		HealPlayerInHubScene();
 	}
 
@@ -128,6 +146,8 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (PlayerIsLocalPlayer())
 		{
+			reviveTimer = reviveTimerCooldown;
+			respawnTimer = respawnTimerCooldown;
 			playerSpectatorIndex = 0;
 			UpdateLocalPlayerReferences();
 
@@ -389,6 +409,68 @@ public class PlayerController : NetworkBehaviour
 				return true;
 		}
 		return false;
+	}
+
+	//PLAYER RESPAWNING
+	public void StartReviveTimer(PlayerController playerReviving)
+	{
+		if (beingRevived) return;
+
+		Debug.LogError("start revive");
+		reviveTimer = reviveTimerCooldown;
+		this.playerReviving = playerReviving;
+		beingRevived = true;
+	}
+	public void CancelReviveTimer(PlayerController playerReviving)
+	{
+		if (beingRevived && this.playerReviving != playerReviving) return;
+
+		if (beingRevived && this.playerReviving == playerReviving)
+		{
+			Debug.LogError("cancel revive");
+			beingRevived = false;
+			reviveTimer = reviveTimerCooldown;
+			this.playerReviving = null;
+		}
+	}
+	private void ReviveTimer()
+	{
+		if (!beingRevived) return;
+
+		if (reviveTimer > 0)
+		{
+			reviveTimer -= Time.deltaTime;
+			//call rpc to sync ui of revive timers for client being revived + this one
+			Debug.LogError("revive timer: " + reviveTimer);
+
+			if (reviveTimer < 0)
+			{
+				beingRevived = false;
+				reviveTimer = reviveTimerCooldown;
+				Debug.LogError("revive complete");
+				ClientRpcManager.instance.RevivePlayerRpc(NetworkObjectId);
+			}
+		}
+	}
+
+	//PLAYER REVIVNG
+
+	//revive event listners
+	private void ReviveAllDeadPlayer()
+	{
+		reviveTimer = reviveTimerCooldown;
+		respawnTimer = respawnTimerCooldown;
+		playerSpectatorIndex = 0;
+		playerStats.ResetEntityStats();
+	}
+	private void ReviveDeadPlayer(GameObject playerObj)
+	{
+		if (playerObj != gameObject) return;
+
+		reviveTimer = reviveTimerCooldown;
+		respawnTimer = respawnTimerCooldown;
+		playerSpectatorIndex = 0;
+		playerStats.ResetEntityStats();
 	}
 
 	//PLAYER SPECTATING
@@ -712,15 +794,6 @@ public class PlayerController : NetworkBehaviour
 		return 0;
 	}
 
-	//REVIVE DEAD PLAYERS LISTENER
-	private void ReviveDeadPlayer(GameObject playerObj)
-	{
-		if (playerObj != gameObject) return;
-
-		playerSpectatorIndex = 0;
-		playerStats.ResetEntityStats();
-	}
-
 	//PLAYER MARKING FOR BOSS ABILITIES
 	public void MarkPlayer()
 	{
@@ -746,18 +819,6 @@ public class PlayerController : NetworkBehaviour
 			return true;
 		else return false;
 	}
-	private bool IsCollidedObjectInteractable(Collider2D other)
-	{
-		if (GameManager.Localplayer != this) return false; //ignore if not local player
-
-		if (other.GetComponent<BossRoomHandler>() != null || other.GetComponent<PortalHandler>() != null ||
-			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null ||
-			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
-		{
-			return true;
-		}
-		else return false;
-	}
 
 	//INTERACTABLES COLLISSION TRIGGER EVENTS
 	private void OnTriggerEnter2D(Collider2D other)
@@ -770,31 +831,65 @@ public class PlayerController : NetworkBehaviour
 		if (IsCollidedObjectInteractable(other))
 			HandleUnInteractWithCollidables(other);
 	}
+	private bool IsCollidedObjectInteractable(Collider2D other)
+	{
+		if (GameManager.Localplayer != this) return false; //ignore if not local player
+
+		if (other.GetComponent<Interactables>() != null)
+			return true;
+		else
+			return false;
+	}
 	private void HandleInteractWithCollidables(Collider2D other)
 	{
 		currentInteractedObject = other.GetComponent<Interactables>();
 
-		if (other.GetComponent<TrapHandler>() != null)
+		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.trap)
 		{
 			TrapHandler trapHandler = other.GetComponent<TrapHandler>();
 			currentInteractedObject = other.GetComponent<Interactables>();
 
 			if (!trapHandler.trapDetected) return;
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
 		}
-		if (other.GetComponent<ChestHandler>() != null)
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.portal)
+		{
+			if (!MultiplayerManager.IsClientHost())
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Not Host");
+			else
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
+		}
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.chest)
 		{
 			if (other.GetComponent<ChestHandler>().GetChestState() == ChestHandler.ChestState.opened)
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
 			else
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
+		}
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
+		{
+			if (!currentInteractedObject.GetPlayer().playerStats.IsEntityDead()) return; //dont care about alive players
+
+			if (currentInteractedObject.GetPlayer().beingRevived)
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Being Revived");
+			else
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Revive");
 		}
 		else
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
 	}
 	private void HandleUnInteractWithCollidables(Collider2D other)
 	{
-		PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
+
+		if (currentInteractedObject == null) return;
+
+		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
+		{
+			if (currentInteractedObject == null) return;
+			currentInteractedObject.GetPlayer().CancelReviveTimer(this);
+		}
+
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;
 	}
@@ -802,6 +897,20 @@ public class PlayerController : NetworkBehaviour
 	/// <summary>
 	/// Below are all player actions
 	/// </summary>
+
+	//player interacts
+	public void InteractStarted()
+	{
+		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+		if (currentInteractedObject == null) return;
+		currentInteractedObject.Interact(this);
+	}
+	public void InteractCanceled()
+	{
+		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+		if (currentInteractedObject == null) return;
+		currentInteractedObject.CancelInteract(this);
+	}
 
 	//in game actions
 	private void OnCameraZoom()
@@ -860,16 +969,6 @@ public class PlayerController : NetworkBehaviour
 			CancelAbility();
 
 		CheckForSelectableTarget();
-	}
-	private void OnInteract()
-	{
-		Debug.LogError("interact");
-
-		return;
-
-		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (currentInteractedObject == null) return;
-		currentInteractedObject.Interact(this);
 	}
 	private void OnTabTargetingForwards()
 	{

@@ -10,6 +10,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
+	private Interactables interactable;
 
 	private ChestState chestState;
 	public enum ChestState
@@ -39,6 +40,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
+		interactable = GetComponent<Interactables>();
 	}
 	private void Start()
 	{
@@ -75,7 +77,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		gameObject.SetActive(true);
 		chestState = ChestState.opened;
 		spriteRenderer.sprite = chestOpenedSprite;
-		PlayerEventManager.DetectNewInteractedObject(gameObject, false);
+		PlayerEventManager.DetectNewInteractedObject(interactable, false, "Interact");
 
 		if (isPlayerInteraction)
 		{

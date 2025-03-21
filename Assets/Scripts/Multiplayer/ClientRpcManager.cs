@@ -29,4 +29,10 @@ public class ClientRpcManager : NetworkBehaviour
 	{
 		PlayerDeathUi.Instance.CallReviveAllPlayersEvent();
 	}
+
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	public void RevivePlayerRpc(ulong playerObjId)
+	{
+		PlayerEventManager.RevivePlayer(NetworkManager.SpawnManager.SpawnedObjects[playerObjId].gameObject);
+	}
 }

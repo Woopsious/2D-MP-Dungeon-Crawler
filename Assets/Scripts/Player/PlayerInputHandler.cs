@@ -161,15 +161,15 @@ public class PlayerInputHandler : MonoBehaviour
 
 		InteractInput = _InteractAction.WasPressedThisFrame();
 
-		_InteractAction.performed += context =>
+		_InteractAction.started += context =>
 		{
 			if (context.interaction is PressInteraction)
-				Debug.LogError("interact action press performed");
+				GameManager.Localplayer.InteractStarted();
 		};
 		_InteractAction.canceled += context =>
 		{
 			if (context.interaction is PressInteraction)
-				Debug.LogError("interact action press canceled");
+				GameManager.Localplayer.InteractCanceled();
 		};
 
 		TabTargetingForwardsInput = _TabTargetingForwards.WasPressedThisFrame();

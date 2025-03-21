@@ -79,10 +79,10 @@ public static class PlayerEventManager
 	}
 
 	//player ui
-	public static event Action<GameObject, bool> OnDetectNewInteractedObject;
-	public static void DetectNewInteractedObject(GameObject obj, bool showText)
+	public static event Action<Interactables, bool, string> OnDetectNewInteractedObject;
+	public static void DetectNewInteractedObject(Interactables interactable, bool showText, string message)
 	{
-		OnDetectNewInteractedObject?.Invoke(obj, showText);
+		OnDetectNewInteractedObject?.Invoke(interactable, showText, message);
 	}
 
 	public static event Action OnShowPlayerInventoryEvent;

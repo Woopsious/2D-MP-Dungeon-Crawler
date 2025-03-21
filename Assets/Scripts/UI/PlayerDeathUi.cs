@@ -26,6 +26,11 @@ public class PlayerDeathUi : MonoBehaviour
 	public void Awake()
 	{
 		Instance = this;
+
+		PlayerDeathPanelUi.SetActive(false);
+		respawnInDungeonButton.SetActive(false);
+		respawnInHubAreaButton.SetActive(false);
+		PlayerSpectatePanelUi.SetActive(false);
 	}
 
 	private void OnEnable()

@@ -271,6 +271,7 @@ GameObject:
   - component: {fileID: 120328194627084056}
   - component: {fileID: 5724620505289801652}
   - component: {fileID: 4928850030821427467}
+  - component: {fileID: 4422047265584364054}
   - component: {fileID: 7384192646310340082}
   - component: {fileID: 8198535930077927786}
   - component: {fileID: 5089666405394201071}
@@ -424,7 +425,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -504,6 +505,7 @@ MonoBehaviour:
   playerClassHandler: {fileID: 0}
   playerEquipmentHandler: {fileID: 0}
   playerExperienceHandler: {fileID: 0}
+  playerInventoryHandler: {fileID: 0}
   enemyDetection: {fileID: 0}
   speed: 12
   selectedEnemyTarget: {fileID: 0}
@@ -762,12 +764,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
-  hasRecievedStartingItems: 0
-  hasRecievedKnightItems: 0
-  hasRecievedWarriorItems: 0
-  hasRecievedRogueItems: 0
-  hasRecievedRangerItems: 0
-  hasRecievedMageItems: 0
 --- !u!114 &4928850030821427467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -782,6 +778,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugDisablePlayerLevelUp: 0
   currentExp: 0
+--- !u!114 &4422047265584364054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763340389273497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7384192646310340082
 MonoBehaviour:
   m_ObjectHideFlags: 0

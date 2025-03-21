@@ -13,7 +13,7 @@ public class PlayerInfoUi : MonoBehaviour
 	public TMP_Text playerInfo;
 
 	public TMP_Text interactWithText;
-	public GameObject currentPlayerInteractedObj;
+	public Interactables currentPlayerInteractable;
 
 	private void Awake()
 	{
@@ -22,10 +22,10 @@ public class PlayerInfoUi : MonoBehaviour
 	}
 	private void Update()
 	{
-		if (currentPlayerInteractedObj == null && !interactWithText.gameObject.activeInHierarchy) return;
+		if (currentPlayerInteractable == null && !interactWithText.gameObject.activeInHierarchy) return;
 
 		interactWithText.transform.position = GameManager.LocalPlayerCamera.WorldToScreenPoint(new Vector3(
-			currentPlayerInteractedObj.transform.position.x, currentPlayerInteractedObj.transform.position.y + 1.25f, 0));
+			currentPlayerInteractable.transform.position.x, currentPlayerInteractable.transform.position.y + 1.25f, 0));
 	}
 
 	private void OnEnable()
@@ -40,24 +40,17 @@ public class PlayerInfoUi : MonoBehaviour
 	}
 
 	//interact with text updates
-	private void ShowHideInteractWithText(GameObject obj, bool showText)
+	private void ShowHideInteractWithText(Interactables interactable, bool showText, string message)
 	{
+		if (interactable == null) return;
+
         if (showText)
 			Instance.interactWithText.gameObject.SetActive(true);
 		else
 			Instance.interactWithText.gameObject.SetActive(false);
 
-		if (obj.GetComponent<PortalHandler>() != null)
-		{
-			if (!MultiplayerManager.IsClientHost())
-				interactWithText.text = "Not Host";
-			else
-				interactWithText.text = "Interact";
-		}
-		else
-			interactWithText.text = "Interact";
-
-		currentPlayerInteractedObj = obj;
+		Instance.interactWithText.text = message;
+		currentPlayerInteractable = interactable;
 	}
 	//update text info in player inventory screen
 	public void UpdatePlayerStatInfo(EntityStats stats)

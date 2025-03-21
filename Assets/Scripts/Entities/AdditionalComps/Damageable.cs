@@ -62,7 +62,7 @@ public class DamageSourceInfo
 	public DeathMessageType deathMessageType;
 	public enum DeathMessageType
 	{
-		entityWeapon, entityAbility, trap, trapProjectile, statusEffect, enviromental
+		entityWeapon, entityAbility, trap, trapProjectile, statusEffect, enviromental, debug
 	}
 
 	//refs for death message
@@ -138,6 +138,11 @@ public class DamageSourceInfo
 
 		deathMessage = GetPlayerDeathMessage();
 	}
+	public void SetDebugDeathMessage()
+	{
+		deathMessageType = DeathMessageType.debug;
+		deathMessage = $"Debug kill local player";
+	}
 	private string GetPlayerDeathMessage()
 	{
 		string deathMessage = string.Empty;
@@ -149,7 +154,7 @@ public class DamageSourceInfo
 			else
 				deathMessage = $"Died from swing of {entity.statsRef.entityName}'s {weapon.itemName}";
 		}
-		else if (deathMessageType ==DeathMessageType.entityAbility)
+		else if (deathMessageType == DeathMessageType.entityAbility)
 		{
 			deathMessage = $"Died from {entity.statsRef.entityName}'s {ability.Name} ability";
 		}
@@ -157,9 +162,9 @@ public class DamageSourceInfo
 		{
 			deathMessage = $"Died from {trap.trapName}";
 		}
-		else if (deathMessageType ==DeathMessageType.statusEffect)
+		else if (deathMessageType == DeathMessageType.statusEffect)
 		{
-			if (statusEffect.damageType ==DamageType.isPhysicalDamage)
+			if (statusEffect.damageType == DamageType.isPhysicalDamage)
 				deathMessage = $"Died from bleeding out";
 			else if (statusEffect.damageType == DamageType.isPoisonDamage)
 				deathMessage = $"Died from being poisoned ";

@@ -328,9 +328,9 @@ public class EntityStats : NetworkBehaviour
 		audioHandler.PlayAudio(statsRef.deathSfx);
 		StartCoroutine(EntityDeathFinish(optionalDeathMessage));
 		animator.SetTrigger("DeathTrigger");
-		boxCollider2D.enabled = false;
 
 		if (IsPlayerEntity()) return;
+		boxCollider2D.enabled = false;
 		entityBehaviour.navMeshAgent.isStopped = true;
 	}
 	private IEnumerator EntityDeathFinish(string deathMessage)
