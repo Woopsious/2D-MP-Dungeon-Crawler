@@ -38,8 +38,8 @@ public class PlayerController : NetworkBehaviour
 	public float respawnTimer;
 
 	[Header("Player Revive Info")]
+	public PlayerController playerRevivingThis;
 	public bool beingRevived;
-	private PlayerController playerReviving;
 	public float reviveTimerCooldown { private set; get; } = 3f;
 	public float reviveTimer;
 
@@ -440,30 +440,40 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//PLAYER REVIVNG
-	public void StartReviveTimer(PlayerController playerReviving)
+	public void StartReviveTimer(PlayerController playerRevivingThis)
 	{
 		if (beingRevived) return;
 
 		Debug.LogError("start revive");
-		reviveTimer = reviveTimerCooldown;
-		this.playerReviving = playerReviving;
 		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimerCooldown);
 		ClientRpcManager.instance.SyncStartRevivePlayerTimerUiRpc(reviveTimerCooldown, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+		SyncStartReviveRpc(playerRevivingThis.NetworkObjectId);
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncStartReviveRpc(ulong playerRevivngThisId)
+	{
+		reviveTimer = reviveTimerCooldown;
+		playerRevivingThis = NetworkManager.SpawnManager.SpawnedObjects[playerRevivngThisId].GetComponent<PlayerController>();
 		beingRevived = true;
 	}
-	public void CancelReviveTimer(PlayerController playerReviving)
+	public void CancelReviveTimer(PlayerController playerRevivingThis)
 	{
-		if (beingRevived && this.playerReviving != playerReviving) return;
+		if (this.playerRevivingThis == null || beingRevived && this.playerRevivingThis != playerRevivingThis) return;
 
-		if (beingRevived && this.playerReviving == playerReviving)
+		if (beingRevived && this.playerRevivingThis == playerRevivingThis)
 		{
 			Debug.LogError("cancel revive");
-			beingRevived = false;
-			reviveTimer = reviveTimerCooldown;
 			PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
 			ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
-			this.playerReviving = null;
+			SyncCancelReviveRpc();
 		}
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncCancelReviveRpc()
+	{
+		beingRevived = false;
+		reviveTimer = reviveTimerCooldown;
+		playerRevivingThis = null;
 	}
 	private void ReviveTimer()
 	{
@@ -476,9 +486,10 @@ public class PlayerController : NetworkBehaviour
 			if (reviveTimer < 0)
 			{
 				Debug.LogError("revive complete");
-				beingRevived = false;
-				reviveTimer = reviveTimerCooldown;
 				ClientRpcManager.instance.RespawnPlayerRpc(NetworkObjectId);
+				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+				ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+				SyncCancelReviveRpc();
 			}
 		}
 	}
@@ -909,6 +920,17 @@ public class PlayerController : NetworkBehaviour
 	private void HandleUnInteractWithCollidables(Collider2D other)
 	{
 		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
+
+		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
+		{
+			PlayerController player = currentInteractedObject.GetPlayer();
+			if (beingRevived && playerRevivingThis == player)
+			{
+				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+				ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(player.OwnerClientId, RpcTargetUse.Temp));
+				SyncCancelReviveRpc();
+			}
+		}
 
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;

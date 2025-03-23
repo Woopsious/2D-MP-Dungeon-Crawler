@@ -432,9 +432,6 @@ public class LobbyManager : NetworkBehaviour
 			catch (LobbyServiceException e)
 			{
 				Debug.LogError($"{e.Message}");
-				Instance._Lobby = null;
-				Instance._LobbyId = null;
-				_LobbyEvents = null;
 			}
 		}
 	}

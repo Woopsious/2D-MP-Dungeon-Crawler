@@ -130,6 +130,7 @@ public class PlayerDeathUi : MonoBehaviour
 	private void HideReviveTimerUi()
 	{
 		PlayerReviveTimerPanelUi.SetActive(false);
+		Debug.LogError("HIDE REVIVE TIMER");
 	}
 	private void ReviveTimer()
 	{
@@ -151,8 +152,6 @@ public class PlayerDeathUi : MonoBehaviour
 
 		this.respawnTimer = respawnTimer;
 		respawnTimerText.text = "Respawn in " + (int)respawnTimer;
-
-		Debug.LogError("RESPAWN TIMER: " + respawnTimer);
 
 		if (BossRoomHandler.Instance != null)
 		{
