@@ -33,15 +33,15 @@ public class PlayerController : NetworkBehaviour
 	private float mainAttackAutoAttackTimer;
 
 	[Header("Player Respawn Info")]
-	private bool beingRespawned;
-	private float respawnTimerCooldown = 20f;
-	private float respawnTimer;
+	public bool beingRespawned;
+	public float respawnTimerCooldown { private set; get; } = 20f;
+	public float respawnTimer;
 
 	[Header("Player Revive Info")]
-	private bool beingRevived;
+	public bool beingRevived;
 	private PlayerController playerReviving;
-	private float reviveTimerCooldown = 3f;
-	private float reviveTimer;
+	public float reviveTimerCooldown { private set; get; } = 3f;
+	public float reviveTimer;
 
 	[Header("Player Enemy Targeting")] // +info
 	public EntityStats selectedEnemyTarget;
@@ -101,16 +101,18 @@ public class PlayerController : NetworkBehaviour
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent += ReviveAllDeadPlayer;
-		PlayerEventManager.OnRevivePlayerEvent += ReviveDeadPlayer;
+		PlayerEventManager.OnRespawnAllPlayersEvent += ReviveAllDeadPlayer;
+		PlayerEventManager.OnRespawnPlayerEvent += ReviveDeadPlayer;
+
 		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
 		ObjectPoolingManager.AddPlayerToList(this);
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent -= ReviveAllDeadPlayer;
-		PlayerEventManager.OnRevivePlayerEvent -= ReviveDeadPlayer;
+		PlayerEventManager.OnRespawnAllPlayersEvent -= ReviveAllDeadPlayer;
+		PlayerEventManager.OnRespawnPlayerEvent -= ReviveDeadPlayer;
+
 		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
 		ObjectPoolingManager.RemovePlayerFromList(this);
@@ -122,13 +124,21 @@ public class PlayerController : NetworkBehaviour
 			playerCamera.transform.position = new Vector3(
 				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
 
-		ReviveTimer();
+		if (playerStats.IsEntityDead())
+		{
+			if (PlayerIsLocalPlayer())
+				RespawnTimer();
+			else
+				ReviveTimer();
+		}
+		else
+		{
+			if (IsPlayerInteracting()) return;
 
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
-
-		UpdateTargetsInList();
-		AutoAttackTimer();
-		AbilityCastingTimer();
+			UpdateTargetsInList();
+			AutoAttackTimer();
+			AbilityCastingTimer();
+		}
 	}
 	private void FixedUpdate()
 	{
@@ -412,6 +422,24 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//PLAYER RESPAWNING
+	private void RespawnTimer()
+	{
+		if (BossRoomHandler.Instance != null)
+			if (BossRoomHandler.Instance.GetBossRoomState() == BossRoomHandler.BossRoomState.bossActive) return; //disable respawning
+
+		if (respawnTimer > 0)
+		{
+			respawnTimer -= Time.deltaTime;
+
+			if (respawnTimer < 0)
+			{
+				Debug.LogError("respawn complete");
+				respawnTimer = respawnTimerCooldown;
+			}
+		}
+	}
+
+	//PLAYER REVIVNG
 	public void StartReviveTimer(PlayerController playerReviving)
 	{
 		if (beingRevived) return;
@@ -419,6 +447,8 @@ public class PlayerController : NetworkBehaviour
 		Debug.LogError("start revive");
 		reviveTimer = reviveTimerCooldown;
 		this.playerReviving = playerReviving;
+		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimerCooldown);
+		ClientRpcManager.instance.SyncStartRevivePlayerTimerUiRpc(reviveTimerCooldown, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
 		beingRevived = true;
 	}
 	public void CancelReviveTimer(PlayerController playerReviving)
@@ -430,6 +460,8 @@ public class PlayerController : NetworkBehaviour
 			Debug.LogError("cancel revive");
 			beingRevived = false;
 			reviveTimer = reviveTimerCooldown;
+			PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+			ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
 			this.playerReviving = null;
 		}
 	}
@@ -440,20 +472,16 @@ public class PlayerController : NetworkBehaviour
 		if (reviveTimer > 0)
 		{
 			reviveTimer -= Time.deltaTime;
-			//call rpc to sync ui of revive timers for client being revived + this one
-			Debug.LogError("revive timer: " + reviveTimer);
 
 			if (reviveTimer < 0)
 			{
+				Debug.LogError("revive complete");
 				beingRevived = false;
 				reviveTimer = reviveTimerCooldown;
-				Debug.LogError("revive complete");
-				ClientRpcManager.instance.RevivePlayerRpc(NetworkObjectId);
+				ClientRpcManager.instance.RespawnPlayerRpc(NetworkObjectId);
 			}
 		}
 	}
-
-	//PLAYER REVIVNG
 
 	//revive event listners
 	private void ReviveAllDeadPlayer()
@@ -881,14 +909,6 @@ public class PlayerController : NetworkBehaviour
 	private void HandleUnInteractWithCollidables(Collider2D other)
 	{
 		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
-
-		if (currentInteractedObject == null) return;
-
-		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
-		{
-			if (currentInteractedObject == null) return;
-			currentInteractedObject.GetPlayer().CancelReviveTimer(this);
-		}
 
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;

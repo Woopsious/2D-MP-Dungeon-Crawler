@@ -31,12 +31,12 @@ public class DungeonHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent += RespawnPlayersAtClosestPortal;
+		PlayerEventManager.OnRespawnAllPlayersEvent += RespawnPlayersAtClosestPortal;
 		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent -= RespawnPlayersAtClosestPortal;
+		PlayerEventManager.OnRespawnAllPlayersEvent -= RespawnPlayersAtClosestPortal;
 		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
 	}
 

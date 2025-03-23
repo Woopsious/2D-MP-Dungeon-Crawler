@@ -7,9 +7,8 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 {
 	public static BossRoomHandler Instance;
 
-	private bool respawnPortalUnlocked;
-	private bool bossFightStarted;
-	private bool bossFightCompleted;
+	//private bool bossFightStarted;
+	//private bool bossFightCompleted;
 
 	public GameObject roomCenterPiece;
 	private CircleCollider2D centerPieceCollider;
@@ -19,14 +18,18 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 	public PortalHandler roomRespawnPortal;
 	public PortalHandler roomExitPortal;
 
+	private BossRoomState bossRoomState;
+	public enum BossRoomState
+	{
+		bossNotReached, bossInactive, bossActive, bossDead
+	}
+
 	public static event Action<GameObject> OnStartBossFight;
 
 	private void Awake()
 	{
 		Instance = this;
-		respawnPortalUnlocked = false;
-		bossFightStarted = false;
-		bossFightCompleted = false;
+		bossRoomState = BossRoomState.bossNotReached;
 		centerPieceCollider = GetComponent<CircleCollider2D>();
 		roomBarrier.SetActive(false);
 		roomRespawnPortal.gameObject.SetActive(false);
@@ -35,51 +38,54 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent += RevivePlayersAtPortal;
-		PlayerEventManager.OnReviveAllPlayersEvent += ResetRoom;
+		PlayerEventManager.OnRespawnAllPlayersEvent += RespawnPlayersAtPortal;
+		PlayerEventManager.OnRespawnAllPlayersEvent += ResetRoom;
 		BossEntityStats.OnBossDeath += OnBossDeath;
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnReviveAllPlayersEvent -= RevivePlayersAtPortal;
-		PlayerEventManager.OnReviveAllPlayersEvent -= ResetRoom;
+		PlayerEventManager.OnRespawnAllPlayersEvent -= RespawnPlayersAtPortal;
+		PlayerEventManager.OnRespawnAllPlayersEvent -= ResetRoom;
 		BossEntityStats.OnBossDeath -= OnBossDeath;
 	}
 
 	//respawning players
-	private void RevivePlayersAtPortal()
+	private void RespawnPlayersAtPortal()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		if (respawnPortalUnlocked)
+		if (bossRoomState == BossRoomState.bossDead)
+		{
+			foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+				player.transform.position = roomExitPortal.transform.position;
+		}
+		else if (bossRoomState == BossRoomState.bossInactive)
 		{
 			foreach(PlayerController player in ObjectPoolingManager.Instance.playersPool)
 				player.transform.position = roomRespawnPortal.transform.position;
 		}
 		else
-			DungeonHandler.Instance.RespawnPlayersAtClosestPortal();
+			DungeonHandler.Instance.RespawnPlayersAtClosestPortal(); //enterence portal only portal in list
 	}
 
-	//boss room states
+	//boss room state updates
 	private void StartBossFight()
 	{
 		centerPieceCollider.enabled = false;
-		respawnPortalUnlocked = true;
-		bossFightStarted = true;
+		bossRoomState = BossRoomState.bossActive;
 		roomBarrier.SetActive(true);
 		roomRespawnPortal.gameObject.SetActive(true);
 	}
 	private void OnBossDeath()
-	{       
+	{
 		//unlock room, enable exit portal
-		bossFightCompleted = true;
+		bossRoomState = BossRoomState.bossDead;
 		roomBarrier.SetActive(false);
 		roomExitPortal.gameObject.SetActive(true);
 	}
 	private void ResetRoom()
 	{
-		bossFightStarted = false;
-		bossFightCompleted = false;
+		bossRoomState = BossRoomState.bossInactive;
 		centerPieceCollider.enabled = true;
 		roomBarrier.SetActive(false);
 
@@ -88,10 +94,15 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		//when all players dead, revive them at respawn portal, reset boss/adds + anything else that comes up
 	}
 
+	public BossRoomState GetBossRoomState()
+	{
+		return bossRoomState;
+	}
+
 	//player interactions
 	public void Interact(PlayerController player)
 	{
-		if (bossFightCompleted || bossFightStarted) return;
+		if (bossRoomState == BossRoomState.bossDead || bossRoomState == BossRoomState.bossActive) return;
 
 		OnStartBossFight?.Invoke(gameObject);
 		StartBossFight();

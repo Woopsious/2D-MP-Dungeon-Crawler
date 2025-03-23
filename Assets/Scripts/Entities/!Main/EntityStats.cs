@@ -340,20 +340,7 @@ public class EntityStats : NetworkBehaviour
 
 		if (IsPlayerEntity())
 		{
-			if (MultiplayerManager.IsMultiplayer())
-			{
-				if (GameManager.Instance.SceneIsBossDungeonScene(GameManager.Instance.currentlyLoadedScene.name)) //player death in mp + boss dungeon
-					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.dungeonMpDeath, deathMessage);
-				else																							//player death in mp + basic dungeon
-					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.bossDungeonMpDeath, deathMessage);
-			}
-			else
-			{
-				if (GameManager.Instance.SceneIsBossDungeonScene(GameManager.Instance.currentlyLoadedScene.name)) //player death in sp + boss dungeon
-					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.dungeonSpDeath, deathMessage);
-				else																							//player death in sp + basic dungeon
-					PlayerEventManager.PlayerDeath(gameObject, PlayerEventManager.PlayerDeathType.bossDungeonSpDeath, deathMessage);
-			}
+			PlayerEventManager.PlayerDeath(gameObject, deathMessage, playerRef.respawnTimerCooldown);
 		}
 		else
 			ObjectPoolingManager.EntityDeathEvent(gameObject); //entity death

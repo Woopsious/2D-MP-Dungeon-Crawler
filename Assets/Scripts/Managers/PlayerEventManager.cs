@@ -14,30 +14,51 @@ public static class PlayerEventManager
 		OnPlayerLevelUpEvent?.Invoke(playerStats);
 	}
 
-	//player death events
-	public enum PlayerDeathType
+	//player death event
+	public static event Action<GameObject, string, float> OnPlayerDeathEvent;
+	public static void PlayerDeath(GameObject playerObj, string deathMessage, float respawnTimer)
 	{
-		dungeonSpDeath, bossDungeonSpDeath, dungeonMpDeath, bossDungeonMpDeath
-	}
-
-	public static event Action<GameObject, PlayerDeathType, string> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject playerObj, PlayerDeathType playerDeathType, string deathMessage)
-	{
-		OnPlayerDeathEvent?.Invoke(playerObj, playerDeathType, deathMessage);
+		OnPlayerDeathEvent?.Invoke(playerObj, deathMessage, respawnTimer);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
-	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath() used to hide all other ui elements
 
-	public static event Action<GameObject> OnRevivePlayerEvent;
-	public static void RevivePlayer(GameObject playerObj)
+	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath() hides all other ui elements
+
+	//sync player revive ui timer events
+	public static event Action<float> OnStartReviveTimerUiEvent; //also invoked from PlayerDeath()
+	public static void SyncStartRevivePlayerUiTimerEvent(float respawnTimer)
 	{
-		OnRevivePlayerEvent?.Invoke(playerObj);
+		OnStartReviveTimerUiEvent?.Invoke(respawnTimer);
+	}
+	public static event Action OnCancelReviveTimerUiEvent; //also invoked from PlayerDeath()
+	public static void SyncCancelRevivePlayerUiTimerEvent()
+	{
+		OnCancelReviveTimerUiEvent?.Invoke();
 	}
 
-	public static event Action OnReviveAllPlayersEvent;
-	public static void ReviveAllPlayers()
+	//player Respawn events
+	public static event Action OnRespawnAllPlayersEvent;
+	public static void RespawnAllPlayers()
 	{
-		OnReviveAllPlayersEvent?.Invoke();
+		OnRespawnAllPlayersEvent?.Invoke();
+		OnRespawnPlayerEvent?.Invoke(GameManager.Localplayer.gameObject);
+	}
+	public static event Action<GameObject> OnRespawnPlayerEvent;
+	public static void RespawnPlayer(GameObject playerObj)
+	{
+		OnRespawnPlayerEvent?.Invoke(playerObj);
+	}
+
+	//player revive events
+	public static event Action<GameObject> OnStartRevivePlayerEvent;
+	public static void StartRevivePlayerEvent(GameObject playerObj)
+	{
+		OnStartRevivePlayerEvent?.Invoke(playerObj);
+	}
+	public static event Action<GameObject> OnCancelRevivePlayerEvent;
+	public static void CancelRevivePlayerEvent(GameObject playerObj)
+	{
+		OnCancelRevivePlayerEvent?.Invoke(playerObj);
 	}
 
 	/// <summary>

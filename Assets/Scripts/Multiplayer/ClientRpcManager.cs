@@ -25,14 +25,27 @@ public class ClientRpcManager : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	public void ReviveAllPlayersRpc()
+	public void RespawnAllPlayersRpc()
 	{
-		PlayerDeathUi.Instance.CallReviveAllPlayersEvent();
+		PlayerEventManager.RespawnAllPlayers();
 	}
 
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	public void RevivePlayerRpc(ulong playerObjId)
+	public void RespawnPlayerRpc(ulong playerObjId)
 	{
-		PlayerEventManager.RevivePlayer(NetworkManager.SpawnManager.SpawnedObjects[playerObjId].gameObject);
+		PlayerEventManager.RespawnPlayer(NetworkManager.SpawnManager.SpawnedObjects[playerObjId].gameObject);
+	}
+
+
+	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
+	public void SyncStartRevivePlayerTimerUiRpc(float reviveTimer, RpcParams rpcParams)
+	{
+		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimer);
+	}
+
+	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
+	public void SyncCancelRevivePlayerTimerUiRpc(RpcParams rpcParams)
+	{
+		PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
 	}
 }
