@@ -95,13 +95,13 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	{
 		if (MultiplayerManager.IsClientHost()) return; //double check
 
-		ClientManager.Instance.ClientLeaveRelayAndLobby("Lobby Left");
+		ClientManager.Instance.ClientLeaveRelayAndLobby("Lobby Left", false);
 	}
 	private void HostCloseLobbyButton()
 	{
 		if (!MultiplayerManager.IsClientHost()) return; //double check
 
-		HostManager.Instance.CloseLobby("Host Closed Lobby");
+		HostManager.Instance.CloseLobbyAndStopHost("Host Closed Lobby", false);
 	}
 	private void HostKickPlayerButton()
 	{

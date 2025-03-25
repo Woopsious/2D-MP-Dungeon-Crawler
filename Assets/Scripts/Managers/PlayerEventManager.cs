@@ -8,10 +8,10 @@ public static class PlayerEventManager
 	/// <summary>
 	/// GAME EVENTS
 	/// </summary>
-	public static Action<EntityStats> OnPlayerLevelUpEvent;
-	public static void PlayerLevelUp(EntityStats playerStats)
+	public static Action<PlayerController> OnPlayerLevelChangeEvent;
+	public static void PlayerLevelChange(PlayerController player)
 	{
-		OnPlayerLevelUpEvent?.Invoke(playerStats);
+		OnPlayerLevelChangeEvent?.Invoke(player);
 	}
 
 	//player death event

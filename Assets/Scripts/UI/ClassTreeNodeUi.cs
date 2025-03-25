@@ -47,7 +47,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		image = GetComponent<Image>();
 		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNode);
 		nodeRefundButtonObj.GetComponent<Button>().onClick.AddListener(RefundThisNode);
-		ResetNode(null);
+		ResetNode(null, null);
 	}
 
 	//tool tip
@@ -206,13 +206,13 @@ public class ClassTreeNodeUi : MonoBehaviour
 		else if (abilityUnlock.unlock != null)
 			PlayerClassesUi.Instance.RefundAbility(this, abilityUnlock.unlock);
 	}
-	private void ResetNode(SOClasses currentClass)
+	private void ResetNode(PlayerController player, SOClasses newClass)
 	{
 		isAlreadyUnlocked = false;
 	}
 
 	//node checks 
-	public void CheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
+	private void CheckIfNodeShouldBeLockedOrUnlocked(PlayerController player)
 	{
 		if (isAlreadyUnlocked)
 		{
@@ -222,7 +222,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		}
 		if (statUnlock != null)
 		{
-			if (playerStats.entityLevel < statUnlock.LevelRequirement)
+			if (player.playerStats.entityLevel < statUnlock.LevelRequirement)
 			{
 				LockNode();
 				return;
@@ -235,7 +235,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		}
 		if (abilityUnlock != null)
 		{
-			if (playerStats.entityLevel < abilityUnlock.LevelRequirement)
+			if (player.playerStats.entityLevel < abilityUnlock.LevelRequirement)
 			{
 				LockNode();
 				return;

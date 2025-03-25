@@ -53,7 +53,7 @@ public class SpawnHandler : MonoBehaviour
 	{
 		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateSpawnerLevel;
 
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
@@ -63,7 +63,7 @@ public class SpawnHandler : MonoBehaviour
 	{
 		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateSpawnerLevel;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -141,9 +141,9 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//event listeners
-	private void UpdateSpawnerLevel(EntityStats playerStats)
+	private void UpdateSpawnerLevel(PlayerController player)
 	{
-		spawnerLevel = playerStats.entityLevel;
+		spawnerLevel = player.playerStats.entityLevel;
 	}
 	private void OnEntityDeath(GameObject obj)
 	{

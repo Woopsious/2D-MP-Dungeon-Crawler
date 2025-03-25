@@ -135,7 +135,15 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void QuitToMainMenuButton()
 	{
-		GameManager.Instance.LoadMainMenu();
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (MultiplayerManager.IsClientHost())
+				HostManager.Instance.CloseLobbyAndStopHost("Host Quit To Main Menu", true);
+			else
+				ClientManager.Instance.ClientLeaveRelayAndLobby("Quit To Main Menu", true);
+		}
+		else
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	public void PlayGameButton()

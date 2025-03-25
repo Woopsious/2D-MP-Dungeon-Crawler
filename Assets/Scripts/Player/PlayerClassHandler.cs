@@ -7,8 +7,11 @@ using UnityEngine;
 
 public class PlayerClassHandler : EntityClassHandler
 {
+	private PlayerController playerController;
+
 	private void OnEnable()
 	{
+		playerController = GetComponent<PlayerController>();
 		PlayerClassesUi.OnClassChanges += UpdateClass;
 		PlayerClassesUi.OnNewStatBonusUnlock += UnlockStatBoost;
 		PlayerClassesUi.OnNewAbilityUnlock += UnlockAbility;
@@ -40,14 +43,14 @@ public class PlayerClassHandler : EntityClassHandler
 	}
 
 	//player class events
-	protected override void UpdateClass(SOClasses newPlayerClass)
+	protected void UpdateClass(PlayerController player, SOClasses newClass)
 	{
-		if (entityStats.playerRef != GameManager.Localplayer) return;
+		if (player != GameManager.Localplayer) return;
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfClass(newPlayerClass));
+			SyncPlayerClassRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfClass(newClass));
 		else
-			base.UpdateClass(newPlayerClass);
+			base.UpdateClass(newClass);
 	}
 
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
@@ -126,7 +129,7 @@ public class PlayerClassHandler : EntityClassHandler
 	{
 		if (MultiplayerManager.IsMultiplayer() && OwnerClientId != ClientManager.Instance.clientNetworkedId) return;
 
-		PlayerClassesUi.Instance.UpdateNodesInClassTree(entityStats);
+		PlayerClassesUi.Instance.UpdateNodesInClassTree(playerController);
 	}
 
 	//helpers

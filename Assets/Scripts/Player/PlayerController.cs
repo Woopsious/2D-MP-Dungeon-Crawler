@@ -170,7 +170,7 @@ public class PlayerController : NetworkBehaviour
 		else
 			playerStats.entityLevel = 1;
 
-		PlayerEventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelChange(this);
 		playerStats.CalculateBaseStats();
 	}
 	private void UpdateLocalPlayerReferences()
@@ -199,7 +199,7 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
-		PlayerEventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelChange(this);
 	}
 
 	//movement

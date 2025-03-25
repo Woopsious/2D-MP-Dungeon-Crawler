@@ -85,6 +85,7 @@ public class PlayerDeathUi : MonoBehaviour
 	}
 	public void CheckDeadPlayersOnClientDisconnect()
 	{
+		if (!PlayerPartyWiped()) return;
 		ShowDeathAndSpectatorUiPanels("Last player alive left");
 	}
 

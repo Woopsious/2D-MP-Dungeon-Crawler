@@ -41,7 +41,7 @@ public class LobbyManager : NetworkBehaviour
 		else
 			Destroy(gameObject);
 	}
-	public void Update()
+	private void Update()
 	{
 		if (_Lobby == null || _LobbyId.IsNullOrEmpty()) return;
 
@@ -52,6 +52,15 @@ public class LobbyManager : NetworkBehaviour
 			//no longer valid with multiple joined players
 			//KickPlayerFromLobbyIfFailedToConnectToRelay();
 		}
+	}
+
+	private void OnEnable()
+	{
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateClientPlayerLevel;
+	}
+	private void OnDisable()
+	{
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateClientPlayerLevel;
 	}
 
 	//LOBBY CREATION
@@ -69,7 +78,7 @@ public class LobbyManager : NetworkBehaviour
 			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
 			{
 				IsPrivate = lobbyPrivate,
-				Player = GetPlayerData(),
+				Player = SetClientPlayerData(),
 				IsLocked = false,
 				Data = new Dictionary<string, DataObject>
 				{
@@ -106,7 +115,7 @@ public class LobbyManager : NetworkBehaviour
 			CreateLobbyOptions createLobbyOptions = new CreateLobbyOptions
 			{
 				IsPrivate = lobbyPrivate,
-				Player = GetPlayerData(),
+				Player = SetClientPlayerData(),
 				IsLocked = false,
 				Password = lobbyPassword,
 				Data = new Dictionary<string, DataObject>{}
@@ -162,7 +171,7 @@ public class LobbyManager : NetworkBehaviour
 		{
 			JoinLobbyByIdOptions joinLobbyByIdOptions = new JoinLobbyByIdOptions
 			{
-				Player = GetPlayerData()
+				Player = SetClientPlayerData()
 			};
 
 			await Lobbies.Instance.JoinLobbyByIdAsync(lobby.Id, joinLobbyByIdOptions);
@@ -251,8 +260,8 @@ public class LobbyManager : NetworkBehaviour
 		PlayerPartyUi.Instance.SendPlayerLeftMessage(playerName);
 	}
 
-	//UPDATING LOBBY PLAYER DATA
-	public Player GetPlayerData()
+	//UPDATING CLIENT PLAYER DATA IN LOBBY
+	private Player SetClientPlayerData()
 	{
 		return new Player
 		{
@@ -264,13 +273,15 @@ public class LobbyManager : NetworkBehaviour
 					ClientManager.Instance.clientId.ToString())},
 				{ "PlayerNetworkID", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					ClientManager.Instance.clientNetworkedId.ToString())},
-				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
-					GameManager.Localplayer.playerStats.entityLevel.ToString())},
 				{ "PlayerClass", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
 					GameManager.Localplayer.playerClassHandler.currentEntityClass.className.ToString())},
+				{ "PlayerLevel", new PlayerDataObject(PlayerDataObject.VisibilityOptions.Member,
+					GameManager.Localplayer.playerStats.entityLevel.ToString())},
 			}
 		};
 	}
+
+	//update specific client player data
 	public async void UpdateJoiningClientsNetworkID()
 	{
 		try
@@ -291,6 +302,75 @@ public class LobbyManager : NetworkBehaviour
 		{
 			Debug.Log(e);
 		}
+	}
+	public async void UpdateClientPlayerClass(SOClasses newClass)
+	{
+		Debug.LogError("update client player class event");
+
+		try
+		{
+			Debug.LogError("update client player class");
+
+			UpdatePlayerOptions options = new UpdatePlayerOptions();
+
+			options.Data = new Dictionary<string, PlayerDataObject>()
+			{
+				{ "PlayerClass", new PlayerDataObject(
+				visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: newClass.className)}
+			};
+
+			string playerId = AuthenticationService.Instance.PlayerId;
+			await LobbyService.Instance.UpdatePlayerAsync(_LobbyId, playerId, options);
+		}
+		catch (LobbyServiceException e)
+		{
+			if (e.ErrorCode == 429) //rate limit error
+				StartCoroutine(RetryUpdatingClientPlayerInfo(null, newClass));
+			else
+				Debug.Log(e);
+		}
+	}
+	public async void UpdateClientPlayerLevel(PlayerController player)
+	{
+		Debug.LogError("update client player level event");
+
+		if (_LobbyId.IsNullOrEmpty()) return; //occasionally happens when first hosting lobby
+
+		try
+		{
+			Debug.LogError("update client player level");
+
+			UpdatePlayerOptions options = new UpdatePlayerOptions();
+
+			options.Data = new Dictionary<string, PlayerDataObject>()
+			{
+				{ "PlayerLevel", new PlayerDataObject(
+				visibility: PlayerDataObject.VisibilityOptions.Member,
+				value: player.playerStats.entityLevel.ToString())}
+			};
+
+			string playerId = AuthenticationService.Instance.PlayerId;
+			await LobbyService.Instance.UpdatePlayerAsync(_LobbyId, playerId, options);
+		}
+		catch (LobbyServiceException e)
+		{
+			if (e.ErrorCode == 429) //rate limit error
+				StartCoroutine(RetryUpdatingClientPlayerInfo(player, null));
+			else
+				Debug.Log(e);
+		}
+	}
+
+	//retry on rate limit hit
+	private IEnumerator RetryUpdatingClientPlayerInfo(PlayerController player, SOClasses newClass)
+	{
+		yield return new WaitForSeconds(5.5f);
+
+		if (player == null)
+			UpdateClientPlayerClass(newClass);
+		else
+			UpdateClientPlayerLevel(player);
 	}
 
 	public void LogSpecificPlayerInfo(string networkIdOfPlayerToLog)

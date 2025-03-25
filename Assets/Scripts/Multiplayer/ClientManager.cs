@@ -42,7 +42,7 @@ public class ClientManager : NetworkBehaviour
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
-	public void StopClient()
+	public void StopClient(bool quittingToMainMenu)
 	{
 		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
 			SaveManager.Instance.AutoSaveData();
@@ -52,6 +52,9 @@ public class ClientManager : NetworkBehaviour
 		MultiplayerManager.UpdateIsMultiplayer(false);
 		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		NetworkManager.Singleton.Shutdown();
+
+		if (quittingToMainMenu)
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	//JOINING HOST RELAY SERVER
@@ -94,9 +97,11 @@ public class ClientManager : NetworkBehaviour
 
 	//DISCONNECT OPTIONS
 	//leave lobby
-	public void ClientLeaveRelayAndLobby(string disconnectReason)
+	public void ClientLeaveRelayAndLobby(string disconnectReason, bool quittingToMainMenu)
 	{
-		Instance.StopClient();
+		Instance.StopClient(quittingToMainMenu);
+
+		if (quittingToMainMenu) return;
 		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
 		LoadingScreensManager.Instance.ShowDisconnectScreen();
 	}
@@ -115,6 +120,6 @@ public class ClientManager : NetworkBehaviour
 
 		LoadingScreensManager.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
 		LoadingScreensManager.Instance.ShowDisconnectScreen();
-		StopClient();
+		StopClient(false);
 	}
 }

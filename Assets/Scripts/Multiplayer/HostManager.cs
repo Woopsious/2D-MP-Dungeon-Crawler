@@ -45,7 +45,7 @@ public class HostManager : NetworkBehaviour
 		MultiplayerManager.Instance.SubToEvents();
 		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
-	public void StopHost()
+	public void StopHost(bool quittingToMainMenu)
 	{
 		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
 			SaveManager.Instance.AutoSaveData();
@@ -56,6 +56,9 @@ public class HostManager : NetworkBehaviour
 		MultiplayerManager.UpdateIsMultiplayer(false);
 		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		NetworkManager.Singleton.Shutdown();
+
+		if (quittingToMainMenu)
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	//CREATE RELAY SERVER
@@ -112,7 +115,7 @@ public class HostManager : NetworkBehaviour
 
 	//DISCONNECT OPTIONS
 	//close lobby
-	public void CloseLobby(string disconnectReason)
+	public void CloseLobbyAndStopHost(string disconnectReason, bool quittingToMainMenu)
 	{
 		for (int i = 0; i < LobbyManager.Instance._Lobby.Players.Count; i++)
 		{
@@ -120,7 +123,9 @@ public class HostManager : NetworkBehaviour
 			RemoveClientFromRelay(player.Data["PlayerNetworkID"].Value, disconnectReason);
 		}
 
-		StopHost();
+		Instance.StopHost(quittingToMainMenu);
+
+		if (quittingToMainMenu) return;
 		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
 		LoadingScreensManager.Instance.ShowDisconnectScreen();
 	}
@@ -155,7 +160,6 @@ public class HostManager : NetworkBehaviour
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{
 		RemoveDisconnectedClientsFromLobby(id);
-		PlayerDeathUi.Instance.CheckDeadPlayersOnClientDisconnect();
 	}
 
 	//auto remove disconnected clients from lobby for what ever reason

@@ -62,11 +62,10 @@ public class GameManager : MonoBehaviour
 		GetAllDungeonSceneNames();
 		GetAllBossSceneNames();
 
-		if (MainMenuManager.Instance == null)
-			LoadUiScene();
-
-		if (SceneHandler.Instance == null) //if != null starting scene = different scene
-			LoadMainMenu(); //starting scene = MainScene
+		if (SceneHandler.Instance == null)
+			LoadMainMenu(); //default start from MainMenu Scene
+		else
+			LoadUiScene(); //debug start from hub or 1 of the dungeons scenes
 	}
 	private void Start()
 	{
@@ -118,6 +117,8 @@ public class GameManager : MonoBehaviour
 	public void LoadMainMenu()
 	{
 		SaveManager.Instance.GameData = new GameData();
+		Instance.currentDungeonData = new DungeonData();
+		LoadUiScene();
 
 		DestroyCurrentLocalPlayer();
 		StartCoroutine(LoadSceneAsync(menuScene, false));
@@ -127,6 +128,12 @@ public class GameManager : MonoBehaviour
 		LoadingScreensManager.Instance.ShowGameLoadingScreen(LoadingScreensManager.LoadingScreenType.game);
 		GameManager.isNewGame = isNewGame;
 		Instance.gameDataReloadMode = gameDataRestoreMode;
+
+		if (isNewGame)
+		{
+			SaveManager.Instance.GameData = new GameData();
+			Instance.currentDungeonData = new DungeonData();
+		}
 
 		if (gameDataRestoreMode == GameDataReloadMode.reloadAllScenesAndData)
 		{
@@ -190,13 +197,13 @@ public class GameManager : MonoBehaviour
 	}
 	private void ReloadAllScenes() //when loading a save file whilst already in a game scene
 	{
-		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedUiScene.name));
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
 		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
 		if (Localplayer != null)
 			Destroy(Localplayer.gameObject);
 
-		StartCoroutine(LoadSceneAsync(uiScene, false));
+		LoadUiScene();
 		StartCoroutine(LoadSceneAsync(hubScene, false));
 	}
 	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
@@ -272,7 +279,7 @@ public class GameManager : MonoBehaviour
 	//SCENE UNLOAD EVENT
 	private void OnUnloadSceneFinish(Scene unLoadedScene)
 	{
-		Debug.LogError("unloaded scene: " + unLoadedScene.name + " at: " + DateTime.Now.ToString());
+        Debug.LogError("unloaded scene: " + unLoadedScene.name + " at: " + DateTime.Now.ToString());
 	}
 
 	//SCENE CHECKS/UPDATES

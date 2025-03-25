@@ -89,7 +89,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdatePlayerLevelInfo;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdatePlayerLevelInfo;
 		PlayerEventManager.OnGoldAmountChange += UpdatePlayerGoldAmount;
 		PlayerEventManager.OnPlayerExpChangeEvent += UpdatePlayerExpBar;
 		PlayerEventManager.OnPlayerHealthChangeEvent += UpdatePlayerHealthBar;
@@ -106,7 +106,7 @@ public class PlayerHotbarUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdatePlayerLevelInfo;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdatePlayerLevelInfo;
 		PlayerEventManager.OnGoldAmountChange -= UpdatePlayerGoldAmount;
 		PlayerEventManager.OnPlayerExpChangeEvent -= UpdatePlayerExpBar;
 		PlayerEventManager.OnPlayerHealthChangeEvent -= UpdatePlayerHealthBar;
@@ -255,12 +255,13 @@ public class PlayerHotbarUi : MonoBehaviour
 
 	//PLAYER UI UPDATES
 	//events
-	private void UpdatePlayerLevelInfo(EntityStats playerStats)
+	private void UpdatePlayerLevelInfo(PlayerController player)
 	{
-		playerLevelInfoText.text = $"Level {playerStats.entityLevel}";
+		playerLevelInfoText.text = $"Level {player.playerStats.entityLevel}";
 	}
-	private void UpdatePlayerClassInfo(SOClasses newClass)
+	private void UpdatePlayerClassInfo(PlayerController player, SOClasses newClass)
 	{
+		if (player != GameManager.Localplayer) return;
 		playerClassInfoText.text = newClass.className;
 	}
 	private void UpdatePlayerGoldAmount(int amount)

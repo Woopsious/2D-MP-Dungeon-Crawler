@@ -81,6 +81,8 @@ public class MultiplayerManager : NetworkBehaviour
 			HostManager.Instance.HandleClientDisconnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
+
+		PlayerDeathUi.Instance.CheckDeadPlayersOnClientDisconnect();
 	}
 
 	//UPDATE MP MODE

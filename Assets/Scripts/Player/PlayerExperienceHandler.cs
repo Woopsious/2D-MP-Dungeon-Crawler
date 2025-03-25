@@ -120,7 +120,7 @@ public class PlayerExperienceHandler : MonoBehaviour
 				playerStats.CalculateBaseStats();
 
 				PlayerEventManager.PlayerExpChange(maxExp, currentExp);
-				PlayerEventManager.PlayerLevelUp(playerStats);
+				PlayerEventManager.PlayerLevelChange(playerRef);
 			}
 			else
 			{

@@ -74,8 +74,8 @@ public class PlayerClassesUi : MonoBehaviour
 	public bool hasRecievedRangerItems;
 	public bool hasRecievedMageItems;
 
-	public static event Action<SOClasses> OnClassChanges;
-	public static event Action<EntityStats> OnClassNodeUnlocks;
+	public static event Action<PlayerController, SOClasses> OnClassChanges;
+	public static event Action<PlayerController> OnClassNodeUnlocks;
 
 	public static event Action<SOClassStatBonuses> OnNewStatBonusUnlock;
 	public static event Action<SOAbilities> OnNewAbilityUnlock;
@@ -117,7 +117,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideClassSkillTree;
 
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateMaxAbilitySlots;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateMaxAbilitySlots;
 	}
 	private void OnDisable()
 	{
@@ -138,7 +138,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideClassSkillTree;
 
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateMaxAbilitySlots;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateMaxAbilitySlots;
 
 		nodeSlotUiList.Clear();
 	}
@@ -637,10 +637,10 @@ public class PlayerClassesUi : MonoBehaviour
 		for (int i = currentUnlockedClassNodes.Count - 1; i >= 0; i--)
 			currentUnlockedClassNodes[i].RefundThisNode();
 
-		UpdateMaxAbilitySlots(GameManager.Localplayer.playerStats);
+		UpdateMaxAbilitySlots(GameManager.Localplayer);
 		currentUnlockedClassNodes.Clear();
 
-		OnClassChanges?.Invoke(currentPlayerClass);
+		OnClassChanges?.Invoke(GameManager.Localplayer, currentPlayerClass);
 	}
 
 	//skill tree node event calls
@@ -661,7 +661,7 @@ public class PlayerClassesUi : MonoBehaviour
 
 		abilitySlotsUsed++;
 		classTreeSlot.isAlreadyUnlocked = true;
-		UpdateMaxAbilitySlots(GameManager.Localplayer.playerStats);
+		UpdateMaxAbilitySlots(GameManager.Localplayer);
 
 		currentUnlockedClassNodes.Add(classTreeSlot);
 		OnNewAbilityUnlock?.Invoke(ability);
@@ -677,18 +677,18 @@ public class PlayerClassesUi : MonoBehaviour
 	{
 		abilitySlotsUsed--;
 		classTreeSlot.isAlreadyUnlocked = false;
-		UpdateMaxAbilitySlots(GameManager.Localplayer.playerStats);
+		UpdateMaxAbilitySlots(GameManager.Localplayer);
 
 		currentUnlockedClassNodes.Remove(classTreeSlot);
 		OnRefundAbilityUnlock?.Invoke(ability);
 	}
-	public void UpdateNodesInClassTree(EntityStats playerStats)
+	public void UpdateNodesInClassTree(PlayerController player)
 	{
-		OnClassNodeUnlocks?.Invoke(playerStats);
+		OnClassNodeUnlocks?.Invoke(player);
 	}
 
 	//ability slots tracking
-	private void UpdateMaxAbilitySlots(EntityStats playerStats)
+	private void UpdateMaxAbilitySlots(PlayerController player)
 	{
 		if (currentPlayerClass == null) return;
 
@@ -696,7 +696,7 @@ public class PlayerClassesUi : MonoBehaviour
 
 		foreach (AbilitySlots abilitySlot in currentPlayerClass.spellSlotsPerLevel)
 		{
-			if (playerStats.entityLevel >= abilitySlot.LevelRequirement)
+			if (player.playerStats.entityLevel >= abilitySlot.LevelRequirement)
 				maxAbilitySlots += abilitySlot.AbilitySlotsPerLevel;
 		}
 		UpdateAbilitySlotsCounterUi();
@@ -717,26 +717,41 @@ public class PlayerClassesUi : MonoBehaviour
 	public void PlayAsKnightButton()
 	{
 		SetPlayerClass(knightClass, true);
+
+		if (LobbyManager.Instance != null)
+			LobbyManager.Instance.UpdateClientPlayerClass(knightClass);
 	}
 	public void PlayAsWarriorButton()
 	{
 		SetPlayerClass(warriorClass, true);
+
+		if (LobbyManager.Instance != null)
+			LobbyManager.Instance.UpdateClientPlayerClass(warriorClass);
 	}
 	public void PlayAsRogueButton()
 	{
 		SetPlayerClass(rogueClass, true);
+
+		if (LobbyManager.Instance != null)
+			LobbyManager.Instance.UpdateClientPlayerClass(rogueClass);
 	}
 	public void PlayAsRangerButton()
 	{
 		SetPlayerClass(rangerClass, true);
+
+		if (LobbyManager.Instance != null)
+			LobbyManager.Instance.UpdateClientPlayerClass(rangerClass);
 	}
 	public void PlayAsMageButton()
 	{
 		SetPlayerClass(mageClass, true);
+
+		if (LobbyManager.Instance != null)
+			LobbyManager.Instance.UpdateClientPlayerClass(mageClass);
 	}
 
 	//class selection
-	public void ShowPlayerClassSelection()
+	private void ShowPlayerClassSelection()
 	{
 		if (playerClassSelectionPanel.activeInHierarchy)
 			HidePlayerClassSelection();
@@ -751,14 +766,14 @@ public class PlayerClassesUi : MonoBehaviour
 				closeplayerClassSelectionButton.SetActive(true);
 		}
 	}
-	public void HidePlayerClassSelection()
+	private void HidePlayerClassSelection()
 	{
 		ClassSelectionUiPanel.SetActive(false);
 		playerClassSelectionPanel.SetActive(false);
 	}
 
 	//class skill trees
-	public void ShowClassSkillTree()
+	private void ShowClassSkillTree()
 	{
 		if (currentPlayerClass == null) return;
 
@@ -781,10 +796,10 @@ public class PlayerClassesUi : MonoBehaviour
 				MageClassPanel.SetActive(true);
 
 			UpdateToolTipsForClassNodes();
-			UpdateNodesInClassTree(GameManager.Localplayer.playerStats);
+			UpdateNodesInClassTree(GameManager.Localplayer);
 		}
 	}
-	public void HideClassSkillTree()
+	private void HideClassSkillTree()
 	{
 		ClassTreesUiPanel.SetActive(false);
 		SharedClassUiElements.SetActive(false);

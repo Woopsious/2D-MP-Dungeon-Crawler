@@ -48,11 +48,11 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateTrapLevel;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateTrapLevel;
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateTrapLevel;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateTrapLevel;
 		StopAllCoroutines();
 	}
 
@@ -109,9 +109,9 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		}
 		return -1;
 	}
-	private void UpdateTrapLevel(EntityStats playerStats)
+	private void UpdateTrapLevel(PlayerController player)
 	{
-		trapLevel = playerStats.entityLevel;
+		trapLevel = player.playerStats.entityLevel;
 		levelModifier = Utilities.GetLevelModifier(trapLevel);
 
 		trapDamage = (int)(trapBaseRef.baseDamage * levelModifier);
