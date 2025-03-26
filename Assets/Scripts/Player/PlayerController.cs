@@ -26,44 +26,43 @@ public class PlayerController : NetworkBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 
-	public float speed = 12;
+	private float moveSpeed = 12;
+
+	[Header("Prefabs")]
+	public GameObject AbilityAoePrefab;
+	public GameObject projectilePrefab;
 
 	//main attack auto attack timer
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
 	private float mainAttackAutoAttackTimer;
 
-	[Header("Player Respawn Info")]
-	public bool beingRespawned;
-	public float respawnTimerCooldown { private set; get; } = 20f;
-	public float respawnTimer;
+	//player respawn info
+	private readonly float respawnTimerCooldown = 3f;
+	private float respawnTimer;
 
-	[Header("Player Revive Info")]
-	public PlayerController playerRevivingThis;
-	public bool beingRevived;
-	public float reviveTimerCooldown { private set; get; } = 3f;
-	public float reviveTimer;
-
-	[Header("Player Enemy Targeting")] // +info
-	public EntityStats selectedEnemyTarget;
-	private int selectedEnemyTargetIndex;
-	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
-
-	[Header("Player Friendly Targeting")] // +info
-	public EntityStats selectedFriendlyTarget;
-
-	//current player spectating index
-	private int playerSpectatorIndex;
-
-	//target selected event
-	public static event Action<EntityStats> OnNewTargetSelected;
+	//player revive info
+	private PlayerController playerRevivingThis;
+	private PlayerController playerBeingRevived;
+	private bool beingRevived;
+	private readonly float reviveTimerCooldown = 3f;
+	private float reviveTimer;
 
 	//targetlist update timer
 	private readonly float updateTargetListCooldown = 0.5f;
 	private float updateTargetListTimer;
 
-	[Header("Ability Prefabs")] // +info
-	public GameObject AbilityAoePrefab;
-	public GameObject projectilePrefab;
+	//ENTITY TARGETING
+	public static event Action<EntityStats> OnNewTargetSelected;
+	//enemy targeting
+	public EntityStats selectedEnemyTarget { get; private set; }
+	private int selectedEnemyTargetIndex;
+	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+
+	//friendly targeting
+	public EntityStats selectedFriendlyTarget { get; private set; }
+
+	//current player spectating index
+	private int playerSpectatorIndex;
 
 	//ability events
 	public static event Action<Abilities> OnPlayerUseAbility;
@@ -205,7 +204,7 @@ public class PlayerController : NetworkBehaviour
 	//movement
 	private void PlayerMovement()
 	{
-		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);
+		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * moveSpeed, PlayerInputHandler.Instance.MovementInput.y * moveSpeed);
 
 		if (!MultiplayerManager.IsMultiplayer())
 		{
@@ -252,9 +251,9 @@ public class PlayerController : NetworkBehaviour
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
 		if (resetSpeed)
-			speed = 12;
+			moveSpeed = 12;
 		else
-			speed *= speedModifier;
+			moveSpeed *= speedModifier;
 	}
 
 	private void HealPlayerInHubScene()
@@ -439,21 +438,26 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
+	public float GetRespawnTime()
+	{
+		return respawnTimer;
+	}
+
 	//PLAYER REVIVNG
 	public void StartReviveTimer(PlayerController playerRevivingThis)
 	{
 		if (beingRevived) return;
 
-		Debug.LogError("start revive");
 		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimerCooldown);
 		ClientRpcManager.instance.SyncStartRevivePlayerTimerUiRpc(reviveTimerCooldown, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
-		SyncStartReviveRpc(playerRevivingThis.NetworkObjectId);
+		SyncStartReviveRpc(playerRevivingThis.NetworkObjectId, NetworkObjectId);
 	}
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	private void SyncStartReviveRpc(ulong playerRevivngThisId)
+	private void SyncStartReviveRpc(ulong playerRevivingThisId, ulong playerBeingRevivedId)
 	{
 		reviveTimer = reviveTimerCooldown;
-		playerRevivingThis = NetworkManager.SpawnManager.SpawnedObjects[playerRevivngThisId].GetComponent<PlayerController>();
+		playerRevivingThis = NetworkManager.SpawnManager.SpawnedObjects[playerRevivingThisId].GetComponent<PlayerController>();
+		playerBeingRevived = NetworkManager.SpawnManager.SpawnedObjects[playerBeingRevivedId].GetComponent<PlayerController>();
 		beingRevived = true;
 	}
 	public void CancelReviveTimer(PlayerController playerRevivingThis)
@@ -462,7 +466,6 @@ public class PlayerController : NetworkBehaviour
 
 		if (beingRevived && this.playerRevivingThis == playerRevivingThis)
 		{
-			Debug.LogError("cancel revive");
 			PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
 			ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
 			SyncCancelReviveRpc();
@@ -474,6 +477,7 @@ public class PlayerController : NetworkBehaviour
 		beingRevived = false;
 		reviveTimer = reviveTimerCooldown;
 		playerRevivingThis = null;
+		playerBeingRevived = null;
 	}
 	private void ReviveTimer()
 	{
@@ -485,8 +489,7 @@ public class PlayerController : NetworkBehaviour
 
 			if (reviveTimer < 0)
 			{
-				Debug.LogError("revive complete");
-				ClientRpcManager.instance.RespawnPlayerRpc(NetworkObjectId);
+				ClientRpcManager.instance.RespawnPlayerRpc(playerRevivingThis.NetworkObjectId, playerBeingRevived.NetworkObjectId);
 				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
 				ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
 				SyncCancelReviveRpc();
@@ -502,9 +505,9 @@ public class PlayerController : NetworkBehaviour
 		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
 	}
-	private void ReviveDeadPlayer(GameObject playerObj)
+	private void ReviveDeadPlayer(PlayerController optionalReviverPlayer, PlayerController revivedPlayer)
 	{
-		if (playerObj != gameObject) return;
+		if (revivedPlayer != this) return;
 
 		reviveTimer = reviveTimerCooldown;
 		respawnTimer = respawnTimerCooldown;

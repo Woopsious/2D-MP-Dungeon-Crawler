@@ -339,9 +339,7 @@ public class EntityStats : NetworkBehaviour
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
 		if (IsPlayerEntity())
-		{
-			PlayerEventManager.PlayerDeath(gameObject, deathMessage, playerRef.respawnTimerCooldown);
-		}
+			PlayerEventManager.PlayerDeath(playerRef, deathMessage); //player death
 		else
 			ObjectPoolingManager.EntityDeathEvent(gameObject); //entity death
 	}

@@ -15,10 +15,10 @@ public static class PlayerEventManager
 	}
 
 	//player death event
-	public static event Action<GameObject, string, float> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject playerObj, string deathMessage, float respawnTimer)
+	public static event Action<PlayerController, string> OnPlayerDeathEvent;
+	public static void PlayerDeath(PlayerController player, string deathMessage)
 	{
-		OnPlayerDeathEvent?.Invoke(playerObj, deathMessage, respawnTimer);
+		OnPlayerDeathEvent?.Invoke(player, deathMessage);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
 
@@ -41,12 +41,12 @@ public static class PlayerEventManager
 	public static void RespawnAllPlayers()
 	{
 		OnRespawnAllPlayersEvent?.Invoke();
-		OnRespawnPlayerEvent?.Invoke(GameManager.Localplayer.gameObject);
+		OnRespawnPlayerEvent?.Invoke(null, GameManager.Localplayer);
 	}
-	public static event Action<GameObject> OnRespawnPlayerEvent;
-	public static void RespawnPlayer(GameObject playerObj)
+	public static event Action<PlayerController, PlayerController> OnRespawnPlayerEvent;
+	public static void RespawnPlayer(PlayerController optionalReviverPlayer, PlayerController revivedplayer)
 	{
-		OnRespawnPlayerEvent?.Invoke(playerObj);
+		OnRespawnPlayerEvent?.Invoke(optionalReviverPlayer, revivedplayer);
 	}
 
 	//player revive events

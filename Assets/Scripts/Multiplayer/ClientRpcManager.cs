@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class ClientRpcManager : NetworkBehaviour
@@ -31,9 +32,15 @@ public class ClientRpcManager : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
-	public void RespawnPlayerRpc(ulong playerObjId)
+	public void RespawnPlayerRpc(ulong objIdOfReviverPlayer, ulong objIOfRevivedPlayer)
 	{
-		PlayerEventManager.RespawnPlayer(NetworkManager.SpawnManager.SpawnedObjects[playerObjId].gameObject);
+		PlayerController reviverPlayer = NetworkManager.SpawnManager.SpawnedObjects[objIdOfReviverPlayer].GetComponent<PlayerController>();
+		PlayerController revivedPlayer = NetworkManager.SpawnManager.SpawnedObjects[objIOfRevivedPlayer].GetComponent<PlayerController>();
+
+		if (reviverPlayer != revivedPlayer)
+			PlayerEventManager.RespawnPlayer(reviverPlayer, revivedPlayer);
+		else
+			PlayerEventManager.RespawnPlayer(revivedPlayer, revivedPlayer);
 	}
 
 

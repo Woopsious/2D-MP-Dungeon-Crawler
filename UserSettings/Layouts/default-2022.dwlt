@@ -43,8 +43,8 @@ MonoBehaviour:
     y: 0
     width: 658
     height: 336
-  m_MinSize: {x: 230, y: 250}
-  m_MaxSize: {x: 10000, y: 10000}
+  m_MinSize: {x: 232, y: 271}
+  m_MaxSize: {x: 10002, y: 10021}
   m_ActualView: {fileID: 20}
   m_Panes:
   - {fileID: 20}
@@ -639,7 +639,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/Player
+    - Assets/Scenes/AdditiveSceneLoading
     m_Globs: []
     m_OriginalText: 
     m_ImportLogFlags: 0
@@ -647,16 +647,16 @@ MonoBehaviour:
   m_ViewMode: 1
   m_StartGridSize: 64
   m_LastFolders:
-  - Assets/Scripts/Player
+  - Assets/Scenes/AdditiveSceneLoading
   m_LastFoldersGridSize: -1
   m_LastProjectPath: D:\Unity\Unity Projects\2D MP Dungeon Crawler
   m_LockTracker:
     m_IsLocked: 0
   m_FolderTreeState:
-    scrollPos: {x: 0, y: 697}
-    m_SelectedIDs: bc8d0000
-    m_LastClickedID: 36284
-    m_ExpandedIDs: 00000000708b0000728b0000748b0000768b0000788b00007a8b00007c8b00007e8b0000808b0000828b0000848b0000868b0000888b00008a8b00008c8b00008e8b0000908b0000928b0000948b0000968b0000988b00009a8b0000
+    scrollPos: {x: 0, y: 497}
+    m_SelectedIDs: 9eeb0000
+    m_LastClickedID: 60318
+    m_ExpandedIDs: 00000000708b0000728b0000748b0000768b0000788b00007a8b00007c8b00007e8b0000808b0000828b0000848b0000868b0000888b00008a8b00008c8b00008e8b0000908b0000928b0000948b0000968b0000988b00009a8b0000a48d0000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -777,9 +777,9 @@ MonoBehaviour:
   m_SceneHierarchy:
     m_TreeViewState:
       scrollPos: {x: 0, y: 0}
-      m_SelectedIDs: 
+      m_SelectedIDs: 8496f2ff
       m_LastClickedID: 0
-      m_ExpandedIDs: 3454f8ff9654f8ffee59f8ff4062f8ff4463f8ff188af8ff1c8af8ffc68af8ff442ff9ffa62ff9fffe34f9ff503df9ff543ef9ff2865f9ff2c65f9ffd665f9ff928efcfff48efcff4c94fcff9e9cfcffa29dfcff76c4fcff7ac4fcff24c5fcff12fbfffff4ffffff
+      m_ExpandedIDs: d81ef3ff6c25f3ffae76f6ff8879f6ff527af6ff9e7af6ff70a1f6ff2aa5f6fffccbf6ff26cef6ffe8ccf8ffa689f9ff40b8ffffa6b8fffffebdffff50c6ffff54c7ffff28eeffff2ceeffffd6eeffff12fbfffff4ffffff
       m_RenameOverlay:
         m_UserAcceptedRename: 0
         m_Name: 
@@ -841,9 +841,9 @@ MonoBehaviour:
       floating: 0
       collapsed: 0
       displayed: 1
-      snapOffset: {x: 0, y: -26}
+      snapOffset: {x: -172, y: -26}
       snapOffsetDelta: {x: 0, y: 0}
-      snapCorner: 2
+      snapCorner: 3
       id: Tool Settings
       index: 0
       layout: 1

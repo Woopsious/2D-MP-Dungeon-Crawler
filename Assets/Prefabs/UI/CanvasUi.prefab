@@ -9064,7 +9064,7 @@ MonoBehaviour:
   m_Elasticity: 0.1
   m_Inertia: 0
   m_DecelerationRate: 0.135
-  m_ScrollSensitivity: 100
+  m_ScrollSensitivity: 10
   m_Viewport: {fileID: 0}
   m_HorizontalScrollbar: {fileID: 0}
   m_VerticalScrollbar: {fileID: 0}
@@ -52213,6 +52213,7 @@ MonoBehaviour:
   - {fileID: 5113717211506351162}
   partyMessagesPanelUi: {fileID: 1262725868807657558}
   partyMessagesContent: {fileID: 5909855993184967244}
+  partyMessagesList: []
   partyMessagePrefab: {fileID: 7370209113152440779, guid: 657c49605c208614fb1c6d995bb52a2f, type: 3}
 --- !u!1 &7526383101510464748
 GameObject:

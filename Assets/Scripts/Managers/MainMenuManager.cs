@@ -162,7 +162,7 @@ public class MainMenuManager : MonoBehaviour
 	{
 		playMpButton.onClick.RemoveAllListeners();
 
-		if (LobbyManager.Instance != null && LobbyManager.Instance._Lobby != null) //player in lobby show lobby ui
+		if (MultiplayerManager.IsMultiplayer()) //player in lobby show lobby ui
 		{
 			playMpButton.onClick.AddListener(delegate { ShowLobbyUiWhenPlayerInLobby(); });
 			playMpButton.interactable = true;

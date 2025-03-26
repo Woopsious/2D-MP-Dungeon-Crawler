@@ -83,14 +83,14 @@ public class Interactables : MonoBehaviour
 		}
 		else if (interactType == InteractType.player)
 		{
-			playerController.StartReviveTimer(playerController);
+			playerController.StartReviveTimer(player);
 		}
 	}
 	public void CancelInteract(PlayerController player)
 	{
 		if (interactType != InteractType.player) return;
 
-		playerController.CancelReviveTimer(playerController);
+		playerController.CancelReviveTimer(player);
 	}
 	public InteractType GetInteractableType()
 	{

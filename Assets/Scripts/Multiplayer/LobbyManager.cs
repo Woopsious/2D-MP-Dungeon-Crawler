@@ -305,12 +305,8 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public async void UpdateClientPlayerClass(SOClasses newClass)
 	{
-		Debug.LogError("update client player class event");
-
 		try
 		{
-			Debug.LogError("update client player class");
-
 			UpdatePlayerOptions options = new UpdatePlayerOptions();
 
 			options.Data = new Dictionary<string, PlayerDataObject>()
@@ -333,14 +329,10 @@ public class LobbyManager : NetworkBehaviour
 	}
 	public async void UpdateClientPlayerLevel(PlayerController player)
 	{
-		Debug.LogError("update client player level event");
-
 		if (_LobbyId.IsNullOrEmpty()) return; //occasionally happens when first hosting lobby
 
 		try
 		{
-			Debug.LogError("update client player level");
-
 			UpdatePlayerOptions options = new UpdatePlayerOptions();
 
 			options.Data = new Dictionary<string, PlayerDataObject>()

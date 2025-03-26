@@ -69,19 +69,15 @@ public class PlayerDeathUi : MonoBehaviour
 		ReviveTimer();
 	}
 
-	private void OnPlayerDeath(GameObject playerObj, string deathMessage, float respawnTimer)
+	private void OnPlayerDeath(PlayerController player, string deathMessage)
 	{
 		if (MultiplayerManager.IsMultiplayer() && PlayerPartyWiped()) //update to wipe respawns for mp
 			ShowDeathAndSpectatorUiPanels("Party Wiped");
 
-		Debug.LogError("PLAYER DIED");
-
-		if (playerObj != GameManager.Localplayer.gameObject) return; //this player didnt die so ingnore ui
-
-		Debug.LogError("LOCAL PLAYER DIED");
+		if (player != GameManager.Localplayer) return; //this player didnt die so ingnore ui
 
 		ShowDeathAndSpectatorUiPanels(deathMessage);
-		ShowRespawnTimerUi(respawnTimer);
+		ShowRespawnTimerUi(player.GetRespawnTime());
 	}
 	public void CheckDeadPlayersOnClientDisconnect()
 	{
@@ -103,9 +99,9 @@ public class PlayerDeathUi : MonoBehaviour
 		if (PlayerPartyWiped()) //show respawn screen on player party wipe (all players dead in sp/mp)
 			ShowPlayerRespawnUi();
 	}
-	private void HideAllUiPanelsOnRespawn(GameObject playerObj)
+	private void HideAllUiPanelsOnRespawn(PlayerController optionalReviverPlayer, PlayerController revivedPlayer)
 	{
-		if (playerObj != GameManager.Localplayer.gameObject) return;
+		if (revivedPlayer != GameManager.Localplayer) return;
 
 		PlayerDeathPanelUi.SetActive(false);
 		respawnInDungeonButton.SetActive(false);
@@ -246,8 +242,8 @@ public class PlayerDeathUi : MonoBehaviour
 	public void RespawnPlayerInDungeon()
 	{
 		if (MultiplayerManager.IsMultiplayer())
-			ClientRpcManager.instance.RespawnPlayerRpc(GameManager.Localplayer.NetworkObjectId);
+			ClientRpcManager.instance.RespawnPlayerRpc(GameManager.Localplayer.NetworkObjectId, GameManager.Localplayer.NetworkObjectId);
 		else
-			PlayerEventManager.RespawnPlayer(GameManager.Localplayer.gameObject);
+			PlayerEventManager.RespawnPlayer(GameManager.Localplayer, GameManager.Localplayer);
 	}
 }
