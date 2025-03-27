@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -18,9 +19,6 @@ public class DungeonPortalUi : MonoBehaviour
 	public List<DungeonDataUi> savedDungeonLists = new List<DungeonDataUi>();
 	public List<DungeonDataUi> bossDungeonLists = new List<DungeonDataUi>();
 
-	[Header("Dungeon Bosses")]
-	public List<SOEntityStats> bossesInGame = new List<SOEntityStats>();
-
 	[Header("Shared Dungeon list Ui")]
 	public GameObject dungeonListContent;
 	public GameObject hiddenDungeonsParentObj;
@@ -37,14 +35,16 @@ public class DungeonPortalUi : MonoBehaviour
 	[Header("Dungeon Exit Ui")]
 	public GameObject dungeonExitUi;
 
+	private bool blockNewDungeonGeneration;
+
 	private void Awake()
 	{
 		instance = this;
+		blockNewDungeonGeneration = false;
 		GenerateBossDungeonsOnAwake();
 	}
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += ReloadSavedDungeons;
 		SaveManager.ReloadSaveGameData += ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi += ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi += HidePortalUi;
@@ -56,7 +56,6 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= ReloadSavedDungeons;
 		SaveManager.ReloadSaveGameData -= ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi -= ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi -= HidePortalUi;
@@ -67,54 +66,9 @@ public class DungeonPortalUi : MonoBehaviour
 		DungeonDataUi.OnDungeonDelete -= OnDeleteDungeon;
 	}
 
-	private void GenerateBossDungeonsOnAwake()
-	{
-		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.SceneIsActive("HubArea")) return;
-
-		for (int i = 0; i < bossesInGame.Count; i++) //generate dungond for each boss
-		{
-			Transform parentTransform;
-			if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
-				parentTransform = dungeonListContent.transform;
-			else parentTransform = hiddenDungeonsParentObj.transform;
-
-			for (int j = 0; j < 3; j++) //generate dungeon for every difficulty per boss
-			{
-				GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
-				DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
-				dungeonData.Initilize(i, j, bossesInGame[i]);
-				bossDungeonLists.Add(dungeonData);
-			}
-		}
-	}
-	private void GenerateNewDungeons()
-	{
-		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return; //if not hub area return
-
-		activeDungeonLists.Clear();
-
-		for (int i = 0; i < 5; i++)
-		{
-			Transform parentTransform;
-			if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
-				parentTransform = dungeonListContent.transform;
-			else parentTransform = hiddenDungeonsParentObj.transform;
-
-			GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
-			DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
-			dungeonData.Initilize(i);
-			activeDungeonLists.Add(dungeonData);
-		}
-	}	
-
 	//button actions
 	public void GenerateNewRandomDungeonsButton()
 	{
-		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
-			activeDungeonLists[i].DeleteDungeon();
-
 		GenerateNewDungeons();
 	}
 	public void ReturnToHubButton()
@@ -146,6 +100,52 @@ public class DungeonPortalUi : MonoBehaviour
 
 		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.noReload);
 	}
+
+	//dungeon generation
+	private async void GenerateBossDungeonsOnAwake()
+	{
+		for (int i = 0; i < AssetDatabase.Database.bossEntities.Count; i++) //generate dungeons for each boss
+		{
+			Transform parentTransform;
+			if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
+				parentTransform = dungeonListContent.transform;
+			else parentTransform = hiddenDungeonsParentObj.transform;
+
+			for (int j = 0; j < 3; j++) //generate dungeons for every difficulty per boss
+			{
+				GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
+				DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
+				bossDungeonLists.Add(dungeonData);
+				await dungeonData.Initilize(i, j, AssetDatabase.Database.bossEntities[i]);
+			}
+		}
+	}
+	private async void GenerateNewDungeons()
+	{
+		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return; //if not hub area return
+		if (blockNewDungeonGeneration) return;
+		blockNewDungeonGeneration = true;
+
+		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
+			activeDungeonLists[i].DeleteDungeon();
+
+		activeDungeonLists.Clear();
+
+		for (int i = 0; i < 5; i++)
+		{
+			Transform parentTransform;
+			if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
+				parentTransform = dungeonListContent.transform;
+			else parentTransform = hiddenDungeonsParentObj.transform;
+
+			GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
+			DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
+			activeDungeonLists.Add(dungeonData);
+			await dungeonData.Initilize(i);
+		}
+
+		blockNewDungeonGeneration = false;
+	}	
 
 	//Events
 	private void ReloadSavedDungeons()

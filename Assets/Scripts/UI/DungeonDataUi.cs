@@ -1,14 +1,14 @@
-using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static DungeonDataUi;
 
 public class DungeonDataUi : MonoBehaviour
 {
+	public GameObject DungeonInfoUi;
+
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
 
@@ -37,26 +37,24 @@ public class DungeonDataUi : MonoBehaviour
 	public static event Action<DungeonDataUi> OnDungeonDelete;
 
 	//set dungeon data
-	public void Initilize(int index) //initilize new dungeon
+	public async Task Initilize(int index, int dungeonDifficulty, SOEntityStats bossToSpawn) //initilize boss dungeon
 	{
+		hasExploredDungeon = false;
+		isDungeonSaved = false;
+		dungeonIndex = index;
+		dungeonNumber = -1; //-1 to indicate its boss dungeon and scene it loads is randomized on enter
+		this.bossToSpawn = bossToSpawn;
+		await SetModifiersAndUi(dungeonDifficulty);
+	}
+	public async Task Initilize(int index) //initilize new dungeon
+	{
+		DungeonInfoUi.SetActive(false);
 		hasExploredDungeon = false;
 		isDungeonSaved = false;
 		dungeonIndex = index;
 		int choice = Utilities.GetRandomNumber(GameManager.Instance.dungeonSceneNamesList.Count - 1);
 		dungeonNumber = choice + 4; //+4 for other scenes in build
-		int modifier = Utilities.GetRandomNumber(2);
-
-		SetDifficultyModifierAndUI(modifier);
-		UpdateDynamicUi();
-
-		for (int i = 0; i < maxDungeonModifiers; i++)
-		{
-			int chanceOfModifier = Utilities.GetRandomNumber(100);
-			if (chanceOfModifier <= 50) continue;
-
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetDungeonModifiersAndUi(modifierType);
-		}
+		await SetModifiersAndUi(Utilities.GetRandomNumber(2));
 	}
 	public void Initilize(DungeonData dungeonData, int index) //initilize dungeon from saved data
 	{
@@ -108,22 +106,29 @@ public class DungeonDataUi : MonoBehaviour
 		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
 	}
-	public void Initilize(int index, int dungeonDifficulty, SOEntityStats bossToSpawn) //initilize boss dungeon
-	{
-		hasExploredDungeon = false;
-		isDungeonSaved = false;
-		dungeonIndex = index;
-		dungeonNumber = -1; //-1 to indicate its boss dungeon and scene it loads is randomized on enter
-		this.bossToSpawn = bossToSpawn;
-		int modifier = dungeonDifficulty;
 
+	//set modifiers + ui
+	private async Task SetModifiersAndUi(int modifier)
+	{
 		SetDifficultyModifierAndUI(modifier);
 		UpdateDynamicUi();
-	}
 
-	//dungeon set ups + ui
+		for (int i = 0; i < maxDungeonModifiers; i++)
+		{
+			int chanceOfModifierAndDelay = Utilities.GetRandomNumber(100);
+			await Task.Delay(chanceOfModifierAndDelay);
+
+			if (chanceOfModifierAndDelay <= 50) continue;
+
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
+			SetDungeonModifiersAndUi(modifierType);
+		}
+
+		DungeonInfoUi.SetActive(true);
+	}
 	private void SetDifficultyModifierAndUI(int modifier)
 	{
+		if (dungeonNumber == -1) return; //boss dungeon
 		if (modifier == 0)
 		{
 			maxDungeonModifiers = 1;
@@ -224,9 +229,11 @@ public class DungeonDataUi : MonoBehaviour
 		{
 			dungeonExploredText.gameObject.SetActive(true);
 			dungeonExploredText.text = bossToSpawn.entityName;
+			dungeonModifiersText.text = "No Modifiers for boss Dungeons";
 
 			saveDungeonButtonObj.SetActive(false);
 			deleteDungeonButtonObj.SetActive(false);
+			return;
 		}
 
 		if (hasExploredDungeon)
