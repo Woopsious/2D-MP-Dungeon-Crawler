@@ -14,6 +14,12 @@ public class ClientRpcManager : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone)]
+	public void SyncDungeonStatModifiersRpc(float difficultyModifier, float[] modifiersList)
+	{
+		GameManager.Instance.SyncDungeonStatModifiers(difficultyModifier, modifiersList);
+	}
+
+	[Rpc(SendTo.Everyone)]
 	public void SyncDungeonChestStatsRpc(ChestHandler.ChestState[] chestStates)
 	{
 		DungeonHandler.Instance.SyncChestStates(chestStates);

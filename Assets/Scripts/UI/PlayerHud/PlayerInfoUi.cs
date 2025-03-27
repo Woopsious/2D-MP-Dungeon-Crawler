@@ -42,8 +42,6 @@ public class PlayerInfoUi : MonoBehaviour
 	//interact with text updates
 	private void ShowHideInteractWithText(Interactables interactable, bool showText, string message)
 	{
-		if (interactable == null) return;
-
         if (showText)
 			Instance.interactWithText.gameObject.SetActive(true);
 		else

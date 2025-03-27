@@ -144,9 +144,6 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		PlayerMovement();
-
-		return;
-
 		HealPlayerInHubScene();
 	}
 
@@ -922,6 +919,8 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void HandleUnInteractWithCollidables(Collider2D other)
 	{
+		if (currentInteractedObject == null) return;
+
 		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
 
 		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
@@ -969,13 +968,13 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void OnSpectateNextPlayer()
 	{
-		//if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		SpectateNextAlivePlayer();
 	}
 	private void OnSpectatePreviousPlayer()
 	{
-		//if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		SpecatePreviousAlivePlayer();
 	}

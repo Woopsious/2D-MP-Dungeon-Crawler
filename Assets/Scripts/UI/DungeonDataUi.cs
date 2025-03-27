@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,6 +24,7 @@ public class DungeonDataUi : MonoBehaviour
 
 	public int maxDungeonModifiers;
 	public SOEntityStats bossToSpawn;
+	private List<int> dungeonModifiersInUse = new List<int>();
 	public DungeonStatModifier dungeonStatModifiers;
 	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 
@@ -120,8 +122,7 @@ public class DungeonDataUi : MonoBehaviour
 
 			if (chanceOfModifierAndDelay <= 50) continue;
 
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetDungeonModifiersAndUi(modifierType);
+			SetDungeonModifiersAndUi(GetNonDuplicateModifier());
 		}
 
 		DungeonInfoUi.SetActive(true);
@@ -151,6 +152,7 @@ public class DungeonDataUi : MonoBehaviour
 	private void SetDungeonModifiersAndUi(int modifierType)
 	{
 		float modifierValue = 0.25f;
+		dungeonModifiersInUse.Add(modifierType);
 
 		if (modifierType == 0)
 		{
@@ -223,6 +225,29 @@ public class DungeonDataUi : MonoBehaviour
 		else
 			Debug.LogError("modifer type out of range");
 	}
+	private int GetNonDuplicateModifier()
+	{
+		for (int i = 0; i < 10; i++) //try max 10 times
+		{
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
+			if (!DungeonStatModifierAlreadyExists(modifierType))
+				return modifierType;
+			else
+				continue;
+		}
+		return 0; //return health mod as fail safe
+	}
+	private bool DungeonStatModifierAlreadyExists(int newModifier)
+	{
+		foreach (int modifier in dungeonModifiersInUse)
+		{
+			if (modifier == newModifier)
+				return true;
+		}
+		return false;
+	}
+
+	//ui that changes
 	public void UpdateDynamicUi()
 	{
 		if (dungeonNumber == -1) //boss dungeon
@@ -258,6 +283,9 @@ public class DungeonDataUi : MonoBehaviour
 	{
 		hasExploredDungeon = true;
 
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonStatModifiersRpc(dungeonStatModifiers.difficultyModifier, GetListOfDungeonStatModifiers());
+
 		GameManager.Instance.currentDungeonData.hasExploredDungeon = hasExploredDungeon;
 		GameManager.Instance.currentDungeonData.isDungeonSaved = isDungeonSaved;
 		GameManager.Instance.currentDungeonData.dungeonIndex = dungeonIndex;
@@ -290,5 +318,21 @@ public class DungeonDataUi : MonoBehaviour
 	public void DeleteDungeon() //button click
 	{
 		OnDungeonDelete.Invoke(this);
+	}
+
+	private float[] GetListOfDungeonStatModifiers()
+	{
+		float[] modifiers = new float[]
+		{
+			dungeonStatModifiers.healthModifier, dungeonStatModifiers.manaModifier, 
+			dungeonStatModifiers.physicalResistanceModifier,dungeonStatModifiers.poisonResistanceModifier, 
+			dungeonStatModifiers.fireResistanceModifier, dungeonStatModifiers.iceResistanceModifier,
+			dungeonStatModifiers.physicalDamageModifier, dungeonStatModifiers.poisonDamageModifier, 
+			dungeonStatModifiers.fireDamageModifier, dungeonStatModifiers.iceDamageModifier, 
+			dungeonStatModifiers.mainWeaponDamageModifier, dungeonStatModifiers.dualWeaponDamageModifier,
+			dungeonStatModifiers.rangedWeaponDamageModifier,
+		};
+
+		return modifiers;
 	}
 }

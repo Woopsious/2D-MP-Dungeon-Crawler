@@ -34,14 +34,6 @@ public class PlayerExperienceHandler : MonoBehaviour
 		PlayerJournalUi.OnQuestComplete -= OnQuestComplete;
 	}
 
-	/// <summary>
-	/// SYNCING PLAYER LEVELS BETWEEN CLIENTS PLAN:
-	/// once save game data is restored completely on joining clients side.
-	/// joining client calls rpc sending networked id of themselves + players current level.
-	/// host client recieves call then sends id + player level to all clients.
-	/// based on if this networked player objs owner id matches this id of player calling rpc. adjust level and stats of said player object
-	/// </summary>
-
 	//set player exp
 	public void Start()
 	{

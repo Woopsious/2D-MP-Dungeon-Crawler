@@ -194,6 +194,7 @@ public class DungeonStatModifier
 
 	public float healthModifier;
 	public float manaModifier;
+
 	public float physicalResistanceModifier;
 	public float poisonResistanceModifier;
 	public float fireResistanceModifier;
@@ -203,7 +204,49 @@ public class DungeonStatModifier
 	public float poisonDamageModifier;
 	public float fireDamageModifier;
 	public float iceDamageModifier;
+
 	public float mainWeaponDamageModifier;
 	public float dualWeaponDamageModifier;
 	public float rangedWeaponDamageModifier;
+
+	public DungeonStatModifier(float difficultyModifier, float[] statsModifiers)
+	{
+		this.difficultyModifier = difficultyModifier;
+
+		for (int i = 0; i < statsModifiers.Length; i++)
+		{
+			if (i == 0)
+				healthModifier = statsModifiers[i];
+			else if (i == 1)
+				manaModifier = statsModifiers[i];
+
+			else if (i == 2)
+				physicalResistanceModifier = statsModifiers[i];
+			else if (i == 3)
+				poisonResistanceModifier = statsModifiers[i];
+			else if (i == 4)
+				fireResistanceModifier = statsModifiers[i];
+			else if (i == 5)
+				iceResistanceModifier = statsModifiers[i];
+
+			else if (i == 6)
+				physicalDamageModifier = statsModifiers[i];
+			else if (i == 7)
+				poisonDamageModifier = statsModifiers[i];
+			else if (i == 8)
+				fireDamageModifier = statsModifiers[i];
+			else if (i == 9)
+				iceDamageModifier = statsModifiers[i];
+
+			else if (i == 10)
+				mainWeaponDamageModifier = statsModifiers[i];
+			else if (i == 11)
+				dualWeaponDamageModifier = statsModifiers[i];
+			else if (i == 12)
+				rangedWeaponDamageModifier = statsModifiers[i];
+			else
+				Debug.LogError("modifer type out of range");
+		}
+
+	}
 }

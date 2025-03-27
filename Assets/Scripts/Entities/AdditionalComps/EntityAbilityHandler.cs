@@ -74,21 +74,20 @@ public class EntityAbilityHandler : NetworkBehaviour
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		SOAbilities offensiiveAbility = PickRandomAbilityFromClass(true);
-		SOAbilities healingbility = PickRandomAbilityFromClass(false);
+		SOAbilities offensiveAbility = PickRandomAbilityFromClass(true);
+		SOAbilities healingAility = PickRandomAbilityFromClass(false);
 
-		this.offensiveAbility = offensiiveAbility;
-		this.healingAbility = healingbility;
+		this.offensiveAbility = offensiveAbility;
+		this.healingAbility = healingAility;
 
 		if (MultiplayerManager.IsMultiplayer())
-			SyncEntityAbilitiesForClientsRPC(FindAbilityIndex(offensiiveAbility), FindAbilityIndex(healingbility));
+			SyncEntityAbilitiesForClientsRPC(FindAbilityIndex(offensiveAbility), FindAbilityIndex(healingAility));
 	}
 	private SOAbilities PickRandomAbilityFromClass(bool offensiveAbility)
 	{
 		if (offensiveAbility == true)
 		{
 			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
-			//entityStats.classHandler.unlockedAbilitiesList
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
 				if (ability.isOffensiveAbility && ability.damageType != IDamagable.DamageType.isHealing)
@@ -103,7 +102,6 @@ public class EntityAbilityHandler : NetworkBehaviour
 		else
 		{
 			List<SOAbilities> healingAbilities = new List<SOAbilities>();
-			//entityStats.classHandler.unlockedAbilitiesList
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
 				if (ability.damageType == IDamagable.DamageType.isHealing)

@@ -127,7 +127,6 @@ public class PlayerDeathUi : MonoBehaviour
 	private void HideReviveTimerUi()
 	{
 		PlayerReviveTimerPanelUi.SetActive(false);
-		Debug.LogError("HIDE REVIVE TIMER");
 	}
 	private void ReviveTimer()
 	{

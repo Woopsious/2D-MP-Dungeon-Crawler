@@ -26,21 +26,21 @@ public class Utilities
 	{
 		float percentage = GetRandomNumber(100); //0.5% for legendary | 5% for epic | 10% for rare | 84.5% for common (Normal Difficulty)
 
-		if (GameManager.Instance != null && GameManager.Instance.currentDungeonData != null)
+		if (GameManager.Instance.currentDungeonData == null)
 		{
-			if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.25f)
-				return HellDifficultyRarity(percentage, rarityChanceModifier);
-			else if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.1f)
-				return HardDifficultyRarity(percentage, rarityChanceModifier);
-			else
-				return NormalDifficultyRarity(percentage, rarityChanceModifier);
+			Debug.LogError("current dungeon data null");
 		}
+		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers == null)
+		{
+			Debug.LogError("current dungeon stat modifiers null");
+		}
+
+		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.25f)
+			return HellDifficultyRarity(percentage, rarityChanceModifier);
+		else if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.1f)
+			return HardDifficultyRarity(percentage, rarityChanceModifier);
 		else
-		{
-			Debug.LogWarning("GameManager Instance not found for setting item rarity, " +
-				"defaulting to NormalDifficultyRarity, if testing ignore");
 			return NormalDifficultyRarity(percentage, rarityChanceModifier);
-		}
 	}
 	//modify chances based on dungeon difficulty
 	private static SOItems.Rarity HellDifficultyRarity(float percentage, float rarityChanceModifier)

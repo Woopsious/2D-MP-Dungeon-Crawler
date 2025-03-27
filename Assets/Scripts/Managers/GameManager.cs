@@ -7,6 +7,7 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using WebSocketSharp;
+using static DungeonDataUi;
 
 public class GameManager : MonoBehaviour
 {
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
 
 	public static string currentGameDataDirectory;
 
+	//scene names
 	public readonly string mainScene = "MainScene";
 	public readonly string menuScene = "MenuScene";
 	public readonly string uiScene = "UiScene";
@@ -30,18 +32,23 @@ public class GameManager : MonoBehaviour
 	public readonly string dungeonOneScene = "DungeonOneScene";
 	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
 
+	//loaded scenes
 	public Scene currentlyLoadedUiScene;
 	public Scene currentlyLoadedScene;
 
+	//local player + prefab
 	public GameObject PlayerPrefab;
 	public static PlayerController Localplayer { get; private set; }
 
+	//local camera + prefab
 	public GameObject CameraPrefab;
 	public static Camera LocalPlayerCamera;
 
+	//dungeon name lists
 	public List<string> dungeonSceneNamesList = new List<string>();
 	public List<string> bossSceneNamesList = new List<string>();
 
+	//current dungeon data
 	public DungeonData currentDungeonData;
 
 	private void Awake()
@@ -310,6 +317,13 @@ public class GameManager : MonoBehaviour
 		if (sceneName.Contains("Boss"))
 			return true;
 		else return false;
+	}
+
+	//SYNCING DUNGEON DATA FOR MP
+	public void SyncDungeonStatModifiers(float difficultyModifier, float[] modifiersList)
+	{
+		DungeonStatModifier dungeonModifiers = new(difficultyModifier, modifiersList);
+		Instance.currentDungeonData.dungeonStatModifiers = dungeonModifiers;
 	}
 
 	//PLAYER CAMERA SPAWNING
