@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
+using static PortalHandler;
 
 public class ChestHandler : MonoBehaviour, IInteractables
 {
@@ -47,12 +49,21 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		Initilize();
 	}
 
-	//set chest data
 	private void Initilize()
 	{
-		if (isPlayerStorageChest) return;
-		spriteRenderer.sprite = chestClosedSprite;
-		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
+		if (!isPlayerStorageChest)
+		{
+			if (!DungeonHandler.Instance.dungeonLootChestsList.Contains(this))
+				Debug.LogError("Loot chest not added to dungeon loot chest list, ensure of this type are added");
+
+			spriteRenderer.sprite = chestClosedSprite;
+			lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
+		}
+		else
+		{
+			if (DungeonHandler.Instance.dungeonLootChestsList.Contains(this))
+				Debug.LogError("player storage chest added to dungeon loot chest list, ensure non of this type are added");
+		}
 	}
 
 	//loot chest states

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -26,6 +27,20 @@ public class PortalHandler : MonoBehaviour, IInteractables
 	private void Awake()
 	{
 		audioHandler = GetComponent<AudioHandler>();
+	}
+
+	private void Start()
+	{
+		if (portalType != PortalType.isBossDungeonExitPortal)
+		{
+			if (!DungeonHandler.Instance.dungeonPortalsList.Contains(gameObject))
+				Debug.LogError("Portal not added to dungeon portal list, ensure all of this type are added");
+		}
+		else
+		{
+			if (DungeonHandler.Instance.dungeonPortalsList.Contains(gameObject))
+				Debug.LogError("Portal added to dungeon portal list, ensure non of this type is added");
+		}
 	}
 
 	private void Update()

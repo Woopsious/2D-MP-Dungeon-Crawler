@@ -22,8 +22,9 @@ public class DungeonDataUi : MonoBehaviour
 	public int dungeonIndex;
 	public int dungeonNumber;
 
-	public int maxDungeonModifiers;
-	public SOEntityStats bossToSpawn;
+	private int minDungeonModifiers;
+	private int maxDungeonModifiers;
+	private SOEntityStats bossToSpawn;
 	private List<int> dungeonModifiersInUse = new List<int>();
 	public DungeonStatModifier dungeonStatModifiers;
 	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
@@ -117,11 +118,13 @@ public class DungeonDataUi : MonoBehaviour
 
 		for (int i = 0; i < maxDungeonModifiers; i++)
 		{
-			int chanceOfModifierAndDelay = Utilities.GetRandomNumber(100);
-			await Task.Delay(chanceOfModifierAndDelay);
+			int chanceOfModifierAndDelayTime = Utilities.GetRandomNumber(100);
+			await Task.Delay(chanceOfModifierAndDelayTime);
 
-			if (chanceOfModifierAndDelay <= 50) continue;
+			if (dungeonModifiersInUse.Count < minDungeonModifiers) //ensure min modifiers
+				chanceOfModifierAndDelayTime = 100;
 
+			if (chanceOfModifierAndDelayTime <= 66) continue;
 			SetDungeonModifiersAndUi(GetNonDuplicateModifier());
 		}
 
@@ -132,18 +135,21 @@ public class DungeonDataUi : MonoBehaviour
 		if (dungeonNumber == -1) return; //boss dungeon
 		if (modifier == 0)
 		{
+			minDungeonModifiers = 0;
 			maxDungeonModifiers = 1;
 			dungeonStatModifiers.difficultyModifier = 0;
 			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
 		}
 		else if (modifier == 1)
 		{
+			minDungeonModifiers = 1;
 			maxDungeonModifiers = 3;
 			dungeonStatModifiers.difficultyModifier = 0.1f;
 			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
 		}
 		else
 		{
+			minDungeonModifiers = 3;
 			maxDungeonModifiers = 5;
 			dungeonStatModifiers.difficultyModifier = 0.25f;
 			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";

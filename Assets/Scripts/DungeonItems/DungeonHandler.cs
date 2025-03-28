@@ -1,13 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 using static ChestHandler;
-using static UnityEngine.Mesh;
 
 public class DungeonHandler : MonoBehaviour
 {
@@ -16,9 +10,10 @@ public class DungeonHandler : MonoBehaviour
 	public List<GameObject> dungeonPortalsList = new List<GameObject>();
 	private GameObject dungeonEnterencePortal;
 
-	public ChestHandler playerStorageChest;
+	public List<TrapHandler> dungeonTrapsList = new List<TrapHandler>();
 	public List<ChestHandler> dungeonLootChestsList = new List<ChestHandler>();
 	private readonly int chanceForChestToActivate = 50;
+	public ChestHandler playerStorageChest;
 
 	private void Awake()
 	{
@@ -27,16 +22,19 @@ public class DungeonHandler : MonoBehaviour
 	private void Start()
 	{
 		MovePlayersToEnterencePortal();
-		ActivateRandomChests();
+		SetUpRandomChests();
+		SetUpTraps();
 	}
 	private void OnEnable()
 	{
 		PlayerEventManager.OnRespawnAllPlayersEvent += RespawnPlayersAtClosestPortal;
+		PlayerEventManager.OnRespawnPlayerEvent += RespawnPlayerAtClosestPortal;
 		SaveManager.ReloadDungeonData += RestoreDungeonChestData;
 	}
 	private void OnDisable()
 	{
 		PlayerEventManager.OnRespawnAllPlayersEvent -= RespawnPlayersAtClosestPortal;
+		PlayerEventManager.OnRespawnPlayerEvent -= RespawnPlayerAtClosestPortal;
 		SaveManager.ReloadDungeonData -= RestoreDungeonChestData;
 	}
 
@@ -46,19 +44,18 @@ public class DungeonHandler : MonoBehaviour
 		if (!MultiplayerManager.IsClientHost()) return;
 
 		//respawn all players at hosts closest portal for simplicity + keeping players together
-		Vector2 positionToRespawnAt = GetClosestPortalToPlayer(GameManager.Localplayer.gameObject);
+		Vector2 positionToRespawnAt = GetClosestPortalToPlayer(GameManager.Localplayer);
 
 		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
 			player.transform.position = positionToRespawnAt;
 	}
-	private void RespawnPlayerAtClosestPortal(GameObject playerObj)
+	private void RespawnPlayerAtClosestPortal(PlayerController optionalPlayer, PlayerController player)
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		playerObj.transform.position = GetClosestPortalToPlayer(playerObj);
+		player.transform.position = GetClosestPortalToPlayer(player);
 	}
-
-	private Vector2 GetClosestPortalToPlayer(GameObject playerObj)
+	private Vector2 GetClosestPortalToPlayer(PlayerController player)
 	{
 		List<float> portalDistances = new();
 		Vector2 positionToRespawnAt = Vector2.zero;
@@ -66,7 +63,7 @@ public class DungeonHandler : MonoBehaviour
 
 		foreach (GameObject portal in dungeonPortalsList)
 		{
-			float newDistance = Vector2.Distance(playerObj.transform.position, portal.transform.position);
+			float newDistance = Vector2.Distance(player.transform.position, portal.transform.position);
 			portalDistances.Add(distance);
 
 			if (newDistance < distance)
@@ -98,7 +95,7 @@ public class DungeonHandler : MonoBehaviour
 	}
 
 	//SET UP LOOT CHESTS
-	private void ActivateRandomChests()
+	private void SetUpRandomChests()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
@@ -129,7 +126,7 @@ public class DungeonHandler : MonoBehaviour
 		}
 	}
 
-	//sync chest states between clients on Start
+	//sync chest states between clients on scene load complete
 	public void TrySyncChestStates()
 	{
 		if (!MultiplayerManager.IsMultiplayer()) return;
@@ -180,6 +177,37 @@ public class DungeonHandler : MonoBehaviour
 			chest.OpenChest(OpenChestAsPlayer);
 	}
 
+	//SET UP TRAPS
+	private void SetUpTraps()
+	{
+		int[] trapIndexes = new int[dungeonTrapsList.Count];
+
+		for (int i = 0; i < dungeonTrapsList.Count; i++)
+		{
+			dungeonTrapsList[i].SetUpTrap();
+		}
+
+	}
+
+	public void TrySyncTrapState(ChestHandler chest)
+	{
+		for (int i = 0; i < dungeonLootChestsList.Count; i++)
+		{
+			if (chest == dungeonLootChestsList[i])
+				ClientRpcManager.instance.SyncChestStateRpc(i, chest.GetChestState());
+		}
+	}
+
+	private void UpdateTrapState(TrapHandler trap, TrapHandler.TrapStates newState, bool DisabledByPlayer)
+	{
+		if (newState == TrapHandler.TrapStates.disabled)
+			trap.DisableTrap(DisabledByPlayer);
+		else if (newState == TrapHandler.TrapStates.enabled)
+			trap.EnableTrapState();
+		else if (newState == TrapHandler.TrapStates.detected)
+			trap.DetectTrapState();
+	}
+
 	private void OnDrawGizmos()
 	{
 		Gizmos.color = Color.green;
@@ -187,7 +215,7 @@ public class DungeonHandler : MonoBehaviour
 	}
 }
 
-[System.Serializable]
+[Serializable]
 public class DungeonStatModifier
 {
 	public float difficultyModifier;
