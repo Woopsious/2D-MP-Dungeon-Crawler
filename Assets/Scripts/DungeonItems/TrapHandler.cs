@@ -76,7 +76,8 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			TryDetectTrap(collision.GetComponent<PlayerController>());
 	}
 
-	public void SetUpTrap()
+	//set up trap + type
+	public int SetUpTrap()
 	{
 		int trapTypeIndex;
 
@@ -88,18 +89,18 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			trapTypeIndex = GetIndexOfTrapTypeToSetUP(null);
 		}
 
-		trapBaseRef = AssetDatabase.Database.traps[trapTypeIndex];
-		name = trapBaseRef.name;
-		EnableTrapState();
+		SetTrapType(trapTypeIndex);
 
 		if (trapBaseRef.hasProjectile)
 			FindSpawnPointForProjectiles();
-	}
 
-	public void SyncTrapType(int trapTypeIndex)
+		return trapTypeIndex;
+	}
+	public void SetTrapType(int trapTypeIndex)
 	{
 		trapBaseRef = AssetDatabase.Database.traps[trapTypeIndex];
 		name = trapBaseRef.name;
+		EnableTrapState();
 	}
 
 	//trap initilization
@@ -136,14 +137,6 @@ public class TrapHandler : MonoBehaviour, IInteractables
 				return i;
 		}
 		return -1;
-	}
-
-	private void UpdateTrapLevel(PlayerController player)
-	{
-		trapLevel = player.playerStats.entityLevel;
-		levelModifier = Utilities.GetLevelModifier(trapLevel);
-
-		trapDamage = (int)(trapBaseRef.baseDamage * levelModifier);
 	}
 
 	//set projectile spawn point
@@ -191,6 +184,11 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 		StartCoroutine(DisableTrapState(waitTime));
 		//call mp sync state
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.disabled, waitTime);
+		else
+			StartCoroutine(DisableTrapState(waitTime));
 	}
 	public IEnumerator DisableTrapState(float waitTime)
 	{
@@ -223,8 +221,10 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		if (!RollPlayerDetectChance(newPlayer))
 			return; //failed detect
 
-		DetectTrapState();
-		//call mp sync state
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.detected, 0);
+		else
+			DetectTrapState();
 	}
 	public void DetectTrapState()
 	{
@@ -243,8 +243,10 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 		TryDamageThingsInsideAoe(); //apply damage + effects
 
-		StartCoroutine(ActivateTrapState());
-		//call mp sync state
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.activated, 0);
+		else
+			StartCoroutine(ActivateTrapState());
 	}
 	public IEnumerator ActivateTrapState()
 	{
@@ -282,6 +284,17 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			Debug.LogError("player with id: " + newPlayer.OwnerClientId + " failed to detected trap");
 			return false;
 		}
+	}
+	private int GetTrapIndex()
+	{
+		for (int i = 0; i < DungeonHandler.Instance.dungeonTrapsList.Count; i++)
+		{
+			if (DungeonHandler.Instance.dungeonTrapsList[i] == this)
+				return i;
+		}
+
+		Debug.LogError("Failed to match this trap to one in DungeonHandler list");
+		return 0;
 	}
 
 	//apply damage/effects
@@ -332,6 +345,15 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	public void UnInteract(PlayerController player)
 	{
 		//noop
+	}
+
+	//update trap level event
+	private void UpdateTrapLevel(PlayerController player)
+	{
+		trapLevel = player.playerStats.entityLevel;
+		levelModifier = Utilities.GetLevelModifier(trapLevel);
+
+		trapDamage = (int)(trapBaseRef.baseDamage * levelModifier);
 	}
 
 	public void OnDrawGizmos()

@@ -94,6 +94,18 @@ public class DungeonHandler : MonoBehaviour
 			player.transform.position = dungeonEnterencePortal.transform.position;
 	}
 
+	//SET UP TRAPS
+	private void SetUpTraps()
+	{
+		int[] trapTypeIndexes = new int[dungeonTrapsList.Count];
+
+		for (int i = 0; i < dungeonTrapsList.Count; i++)
+			trapTypeIndexes[i] = dungeonTrapsList[i].SetUpTrap();
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonTrapTypesRpc(trapTypeIndexes);
+	}
+
 	//SET UP LOOT CHESTS
 	private void SetUpRandomChests()
 	{
@@ -140,7 +152,7 @@ public class DungeonHandler : MonoBehaviour
 			i++;
 		}
 
-		ClientRpcManager.instance.SyncDungeonChestStatsRpc(chestStates);
+		ClientRpcManager.instance.SyncDungeonChestStatesRpc(chestStates);
 	}
 	public void SyncChestStates(ChestState[] chestStates)
 	{
@@ -175,37 +187,6 @@ public class DungeonHandler : MonoBehaviour
 			chest.EnableChest();
 		else if (newState == ChestState.opened)
 			chest.OpenChest(OpenChestAsPlayer);
-	}
-
-	//SET UP TRAPS
-	private void SetUpTraps()
-	{
-		int[] trapIndexes = new int[dungeonTrapsList.Count];
-
-		for (int i = 0; i < dungeonTrapsList.Count; i++)
-		{
-			dungeonTrapsList[i].SetUpTrap();
-		}
-
-	}
-
-	public void TrySyncTrapState(ChestHandler chest)
-	{
-		for (int i = 0; i < dungeonLootChestsList.Count; i++)
-		{
-			if (chest == dungeonLootChestsList[i])
-				ClientRpcManager.instance.SyncChestStateRpc(i, chest.GetChestState());
-		}
-	}
-
-	private void UpdateTrapState(TrapHandler trap, TrapHandler.TrapStates newState, bool DisabledByPlayer)
-	{
-		if (newState == TrapHandler.TrapStates.disabled)
-			trap.DisableTrap(DisabledByPlayer);
-		else if (newState == TrapHandler.TrapStates.enabled)
-			trap.EnableTrapState();
-		else if (newState == TrapHandler.TrapStates.detected)
-			trap.DetectTrapState();
 	}
 
 	private void OnDrawGizmos()

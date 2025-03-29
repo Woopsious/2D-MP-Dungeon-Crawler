@@ -13,14 +13,38 @@ public class ClientRpcManager : NetworkBehaviour
 		instance = this;
 	}
 
+	//dungeon stat modifiers
 	[Rpc(SendTo.Everyone)]
 	public void SyncDungeonStatModifiersRpc(float difficultyModifier, float[] modifiersList)
 	{
 		GameManager.Instance.SyncDungeonStatModifiers(difficultyModifier, modifiersList);
 	}
 
+	//dungeon trap types
 	[Rpc(SendTo.Everyone)]
-	public void SyncDungeonChestStatsRpc(ChestHandler.ChestState[] chestStates)
+	public void SyncDungeonTrapTypesRpc(int[] trapTypeIndexes)
+	{
+		for (int i = 0; i < trapTypeIndexes.Length; i++)
+			DungeonHandler.Instance.dungeonTrapsList[i].SetTrapType(trapTypeIndexes[i]);
+	}
+
+	//dungeon trap states
+	[Rpc(SendTo.Everyone)]
+	public void SyncDungeonTrapStateRpc(int trapIndex, TrapHandler.TrapStates newState, float waitTime)
+	{
+		if (newState == TrapHandler.TrapStates.disabled)
+			StartCoroutine(DungeonHandler.Instance.dungeonTrapsList[trapIndex].DisableTrapState(waitTime));
+		else if (newState == TrapHandler.TrapStates.enabled)
+			DungeonHandler.Instance.dungeonTrapsList[trapIndex].EnableTrapState();
+		else if (newState == TrapHandler.TrapStates.detected)
+			DungeonHandler.Instance.dungeonTrapsList[trapIndex].DetectTrapState();
+		else if (newState == TrapHandler.TrapStates.activated)
+			StartCoroutine(DungeonHandler.Instance.dungeonTrapsList[trapIndex].ActivateTrapState());
+	}
+
+	//dungeon chest states
+	[Rpc(SendTo.Everyone)]
+	public void SyncDungeonChestStatesRpc(ChestHandler.ChestState[] chestStates)
 	{
 		DungeonHandler.Instance.SyncChestStates(chestStates);
 	}
@@ -31,12 +55,24 @@ public class ClientRpcManager : NetworkBehaviour
 		DungeonHandler.Instance.SyncChestState(chestIndex, newState);
 	}
 
+	//player revive ui timers
+	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
+	public void SyncStartRevivePlayerTimerUiRpc(float reviveTimer, RpcParams rpcParams)
+	{
+		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimer);
+	}
+	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
+	public void SyncCancelRevivePlayerTimerUiRpc(RpcParams rpcParams)
+	{
+		PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+	}
+
+	//player respawning
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	public void RespawnAllPlayersRpc()
 	{
 		PlayerEventManager.RespawnAllPlayers();
 	}
-
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	public void RespawnPlayerRpc(ulong objIdOfReviverPlayer, ulong objIOfRevivedPlayer)
 	{
@@ -47,18 +83,5 @@ public class ClientRpcManager : NetworkBehaviour
 			PlayerEventManager.RespawnPlayer(reviverPlayer, revivedPlayer);
 		else
 			PlayerEventManager.RespawnPlayer(revivedPlayer, revivedPlayer);
-	}
-
-
-	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
-	public void SyncStartRevivePlayerTimerUiRpc(float reviveTimer, RpcParams rpcParams)
-	{
-		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimer);
-	}
-
-	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
-	public void SyncCancelRevivePlayerTimerUiRpc(RpcParams rpcParams)
-	{
-		PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
 	}
 }
