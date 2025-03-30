@@ -112,6 +112,8 @@ public class Items : MonoBehaviour
 	//player item interactions (pick up dropped items from floor)
 	public void Interact(PlayerController playerController)
 	{
+		if (playerController != GameManager.Localplayer) return;
+
 		PlayerInventoryHandler playerInventory = playerController.GetComponent<PlayerInventoryHandler>();
 		if (playerInventory.CheckIfInventoryFull())
 		{
@@ -124,7 +126,7 @@ public class Items : MonoBehaviour
 	}
 	public void UnInteract(PlayerController playerController)
 	{
-
+		//noop
 	}
 	protected virtual void OnTriggerEnter2D(Collider2D other)
 	{
@@ -135,7 +137,7 @@ public class Items : MonoBehaviour
 	//tool tip
 	public virtual void UpdateToolTip(EntityStats playerStats, bool itemInShopSlot)
 	{
-
+		//noop
 	}
 	protected int AdjustItemPriceDisplay(bool itemInShopSlot)
 	{

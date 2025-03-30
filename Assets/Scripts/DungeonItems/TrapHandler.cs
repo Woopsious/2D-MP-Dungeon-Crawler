@@ -12,7 +12,9 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 	[Header("Trap Info")]
 	public bool debugOverrideTrapType;
-	public SOTraps trapBaseRef;
+	private SOTraps trapBaseRef;
+	private int trapTypeIndex;
+	private int trapListIndex;
 	public LayerMask layerMask;
 	public LayerMask projectileObstaclesMaskCheck;
 
@@ -23,7 +25,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	public GameObject projectilePrefab;
 
 	//trap states
-	public TrapStates trapState;
+	private TrapStates trapState;
 	public enum TrapStates
 	{
 		disabled, enabled, detected, activated
@@ -56,8 +58,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 	}
 	private void Start()
 	{
-		if (!DungeonHandler.Instance.dungeonTrapsList.Contains(this))
-			Debug.LogError("Trap not added to dungeon trap list, ensure all are added");
+		Initilize();
 	}
 
 	private void OnEnable()
@@ -76,34 +77,44 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			TryDetectTrap(collision.GetComponent<PlayerController>());
 	}
 
-	//set up trap + type
-	public int SetUpTrap()
+	private void Initilize()
 	{
-		int trapTypeIndex;
+		if (!DungeonHandler.Instance.dungeonTrapsList.Contains(this))
+			Debug.LogError("Trap not added to dungeon trap list, ensure all are added");
 
+		SetTrapListIndex();
+	}
+	private void SetTrapListIndex()
+	{
+		for (int i = 0; i < DungeonHandler.Instance.dungeonTrapsList.Count; i++)
+		{
+			if (DungeonHandler.Instance.dungeonTrapsList[i] == this)
+				trapListIndex = i;
+		}
+	}
+
+	//set up trap + type
+	public void SetUpTrap()
+	{
 		if (debugOverrideTrapType && trapBaseRef != null)
-			trapTypeIndex = GetIndexOfTrapTypeToSetUP(trapBaseRef);
+			trapTypeIndex = SetIndexOfTrapType(trapBaseRef);
 		else
 		{
 			CreateTrapTypeTable();
-			trapTypeIndex = GetIndexOfTrapTypeToSetUP(null);
+			trapTypeIndex = SetIndexOfTrapType(null);
 		}
-
 		SetTrapType(trapTypeIndex);
 
 		if (trapBaseRef.hasProjectile)
 			FindSpawnPointForProjectiles();
-
-		return trapTypeIndex;
 	}
 	public void SetTrapType(int trapTypeIndex)
 	{
 		trapBaseRef = AssetDatabase.Database.traps[trapTypeIndex];
 		name = trapBaseRef.name;
+		this.trapTypeIndex = trapTypeIndex;
 		EnableTrapState();
 	}
-
-	//trap initilization
 	private void CreateTrapTypeTable()
 	{
 		trapSpawnChanceTable.Clear();
@@ -115,13 +126,13 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		foreach (float num in trapSpawnChanceTable)
 			totalTrapSpawnChance += num;
 	}
-	private int GetIndexOfTrapTypeToSetUP(SOTraps optionalTrap)
+	private int SetIndexOfTrapType(SOTraps optionalTrapType)
 	{
-		if (optionalTrap != null) //fetch index of trap ref instead of getting random one
+		if (optionalTrapType != null) //fetch index of trap ref instead of getting random one
 		{
 			for (int i = 0; i < AssetDatabase.Database.traps.Count; i++)
 			{
-				if (optionalTrap == AssetDatabase.Database.traps[i])
+				if (optionalTrapType == AssetDatabase.Database.traps[i])
 					return i;
 			}
 		}
@@ -161,7 +172,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		return true;
 	}
 
-	//TRAP STATE CHANGES + SYNCING
+	//TRAP STATE CHANGES
 	//enable trap
 	public void EnableTrapState()
 	{
@@ -186,7 +197,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		//call mp sync state
 
 		if (MultiplayerManager.IsMultiplayer())
-			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.disabled, waitTime);
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(trapListIndex, TrapStates.disabled, waitTime);
 		else
 			StartCoroutine(DisableTrapState(waitTime));
 	}
@@ -222,7 +233,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			return; //failed detect
 
 		if (MultiplayerManager.IsMultiplayer())
-			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.detected, 0);
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(trapListIndex, TrapStates.detected, 0);
 		else
 			DetectTrapState();
 	}
@@ -233,7 +244,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		audioHandler.PlayAudio(trapDetectedSfx);
 	}
 
-	//activate trap from player coll
+	//activate trap (from player coll)
 	public IEnumerator ActivateTrap()
 	{
 		if (trapState == TrapStates.disabled || trapState == TrapStates.activated) yield return null;
@@ -244,7 +255,7 @@ public class TrapHandler : MonoBehaviour, IInteractables
 		TryDamageThingsInsideAoe(); //apply damage + effects
 
 		if (MultiplayerManager.IsMultiplayer())
-			ClientRpcManager.instance.SyncDungeonTrapStateRpc(GetTrapIndex(), TrapStates.activated, 0);
+			ClientRpcManager.instance.SyncDungeonTrapStateRpc(trapListIndex, TrapStates.activated, 0);
 		else
 			StartCoroutine(ActivateTrapState());
 	}
@@ -256,6 +267,46 @@ public class TrapHandler : MonoBehaviour, IInteractables
 
 		yield return new WaitForSeconds(trapActivatedSfx.length);
 		gameObject.SetActive(false);
+	}
+
+	//apply damage/effects
+	private void TryDamageThingsInsideAoe()
+	{
+		RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, trapBaseRef.aoeSize, Vector2.up, 0, layerMask);
+
+		foreach (RaycastHit2D hit in hits)
+		{
+			EntityStats entityStats = hit.transform.GetComponent<EntityStats>();
+
+			if (trapBaseRef.hasProjectile) //no need to apply effects as projectiles do that already
+				ShootProjectiles(entityStats);
+			else
+			{
+				DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment,
+					trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType, false);
+
+				damageSourceInfo.SetDeathMessage(trapBaseRef);
+				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo); //apply damage
+
+				if (trapBaseRef.hasEffects) //apply effects
+					entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);
+			}
+		}
+	}
+	private void ShootProjectiles(EntityStats entity)
+	{
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
+		}
+
+		projectile.Initilize(trapBaseRef, trapDamage, transform.position, entity.transform.position);
 	}
 
 	//helpers
@@ -285,56 +336,13 @@ public class TrapHandler : MonoBehaviour, IInteractables
 			return false;
 		}
 	}
-	private int GetTrapIndex()
+	public int GetTrapTypeIndex()
 	{
-		for (int i = 0; i < DungeonHandler.Instance.dungeonTrapsList.Count; i++)
-		{
-			if (DungeonHandler.Instance.dungeonTrapsList[i] == this)
-				return i;
-		}
-
-		Debug.LogError("Failed to match this trap to one in DungeonHandler list");
-		return 0;
+		return trapTypeIndex;
 	}
-
-	//apply damage/effects
-	private void TryDamageThingsInsideAoe()
+	public TrapStates GetTrapState()
 	{
-		RaycastHit2D[] hits = Physics2D.CircleCastAll(transform.position, trapBaseRef.aoeSize, Vector2.up, 0, layerMask);
-
-		foreach (RaycastHit2D hit in hits)
-		{
-			EntityStats entityStats = hit.transform.GetComponent<EntityStats>();
-
-			if (trapBaseRef.hasProjectile) //no need to apply effects as projectiles do that already
-				ShootProjectiles(entityStats);
-			else
-			{
-				DamageSourceInfo damageSourceInfo = new(null, IDamagable.HitBye.enviroment, 
-					trapDamage, (IDamagable.DamageType)trapBaseRef.baseDamageType, false);
-
-				damageSourceInfo.SetDeathMessage(trapBaseRef);
-				entityStats.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo); //apply damage
-
-				if (trapBaseRef.hasEffects) //apply effects
-					entityStats.ApplyNewStatusEffects(trapBaseRef.statusEffects, entityStats);
-			}
-		}
-	}
-	private void ShootProjectiles(EntityStats entity)
-	{
-		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
-		if (projectile == null)
-		{
-			GameObject go = Instantiate(projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
-
-			if (MultiplayerManager.IsMultiplayer())
-				projectile.GetComponent<NetworkObject>().Spawn();
-		}
-
-		projectile.Initilize(trapBaseRef, trapDamage, transform.position, entity.transform.position);
+		return trapState;
 	}
 
 	//player interacts

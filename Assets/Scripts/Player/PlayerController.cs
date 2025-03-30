@@ -887,11 +887,7 @@ public class PlayerController : NetworkBehaviour
 		{
 			TrapHandler trapHandler = other.GetComponent<TrapHandler>();
 
-			if (trapHandler.trapState != TrapHandler.TrapStates.detected)
-			{
-				Debug.LogError("trap state: " + trapHandler.trapState);
-				return;
-			}
+			if (trapHandler.GetTrapState() != TrapHandler.TrapStates.detected) return;
 			PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
 		}
 		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.portal)

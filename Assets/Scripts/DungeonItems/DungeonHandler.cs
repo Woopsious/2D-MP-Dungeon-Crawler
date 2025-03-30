@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -22,7 +23,7 @@ public class DungeonHandler : MonoBehaviour
 	private void Start()
 	{
 		MovePlayersToEnterencePortal();
-		SetUpRandomChests();
+		SetUpChests();
 		SetUpTraps();
 	}
 	private void OnEnable()
@@ -97,17 +98,28 @@ public class DungeonHandler : MonoBehaviour
 	//SET UP TRAPS
 	private void SetUpTraps()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		foreach (TrapHandler trap in dungeonTrapsList)
+			trap.SetUpTrap();
+	}
+	//sync trap types for mp
+	public void SyncTrapsTypes()
+	{
 		int[] trapTypeIndexes = new int[dungeonTrapsList.Count];
+		int i = 0;
 
-		for (int i = 0; i < dungeonTrapsList.Count; i++)
-			trapTypeIndexes[i] = dungeonTrapsList[i].SetUpTrap();
+		foreach (TrapHandler trap in dungeonTrapsList)
+		{
+			trapTypeIndexes[i] = trap.GetTrapTypeIndex();
+			i++;
+		}
 
-		if (MultiplayerManager.IsMultiplayer())
-			ClientRpcManager.instance.SyncDungeonTrapTypesRpc(trapTypeIndexes);
+		ClientRpcManager.instance.SyncDungeonTrapTypesRpc(trapTypeIndexes);
 	}
 
 	//SET UP LOOT CHESTS
-	private void SetUpRandomChests()
+	private void SetUpChests()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
@@ -117,32 +129,15 @@ public class DungeonHandler : MonoBehaviour
 			int chance = Utilities.GetRandomNumberBetween(0, 100);
 
 			if (chance > chanceForChestToActivate)
-				UpdateChestState(chest, ChestState.enabled, false);
+				chest.EnableChestState();
 			else
-				UpdateChestState(chest, ChestState.disabled, false);
+				chest.DisableChestState();
 		}
 	}
 
-	//restore chest data
-	private void RestoreDungeonChestData()
+	//sync loot chest states for mp
+	public void SyncChestStates()
 	{
-		if (!MultiplayerManager.IsClientHost()) return;
-		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
-			dungeonLootChestsList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
-
-		int i = 0;
-		foreach (DungeonChestData chestData in GameManager.Instance.currentDungeonData.dungeonChestData)
-		{
-			UpdateChestState(dungeonLootChestsList[i], chestData.chestState, false);
-			i++;
-		}
-	}
-
-	//sync chest states between clients on scene load complete
-	public void TrySyncChestStates()
-	{
-		if (!MultiplayerManager.IsMultiplayer()) return;
-
 		ChestState[] chestStates = new ChestState[dungeonLootChestsList.Count];
 		int i = 0;
 
@@ -152,41 +147,26 @@ public class DungeonHandler : MonoBehaviour
 			i++;
 		}
 
-		ClientRpcManager.instance.SyncDungeonChestStatesRpc(chestStates);
+		ClientRpcManager.instance.SyncAllInitialChestStatesRpc(chestStates);
 	}
-	public void SyncChestStates(ChestState[] chestStates)
+
+	//restore chest data
+	private void RestoreDungeonChestData()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+		if (GameManager.Instance.currentDungeonData.dungeonChestData.Count <= 0 ||
+			dungeonLootChestsList.Count <= 0) return; //return on first time enter + no loot chest (hub area)
+
+		ChestState[] chestStates = new ChestState[dungeonLootChestsList.Count];
+
 		int i = 0;
-		foreach (ChestState chestState in chestStates)
+		foreach (DungeonChestData chestData in GameManager.Instance.currentDungeonData.dungeonChestData)
 		{
-			UpdateChestState(dungeonLootChestsList[i], chestState, false);
+			chestStates[i] = chestData.chestState;
 			i++;
 		}
-	}
 
-	//update chest states between clients during runtime
-	public void TrySyncChestState(ChestHandler chest)
-	{
-		for (int i = 0; i <  dungeonLootChestsList.Count; i++)
-		{
-			if (chest == dungeonLootChestsList[i])
-				ClientRpcManager.instance.SyncChestStateRpc(i, chest.GetChestState());
-		}
-	}
-	public void SyncChestState(int chestIndex, ChestState newState)
-	{
-		UpdateChestState(dungeonLootChestsList[chestIndex], newState, true);
-	}
-
-	//update chest state
-	private void UpdateChestState(ChestHandler chest, ChestState newState, bool OpenChestAsPlayer)
-	{
-		if (newState == ChestState.disabled)
-			chest.DisableChest();
-		else if (newState == ChestState.enabled)
-			chest.EnableChest();
-		else if (newState == ChestState.opened)
-			chest.OpenChest(OpenChestAsPlayer);
+		ClientRpcManager.instance.SyncAllInitialChestStatesRpc(chestStates);
 	}
 
 	private void OnDrawGizmos()

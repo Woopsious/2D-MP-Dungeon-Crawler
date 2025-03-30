@@ -14,6 +14,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	private LootSpawnHandler lootSpawnHandler;
 	private Interactables interactable;
 
+	private int chestListIndex;
 	private ChestState chestState;
 	public enum ChestState
 	{
@@ -64,40 +65,65 @@ public class ChestHandler : MonoBehaviour, IInteractables
 			if (DungeonHandler.Instance.dungeonLootChestsList.Contains(this))
 				Debug.LogError("player storage chest added to dungeon loot chest list, ensure non of this type are added");
 		}
+
+		SetChestListIndex();
+	}
+	private void SetChestListIndex()
+	{
+		for (int i = 0; i < DungeonHandler.Instance.dungeonLootChestsList.Count; i++)
+		{
+			if (DungeonHandler.Instance.dungeonLootChestsList[i] != this) continue;
+			chestListIndex = i;
+		}
 	}
 
-	//loot chest states
-	public ChestState GetChestState()
+	//CHEST STATE CHANGES
+	//disable chest
+	public void DisableChestState()
 	{
-		return chestState;
-	}
-	public void DisableChest()
-	{
-		gameObject.SetActive(false);
 		chestState = ChestState.disabled;
+		gameObject.SetActive(false);
 	}
-	public void EnableChest()
+
+	//enable chest
+	public void EnableChestState()
 	{
-		gameObject.SetActive(true);
 		chestState = ChestState.enabled;
+		gameObject.SetActive(true);
 	}
+
+	//open chest
 	public void OpenChest(bool isPlayerInteraction)
 	{
 		if (chestState == ChestState.opened) return;
+		chestState = ChestState.opened; //call early
 
+		PlayerEventManager.DetectNewInteractedObject(interactable, false, "Interact");
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncChestStateRpc(chestListIndex, chestState, isPlayerInteraction);
+		else
+			OpenChestState(isPlayerInteraction);
+	}
+	public void OpenChestState(bool isPlayerInteraction)
+	{
 		gameObject.SetActive(true);
 		chestState = ChestState.opened;
 		spriteRenderer.sprite = chestOpenedSprite;
-		PlayerEventManager.DetectNewInteractedObject(interactable, false, "Interact");
+
+		Debug.LogError("Chest opened");
 
 		if (isPlayerInteraction)
 		{
 			lootSpawnHandler.SpawnLoot();
 			lootSpawnHandler.AddGold();
 		}
+	}
 
-		if (MultiplayerManager.IsMultiplayer())
-			DungeonHandler.Instance.TrySyncChestState(this);
+	//helpers
+	public ChestState GetChestState()
+	{
+		return chestState;
 	}
 
 	//player interactions

@@ -161,7 +161,8 @@ public class MultiplayerManager : NetworkBehaviour
 					{
 						Debug.LogError("loadEventCompleted for server ID: " + clientIdLoadComplete + " | at: " + DateTime.Now.ToString());
 
-						DungeonHandler.Instance.TrySyncChestStates();
+						DungeonHandler.Instance.SyncTrapsTypes();
+						DungeonHandler.Instance.SyncChestStates();
 					}
 					else
 					{
