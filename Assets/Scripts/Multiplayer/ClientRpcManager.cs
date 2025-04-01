@@ -35,14 +35,16 @@ public class ClientRpcManager : NetworkBehaviour
 	[Rpc(SendTo.Everyone)]
 	public void SyncDungeonTrapStateRpc(int trapIndex, TrapStates newState, float waitTime)
 	{
+		TrapHandler trap = DungeonHandler.Instance.dungeonTrapsList[trapIndex];
+
 		if (newState == TrapStates.disabled)
-			StartCoroutine(DungeonHandler.Instance.dungeonTrapsList[trapIndex].DisableTrapState(waitTime));
+			StartCoroutine(trap.DisableTrapState(waitTime));
 		else if (newState == TrapStates.enabled)
-			DungeonHandler.Instance.dungeonTrapsList[trapIndex].EnableTrapState();
+			trap.EnableTrapState();
 		else if (newState == TrapStates.detected)
-			DungeonHandler.Instance.dungeonTrapsList[trapIndex].DetectTrapState();
+			trap.DetectTrapState();
 		else if (newState == TrapStates.activated)
-			StartCoroutine(DungeonHandler.Instance.dungeonTrapsList[trapIndex].ActivateTrapState());
+			StartCoroutine(trap.ActivateTrapState());
 	}
 
 	//dungeon chest states
@@ -65,12 +67,14 @@ public class ClientRpcManager : NetworkBehaviour
 	[Rpc(SendTo.Everyone, RequireOwnership = false)]
 	public void SyncChestStateRpc(int chestIndex, ChestState newState, bool isPlayerInteraction)
 	{
+		ChestHandler chest = DungeonHandler.Instance.dungeonLootChestsList[chestIndex];
+
 		if (newState == ChestState.disabled)
-			DungeonHandler.Instance.dungeonLootChestsList[chestIndex].DisableChestState();
+			chest.DisableChestState();
 		else if (newState == ChestState.enabled)
-			DungeonHandler.Instance.dungeonLootChestsList[chestIndex].EnableChestState();
+			chest.EnableChestState();
 		else if (newState == ChestState.opened)
-			DungeonHandler.Instance.dungeonLootChestsList[chestIndex].OpenChestState(isPlayerInteraction);
+			chest.OpenChestState(isPlayerInteraction);
 	}
 
 	//player revive ui timers

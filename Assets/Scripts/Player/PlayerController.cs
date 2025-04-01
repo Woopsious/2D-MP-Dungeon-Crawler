@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -37,7 +38,7 @@ public class PlayerController : NetworkBehaviour
 	private float mainAttackAutoAttackTimer;
 
 	//player respawn info
-	private readonly float respawnTimerCooldown = 3f;
+	private readonly float respawnTimerCooldown = 20f;
 	private float respawnTimer;
 
 	//player revive info
@@ -54,12 +55,12 @@ public class PlayerController : NetworkBehaviour
 	//ENTITY TARGETING
 	public static event Action<EntityStats> OnNewTargetSelected;
 	//enemy targeting
-	public EntityStats selectedEnemyTarget { get; private set; }
+	private EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
 	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
 
 	//friendly targeting
-	public EntityStats selectedFriendlyTarget { get; private set; }
+	private EntityStats selectedFriendlyTarget;
 
 	//current player spectating index
 	private int playerSpectatorIndex;
@@ -309,6 +310,16 @@ public class PlayerController : NetworkBehaviour
 		}
 	}
 
+	//get selected targets
+	public EntityStats GetFriendlySelectedTarget()
+	{
+		return selectedFriendlyTarget;
+	}
+	public EntityStats GetEnemySelectedTarget()
+	{
+		return selectedEnemyTarget;
+	}
+
 	//cycle targeting
 	private void CycleTargetsForwards(int startingIndex)
 	{
@@ -434,7 +445,6 @@ public class PlayerController : NetworkBehaviour
 			}
 		}
 	}
-
 	public float GetRespawnTime()
 	{
 		return respawnTimer;
@@ -499,8 +509,8 @@ public class PlayerController : NetworkBehaviour
 	{
 		reviveTimer = reviveTimerCooldown;
 		respawnTimer = respawnTimerCooldown;
-		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
+		ResetPlayerSpectateMode();
 	}
 	private void ReviveDeadPlayer(PlayerController optionalReviverPlayer, PlayerController revivedPlayer)
 	{
@@ -508,8 +518,8 @@ public class PlayerController : NetworkBehaviour
 
 		reviveTimer = reviveTimerCooldown;
 		respawnTimer = respawnTimerCooldown;
-		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
+		ResetPlayerSpectateMode();
 	}
 
 	//PLAYER SPECTATING
@@ -537,6 +547,13 @@ public class PlayerController : NetworkBehaviour
 		objectCameraTracks = player.gameObject;
 		playerSpectatorIndex = playerIndex;
 		PlayerDeathUi.Instance.UpdateSpectatingPlayer(player.OwnerClientId);
+	}
+	private void ResetPlayerSpectateMode()
+	{
+		if (GameManager.Localplayer != this) return;
+
+		playerSpectatorIndex = 0;
+		objectCameraTracks = gameObject;
 	}
 
 	//PLAYER MAIN WEAPON ATTACKS

@@ -119,13 +119,18 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone)]
-	public void SyncEntitySORefsRPC(int index)
+	public void SyncEntitySORefsRPC(int index, bool isBoss)
 	{
-		SetEntitySoRefs(index);
+		SetEntitySoRefs(index, isBoss);
 	}
-	public void SetEntitySoRefs(int index)
+	public void SetEntitySoRefs(int index, bool isBoss)
 	{
-		SOEntityStats statsRef = AssetDatabase.Database.entities[index];
+		SOEntityStats statsRef;
+		if (isBoss)
+			statsRef = AssetDatabase.Database.bossEntities[index];
+		else
+			statsRef = AssetDatabase.Database.entities[index];
+
 		this.statsRef = statsRef;
 		entityBehaviour.behaviourRef = statsRef.entityBehaviour;
 		entityLevel = GameManager.Localplayer.playerStats.entityLevel;

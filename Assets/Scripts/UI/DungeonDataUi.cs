@@ -132,7 +132,6 @@ public class DungeonDataUi : MonoBehaviour
 	}
 	private void SetDifficultyModifierAndUI(int modifier)
 	{
-		if (dungeonNumber == -1) return; //boss dungeon
 		if (modifier == 0)
 		{
 			minDungeonModifiers = 0;

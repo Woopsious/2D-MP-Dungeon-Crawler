@@ -226,18 +226,17 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void InstantiateNewBossEntity(GameObject roomCenterPiece)
 	{
-		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
+		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform.position, Quaternion.identity);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 
 		if (MultiplayerManager.IsMultiplayer())
 		{
 			go.GetComponent<NetworkObject>().Spawn();
-			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn), true);
 		}
 		else
-			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn), true);
 
-		bossEntity.transform.SetParent(null);
 		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		this.bossEntity = bossEntity;
 
@@ -285,12 +284,11 @@ public class SpawnHandler : MonoBehaviour
 		if (MultiplayerManager.IsMultiplayer())
 		{
 			go.GetComponent<NetworkObject>().Spawn();
-			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]), false);
 		}
 		else
-			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]), false);
 
-		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
 		ObjectPoolingManager.AddEntityToObjectPooling(entity);
 

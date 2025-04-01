@@ -250,13 +250,13 @@ public class Abilities : MonoBehaviour
 	}
 	private bool PlayerHasSelectedEnemy()
 	{
-		if (GameManager.Localplayer.selectedEnemyTarget != null)
+		if (GameManager.Localplayer.GetEnemySelectedTarget() != null)
 			return true;
 		else return false;
 	}
 	private bool PlayerHasSelectedFriendly()
 	{
-		if (GameManager.Localplayer.selectedFriendlyTarget != null)
+		if (GameManager.Localplayer.GetFriendlySelectedTarget() != null)
 			return true;
 		else return false;
 	}
