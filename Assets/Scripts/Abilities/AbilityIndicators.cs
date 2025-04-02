@@ -1,12 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class AbilityIndicators : MonoBehaviour
+public class AbilityIndicators : NetworkBehaviour
 {
-	private EntityBehaviour caster;
+	private EntityBehaviour entityBehaviour;
 	private GameObject originObj;
 
+	//targets
+	private EntityStats targetEntity;
 	private bool lockTargetPosition;
 	private Vector3 targetPosition;
 
@@ -35,6 +38,8 @@ public class AbilityIndicators : MonoBehaviour
 
 	private void Awake()
 	{
+		entityBehaviour = GetComponentInParent<EntityBehaviour>();
+
 		circleAoeIndicatorSprite =  circleAoeIndicator.GetComponent<SpriteRenderer>();
 		coneAoeIndicatorMesh = coneAoeIndicator.GetComponent<ConeMesh>();
 		boxAoeIndicatorSprite = boxAoeIndicator.GetComponent<SpriteRenderer>();
@@ -58,11 +63,18 @@ public class AbilityIndicators : MonoBehaviour
 			UpdateBoxIndicator();
 	}
 
-	public void ShowAoeIndicators(SOAbilities abilityToShow, EntityBehaviour entity)
+	[Rpc(SendTo.Everyone)]
+	public void SyncShowAoeIndicatorsRpc(int abilityIndex, ulong idOfTargetEntity)
+	{
+		SOAbilities abilityToShow = AssetDatabase.Database.abilities[abilityIndex];
+		EntityStats targetEntity = NetworkManager.SpawnManager.SpawnedObjects[idOfTargetEntity].GetComponent<EntityStats>();
+		ShowAoeIndicators(abilityToShow, targetEntity);
+	}
+	public void ShowAoeIndicators(SOAbilities abilityToShow, EntityStats targetEntity)
 	{
 		lockTargetPosition = false;
-		caster = entity;
-		originObj = entity.gameObject;
+		originObj = gameObject;
+		this.targetEntity = targetEntity;
 
 		if (abilityToShow.aoeType == SOAbilities.AoeType.isCircleAoe)
 			SetUpCircleIndicator(abilityToShow);
@@ -73,10 +85,16 @@ public class AbilityIndicators : MonoBehaviour
 
 		showIndicators = true;
 	}
-	public void ShowAoeIndicators(SOAbilities abilityToShow, EntityBehaviour entity, Vector3 targetPosition)
+
+	[Rpc(SendTo.Everyone)]
+	public void SyncShowAoeIndicatorsRpc(int abilityIndex, Vector3 targetPosition)
+	{
+		SOAbilities abilityToShow = AssetDatabase.Database.abilities[abilityIndex];
+		ShowAoeIndicators(abilityToShow, targetPosition);
+	}
+	public void ShowAoeIndicators(SOAbilities abilityToShow, Vector3 targetPosition)
 	{
 		lockTargetPosition = true;
-		caster = entity;
 		this.targetPosition = targetPosition;
 
 		if (abilityToShow.aoeType == SOAbilities.AoeType.isCircleAoe)
@@ -87,6 +105,12 @@ public class AbilityIndicators : MonoBehaviour
 			SetUpBoxIndicator(abilityToShow);
 
 		showIndicators = true;
+	}
+
+	[Rpc(SendTo.Everyone)]
+	public void SyncHideAoeIndicatorsRpc()
+	{
+		HideAoeIndicators();
 	}
 	public void HideAoeIndicators()
 	{
@@ -150,14 +174,13 @@ public class AbilityIndicators : MonoBehaviour
 		float adjustPos = (float)(boxAoeIndicator.transform.localScale.y / 13.33333333);
 		boxAoeIndicator.transform.localPosition = new Vector2(0, adjustPos);
 	}
+
 	//point Indicator at target
 	private void UpdateTargetPosition()
 	{
 		if (lockTargetPosition) return; //dont track targets
 
-		if (caster.abilityHandler.overriddenPlayerTarget != null)
-			targetPosition = caster.abilityHandler.overriddenPlayerTarget.gameObject.transform.position;
-		else if (caster.playerTarget != null)
-			targetPosition = caster.playerTarget.gameObject.transform.position;
+		if (targetEntity != null)
+			targetPosition = targetEntity.transform.position;
 	}
 }

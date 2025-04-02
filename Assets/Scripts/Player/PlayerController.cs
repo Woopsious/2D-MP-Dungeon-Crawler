@@ -54,6 +54,7 @@ public class PlayerController : NetworkBehaviour
 
 	//ENTITY TARGETING
 	public static event Action<EntityStats> OnNewTargetSelected;
+
 	//enemy targeting
 	private EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
@@ -79,8 +80,8 @@ public class PlayerController : NetworkBehaviour
 	public GameObject PlayerBossMarker;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithInteractable;
-	[HideInInspector] public Interactables currentInteractedObject;
+	public bool isInteractingWithInteractable;
+	public Interactables currentInteractedObject;
 
 	private void Awake()
 	{
@@ -241,7 +242,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void UpdateAnimationState()
 	{
-		if (rb.velocity == new Vector2(0, 0))
+		if (Mathf.Approximately(rb.velocity.magnitude, 0))
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);
@@ -923,9 +924,10 @@ public class PlayerController : NetworkBehaviour
 		}
 		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
 		{
-			if (!currentInteractedObject.GetPlayer().playerStats.IsEntityDead()) return; //dont care about alive players
+			PlayerController player = currentInteractedObject.GetPlayer();
+			if (!player.playerStats.IsEntityDead()) return; //dont care about alive players
 
-			if (currentInteractedObject.GetPlayer().beingRevived)
+			if (player.beingRevived)
 				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Being Revived");
 			else
 				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Revive");
@@ -937,11 +939,10 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (currentInteractedObject == null) return;
 
-		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
-
 		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
 		{
 			PlayerController player = currentInteractedObject.GetPlayer();
+
 			if (beingRevived && playerRevivingThis == player)
 			{
 				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
@@ -950,6 +951,7 @@ public class PlayerController : NetworkBehaviour
 			}
 		}
 
+		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;
 	}
@@ -963,6 +965,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (currentInteractedObject == null) return;
+
 		currentInteractedObject.Interact(this);
 	}
 	public void InteractCanceled()

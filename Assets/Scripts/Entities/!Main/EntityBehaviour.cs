@@ -202,7 +202,7 @@ public class EntityBehaviour : Tree
 	}
 	private void UpdateAnimationState()
 	{
-		if (navMeshAgent.velocity == new Vector3(0,0,0))
+		if (Mathf.Approximately(navMeshAgent.velocity.magnitude, 0))
 			animator.SetBool("isIdle", true);
 		else
 			animator.SetBool("isIdle", false);

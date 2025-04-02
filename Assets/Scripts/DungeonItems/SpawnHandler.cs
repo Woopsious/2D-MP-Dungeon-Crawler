@@ -391,6 +391,12 @@ public class SpawnHandler : MonoBehaviour
 			spawningDisabled = true;
 	}
 
+	//get spawned boss entity
+	public BossEntityStats GetBossEntity()
+	{
+		return bossEntity;
+	}
+
 	public void OnDrawGizmos()
 	{
 		Gizmos.color = Color.cyan;

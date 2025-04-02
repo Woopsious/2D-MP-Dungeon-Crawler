@@ -50,7 +50,10 @@ public class Interactables : MonoBehaviour
         if (interactType == InteractType.bossDungeonSpawner)
 			bossDungeonHandler.Interact(player);
         else if (interactType == InteractType.trap)
-			trapHandler.Interact(player);
+		{
+			if (trapHandler.GetTrapState() == TrapHandler.TrapStates.detected)
+				trapHandler.Interact(player);
+		}
         else if (interactType == InteractType.portal)
 		{
 			if (MultiplayerManager.IsMultiplayer() && !MultiplayerManager.IsClientHost()) return; //joined clients cant interact
@@ -83,7 +86,8 @@ public class Interactables : MonoBehaviour
 		}
 		else if (interactType == InteractType.player)
 		{
-			playerController.StartReviveTimer(player);
+			if (playerController.playerStats.IsEntityDead())
+				playerController.StartReviveTimer(player);
 		}
 	}
 	public void CancelInteract(PlayerController player)

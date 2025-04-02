@@ -63,6 +63,9 @@ public class BossEntityStats : EntityStats
 		lastBossHealthPercentage = newPercentage;
 
 		if (newPercentage <= 0)
+		{
+			Debug.LogError("invoke boss death event");
 			OnBossDeath?.Invoke();
+		}
 	}
 }
