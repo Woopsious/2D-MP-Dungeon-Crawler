@@ -65,11 +65,13 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	{
 		PlayerController.OnNewTargetSelected += OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent += OnTargetDeathUnSelect;
+		PlayerEventManager.OnPlayerDeathEvent += OnLocalPlayerDeath;
 	}
 	private void OnDisable()
 	{
 		PlayerController.OnNewTargetSelected -= OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnTargetDeathUnSelect;
+		PlayerEventManager.OnPlayerDeathEvent -= OnLocalPlayerDeath;
 	}
 
 	//SELECTED TARGET UI
@@ -89,6 +91,13 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 			ClearSelectedEnemyTarget();
 		else
 			ClearSelectedFriendlyTarget();
+	}
+	private void OnLocalPlayerDeath(PlayerController player, string deathMessage)
+	{
+		if (GameManager.Localplayer != player) return;
+
+		ClearSelectedEnemyTarget();
+		ClearSelectedFriendlyTarget();
 	}
 
 	//target select types

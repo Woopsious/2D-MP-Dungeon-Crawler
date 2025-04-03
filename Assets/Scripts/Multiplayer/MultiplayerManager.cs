@@ -83,6 +83,10 @@ public class MultiplayerManager : NetworkBehaviour
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
 
 		PlayerDeathUi.Instance.CheckDeadPlayersOnClientDisconnect();
+
+		if (BossRoomHandler.Instance != null)
+			BossRoomHandler.Instance.CheckResetRoomOnClientDisconnect();
+
 	}
 
 	//UPDATE MP MODE

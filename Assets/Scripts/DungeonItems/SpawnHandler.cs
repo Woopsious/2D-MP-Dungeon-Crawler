@@ -161,15 +161,23 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//Entity clean up
-	public void ForceClearAllEntities()
+	public void ForceCleanUpBossRoomEntities()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (bossEntity != null)
 		{
 			Destroy(bossEntity.gameObject);
 			bossEntity = null;
 		}
 
-		CleanUpEntities();
+		for (int i = listOfSpawnedEntities.Count - 1; i >= 0; i--)
+		{
+			if (listOfSpawnedEntities[i] == null) return;
+
+			Destroy(listOfSpawnedEntities[i].gameObject);
+			listOfSpawnedEntities.Remove(listOfSpawnedEntities[i]);
+		}
 	}
 	private void CleanUpEntities()
 	{
@@ -367,6 +375,10 @@ public class SpawnHandler : MonoBehaviour
 		{
 			Vector2 spawnPosition = (ability.obstaclePositions[i] * ability.obstaclesRadius) + adjustPosition;
 			GameObject go = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn(true);
+
 			Obstacles bossRoomObstacle = go.GetComponent<Obstacles>();
 			bossRoomObstacle.InitilizeBossRoomObstacle(ability.abilityCastingTimer);
 		}

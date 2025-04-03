@@ -20,19 +20,22 @@ MonoBehaviour:
   abilityCastingTimer: 0
   abilityCooldown: 10
   isOffensiveAbility: 1
+  abilityEnviromental: 0
   requiresTarget: 0
   canOnlyTargetSelf: 0
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: 6301da40ed397c443a68f792454c7944, type: 2}
   isAOE: 0
-  isCircleAOE: 0
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeSize: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 20
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 40
@@ -46,7 +49,8 @@ MonoBehaviour:
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}
   marksPlayer: 0
+  spawnsObstacles: 0
   markedPlayerIsRandom: 0
   chanceMarkedPlayerIsAggroTarget: 0
-  spawnsObstacles: 0
+  obstaclesRadius: 5
   obstaclePositions: []

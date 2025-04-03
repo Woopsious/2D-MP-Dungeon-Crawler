@@ -38,34 +38,24 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 
 	private void OnEnable()
 	{
-		PlayerEventManager.OnRespawnAllPlayersEvent += RespawnPlayersAtPortal;
-		PlayerEventManager.OnRespawnAllPlayersEvent += ResetRoom;
+		PlayerEventManager.OnPlayerDeathEvent += ResetRoom;
 		BossEntityStats.OnBossDeath += OnBossDeath;
 	}
 	private void OnDisable()
 	{
-		PlayerEventManager.OnRespawnAllPlayersEvent -= RespawnPlayersAtPortal;
-		PlayerEventManager.OnRespawnAllPlayersEvent -= ResetRoom;
+		PlayerEventManager.OnPlayerDeathEvent -= ResetRoom;
 		BossEntityStats.OnBossDeath -= OnBossDeath;
 	}
 
 	//respawning players
-	private void RespawnPlayersAtPortal()
+	public Vector3 GetPositionOfPortalToRespawnAt(PlayerController playerToRevive)
 	{
-		if (!MultiplayerManager.IsClientHost()) return;
-
 		if (bossRoomState == BossRoomState.bossDead)
-		{
-			foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
-				player.transform.position = roomExitPortal.transform.position;
-		}
+			return roomExitPortal.transform.position;
 		else if (bossRoomState == BossRoomState.bossInactive)
-		{
-			foreach(PlayerController player in ObjectPoolingManager.Instance.playersPool)
-				player.transform.position = roomRespawnPortal.transform.position;
-		}
+			return roomRespawnPortal.transform.position;
 		else
-			DungeonHandler.Instance.RespawnPlayersAtClosestPortal(); //enterence portal only portal in list
+			return DungeonHandler.Instance.GetStartingPortalForBossRoom(); //enterence portal only portal in list
 	}
 
 	//boss room state updates
@@ -83,15 +73,21 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		roomBarrier.SetActive(false);
 		roomExitPortal.gameObject.SetActive(true);
 	}
-	private void ResetRoom()
+
+	public void CheckResetRoomOnClientDisconnect()
 	{
+		if (!PlayerDeathUi.Instance.PlayerPartyWiped()) return;
+		ResetRoom(null, null); //func doesnt need args
+	}
+	private void ResetRoom(PlayerController player, string deathMessage)
+	{
+		if (!PlayerDeathUi.Instance.PlayerPartyWiped()) return;
+
 		bossRoomState = BossRoomState.bossInactive;
 		centerPieceCollider.enabled = true;
 		roomBarrier.SetActive(false);
 
-		roomSpawnHandler.ForceClearAllEntities();
-
-		//when all players dead, revive them at respawn portal, reset boss/adds + anything else that comes up
+		roomSpawnHandler.ForceCleanUpBossRoomEntities();
 	}
 
 	public BossRoomState GetBossRoomState()

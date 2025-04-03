@@ -692,6 +692,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: f36a5e1611688464992795250f7b7467, type: 2}
   - {fileID: 11400000, guid: ef1882c597026754cb67219b18ec7c9c, type: 2}
   - {fileID: 11400000, guid: 6cf19687ff0a8ea4fb67cc075bfac54c, type: 2}
+  bossAbilities:
+  - {fileID: 11400000, guid: 0a90e8d491fe0194baf9d54b7feb6c31, type: 2}
+  - {fileID: 11400000, guid: d763c5907bdb43442b24c2a9c10cda6c, type: 2}
+  - {fileID: 11400000, guid: 7045b5cc3698af7438408aa8ad7c9442, type: 2}
+  - {fileID: 11400000, guid: 7c200819c157b47478418489be54b486, type: 2}
   abilities:
   - {fileID: 11400000, guid: 67a34353f9733ce4795a983ec7d9042b, type: 2}
   - {fileID: 11400000, guid: 51074d5d0ae0fed458e848057c2c72b9, type: 2}

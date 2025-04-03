@@ -5,8 +5,7 @@ using UnityEngine;
 
 public class AbilityIndicators : NetworkBehaviour
 {
-	private EntityBehaviour entityBehaviour;
-	private GameObject originObj;
+	public NetworkVariable<Vector3> originPos;
 
 	//targets
 	private EntityStats targetEntity;
@@ -38,8 +37,6 @@ public class AbilityIndicators : NetworkBehaviour
 
 	private void Awake()
 	{
-		entityBehaviour = GetComponentInParent<EntityBehaviour>();
-
 		circleAoeIndicatorSprite =  circleAoeIndicator.GetComponent<SpriteRenderer>();
 		coneAoeIndicatorMesh = coneAoeIndicator.GetComponent<ConeMesh>();
 		boxAoeIndicatorSprite = boxAoeIndicator.GetComponent<SpriteRenderer>();
@@ -51,6 +48,9 @@ public class AbilityIndicators : NetworkBehaviour
 	private void Update()
 	{
 		if (!showIndicators) return;
+
+		if (MultiplayerManager.IsClientHost())
+			originPos.Value = transform.position;
 
 		UpdateTargetPosition();
 
@@ -73,7 +73,6 @@ public class AbilityIndicators : NetworkBehaviour
 	public void ShowAoeIndicators(SOAbilities abilityToShow, EntityStats targetEntity)
 	{
 		lockTargetPosition = false;
-		originObj = gameObject;
 		this.targetEntity = targetEntity;
 
 		if (abilityToShow.aoeType == SOAbilities.AoeType.isCircleAoe)
@@ -156,7 +155,7 @@ public class AbilityIndicators : NetworkBehaviour
 	}
 	private void UpdateConeIndicator()
 	{
-		Vector3 rotation = targetPosition - originObj.transform.position;
+		Vector3 rotation = targetPosition - originPos.Value;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg - (coneAoeIndicatorMesh.angle / 2);
 		transform.rotation = Quaternion.Euler(0, 0, rotz);
 
@@ -166,7 +165,7 @@ public class AbilityIndicators : NetworkBehaviour
 	}
 	private void UpdateBoxIndicator()
 	{
-		Vector3 rotation = targetPosition - originObj.transform.position;
+		Vector3 rotation = targetPosition - originPos.Value;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		transform.rotation = Quaternion.Euler(0, 0, rotz - 90);
 

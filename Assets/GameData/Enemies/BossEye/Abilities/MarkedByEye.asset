@@ -20,22 +20,25 @@ MonoBehaviour:
   abilityCastingTimer: 0
   abilityCooldown: 0
   isOffensiveAbility: 1
+  abilityEnviromental: 0
   requiresTarget: 1
   canOnlyTargetSelf: 0
   hasStatusEffects: 1
   statusEffects:
   - {fileID: 11400000, guid: 568ee534df8810e4aa29f85b90965e05, type: 2}
   isAOE: 0
-  isCircleAOE: 0
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeSize: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 20
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 0
   projectileSprite: {fileID: 0}
-  projectileSpeed: 0
+  projectileSpeed: 20
   isDamagePercentageBased: 0
   damageType: 0
   damageValue: 0
