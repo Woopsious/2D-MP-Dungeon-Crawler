@@ -77,6 +77,13 @@ public class ClientRpcManager : NetworkBehaviour
 			chest.OpenChestState(isPlayerInteraction);
 	}
 
+	//sync start boss fights
+	[Rpc(SendTo.Everyone)]
+	public void SyncStartBossFightRpc()
+	{
+		BossRoomHandler.Instance.StartBossFight();
+	}
+
 	//player revive ui timers
 	[Rpc(SendTo.SpecifiedInParams, RequireOwnership = false)]
 	public void SyncStartRevivePlayerTimerUiRpc(float reviveTimer, RpcParams rpcParams)

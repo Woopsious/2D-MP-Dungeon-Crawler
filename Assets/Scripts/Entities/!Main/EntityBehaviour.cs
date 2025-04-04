@@ -8,6 +8,7 @@ public class EntityBehaviour : Tree
 {
 	[Header("Behaviour Info")]
 	public SOEntityBehaviour behaviourRef;
+	public GameObject spritesObj;
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityAbilityHandler abilityHandler;
 	[HideInInspector] public EntityEquipmentHandler equipmentHandler;
@@ -94,7 +95,7 @@ public class EntityBehaviour : Tree
 		chaseBounds.max = new Vector3(transform.position.x + behaviourRef.maxChaseRange,
 		transform.position.y + behaviourRef.maxChaseRange, transform.position.z);
 
-		UpdateSpriteDirection();
+		UpdateSpritesDirection();
 		UpdateAnimationState();
 	}
 
@@ -183,21 +184,21 @@ public class EntityBehaviour : Tree
 			position.y + behaviourRef.maxChaseRange, position.z);
 	}
 
-	private void UpdateSpriteDirection()
+	private void UpdateSpritesDirection()
 	{
         if (playerTarget == null)
         {
 			if (navMeshAgent.velocity.x > 0)
-				transform.eulerAngles = new Vector3(0, 180, 0);
+				spritesObj.transform.eulerAngles = new Vector3(0, 180, 0);
 			else
-				transform.eulerAngles = new Vector3(0, 0, 0);
+				spritesObj.transform.eulerAngles = new Vector3(0, 0, 0);
 		}
 		else
 		{
 			if (playerTarget.transform.position.x > transform.position.x)
-				transform.eulerAngles = new Vector3(0, 180, 0);
+				spritesObj.transform.eulerAngles = new Vector3(0, 180, 0);
 			else if (playerTarget.transform.position.x < transform.position.x)
-				transform.eulerAngles = new Vector3(0, 0, 0);
+				spritesObj.transform.eulerAngles = new Vector3(0, 0, 0);
 		}
 	}
 	private void UpdateAnimationState()
@@ -240,7 +241,7 @@ public class EntityBehaviour : Tree
 	}
 	private bool PlayerTargetVisible(PlayerController player)
 	{
-		if (player == null) return false; //check null
+		if (player == null || player.playerStats.IsEntityDead()) return false; //check null or dead
 		RaycastHit2D hit = Physics2D.Linecast(transform.position, player.transform.position, includeMe);
 
 		if (hit.point == null || hit.collider.GetComponent<PlayerController>() == null) //check LoS

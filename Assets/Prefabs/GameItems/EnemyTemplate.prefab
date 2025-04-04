@@ -1016,6 +1016,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviourRef: {fileID: 0}
+  spritesObj: {fileID: 7946406051041455557}
   entityStats: {fileID: 0}
   abilityHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}

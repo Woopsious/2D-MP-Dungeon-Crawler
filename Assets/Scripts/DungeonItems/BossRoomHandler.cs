@@ -1,14 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class BossRoomHandler : MonoBehaviour, IInteractables
 {
 	public static BossRoomHandler Instance;
-
-	//private bool bossFightStarted;
-	//private bool bossFightCompleted;
 
 	public GameObject roomCenterPiece;
 	private CircleCollider2D centerPieceCollider;
@@ -24,7 +22,8 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		bossNotReached, bossInactive, bossActive, bossDead
 	}
 
-	public static event Action<GameObject> OnStartBossFight;
+	public static event Action<GameObject> OnStartBossFightEvent;
+	public static event Action OnResetRoomEvent;
 
 	private void Awake()
 	{
@@ -59,16 +58,18 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 	}
 
 	//boss room state updates
-	private void StartBossFight()
+	public void StartBossFight()
 	{
 		centerPieceCollider.enabled = false;
 		bossRoomState = BossRoomState.bossActive;
+
 		roomBarrier.SetActive(true);
 		roomRespawnPortal.gameObject.SetActive(true);
+
+		OnStartBossFightEvent?.Invoke(gameObject);
 	}
 	private void OnBossDeath()
 	{
-		//unlock room, enable exit portal
 		bossRoomState = BossRoomState.bossDead;
 		roomBarrier.SetActive(false);
 		roomExitPortal.gameObject.SetActive(true);
@@ -87,7 +88,7 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 		centerPieceCollider.enabled = true;
 		roomBarrier.SetActive(false);
 
-		roomSpawnHandler.ForceCleanUpBossRoomEntities();
+		OnResetRoomEvent?.Invoke();
 	}
 
 	public BossRoomState GetBossRoomState()
@@ -100,8 +101,10 @@ public class BossRoomHandler : MonoBehaviour, IInteractables
 	{
 		if (bossRoomState == BossRoomState.bossDead || bossRoomState == BossRoomState.bossActive) return;
 
-		OnStartBossFight?.Invoke(gameObject);
-		StartBossFight();
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncStartBossFightRpc();
+		else
+			StartBossFight();
 	}
 	public void UnInteract(PlayerController player)
 	{

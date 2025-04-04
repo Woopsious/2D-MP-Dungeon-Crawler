@@ -51,19 +51,24 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateSpawnerLevel;
 
+		BossRoomHandler.OnStartBossFightEvent += SpawnBossEntity;
+		BossRoomHandler.OnResetRoomEvent += ForceCleanUpBossRoomEntities;
+		BossEntityStats.OnBossDeath += ForceCleanUpBossRoomAdEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
 	}
 	private void OnDisable()
 	{
-		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateSpawnerLevel;
+
+		BossRoomHandler.OnStartBossFightEvent -= SpawnBossEntity;
+		BossRoomHandler.OnResetRoomEvent -= ForceCleanUpBossRoomEntities;
+		BossEntityStats.OnBossDeath -= ForceCleanUpBossRoomAdEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -161,7 +166,7 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//Entity clean up
-	public void ForceCleanUpBossRoomEntities()
+	private void ForceCleanUpBossRoomEntities()
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
@@ -170,6 +175,12 @@ public class SpawnHandler : MonoBehaviour
 			Destroy(bossEntity.gameObject);
 			bossEntity = null;
 		}
+
+		ForceCleanUpBossRoomAdEntities();
+	}
+	private void ForceCleanUpBossRoomAdEntities()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
 
 		for (int i = listOfSpawnedEntities.Count - 1; i >= 0; i--)
 		{

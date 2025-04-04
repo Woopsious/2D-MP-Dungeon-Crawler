@@ -883,6 +883,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c0363ac907a3345bda49979af33f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originPos:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   directionalIndicator: {fileID: 0}
   circleAoeIndicator: {fileID: 562549951276114887}
   coneAoeIndicator: {fileID: 203677092670643291}
@@ -1341,6 +1343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviourRef: {fileID: 0}
+  spritesObj: {fileID: 7946406051041455557}
   entityStats: {fileID: 0}
   abilityHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}
