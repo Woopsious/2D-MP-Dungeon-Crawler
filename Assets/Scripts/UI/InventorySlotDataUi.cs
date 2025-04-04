@@ -148,9 +148,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public void UpdateSlotSize()
 	{
 		if (itemInSlot.type == SOItems.ItemType.isWeapon)
-			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(50, 100);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(48, 96);
 		else
-			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(96, 96);
 	}
 
 	//bool checks

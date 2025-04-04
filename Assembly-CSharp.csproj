@@ -156,6 +156,7 @@
     <Compile Include="Assets\Scripts\UI\PlayerHud\PartyMessagesUi.cs" />
     <Compile Include="Assets\Scripts\Items\Projectiles.cs" />
     <Compile Include="Assets\Scripts\Items\Accessories.cs" />
+    <Compile Include="Assets\Scripts\Player\PlayerClientNetworkTransform.cs" />
     <Compile Include="Assets\Scripts\DungeonItems\BossRoomHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\AdditionalComps\EntityEquipmentHandler.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossAbilities.cs" />

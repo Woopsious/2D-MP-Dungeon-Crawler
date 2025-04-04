@@ -121,7 +121,9 @@ public static class PlayerEventManager
 	public static event Action OnShowPlayerSkillTreeEvent;
 	public static void ShowPlayerSkillTree()
 	{
-		OnShowPlayerSkillTreeEvent?.Invoke();
+		//allow skill changes in editor when ever
+		if (Application.isEditor || Utilities.SceneIsActive(GameManager.Instance.hubScene))
+			OnShowPlayerSkillTreeEvent?.Invoke();
 	}
 	public static event Action OnShowPlayerLearntAbilitiesEvent;
 	public static void ShowPlayerLearntAbilities()
