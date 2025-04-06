@@ -31,6 +31,9 @@ public class BossEntityStats : EntityStats
 	protected override void Start()
 	{
 		base.Start();
+
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
+
 		inPhaseTransition = true;
 		bossBehaviour.EventSpawnBossAdds(2); //spawn adds at the start
 	}

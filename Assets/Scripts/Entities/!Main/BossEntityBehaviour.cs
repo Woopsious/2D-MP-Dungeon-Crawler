@@ -14,6 +14,8 @@ public class BossEntityBehaviour : EntityBehaviour
 	{
 		base.Update();
 
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
+
 		abilityHandler.BossAbilityCooldownTimerOne();
 		abilityHandler.BossAbilityCooldownTimerTwo();
 		abilityHandler.BossAbilityCooldownTimerThree();

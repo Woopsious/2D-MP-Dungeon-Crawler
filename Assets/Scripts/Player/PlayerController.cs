@@ -27,6 +27,7 @@ public class PlayerController : NetworkBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 
+	//movement
 	private float moveSpeed = 12;
 
 	[Header("Prefabs")]
@@ -121,10 +122,6 @@ public class PlayerController : NetworkBehaviour
 
 	private void Update()
 	{
-		if (GameManager.Localplayer == this)
-			playerCamera.transform.position = new Vector3(
-				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
-
 		if (playerStats.IsEntityDead())
 		{
 			if (PlayerIsLocalPlayer())
@@ -143,10 +140,16 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void FixedUpdate()
 	{
+		UpdatePlayerCameraPosition();
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
-		PlayerMovement();
+		PlayerMovementInput();
+
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		HealPlayerInHubScene();
+		UpdateSpriteDirection();
+		UpdateAnimationState();
 	}
 
 	//set player data
@@ -201,43 +204,49 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//movement
-	private void PlayerMovement()
+	private void PlayerMovementInput()
 	{
 		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * moveSpeed, PlayerInputHandler.Instance.MovementInput.y * moveSpeed);
 
 		if (!MultiplayerManager.IsMultiplayer())
 		{
 			//Debug.LogError("sp | move input: " + moveInput);
-			Move(moveInput);
+			MovePlayer(moveInput);
 		}
 		else if (IsHost && IsLocalPlayer)
 		{
 			//Debug.LogError("host | move input: " + moveInput);
-			MoveRpc(moveInput);
+			MovePlayerRpc(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
 			//Debug.LogError("client | move input: " + moveInput);
-			MoveRpc(moveInput);
+			MovePlayerRpc(moveInput);
 		}
-
-		UpdateSpriteDirection();
-		UpdateAnimationState();
 	}
 	[Rpc(SendTo.Server)]
-	private void MoveRpc(Vector2 moveInput)
+	private void MovePlayerRpc(Vector2 moveInput)
 	{
-		Move(moveInput);
+		MovePlayer(moveInput);
 	}
-	private void Move(Vector2 moveInput)
+	private void MovePlayer(Vector2 moveInput)
 	{
 		rb.velocity = moveInput;
 	}
+	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
+	{
+		if (resetSpeed)
+			moveSpeed = 12;
+		else
+			moveSpeed *= speedModifier;
+	}
 	private void UpdateSpriteDirection()
 	{
-		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
+		if (Mathf.Approximately(rb.velocity.x, 0)) return;
+
+		if (rb.velocity.x > 0.01)
 			transform.eulerAngles = new Vector3(0, 0, 0);
-		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
+		else if (rb.velocity.x < -0.01)
 			transform.eulerAngles = new Vector3(0, 180, 0);
 	}
 	private void UpdateAnimationState()
@@ -247,14 +256,14 @@ public class PlayerController : NetworkBehaviour
 		else
 			animator.SetBool("isIdle", false);
 	}
-	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
+	private void UpdatePlayerCameraPosition()
 	{
-		if (resetSpeed)
-			moveSpeed = 12;
-		else
-			moveSpeed *= speedModifier;
+		if (GameManager.Localplayer == this)
+			playerCamera.transform.position = new Vector3(
+				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
 	}
 
+	//force heal
 	private void HealPlayerInHubScene()
 	{
 		if (GameManager.Instance.currentlyLoadedScene.name != GameManager.Instance.hubScene) return;

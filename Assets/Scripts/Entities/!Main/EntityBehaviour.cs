@@ -81,6 +81,7 @@ public class EntityBehaviour : Tree
 	}
 	protected virtual void FixedUpdate()
 	{
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
 		if (entityStats.IsEntityDead()) return;
 
 		aggroBounds.min = new Vector3(transform.position.x - behaviourRef.aggroRange,
