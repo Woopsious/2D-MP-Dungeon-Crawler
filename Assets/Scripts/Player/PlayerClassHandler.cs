@@ -67,7 +67,7 @@ public class PlayerClassHandler : EntityClassHandler
 	//player stat unlock/refund events
 	protected override void UnlockStatBoost(SOClassStatBonuses statBoost)
 	{
-		if (entityStats.playerRef != GameManager.Localplayer) return;
+		if (GameManager.Localplayer != entityStats.playerRef) return;
 
 		if (MultiplayerManager.IsMultiplayer())
 			SyncUnlockStatBoostRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfStatBoost(statBoost));
@@ -91,7 +91,7 @@ public class PlayerClassHandler : EntityClassHandler
 
 	protected override void RefundStatBoost(SOClassStatBonuses statBoost)
 	{
-		if (entityStats.playerRef != GameManager.Localplayer) return;
+		if (GameManager.Localplayer != entityStats.playerRef) return;
 
 		if (MultiplayerManager.IsMultiplayer())
 			SyncRefundStatBoostRpc(ClientManager.Instance.clientNetworkedId, GetIndexOfStatBoost(statBoost));

@@ -62,7 +62,7 @@ public class PlayerEquipmentHandler : EntityEquipmentHandler
 	//EQUIP PLAYER ITEMS EVENT LISTNER
 	private void EquipItem(InventorySlotDataUi slot, InventoryItemUi item)
 	{
-		if (entityStats.playerRef != GameManager.Localplayer) return;
+		if (GameManager.Localplayer != entityStats.playerRef) return;
 
 		if (MultiplayerManager.IsMultiplayer())
 		{

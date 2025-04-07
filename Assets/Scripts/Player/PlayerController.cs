@@ -27,8 +27,10 @@ public class PlayerController : NetworkBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 
-	//movement
+	//movement/velocity
 	private float moveSpeed = 12;
+	public NetworkVariable<Vector2> playerVelocity = new NetworkVariable<Vector2>(default, 
+		NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -144,12 +146,12 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		PlayerMovementInput();
+		UpdateSpriteDirection();
+		UpdateAnimationState();
 
 		if (!MultiplayerManager.IsClientHost()) return;
 
 		HealPlayerInHubScene();
-		UpdateSpriteDirection();
-		UpdateAnimationState();
 	}
 
 	//set player data
@@ -206,32 +208,13 @@ public class PlayerController : NetworkBehaviour
 	//movement
 	private void PlayerMovementInput()
 	{
-		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * moveSpeed, PlayerInputHandler.Instance.MovementInput.y * moveSpeed);
+		if (GameManager.Localplayer != this) return;
 
-		if (!MultiplayerManager.IsMultiplayer())
-		{
-			//Debug.LogError("sp | move input: " + moveInput);
-			MovePlayer(moveInput);
-		}
-		else if (IsHost && IsLocalPlayer)
-		{
-			//Debug.LogError("host | move input: " + moveInput);
-			MovePlayerRpc(moveInput);
-		}
-		else if (IsClient && IsLocalPlayer)
-		{
-			//Debug.LogError("client | move input: " + moveInput);
-			MovePlayerRpc(moveInput);
-		}
-	}
-	[Rpc(SendTo.Server)]
-	private void MovePlayerRpc(Vector2 moveInput)
-	{
-		MovePlayer(moveInput);
-	}
-	private void MovePlayer(Vector2 moveInput)
-	{
-		rb.velocity = moveInput;
+		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x, PlayerInputHandler.Instance.MovementInput.y);
+		rb.velocity = moveInput * moveSpeed;
+
+		if (MultiplayerManager.IsMultiplayer() && IsOwner)
+			playerVelocity.Value = moveInput;
 	}
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
@@ -242,19 +225,41 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void UpdateSpriteDirection()
 	{
-		if (Mathf.Approximately(rb.velocity.x, 0)) return;
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (Mathf.Approximately(playerVelocity.Value.x, 0)) return;
 
-		if (rb.velocity.x > 0.01)
-			transform.eulerAngles = new Vector3(0, 0, 0);
-		else if (rb.velocity.x < -0.01)
-			transform.eulerAngles = new Vector3(0, 180, 0);
+			if (playerVelocity.Value.x > 0.01)
+				transform.eulerAngles = new Vector3(0, 0, 0);
+			else if (playerVelocity.Value.x < -0.01)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+		}
+		else
+		{
+			if (Mathf.Approximately(rb.velocity.x, 0)) return;
+
+			if (rb.velocity.x > 0.01)
+				transform.eulerAngles = new Vector3(0, 0, 0);
+			else if (rb.velocity.x < -0.01)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+		}
 	}
 	private void UpdateAnimationState()
 	{
-		if (Mathf.Approximately(rb.velocity.magnitude, 0))
-			animator.SetBool("isIdle", true);
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (Mathf.Approximately(playerVelocity.Value.magnitude, 0))
+				animator.SetBool("isIdle", true);
+			else
+				animator.SetBool("isIdle", false);
+		}
 		else
-			animator.SetBool("isIdle", false);
+		{
+			if (Mathf.Approximately(rb.velocity.magnitude, 0))
+				animator.SetBool("isIdle", true);
+			else
+				animator.SetBool("isIdle", false);
+		}
 	}
 	private void UpdatePlayerCameraPosition()
 	{
