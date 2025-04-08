@@ -214,6 +214,16 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedFriendlyTarget = null;
 	}
 
+	//get targets
+	public EntityStats GetSelectedEnemyTarget()
+	{
+		return selectedEnemyTarget;
+	}
+	public EntityStats GetSelectedFriendlyTarget()
+	{
+		return selectedFriendlyTarget;
+	}
+
 	//bool check
 	private bool SelectedTargetHasUniqueName(bool isBoss, SOEntityStats.HumanoidTypes humanoidType)
 	{

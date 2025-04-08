@@ -12,6 +12,7 @@ public class PlayerController : NetworkBehaviour
 	public bool debugUseSelectedTargetForAttackDirection;
 	public bool debugSetPlayerLevelOnStart;
 	public int debugPlayerLevel;
+	public bool debugNoDeath;
 
 	[Header("Player Info")]
 	private Camera playerCamera;

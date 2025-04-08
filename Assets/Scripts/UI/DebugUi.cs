@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 
 public class DebugUi : MonoBehaviour
@@ -11,6 +13,11 @@ public class DebugUi : MonoBehaviour
 	public TMP_InputField exp;
 
 	public TMP_InputField bossPercentageDamage;
+
+	public TMP_Text PlayerInvincibleText;
+	public TMP_Text PlayerNoDeathText;
+
+	public GameObject KillSelectedEnemyTargetButton;
 
 	private void Update()
 	{
@@ -93,13 +100,70 @@ public class DebugUi : MonoBehaviour
 				Debug.LogError("dungeon boss ref null");
 		}
 	}
+	public void KillSelectedTarget()
+	{
+		EntityStats selectedEntityTarget = PlayerSelectedTargetsUi.Instance.GetSelectedEnemyTarget();
+
+		if (selectedEntityTarget == null)
+		{
+			Debug.LogError("enemy target not selected");
+			return;
+		}
+
+		DamageSourceInfo damageSourceInfo;
+
+		//if boss only damage to move to next phase/40%
+		if (selectedEntityTarget.statsRef.isBossVersion)
+			damageSourceInfo = new(selectedEntityTarget, IDamagable.HitBye.enviroment, 0.4f, IDamagable.DamageType.isPhysicalDamage, true);
+		else
+			damageSourceInfo = new(selectedEntityTarget, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
+
+		selectedEntityTarget.RecieveDamage(damageSourceInfo, false);
+	}
+
+	public void ToggleLocalPlayerInvincible()
+	{
+		Damageable player = GameManager.Localplayer.GetComponent<Damageable>();
+		EntityStats playerStats = GameManager.Localplayer.GetComponent<EntityStats>();
+
+		if (player.invincible)
+		{
+			player.invincible = false;
+			PlayerInvincibleText.text = "Toggle Local Player\nInvincible : False";
+		}
+		else
+		{
+			player.invincible = true;
+			PlayerInvincibleText.text = "Toggle Local Player\nInvincible : True";
+		}
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncLocalPlayerInvincibleRpc(playerStats.NetworkObjectId, player.invincible);
+	}
+	public void ToggleLocalPlayerNoDeath()
+	{
+		EntityStats player = GameManager.Localplayer.GetComponent<EntityStats>();
+
+		if (player.playerRef.debugNoDeath)
+		{
+			player.playerRef.debugNoDeath = false;
+			PlayerNoDeathText.text = "Toggle Local Player\nNo Death :False";
+		}
+		else
+		{
+			player.playerRef.debugNoDeath = true;
+			PlayerNoDeathText.text = "Toggle Local Player\nNo Death :True";
+		}
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncLocalPlayerNoDeathRpc(player.NetworkObjectId, player.playerRef.debugNoDeath);
+	}
 	public void KillLocalPlayer()
 	{
-		DamageSourceInfo damageSourceInfo = new DamageSourceInfo(
-			GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, 1000000, IDamagable.DamageType.isPhysicalDamage, false);
+		DamageSourceInfo damageSourceInfo = new(
+			GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
 
 		damageSourceInfo.SetDebugDeathMessage();
-
 		GameManager.Localplayer.playerStats.RecieveDamage(damageSourceInfo, false);
 	}
 
@@ -107,9 +171,11 @@ public class DebugUi : MonoBehaviour
 	private void ShowDebugUi()
 	{
 		DebugUiPanel.SetActive(true);
+		KillSelectedEnemyTargetButton.SetActive(true);
 	}
 	private void HideDebugUi()
 	{
 		DebugUiPanel.SetActive(false);
+		KillSelectedEnemyTargetButton.SetActive(false);
 	}
 }

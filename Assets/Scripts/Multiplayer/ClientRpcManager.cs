@@ -16,6 +16,20 @@ public class ClientRpcManager : NetworkBehaviour
 		instance = this;
 	}
 
+	//sync debug toggles
+	[Rpc(SendTo.Everyone)]
+	public void SyncLocalPlayerInvincibleRpc(ulong objId, bool newState)
+	{
+		Damageable player = NetworkManager.SpawnManager.SpawnedObjects[objId].GetComponent<Damageable>();
+		player.invincible = newState;
+	}
+	[Rpc(SendTo.Everyone)]
+	public void SyncLocalPlayerNoDeathRpc(ulong objId, bool newState)
+	{
+		EntityStats player = NetworkManager.SpawnManager.SpawnedObjects[objId].GetComponent<EntityStats>();
+		player.playerRef.debugNoDeath = newState;
+	}
+
 	//dungeon stat modifiers
 	[Rpc(SendTo.Everyone)]
 	public void SyncDungeonStatModifiersRpc(float difficultyModifier, float[] modifiersList)

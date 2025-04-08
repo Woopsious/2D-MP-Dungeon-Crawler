@@ -235,6 +235,9 @@ public class EntityStats : NetworkBehaviour
 
 		float newHealthPercentage = (float)currentHealth / maxHealth.finalValue - damageSourceInfo.damage / maxHealth.finalValue;
 
+		//only debug heal when health gets below 0% + damage isnt coming from debug kill player
+		newHealthPercentage = DebugForceHealPlayerOnLowHealth(damageSourceInfo, newHealthPercentage);
+
 		if (MultiplayerManager.IsMultiplayer())
 			ApplyDamageRpc(newHealthPercentage, damageSourceInfo.deathMessage);
 		else
@@ -322,6 +325,17 @@ public class EntityStats : NetworkBehaviour
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
+	}
+	private float DebugForceHealPlayerOnLowHealth(DamageSourceInfo damageSourceInfo, float newHealthPercentage)
+	{
+		if (IsPlayerEntity() && playerRef.debugNoDeath && newHealthPercentage < 0 &&
+			damageSourceInfo.deathMessageType != DamageSourceInfo.DeathMessageType.debug) //force health regen when health below 10
+		{
+			currentHealth = maxHealth.finalValue;
+			newHealthPercentage = 1;
+			return newHealthPercentage;
+		}
+		else return newHealthPercentage;
 	}
 
 	//death event
