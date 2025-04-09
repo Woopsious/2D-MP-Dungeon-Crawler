@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class AbilityAOE : NetworkBehaviour
 {
@@ -62,6 +61,8 @@ public class AbilityAOE : NetworkBehaviour
 	}
 	private void SetUpAoeAbility(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
+		Debug.LogError(abilityRef.Name + " damage: " + abilityRef.damageValue);
+
 		transform.SetParent(null);
 		debugLockDamage = false;
 
@@ -88,7 +89,7 @@ public class AbilityAOE : NetworkBehaviour
 			SetupCircleCollider();
 		}
 
-		SetDamage();
+		aoeDamage = SetDamage();
 
 		aoeLingers = true;
 		abilityDurationTimer = abilityRef.aoeDuration;
@@ -104,21 +105,22 @@ public class AbilityAOE : NetworkBehaviour
 			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
-	private void SetDamage()
+	private int SetDamage()
 	{
 		damageType = abilityRef.damageType;
 		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(abilityOwner.entityLevel));
 
 		if (damageType == IDamagable.DamageType.isPhysicalDamage)
-			aoeDamage = (int)(newDamage * abilityOwner.physicalDamagePercentageModifier.finalPercentageValue);
+			newDamage = (int)(newDamage * abilityOwner.physicalDamagePercentageModifier.finalPercentageValue);
 		if (damageType == IDamagable.DamageType.isPoisonDamage)
-			aoeDamage = (int)(newDamage * abilityOwner.poisonDamagePercentageModifier.finalPercentageValue);
+			newDamage = (int)(newDamage * abilityOwner.poisonDamagePercentageModifier.finalPercentageValue);
 		if (damageType == IDamagable.DamageType.isFireDamage)
-			aoeDamage = (int)(newDamage * abilityOwner.fireDamagePercentageModifier.finalPercentageValue);
+			newDamage = (int)(newDamage * abilityOwner.fireDamagePercentageModifier.finalPercentageValue);
 		if (damageType == IDamagable.DamageType.isIceDamage)
-			aoeDamage = (int)(newDamage * abilityOwner.iceDamagePercentageModifier.finalPercentageValue);
+			newDamage = (int)(newDamage * abilityOwner.iceDamagePercentageModifier.finalPercentageValue);
 
-		aoeDamage *= (int)abilityOwner.damageDealtModifier.finalPercentageValue;
+		newDamage = (int)(newDamage * abilityOwner.damageDealtModifier.finalPercentageValue);
+		return newDamage;
 	}
 
 	//helps with applying damage only to enemies

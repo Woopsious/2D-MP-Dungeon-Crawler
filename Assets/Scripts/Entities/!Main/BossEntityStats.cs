@@ -36,6 +36,7 @@ public class BossEntityStats : EntityStats
 
 		inPhaseTransition = true;
 		bossBehaviour.EventSpawnBossAdds(2); //spawn adds at the start
+		gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 	}
 	protected override void OnEnable()
 	{

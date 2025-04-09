@@ -328,6 +328,20 @@ public class EntityStats : NetworkBehaviour
 	}
 	private float DebugForceHealPlayerOnLowHealth(DamageSourceInfo damageSourceInfo, float newHealthPercentage)
 	{
+		if (IsPlayerEntity())
+		{
+			if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityWeapon)
+			{
+				Debug.LogError(damageSourceInfo.entity.name + "hit player with " + 
+					damageSourceInfo.weapon.name + " dealing " + damageSourceInfo.damage + " damage");
+			}
+			else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityAbility)
+			{
+				Debug.LogError(damageSourceInfo.entity.name + "hit player with " +
+					damageSourceInfo.ability.name + " dealing " + damageSourceInfo.damage + " damage");
+			}
+		}
+
 		if (IsPlayerEntity() && playerRef.debugNoDeath && newHealthPercentage < 0 &&
 			damageSourceInfo.deathMessageType != DamageSourceInfo.DeathMessageType.debug) //force health regen when health below 10
 		{
