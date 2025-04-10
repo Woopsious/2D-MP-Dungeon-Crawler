@@ -13,12 +13,12 @@ GameObject:
   - component: {fileID: 1692056794982684996}
   - component: {fileID: 2470671881758777465}
   m_Layer: 5
-  m_Name: DebugKillEnemy
+  m_Name: DebugKillEnemyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5260502614425101582
 RectTransform:
   m_ObjectHideFlags: 0
@@ -121,9 +121,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 9158966442641934175}
-        m_TargetAssemblyTypeName: DebugUi, Assembly-CSharp
-        m_MethodName: KillSelectedTarget
+      - m_Target: {fileID: 2233141921698956000}
+        m_TargetAssemblyTypeName: PlayerSelectedTargetsUi, Assembly-CSharp
+        m_MethodName: DebugKillSelectedEnemyTarget
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -18879,7 +18879,7 @@ GameObject:
   - component: {fileID: 5176427331437008580}
   - component: {fileID: 1327017531351627243}
   m_Layer: 5
-  m_Name: DeselectEnemy
+  m_Name: DeselectEnemyButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32776,7 +32776,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
@@ -54447,7 +54447,6 @@ MonoBehaviour:
   bossPercentageDamage: {fileID: 4893545897586947984}
   PlayerInvincibleText: {fileID: 1435206063851283853}
   PlayerNoDeathText: {fileID: 8096732460628536422}
-  KillSelectedEnemyTargetButton: {fileID: 2099662974914670}
 --- !u!1 &7311102895724821723
 GameObject:
   m_ObjectHideFlags: 0
@@ -56057,6 +56056,7 @@ MonoBehaviour:
   unSelectedEnemyTargetUi: {fileID: 38160266246836275}
   selectedEnemyTargetTrackerUi: {fileID: 4135721548611971712}
   selectedEnemyTargetUi: {fileID: 3308790874812702239}
+  debugKillSelectedEnemyTargetButton: {fileID: 2099662974914670}
   selectedEnemyTargetUiName: {fileID: 7590167160077003409}
   selectedEnemyTargetUiImage: {fileID: 2589430615879489679}
   selectedEnemyTargetHealthBarFiller: {fileID: 3883015303030212608}
@@ -64280,8 +64280,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -225, y: -405}
-  m_SizeDelta: {x: 200, y: 60}
+  m_AnchoredPosition: {x: -225, y: -400}
+  m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3001706600527548589
 CanvasRenderer:
@@ -65122,8 +65122,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 24
-  m_fontSizeBase: 24
+  m_fontSize: 20
+  m_fontSizeBase: 20
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18

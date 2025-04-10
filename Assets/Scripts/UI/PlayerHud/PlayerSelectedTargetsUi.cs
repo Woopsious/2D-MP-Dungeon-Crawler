@@ -16,6 +16,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	public GameObject unSelectedEnemyTargetUi;
 	public GameObject selectedEnemyTargetTrackerUi;
 	public GameObject selectedEnemyTargetUi;
+	public GameObject debugKillSelectedEnemyTargetButton;
 
 	[Header("Selected Enemy Target Ui comps")]
 	public TMP_Text selectedEnemyTargetUiName;
@@ -45,7 +46,7 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	[Header("Selected Friendly Target Status Effects Ui")]
 	public GameObject selectedFriendlyTargetEffectsContentObj;
 
-	public void Awake()
+	private void Awake()
 	{
 		Instance = this;
 		selectedEnemyTargetTrackerUi.SetActive(false);
@@ -56,6 +57,16 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedFriendlyTargetUi.SetActive(false);
 		unSelectedFriendlyTargetUi.SetActive(false);
 	}
+	private void Start()
+	{
+		selectedEnemyTargetTrackerUi.SetActive(false);
+		selectedEnemyTargetUi.SetActive(false);
+		unSelectedEnemyTargetUi.SetActive(true);
+
+		selectedFriendlyTargetTrackerUi.SetActive(false);
+		selectedFriendlyTargetUi.SetActive(false);
+		unSelectedFriendlyTargetUi.SetActive(true);
+	}
 	private void Update()
 	{
 		UpdateSelectedEnemyTargetTrackerUi();
@@ -63,12 +74,16 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	}
 	private void OnEnable()
 	{
+		DebugUi.UpdateShowDebubUiEvent += UpdateDebugUi;
+
 		PlayerController.OnNewTargetSelected += OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent += OnTargetDeathUnSelect;
 		PlayerEventManager.OnPlayerDeathEvent += OnLocalPlayerDeath;
 	}
 	private void OnDisable()
 	{
+		DebugUi.UpdateShowDebubUiEvent -= UpdateDebugUi;
+
 		PlayerController.OnNewTargetSelected -= OnNewTargetSelected;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnTargetDeathUnSelect;
 		PlayerEventManager.OnPlayerDeathEvent -= OnLocalPlayerDeath;
@@ -85,19 +100,19 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	}
 	private void OnTargetDeathUnSelect(GameObject obj)
 	{
-		EntityStats entityStats = obj.GetComponent<EntityStats>();
+		EntityStats entityThatDied = obj.GetComponent<EntityStats>();
 
-		if (!entityStats.IsPlayerEntity())
-			ClearSelectedEnemyTarget();
+		if (!entityThatDied.IsPlayerEntity())
+			ClearSelectedEnemyTarget(entityThatDied);
 		else
-			ClearSelectedFriendlyTarget();
+			ClearSelectedFriendlyTarget(entityThatDied);
 	}
 	private void OnLocalPlayerDeath(PlayerController player, string deathMessage)
 	{
 		if (GameManager.Localplayer != player) return;
 
-		ClearSelectedEnemyTarget();
-		ClearSelectedFriendlyTarget();
+		ClearSelectedEnemyTarget(selectedEnemyTarget);
+		ClearSelectedFriendlyTarget(selectedFriendlyTarget);
 	}
 
 	//target select types
@@ -181,8 +196,10 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 	}
 
 	//clear targets + on button click
-	public void ClearSelectedEnemyTarget()
+	public void ClearSelectedEnemyTarget(EntityStats entityThatDied)
 	{
+		if (selectedEnemyTarget != entityThatDied) return;
+
 		selectedEnemyTargetTrackerUi.SetActive(false);
 		selectedEnemyTargetUi.SetActive(false);
 		unSelectedEnemyTargetUi.SetActive(true);
@@ -197,8 +214,10 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 
 		selectedEnemyTarget = null;
 	}
-	public void ClearSelectedFriendlyTarget()
+	public void ClearSelectedFriendlyTarget(EntityStats entityThatDied)
 	{
+		if (selectedFriendlyTarget != entityThatDied) return;
+
 		selectedFriendlyTargetTrackerUi.SetActive(false);
 		selectedFriendlyTargetUi.SetActive(false);
 		unSelectedFriendlyTargetUi.SetActive(true);
@@ -212,6 +231,26 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		selectedFriendlyTarget.OnStatusEffectAppliedEvent -= OnFriendlyTargetStatusEffectApplied;
 
 		selectedFriendlyTarget = null;
+	}
+
+	//debug kill selected Targets button action
+	public void DebugKillSelectedEnemyTarget()
+	{
+		if (selectedEnemyTarget == null)
+		{
+			Debug.LogError("enemy target not selected");
+			return;
+		}
+
+		DamageSourceInfo damageSourceInfo;
+
+		//if boss only damage to move to next phase/40%
+		if (selectedEnemyTarget.statsRef.isBossVersion)
+			damageSourceInfo = new(selectedEnemyTarget, IDamagable.HitBye.enviroment, 0.4f, IDamagable.DamageType.isPhysicalDamage, true);
+		else
+			damageSourceInfo = new(selectedEnemyTarget, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
+
+		selectedEnemyTarget.RecieveDamage(damageSourceInfo, false);
 	}
 
 	//get targets
@@ -246,6 +285,17 @@ public class PlayerSelectedTargetsUi : MonoBehaviour
 		if (selectedFriendlyTarget == null || !selectedFriendlyTargetTrackerUi.activeInHierarchy) return;
 		Vector2 position = Camera.main.WorldToScreenPoint(selectedFriendlyTarget.transform.position);
 		selectedFriendlyTargetTrackerUi.transform.position = new Vector3(position.x, position.y + 40, 0);
+	}
+	private void UpdateDebugUi(bool showDebugUi)
+	{
+		if (showDebugUi)
+		{
+			debugKillSelectedEnemyTargetButton.SetActive(true);
+		}
+		else
+		{
+			debugKillSelectedEnemyTargetButton.SetActive(false);
+		}
 	}
 
 	//ui enemy event updates

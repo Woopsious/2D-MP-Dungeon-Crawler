@@ -236,6 +236,7 @@ MonoBehaviour:
   questRewardUi: {fileID: 8836897460151699310}
   questImage: {fileID: 75341728280969388}
   acceptQuestButtonObj: {fileID: 8332477579545890956}
+  DebugCompleteQuestButton: {fileID: 5947165128895109535}
   questName: 
   questDescription: 
   questType: 0
@@ -1049,7 +1050,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &8719201621076273558
 RectTransform:
   m_ObjectHideFlags: 0

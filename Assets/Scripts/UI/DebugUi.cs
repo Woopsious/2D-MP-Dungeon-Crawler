@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
@@ -17,7 +18,8 @@ public class DebugUi : MonoBehaviour
 	public TMP_Text PlayerInvincibleText;
 	public TMP_Text PlayerNoDeathText;
 
-	public GameObject KillSelectedEnemyTargetButton;
+	//event to notify other ui comps (eg: debug kill selected enemy button, debug complete quest)
+	public static event Action<bool> UpdateShowDebubUiEvent;
 
 	private void Update()
 	{
@@ -100,26 +102,6 @@ public class DebugUi : MonoBehaviour
 				Debug.LogError("dungeon boss ref null");
 		}
 	}
-	public void KillSelectedTarget()
-	{
-		EntityStats selectedEntityTarget = PlayerSelectedTargetsUi.Instance.GetSelectedEnemyTarget();
-
-		if (selectedEntityTarget == null)
-		{
-			Debug.LogError("enemy target not selected");
-			return;
-		}
-
-		DamageSourceInfo damageSourceInfo;
-
-		//if boss only damage to move to next phase/40%
-		if (selectedEntityTarget.statsRef.isBossVersion)
-			damageSourceInfo = new(selectedEntityTarget, IDamagable.HitBye.enviroment, 0.4f, IDamagable.DamageType.isPhysicalDamage, true);
-		else
-			damageSourceInfo = new(selectedEntityTarget, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
-
-		selectedEntityTarget.RecieveDamage(damageSourceInfo, false);
-	}
 
 	public void ToggleLocalPlayerInvincible()
 	{
@@ -167,15 +149,14 @@ public class DebugUi : MonoBehaviour
 		GameManager.Localplayer.playerStats.RecieveDamage(damageSourceInfo, false);
 	}
 
-
 	private void ShowDebugUi()
 	{
 		DebugUiPanel.SetActive(true);
-		KillSelectedEnemyTargetButton.SetActive(true);
+		UpdateShowDebubUiEvent?.Invoke(true);
 	}
 	private void HideDebugUi()
 	{
 		DebugUiPanel.SetActive(false);
-		KillSelectedEnemyTargetButton.SetActive(false);
+		UpdateShowDebubUiEvent?.Invoke(false);
 	}
 }

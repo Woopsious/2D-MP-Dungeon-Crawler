@@ -34,7 +34,6 @@ public class PlayerJournalUi : MonoBehaviour
 
 	private void OnEnable()
 	{
-		//SaveManager.RestoreData += ReloadActiveQuests;
 		SaveManager.ReloadSaveGameData += ReloadActiveQuests;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HidePlayerJournal;
@@ -50,7 +49,6 @@ public class PlayerJournalUi : MonoBehaviour
 	}
 	private void OnDisable()
 	{
-		//SaveManager.RestoreData -= ReloadActiveQuests;
 		SaveManager.ReloadSaveGameData -= ReloadActiveQuests;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HidePlayerJournal;
@@ -63,39 +61,6 @@ public class PlayerJournalUi : MonoBehaviour
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
 		PlayerEventManager.OnShowNpcJournal -= ShowAvailableNpcQuests;
 		PlayerEventManager.OnHideNpcJournal -= HideAvailableNpcQuests;
-	}
-
-	//quest actions
-	public void AcceptQuest(QuestDataUi quest)
-	{
-		if (activeQuests.Count >= 5)
-		{
-			Debug.Log("max of 5 active quests reached");
-			return;
-		}
-		quest.isCurrentlyActiveQuest = true;
-		quest.acceptQuestButtonObj.SetActive(false);
-		quest.transform.SetParent(activeQuestContainer.transform);
-		activeQuests.Add(quest);
-
-		OnNewQuestAccepted?.Invoke(quest);
-		UpdateActiveQuestTracker();
-	}
-	public void CompleteQuest(QuestDataUi quest)
-	{
-		activeQuests.Remove(quest);
-		Destroy(quest.gameObject);
-
-		OnQuestComplete?.Invoke(quest);
-		UpdateActiveQuestTracker();
-	}
-	public void AbandonQuest(QuestDataUi quest)
-	{
-		activeQuests.Remove(quest);
-		Destroy(quest.gameObject);
-
-		OnQuestAbandon?.Invoke(quest);
-		UpdateActiveQuestTracker();
 	}
 
 	//restore player quests data
@@ -125,13 +90,45 @@ public class PlayerJournalUi : MonoBehaviour
 		}
 		UpdateActiveQuestTracker();
 	}
+
+	//quest actions
+	public void AcceptQuest(QuestDataUi quest)
+	{
+		if (activeQuests.Count >= 5) return;
+
+		quest.isCurrentlyActiveQuest = true;
+		quest.acceptQuestButtonObj.SetActive(false);
+		quest.transform.SetParent(activeQuestContainer.transform);
+		activeQuests.Add(quest);
+
+		OnNewQuestAccepted?.Invoke(quest);
+		UpdateActiveQuestTracker();
+	}
+	public void CompleteQuest(QuestDataUi quest)
+	{
+		activeQuests.Remove(quest);
+		Destroy(quest.gameObject);
+
+		OnQuestComplete?.Invoke(quest);
+		UpdateActiveQuestTracker();
+	}
+	public void AbandonQuest(QuestDataUi quest)
+	{
+		activeQuests.Remove(quest);
+		Destroy(quest.gameObject);
+
+		OnQuestAbandon?.Invoke(quest);
+		UpdateActiveQuestTracker();
+	}
+
+	//quest completions ways
 	private void OnEntityDeathUpdateKillQuests(GameObject obj)
 	{
 		foreach (QuestDataUi quest in activeQuests)
 		{
 			if (quest.questType == QuestDataUi.QuestType.isItemHandInQuest) continue;
 
-			if (quest.entityToKill = obj.GetComponent<EntityStats>().statsRef)
+			if (quest.entityToKill.humanoidType == obj.GetComponent<EntityStats>().statsRef.humanoidType)
 				quest.currentAmount++;
 
 			quest.questTrackerUi.text = $"{quest.currentAmount} / {quest.amount} Killed";
