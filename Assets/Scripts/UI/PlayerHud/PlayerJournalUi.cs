@@ -41,6 +41,7 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerJournalEvent += ShowPlayerJournal;
+		PlayerEventManager.OnShowPlayerCodexEvent += HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerJournal;
 
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeathUpdateKillQuests;
@@ -56,7 +57,8 @@ public class PlayerJournalUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerJournal;
 		PlayerEventManager.OnShowPlayerJournalEvent -= ShowPlayerJournal;
-		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HidePlayerJournal;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HidePlayerJournal;
 
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeathUpdateKillQuests;
 		PlayerEventManager.OnShowNpcJournal -= ShowAvailableNpcQuests;

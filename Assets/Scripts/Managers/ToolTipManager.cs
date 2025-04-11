@@ -41,6 +41,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideTip;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideTip;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideTip;
+		PlayerEventManager.OnShowPlayerCodexEvent += HideTip;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideTip;
 
 		OnMouseRightClick += HideShowContextMenu;
@@ -50,6 +51,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerCodexEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideContextMenu;
 	}
 	private void OnDisable()
@@ -62,6 +64,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideTip;
 
 		OnMouseRightClick -= HideShowContextMenu;
@@ -71,7 +74,8 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideContextMenu;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideContextMenu;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideContextMenu;
-		PlayerEventManager.OnShowPlayerDeathUiEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideContextMenu;
 	}
 
 	//context menu

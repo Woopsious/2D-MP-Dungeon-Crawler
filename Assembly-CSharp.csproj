@@ -110,6 +110,7 @@
     <Compile Include="Assets\Scripts\UI\DungeonDataUi.cs" />
     <Compile Include="Assets\Scripts\Items\Items.cs" />
     <Compile Include="Assets\Scripts\Items\Armors.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerCodexEntryUi.cs" />
     <Compile Include="Assets\Scripts\Managers\GameManager.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BTNode.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOAccessories.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Assets\Scripts\Managers\PlayerEventManager.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossChecks\CanUseAbilitiesInTransition.cs" />
     <Compile Include="Assets\Scripts\UI\InventorySlotDataUi.cs" />
+    <Compile Include="Assets\Scripts\UI\PlayerCodexUi.cs" />
     <Compile Include="Assets\Scripts\Interfaces\Interactables.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOBossAbilities.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\MultiplayerManager.cs" />

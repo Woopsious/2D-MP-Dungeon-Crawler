@@ -47,6 +47,8 @@ MonoBehaviour:
   playerControls: {fileID: -944628639613478452, guid: dc477a7945053c146806bc49c5d56cfe, type: 3}
   actionMapName: Player
   CameraZoom: CameraZoom
+  SpectateNextPlayer: SpectateNextPlayer
+  SpectatePreviousPlayer: SpectatePreviousPlayer
   Movement: Movement
   MainAttack: MainAttack
   RightClick: RightClick
@@ -72,6 +74,24 @@ MonoBehaviour:
     m_Type: 0
     m_ExpectedControlType: 
     m_Id: 5f93fdbc-d996-4b5b-84cd-52ce77243df0
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _SpectateNextPlayer:
+    m_Name: Spectate Next Player
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 2129a103-f703-400e-94cc-ce0471686ea8
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings: []
+    m_Flags: 0
+  _SpectatePreviousPlayer:
+    m_Name: Spectate Previous Player
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 5178b9ce-d041-4941-b899-d25dba77ce22
     m_Processors: 
     m_Interactions: 
     m_SingletonActionBindings: []
@@ -247,3 +267,5 @@ MonoBehaviour:
     m_Interactions: 
     m_SingletonActionBindings: []
     m_Flags: 0
+  zoomInput: 0
+  moveInput: {x: 0, y: 0}
