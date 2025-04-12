@@ -138,7 +138,7 @@ public class PlayerInventoryHandler : MonoBehaviour
 	//on item pickup
 	public void PickUpNewItem(Items item)
 	{
-		PlayerInventoryUi.Instance.AddItemToInventory(item, true);
+		PlayerInventoryUi.Instance.AddNewItemToInventory(item, true);
 	}
 	public bool CheckIfInventoryFull()
 	{

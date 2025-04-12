@@ -49,9 +49,6 @@ public class PlayerInventoryUi : MonoBehaviour
 	public TMP_Text transactionInfoText;
 	public TMP_Text transactionTrackerText;
 	public Button closeShopButton;
-	private NpcHandler shopNpc;
-
-	//public int goldTransaction;
 
 	[Header("Storage Chest Ui")]
 	public GameObject storageChestPanelUi;
@@ -266,13 +263,15 @@ public class PlayerInventoryUi : MonoBehaviour
 		GetGoldAmount();
 		PlayerEventManager.GoldAmountChange(playerGoldAmount);
 	}
+
+	//quest completion event listener
 	public void OnQuestComplete(QuestDataUi quest)
 	{
 		if (quest.questRewardType == QuestDataUi.RewardType.isGoldReward)
 			UpdateGoldAmount(quest.rewardToAdd);
 	}
 
-	//buying/selling items
+	//buying/selling item event listeners
 	public void OnItemSell(InventoryItemUi item, InventorySlotDataUi slot)
 	{
 		float goldFromItemSelling = item.price * item.currentStackCount;
@@ -312,27 +311,23 @@ public class PlayerInventoryUi : MonoBehaviour
 	}
 
 	//ITEMS
-	//Adding new items to Ui
-	public void AddItemToInventory(Items item, bool tryStack)
+	//adding items to inventory
+	public void AddNewItemToInventory(Items item, bool tryStack)
 	{
 		if (item.isStackable && tryStack)
-			TryStackItem(ConvertPickupsToInventoryItem(item));
+			TryStackInventoryItem(ConvertPickupsToInventoryItem(item));
 		else
-			SpawnNewItemInInventory(ConvertPickupsToInventoryItem(item));
+			AddInventoryItemToInventory(ConvertPickupsToInventoryItem(item));
 	}
-	private void SpawnNewItemInInventory(InventoryItemUi item)
+	public void AddInventoryItemToInventory(InventoryItemUi item, bool tryStack)
 	{
-		for (int i = 0; i < InventorySlots.Count; i++)
-		{
-			InventorySlotDataUi inventorySlot = InventorySlots[i].GetComponent<InventorySlotDataUi>();
-
-			if (inventorySlot.IsSlotEmpty())
-			{
-				inventorySlot.AddItemToSlot(item);
-				return;
-			}
-		}
+		if (item.isStackable && tryStack)
+			TryStackInventoryItem(item);
+		else
+			AddInventoryItemToInventory(item);
 	}
+
+	//convert Items data to InventoryItemUi format
 	private InventoryItemUi ConvertPickupsToInventoryItem(Items item)
 	{
 		GameObject go = Instantiate(ItemUiPrefab, gameObject.transform.position, Quaternion.identity);
@@ -391,19 +386,19 @@ public class PlayerInventoryUi : MonoBehaviour
 			Debug.LogError("item.Ref null this shouldnt happen");
 	}
 
-	//item stacking
-	private void TryStackItem(InventoryItemUi newItem)
+	//inventory item stacking
+	private void TryStackInventoryItem(InventoryItemUi item)
 	{
 		for (int i = 0; i < InventorySlots.Count; i++)
 		{
 			InventorySlotDataUi inventroySlot = InventorySlots[i].GetComponent<InventorySlotDataUi>();
 
 			if (!inventroySlot.IsSlotEmpty())
-				AddToStackCount(inventroySlot, newItem);
+				AddToStackCount(inventroySlot, item);
 
-			else if (newItem.currentStackCount > 0)
+			else if (item.currentStackCount > 0)
 			{
-				SpawnNewItemInInventory(newItem);
+				AddInventoryItemToInventory(item);
 				return;
 			}
 		}
@@ -425,6 +420,21 @@ public class PlayerInventoryUi : MonoBehaviour
 		}
 		else
 			return;
+	}
+
+	//adding inventory items to free slots
+	private void AddInventoryItemToInventory(InventoryItemUi item)
+	{
+		for (int i = 0; i < InventorySlots.Count; i++)
+		{
+			InventorySlotDataUi inventorySlot = InventorySlots[i].GetComponent<InventorySlotDataUi>();
+
+			if (inventorySlot.IsSlotEmpty())
+			{
+				inventorySlot.AddItemToSlot(item);
+				return;
+			}
+		}
 	}
 
 	//ABILITIES
@@ -469,7 +479,8 @@ public class PlayerInventoryUi : MonoBehaviour
 			if (slotData.itemInSlot.abilityBaseRef == ability)
 			{
 				Destroy(slotData.itemInSlot.gameObject);
-				slotData.RemoveItemFromSlot();
+				//slotData.RemoveItemFromSlot();
+				slotData.DestroyItemInSlot();
 			}
 		}
 	}
@@ -549,7 +560,7 @@ public class PlayerInventoryUi : MonoBehaviour
 
 			npc.avalableShopItemsList.Add(slot.itemInSlot); //add new items
 			slot.itemInSlot.transform.SetParent(npc.npcContainer.transform);
-			slot.RemoveItemFromSlot();
+			//slot.RemoveItemFromSlot();
 		}
 
 		GameManager.Localplayer.isInteractingWithInteractable = false;
@@ -649,7 +660,7 @@ public class PlayerInventoryUi : MonoBehaviour
 			if (slot.IsSlotEmpty()) continue;
 
 			slot.itemInSlot.transform.SetParent(playerStoredItemsContainer.transform);
-			slot.RemoveItemFromSlot();
+			slot.RemoveItemFromSlot(); //call directly as not being added to new slot
 		}
 
 		for (int i = playerStoredItemsContainer.transform.childCount - 1;  i >= 0; i--) //re-add all items + any new ones
@@ -668,9 +679,12 @@ public class PlayerInventoryUi : MonoBehaviour
 			HideEnchanterUi();
 		else
 			EnchanterUi.SetActive(true);
+
+		UpdateEnchantItemUiInfo(null);
 	}
 	public void HideEnchanterUi()
 	{
+		ReturnItemToInventory();
 		EnchanterUi.SetActive(false);
 		GameManager.Localplayer.isInteractingWithInteractable = false;
 		HideInventory();
@@ -710,6 +724,11 @@ public class PlayerInventoryUi : MonoBehaviour
 		UpdateGoldAmount(-goldCost);
 		enchanterSlot.EnchantItemInSlot();
 		UpdateEnchantItemUiInfo(enchanterSlot.itemInSlot);
+	}
+	private void ReturnItemToInventory()
+	{
+		if (enchanterSlot.itemInSlot == null) return;
+		Instance.AddInventoryItemToInventory(enchanterSlot.itemInSlot);
 	}
 
 	//update items in ui incase any changes were made
