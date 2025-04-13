@@ -869,6 +869,8 @@ public class PlayerController : NetworkBehaviour
 	//PLAYER MARKING FOR BOSS ABILITIES
 	public void MarkPlayer()
 	{
+		Debug.LogError("player marked");
+
 		PlayerBossMarker.SetActive(true);
 	}
 	public void UnMarkPlayer()

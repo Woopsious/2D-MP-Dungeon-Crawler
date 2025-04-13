@@ -252,7 +252,11 @@ public class EntityAbilityHandler : NetworkBehaviour
 			abilityCastingTimer -= Time.deltaTime;
 
 			if (abilityCastingTimer <= 0)
+			{
+				Debug.LogError("casted ability: " + abilityBeingCasted.Name);
+
 				CastAbility(abilityBeingCasted);
+			}
 		}
 	}
 

@@ -61,8 +61,6 @@ public class AbilityAOE : NetworkBehaviour
 	}
 	private void SetUpAoeAbility(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
-		Debug.LogError(abilityRef.Name + " damage: " + abilityRef.damageValue);
-
 		transform.SetParent(null);
 		debugLockDamage = false;
 

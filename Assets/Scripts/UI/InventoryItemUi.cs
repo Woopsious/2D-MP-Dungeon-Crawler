@@ -157,8 +157,8 @@ public class InventoryItemUi : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 		}
 		else
 		{
-			uiItemName.text = $"Enchanted {itemName}";
-			uiItemLevel.text = $"LVL: {level} +{enchantmentLevel}";
+			uiItemName.text = $"Enchanted {itemName} +{enchantmentLevel}";
+			uiItemLevel.text = $"LVL: {level}";
 		}
 
 		uiItemImage.sprite = itemSprite;

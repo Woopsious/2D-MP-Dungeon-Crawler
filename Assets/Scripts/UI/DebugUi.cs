@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 
 public class DebugUi : MonoBehaviour
@@ -12,8 +8,6 @@ public class DebugUi : MonoBehaviour
 
 	public TMP_InputField money;
 	public TMP_InputField exp;
-
-	public TMP_InputField bossPercentageDamage;
 
 	public TMP_Text PlayerInvincibleText;
 	public TMP_Text PlayerNoDeathText;
@@ -62,47 +56,15 @@ public class DebugUi : MonoBehaviour
 		else
 			GameManager.Localplayer.playerExperienceHandler.DebugAddExp(expToAdd);
 	}
-	public void DamageDungeonBoss()
+
+	public void KillLocalPlayer()
 	{
-		if (BossRoomHandler.Instance == null)
-		{
-			Debug.LogError("not dungeon boss room");
-			return;
-		}
-		else if (BossRoomHandler.Instance.GetBossRoomState() != BossRoomHandler.BossRoomState.bossActive)
-		{
-			Debug.LogError("dungeon boss not alive");
-			return;
-		}
+		DamageSourceInfo damageSourceInfo = new(
+			GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
 
-		float percentageDamage = 0;
-		try
-		{
-			percentageDamage = float.Parse(bossPercentageDamage.text);
-		}
-		catch
-		{
-			Debug.LogError("only numbers allowed");
-		}
-
-		if (percentageDamage < 0 || percentageDamage > 40)
-			Debug.LogError("only numbers between 0 and 40 valid");
-		else
-		{
-			percentageDamage /= 100;
-
-			DamageSourceInfo damageSourceInfo = new DamageSourceInfo(
-				GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, percentageDamage, IDamagable.DamageType.isPhysicalDamage, true);
-
-			BossEntityStats bossEntity = BossRoomHandler.Instance.roomSpawnHandler.GetBossEntity();
-
-			if (bossEntity != null)
-				bossEntity.RecieveDamage(damageSourceInfo, false);
-			else
-				Debug.LogError("dungeon boss ref null");
-		}
+		damageSourceInfo.SetDebugDeathMessage();
+		GameManager.Localplayer.playerStats.RecieveDamage(damageSourceInfo, false);
 	}
-
 	public void ToggleLocalPlayerInvincible()
 	{
 		Damageable player = GameManager.Localplayer.GetComponent<Damageable>();
@@ -139,14 +101,6 @@ public class DebugUi : MonoBehaviour
 
 		if (MultiplayerManager.IsMultiplayer())
 			ClientRpcManager.instance.SyncLocalPlayerNoDeathRpc(player.NetworkObjectId, player.playerRef.debugNoDeath);
-	}
-	public void KillLocalPlayer()
-	{
-		DamageSourceInfo damageSourceInfo = new(
-			GameManager.Localplayer.playerStats, IDamagable.HitBye.enviroment, 10, IDamagable.DamageType.isPhysicalDamage, true);
-
-		damageSourceInfo.SetDebugDeathMessage();
-		GameManager.Localplayer.playerStats.RecieveDamage(damageSourceInfo, false);
 	}
 
 	private void ShowDebugUi()

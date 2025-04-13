@@ -17,7 +17,7 @@ public class TaskTrackPlayer : EntityMovement
 
 	public override NodeState Evaluate()
 	{
-		Debug.Log(behaviour.name + " track player task");
+		//Debug.Log(behaviour.name + " track player task");
 
 		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
 			KeepDistanceFromPlayer(behaviour, equipmentHandler);
