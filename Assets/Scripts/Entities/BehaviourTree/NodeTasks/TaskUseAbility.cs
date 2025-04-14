@@ -23,9 +23,9 @@ public class TaskUseAbility : BTNode
 		if (behaviour.globalAttackTimer > 0) return NodeState.FAILURE;
 		else
 		{
-			if (CanUseHealingAbility() && HealingAbilityInRangeOfTarget())
+			if (CanUseHealingAbility())
 				abilityHandler.CastHealingAbility();
-			else if (CanUseOffensiveAbility() && OffensiveAbilityInRangeOfTarget())
+			else if (CanUseOffensiveAbility())
 				abilityHandler.CastOffensiveAbility();
 			else return NodeState.FAILURE;
 
