@@ -17,6 +17,8 @@ public class DebugUi : MonoBehaviour
 
 	private void Update()
 	{
+		if (!Application.isEditor || !Debug.isDebugBuild) return;
+
 		if (Input.GetKeyDown(KeyCode.Tilde) || Input.GetKeyDown(KeyCode.BackQuote))
 		{
 			if (DebugUiPanel.activeInHierarchy)

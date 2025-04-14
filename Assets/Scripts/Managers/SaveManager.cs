@@ -95,8 +95,6 @@ public class SaveManager : MonoBehaviour
 	//SAVING PLAYER DATA
 	public void SavePlayerData()
 	{
-		Debug.LogError("SAVE PLAYER DATA");
-
 		DeletePlayerData();
 
 		string directory = Application.persistentDataPath + "/PlayerData";
@@ -109,6 +107,8 @@ public class SaveManager : MonoBehaviour
 		}
 		else
 			System.IO.Directory.CreateDirectory(directory);
+
+		Debug.LogError("SAVE PLAYER DATA");
 
 		PlayerData playerData = new PlayerData
 		{
@@ -130,13 +130,13 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadPlayerData()
 	{
-		Debug.LogError("LOAD PLAYER DATA");
-
 		string directory = Application.persistentDataPath + "/PlayerData";
 		string filePath = Application.persistentDataPath + "/PlayerData/data.json";
 
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/data.json")) return;
+
+		Debug.LogError("LOAD PLAYER DATA");
 
 		string data = System.IO.File.ReadAllText(filePath);
 		PlayerData playerData = JsonUtility.FromJson<PlayerData>(data);

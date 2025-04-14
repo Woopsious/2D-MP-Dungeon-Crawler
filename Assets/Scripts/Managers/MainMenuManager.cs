@@ -17,6 +17,7 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject runtimeUiContainer;
 
 	[Header("Unique Main Menu Scene Buttons")]
+	public TMP_Text gameVersionNumberText;
 	public GameObject quitGameButton;
 	public GameObject startNewGameButton;
 
@@ -76,6 +77,7 @@ public class MainMenuManager : MonoBehaviour
 		}
 
 		EnableMainMenuButtons();
+		DisplayGameVersionNumber();
 		SetActionForPlayMpButton();
 	}
 
@@ -125,6 +127,10 @@ public class MainMenuManager : MonoBehaviour
 		quitGameButton.SetActive(true);
 		startNewGameButton.SetActive(true);
 	}
+	private void DisplayGameVersionNumber()
+	{
+		gameVersionNumberText.text = $"Game Version: {Application.version}";
+	}
 
 	//MAIN MENU PANEL ACTIONS
 	public void ButtonFunctionNotSetUp()
@@ -169,6 +175,7 @@ public class MainMenuManager : MonoBehaviour
 		{
 			playMpButton.onClick.AddListener(delegate { ShowLobbyUiWhenPlayerInLobby(); });
 			playMpButton.interactable = true;
+			playMpButton.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 50);
 			playMpButtonText.color = Color.black;
 			playMpButtonText.text = "Open Lobby Ui";
 		}
@@ -178,14 +185,16 @@ public class MainMenuManager : MonoBehaviour
 			{
 				playMpButton.onClick.AddListener(delegate { PlayMultiplayer(); });
 				playMpButton.interactable = true;
+				playMpButton.GetComponent<RectTransform>().sizeDelta = new Vector2(300, 50);
 				playMpButtonText.color = Color.black;
 				playMpButtonText.text = "Play Multiplayer";
 			}
 			else
 			{
 				playMpButton.interactable = false;
+				playMpButton.GetComponent<RectTransform>().sizeDelta = new Vector2(400, 50);
 				playMpButtonText.color = new Color(0.8f, 0, 0);
-				playMpButtonText.text = "Mp available in Hub";
+				playMpButtonText.text = "Mp available from HUB";
 			}
 		}
 	}
@@ -327,5 +336,11 @@ public class MainMenuManager : MonoBehaviour
 	public void HideConfirmActionPanel()
 	{
 		confirmActionPanel.SetActive(false);
+	}
+
+	//button call to open links in credits page
+	public void OpenLink(string link)
+	{
+		Application.OpenURL(link);
 	}
 }
