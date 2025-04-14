@@ -113,6 +113,7 @@ public class EntityBehaviour : Tree
 				new Sequence(new List<BTNode> //attack actions
 				{
 					new CheckGlobalAttackCooldown(this),
+
 					new Selector(new List<BTNode> //attack actions
 					{
 						new Sequence(new List<BTNode> //use ability

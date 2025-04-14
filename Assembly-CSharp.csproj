@@ -91,6 +91,7 @@
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\Selector.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassStatBonuses.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeTasks\TaskMoveInRangeForAbility.cs" />
     <Compile Include="Assets\Scripts\Abilities\AbilityAoeCollider.cs" />
     <Compile Include="Assets\Scripts\Entities\!Main\BossEntityStats.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOClassUnlocks.cs" />
@@ -152,6 +153,7 @@
     <Compile Include="Assets\Scripts\Entities\BehaviourTree\BossTasks\TaskEyeBossTransitions.cs" />
     <Compile Include="Assets\Scripts\Multiplayer\ClientRpcManager.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerDeathUi.cs" />
+    <Compile Include="Assets\Scripts\Entities\BehaviourTree\NodeChecks\CheckPlayerWithinRangeOfAbility.cs" />
     <Compile Include="Assets\Scripts\UI\QuestDataUi.cs" />
     <Compile Include="Assets\Scripts\ScriptableObjs\SOConsumables.cs" />
     <Compile Include="Assets\Scripts\UI\PlayerHud\PartyMessagesUi.cs" />

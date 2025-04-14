@@ -89,7 +89,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
-				if (ability.isOffensiveAbility && ability.damageType != IDamagable.DamageType.isHealing)
+				if (ability.isOffensiveAbility && !ability.isBossAbility && ability.damageType != IDamagable.DamageType.isHealing)
 					offensiveAbilities.Add(ability);
 			}
 
@@ -103,7 +103,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			List<SOAbilities> healingAbilities = new List<SOAbilities>();
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
-				if (ability.damageType == IDamagable.DamageType.isHealing)
+				if (ability.damageType == IDamagable.DamageType.isHealing && !ability.isBossAbility)
 					healingAbilities.Add(ability);
 			}
 
