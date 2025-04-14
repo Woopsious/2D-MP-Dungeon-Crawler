@@ -111,6 +111,7 @@ public static class PlayerEventManager
 	{
 		OnShowPlayerInventoryEvent?.Invoke();
 	}
+
 	public static event Action OnShowPlayerClassSelectionEvent;
 	public static void ShowPlayerClassSelection()
 	{
@@ -118,20 +119,31 @@ public static class PlayerEventManager
 		if (Application.isEditor || Utilities.SceneIsActive(GameManager.Instance.hubScene))
 			OnShowPlayerClassSelectionEvent?.Invoke();
 	}
+
 	public static event Action OnShowPlayerSkillTreeEvent;
 	public static void ShowPlayerSkillTree()
 	{
-		OnShowPlayerSkillTreeEvent?.Invoke();
+		//allow skill changes in editor when ever
+		if (Application.isEditor || Utilities.SceneIsActive(GameManager.Instance.hubScene))
+			OnShowPlayerSkillTreeEvent?.Invoke();
 	}
+
 	public static event Action OnShowPlayerLearntAbilitiesEvent;
 	public static void ShowPlayerLearntAbilities()
 	{
 		OnShowPlayerLearntAbilitiesEvent?.Invoke();
 	}
+
 	public static event Action OnShowPlayerJournalEvent;
 	public static void ShowPlayerJournal()
 	{
 		OnShowPlayerJournalEvent?.Invoke();
+	}
+
+	public static event Action OnShowPlayerCodexEvent;
+	public static void ShowPlayerCodex()
+	{
+		OnShowPlayerCodexEvent?.Invoke();
 	}
 
 	//portal ui

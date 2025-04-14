@@ -37,7 +37,7 @@ public class TaskEyeBossTransitions : EntityMovement, IBossTransitionPhases
 	{
 		if (stats.inPhaseTransition == false) return NodeState.FAILURE;
 
-		Debug.Log(stats.name + " boss phase Transition task");
+		//Debug.Log(stats.name + " boss phase Transition task");
 
 		ActionDelayTimer();
 

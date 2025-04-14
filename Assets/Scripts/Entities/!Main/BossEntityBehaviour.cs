@@ -1,9 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEngine.InputSystem.OnScreen.OnScreenStick;
 
 public class BossEntityBehaviour : EntityBehaviour
 {
@@ -15,6 +13,8 @@ public class BossEntityBehaviour : EntityBehaviour
 	protected override void Update()
 	{
 		base.Update();
+
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
 
 		abilityHandler.BossAbilityCooldownTimerOne();
 		abilityHandler.BossAbilityCooldownTimerTwo();

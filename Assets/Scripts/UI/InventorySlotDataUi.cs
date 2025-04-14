@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using WebSocketSharp;
 
 public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 {
@@ -79,16 +80,16 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 				AddItemToSlot(item);
 			}
 		}
-		else //logic when slot is empty
-		{
+		else
 			AddItemToSlot(item);
-			oldInventorySlot.RemoveItemFromSlot();
-		}
 	}
 
 	//types of item changes
 	public void AddItemToSlot(InventoryItemUi item)
 	{
+		if (item.inventorySlot != null && item.inventorySlot != this) //remove item from old slot
+			item.inventorySlot.RemoveItemFromSlot();
+
 		item.parentAfterDrag = transform;
 		item.inventorySlot = this;
 		item.inventorySlotIndex = slotIndex;
@@ -106,10 +107,14 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	}
 	public void RemoveItemFromSlot()
 	{
-		UpdateSlotSize();
 		itemInSlot = null;
 		CheckIfItemInEquipmentSlot(itemInSlot);
 		CheckIfItemInEnchantmentSlot(itemInSlot);
+	}
+	public void DestroyItemInSlot()
+	{
+		Destroy(itemInSlot.gameObject);
+		itemInSlot = null;
 	}
 
 	//unique enchant item
@@ -148,9 +153,9 @@ public class InventorySlotDataUi : MonoBehaviour, IDropHandler
 	public void UpdateSlotSize()
 	{
 		if (itemInSlot.type == SOItems.ItemType.isWeapon)
-			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(50, 100);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(48, 96);
 		else
-			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 100);
+			itemInSlot.uiItemImage.GetComponent<RectTransform>().sizeDelta = new Vector2(96, 96);
 	}
 
 	//bool checks

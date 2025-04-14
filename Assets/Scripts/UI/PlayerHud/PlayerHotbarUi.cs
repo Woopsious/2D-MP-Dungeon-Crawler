@@ -246,10 +246,7 @@ public class PlayerHotbarUi : MonoBehaviour
 				continue;
 
 			if (slotData.itemInSlot.abilityBaseRef == ability)
-			{
-				Destroy(slotData.itemInSlot.gameObject);
-				slotData.RemoveItemFromSlot();
-			}
+				slotData.DestroyItemInSlot();
 		}
 	}
 

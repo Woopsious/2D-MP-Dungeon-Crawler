@@ -27,7 +27,7 @@ public class TaskWander : BTNode
 
 		if (navMesh.remainingDistance > navMesh.stoppingDistance)
 		{
-			Debug.Log(behaviour.name + " wander task");
+			//Debug.Log(behaviour.name + " wander task");
 			return NodeState.RUNNING;
 		}
 		else return NodeState.FAILURE;

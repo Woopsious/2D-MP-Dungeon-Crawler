@@ -67,4 +67,48 @@ public class TaskUseAbility : BTNode
 		}
 		else return true;
 	}
+
+	public bool HealingAbilityInRangeOfTarget()
+	{
+		return true; //atm always true as can only target self
+	}
+	public bool OffensiveAbilityInRangeOfTarget()
+	{
+		Vector2 targetPos;
+
+		if (abilityHandler.overriddenPlayerTarget)
+			targetPos = abilityHandler.overriddenPlayerTarget.transform.position;
+		else
+		{
+			targetPos = behaviour.playerTarget.transform.position;
+		}
+
+		if (abilityHandler.offensiveAbility.isAOE)
+		{
+			float distance = Vector2.Distance(targetPos, behaviour.transform.position);
+
+			if (abilityHandler.offensiveAbility.aoeType == SOAbilities.AoeType.isConeAoe)
+			{
+				Debug.LogError("distance to target: " + distance);
+
+				if (distance < abilityHandler.offensiveAbility.coneAoeRadius)
+					return true;
+				else return false;
+			}
+			else if (abilityHandler.offensiveAbility.aoeType == SOAbilities.AoeType.isBoxAoe)
+			{
+				float convertOffset = (float)(abilityHandler.offensiveAbility.boxAoeSizeY / 6.66666666);
+
+				Debug.LogError("distance to target: " + distance);
+				Debug.LogError("converted World Size: " + convertOffset);
+
+				if (distance < convertOffset)
+					return true;
+				else return false;
+			}
+			else
+				return true;
+		}
+		else return true;
+	}
 }

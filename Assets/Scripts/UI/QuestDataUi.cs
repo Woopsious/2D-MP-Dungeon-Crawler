@@ -16,6 +16,8 @@ public class QuestDataUi : MonoBehaviour
 	public Image questImage;
 	public GameObject acceptQuestButtonObj;
 
+	public GameObject DebugCompleteQuestButton;
+
 	[Header("Quest Info")]
 	public string questName;
 	[TextArea(3, 10)]
@@ -31,6 +33,8 @@ public class QuestDataUi : MonoBehaviour
 	public int currentAmount;
 
 	[Header("Kill Quest Info")]
+	public SOEntityStats.HumanoidTypes humanoidTypeToKill;
+
 	public SOEntityStats entityToKill;
 
 	[Header("Item Quest Info")]
@@ -49,18 +53,6 @@ public class QuestDataUi : MonoBehaviour
 	}
 	public int rewardToAdd;
 
-	[Header("List of Items/Enemies")]
-	public List<SOEntityStats> possibleBossTargets = new List<SOEntityStats>();
-	public List<SOEntityStats> possibleEntityTargets = new List<SOEntityStats>();
-	public List<SOWeapons> possibleWeapons = new List<SOWeapons>();
-	public List<SOArmors> possibleArmors = new List<SOArmors>();
-	public List<SOAccessories> possibleAccessories = new List<SOAccessories>();
-	public List<SOConsumables> possibleConsumables = new List<SOConsumables>();
-
-	/// <summary>
-	/// entities will sub to above events when they spawn, i wont have to worry about new quests being added as for now quests can only
-	/// be accepted in the hub area and no enemies will exist there (will change if i decide special sorta NPC's can spawn in dungeons)
-	/// </summary>
 	private void OnDisable()
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
@@ -70,7 +62,7 @@ public class QuestDataUi : MonoBehaviour
 	public void InitilizeBossKillQuest()
 	{
 		questType = QuestType.isBossKillQuest;
-		entityToKill = possibleBossTargets[Utilities.GetRandomNumber(possibleBossTargets.Count - 1)];
+		entityToKill = AssetDatabase.Database.bossEntities[Utilities.GetRandomNumber(AssetDatabase.Database.bossEntities.Count - 1)];
 		amount = 1;
 		InitilizeReward();
 		InitilizeText();
@@ -78,7 +70,7 @@ public class QuestDataUi : MonoBehaviour
 	public void InitilizeKillQuest()
 	{
 		questType = QuestType.isKillQuest;
-		entityToKill = possibleEntityTargets[Utilities.GetRandomNumber(possibleEntityTargets.Count - 1)];
+		entityToKill = AssetDatabase.Database.entities[Utilities.GetRandomNumber(AssetDatabase.Database.entities.Count - 1)];
 		amount = Utilities.GetRandomNumberBetween(5, 8);
 		InitilizeReward();
 		InitilizeText();
@@ -90,22 +82,22 @@ public class QuestDataUi : MonoBehaviour
 
 		if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
 		{
-			weaponToHandIn = possibleWeapons[Utilities.GetRandomNumber(possibleWeapons.Count - 1)];
+			weaponToHandIn = AssetDatabase.Database.weapons[Utilities.GetRandomNumber(AssetDatabase.Database.weapons.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == SOItems.ItemType.isArmor)
 		{
-			armorToHandIn = possibleArmors[Utilities.GetRandomNumber(possibleArmors.Count - 1)];
+			armorToHandIn = AssetDatabase.Database.armours[Utilities.GetRandomNumber(AssetDatabase.Database.armours.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == SOItems.ItemType.isAccessory)
 		{
-			accessoryToHandIn = possibleAccessories[Utilities.GetRandomNumber(possibleAccessories.Count - 1)];
+			accessoryToHandIn = AssetDatabase.Database.accessories[Utilities.GetRandomNumber(AssetDatabase.Database.accessories.Count - 1)];
 			amount = 1;
 		}
 		else if (itemTypeToHandIn == SOItems.ItemType.isConsumable)
 		{
-			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count - 1)];
+			consumableToHandIn = AssetDatabase.Database.consumables[Utilities.GetRandomNumber(AssetDatabase.Database.consumables.Count - 1)];
 			amount = 5;
 		}
 		InitilizeReward();
@@ -146,7 +138,7 @@ public class QuestDataUi : MonoBehaviour
 		}
 		else if (questType == QuestType.isKillQuest)
 		{
-			questName = $"Kill {amount} {entityToKill.entityName}";
+			questName = $"Kill {amount} {entityToKill.entityName}'s";
 			questImage.sprite = entityToKill.sprite;
 		}
 		else if(questType == QuestType.isItemHandInQuest)
@@ -191,7 +183,7 @@ public class QuestDataUi : MonoBehaviour
 		}
 		else if (questType == QuestType.isKillQuest)
 		{
-			questDescription = $"Venture into a dungeon and kill {amount} {entityToKill.entityName}.";
+			questDescription = $"Venture into a dungeon and kill {amount} {entityToKill.entityName}'s.";
 			questTrackerUi.text = $"{currentAmount} / {amount} Killed";
 		}
 		else if(questType == QuestType.isItemHandInQuest)
@@ -229,6 +221,7 @@ public class QuestDataUi : MonoBehaviour
 			acceptQuestButtonObj.SetActive(false);
 	}
 
+	//item match check
 	public bool DoesHandInItemMatch(InventoryItemUi item)
 	{
 		if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
@@ -266,16 +259,28 @@ public class QuestDataUi : MonoBehaviour
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= quest.OnQuestAccepted;
 	}
+	private void UpdateShowDebugUi(bool showDebugUi)
+	{
+		if (showDebugUi)
+			DebugCompleteQuestButton.SetActive(true);
+		else
+			DebugCompleteQuestButton.SetActive(false);
+	}
+
+	//quest actions
 	public void AcceptThisQuest() //button call
 	{
 		PlayerJournalUi.Instance.AcceptQuest(this);
+		DebugUi.UpdateShowDebubUiEvent += UpdateShowDebugUi;
 	}
 	public void CompleteThisQuest() //autoChecked
 	{
 		PlayerJournalUi.Instance.CompleteQuest(this);
+		DebugUi.UpdateShowDebubUiEvent -= UpdateShowDebugUi;
 	}
 	public void AbandonThisQuest() //button call
 	{
 		PlayerJournalUi.Instance.AbandonQuest(this);
+		DebugUi.UpdateShowDebubUiEvent -= UpdateShowDebugUi;
 	}
 }

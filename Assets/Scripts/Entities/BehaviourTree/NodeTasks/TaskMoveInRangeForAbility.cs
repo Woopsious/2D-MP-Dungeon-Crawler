@@ -1,15 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
 
-public class TaskTrackPlayer : EntityMovement
+public class TaskMoveInRangeForAbility : EntityMovement
 {
 	EntityBehaviour behaviour;
 	EntityEquipmentHandler equipmentHandler;
 
-	public TaskTrackPlayer(EntityBehaviour behaviour)
+	public TaskMoveInRangeForAbility(EntityBehaviour behaviour)
 	{
 		this.behaviour = behaviour;
 		equipmentHandler = behaviour.equipmentHandler;
@@ -17,7 +15,7 @@ public class TaskTrackPlayer : EntityMovement
 
 	public override NodeState Evaluate()
 	{
-		//Debug.Log(behaviour.name + " track player task");
+		//Debug.Log(behaviour.name + " move player in range for ability");
 
 		if (equipmentHandler.equippedWeapon.weaponBaseRef.isRangedWeapon)
 			KeepDistanceFromPlayer(behaviour, equipmentHandler);

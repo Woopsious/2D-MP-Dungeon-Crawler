@@ -108,6 +108,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerJournalEvent += HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerCodexEvent += HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HidePlayerClassSelection;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent += HideClassSkillTree;
@@ -115,6 +116,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += ShowClassSkillTree;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerCodexEvent += HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideClassSkillTree;
 
 		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateMaxAbilitySlots;
@@ -129,6 +131,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HidePlayerClassSelection;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HidePlayerClassSelection;
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= HidePlayerClassSelection;
 
 		PlayerEventManager.OnShowPlayerInventoryEvent -= HideClassSkillTree;
@@ -136,6 +139,7 @@ public class PlayerClassesUi : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= ShowClassSkillTree;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideClassSkillTree;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HideClassSkillTree;
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideClassSkillTree;
 
 		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateMaxAbilitySlots;

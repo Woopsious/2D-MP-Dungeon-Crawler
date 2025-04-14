@@ -172,7 +172,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 0.19607843}
   m_FlipX: 0
@@ -256,7 +256,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 1
   m_Sprite: {fileID: 0}
   m_Color: {r: 1, g: 0, b: 0, a: 0.19607843}
   m_FlipX: 0
@@ -781,6 +781,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1853216914634594632}
+  - component: {fileID: 1560861126473553795}
   m_Layer: 8
   m_Name: Sprites
   m_TagString: Untagged
@@ -805,6 +806,37 @@ Transform:
   - {fileID: 3891798962374031276}
   m_Father: {fileID: 5152909251807388489}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1560861126473553795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7946406051041455557}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e96cb6065543e43c4a752faaa1468eb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  UseUnreliableDeltas: 0
+  SyncPositionX: 1
+  SyncPositionY: 1
+  SyncPositionZ: 0
+  SyncRotAngleX: 1
+  SyncRotAngleY: 1
+  SyncRotAngleZ: 0
+  SyncScaleX: 1
+  SyncScaleY: 1
+  SyncScaleZ: 0
+  PositionThreshold: 0.001
+  RotAngleThreshold: 0.01
+  ScaleThreshold: 0.01
+  UseQuaternionSynchronization: 0
+  UseQuaternionCompression: 0
+  UseHalfFloatPrecision: 0
+  InLocalSpace: 0
+  Interpolate: 0
+  SlerpPosition: 0
 --- !u!1 &8304159001643266976
 GameObject:
   m_ObjectHideFlags: 0
@@ -883,6 +915,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d0c0363ac907a3345bda49979af33f9d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  originPos:
+    m_InternalValue: {x: 0, y: 0, z: 0}
   directionalIndicator: {fileID: 0}
   circleAoeIndicator: {fileID: 562549951276114887}
   coneAoeIndicator: {fileID: 203677092670643291}
@@ -1004,8 +1038,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e8d0727d5ae3244e3b569694d3912374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TransitionStateInfoList: []
-  m_Animator: {fileID: 0}
+  TransitionStateInfoList:
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 1931073568
+    DestinationState: -1319424928
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: 581703520
+    DestinationState: -1319424928
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1319424928
+    DestinationState: 1931073568
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 0
+  - IsCrossFadeExit: 0
+    Layer: 0
+    OriginatingState: -1319424928
+    DestinationState: 581703520
+    TransitionDuration: 0.25
+    TriggerNameHash: -1309810756
+    TransitionIndex: 1
+  m_Animator: {fileID: 3956036049374441388}
 --- !u!61 &4057299729461720378
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1313,6 +1375,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   behaviourRef: {fileID: 0}
+  spritesObj: {fileID: 7946406051041455557}
   entityStats: {fileID: 0}
   abilityHandler: {fileID: 0}
   equipmentHandler: {fileID: 0}

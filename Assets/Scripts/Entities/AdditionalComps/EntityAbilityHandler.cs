@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
 public class EntityAbilityHandler : NetworkBehaviour
@@ -90,7 +89,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
-				if (ability.isOffensiveAbility && ability.damageType != IDamagable.DamageType.isHealing)
+				if (ability.isOffensiveAbility && !ability.isBossAbility && ability.damageType != IDamagable.DamageType.isHealing)
 					offensiveAbilities.Add(ability);
 			}
 
@@ -104,7 +103,7 @@ public class EntityAbilityHandler : NetworkBehaviour
 			List<SOAbilities> healingAbilities = new List<SOAbilities>();
 			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
 			{
-				if (ability.damageType == IDamagable.DamageType.isHealing)
+				if (ability.damageType == IDamagable.DamageType.isHealing && !ability.isBossAbility)
 					healingAbilities.Add(ability);
 			}
 
@@ -190,7 +189,12 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityBeingCasted = null;
 		abilityCastingTimer = 0;
 		if (entityStats.statsRef.isBossVersion)
-			abilityIndicators.HideAoeIndicators();
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncHideAoeIndicatorsRpc();
+			else
+				abilityIndicators.HideAoeIndicators();
+		}
 	}
 
 	//ability cooldown timers (called in EntityBehaviour scripts)
@@ -248,7 +252,11 @@ public class EntityAbilityHandler : NetworkBehaviour
 			abilityCastingTimer -= Time.deltaTime;
 
 			if (abilityCastingTimer <= 0)
+			{
+				Debug.LogError("casted ability: " + abilityBeingCasted.Name);
+
 				CastAbility(abilityBeingCasted);
+			}
 		}
 	}
 
@@ -290,7 +298,11 @@ public class EntityAbilityHandler : NetworkBehaviour
 
 		if (entityStats.statsRef.isBossVersion)
 		{
-			abilityIndicators.HideAoeIndicators();
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncHideAoeIndicatorsRpc();
+			else
+				abilityIndicators.HideAoeIndicators();
+
 			OnBossAbilityCast?.Invoke();
 		}
 	}
@@ -415,26 +427,8 @@ public class EntityAbilityHandler : NetworkBehaviour
 				return i;
 		}
 
-		Debug.LogError("failed to get ability index");
+		Debug.LogError("failed to get ability index, ENSURE ABILITY IS ADDED TO DATABASE");
 		return 0;
-	}
-
-	//override current PlayerTarget
-	private void OverrideCurrentPlayerTarget(PlayerController player)
-	{
-		overriddenPlayerTarget = player;
-		overridePlayerTarget = true;
-	}
-	private void OverrideCurrentPlayerTarget(Vector3 targetPosition)
-	{
-		overriddenTargetPosition = targetPosition;
-		overridePlayerTarget = true;
-	}
-	private void ResetOverridenPlayerTarget()
-	{
-		overridePlayerTarget = false;
-		overriddenPlayerTarget = null;
-		overriddenTargetPosition = Vector3.zero;
 	}
 
 	//QUEUE UP CASTING OF ABILTIES (called in Task scripts)
@@ -445,6 +439,8 @@ public class EntityAbilityHandler : NetworkBehaviour
 		healingAbilityTimer = healingAbility.abilityCooldown + healingAbility.abilityCastingTimer;
 		abilityCastingTimer = healingAbility.abilityCastingTimer;
 		abilityBeingCasted =healingAbility;
+
+		//add aoe indicator code here if i decide to add indicators for basic entities
 	}
 	public void CastOffensiveAbility()
 	{
@@ -452,6 +448,8 @@ public class EntityAbilityHandler : NetworkBehaviour
 	    offensiveAbilityTimer = offensiveAbility.abilityCooldown + offensiveAbility.abilityCastingTimer;
 		abilityCastingTimer = offensiveAbility.abilityCastingTimer;
 		abilityBeingCasted = offensiveAbility;
+
+		//add aoe indicator code here if i decide to add indicators for basic entities
 	}
 
 	//queue boss entity abilities
@@ -464,7 +462,21 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityCastingTimer = abilityOne.abilityCastingTimer;
 		abilityBeingCasted = abilityOne;
 
-		abilityIndicators.ShowAoeIndicators(abilityOne, behaviour);
+		if (overridePlayerTarget && overriddenPlayerTarget != null)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityOne), overriddenPlayerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityOne, overriddenPlayerTarget.playerStats);
+		}
+		else
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityOne), behaviour.playerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityOne, behaviour.playerTarget.playerStats);
+		}
+
 		EventBossAbilityBeginCasting(abilityOne);
 	}
 	public void CastBossAbilityTwo()
@@ -476,7 +488,21 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityCastingTimer = abilityTwo.abilityCastingTimer;
 		abilityBeingCasted = abilityTwo;
 
-		abilityIndicators.ShowAoeIndicators(abilityTwo, behaviour);
+		if (overridePlayerTarget && overriddenPlayerTarget != null)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityTwo), overriddenPlayerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityTwo, overriddenPlayerTarget.playerStats);
+		}
+		else
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityTwo), behaviour.playerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityTwo, behaviour.playerTarget.playerStats);
+		}
+
 		EventBossAbilityBeginCasting(abilityTwo);
 	}
 	public void CastBossAbilityThree()
@@ -488,7 +514,21 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityCastingTimer = abilityThree.abilityCastingTimer;
 		abilityBeingCasted = abilityThree;
 
-		abilityIndicators.ShowAoeIndicators(abilityThree, behaviour);
+		if (overridePlayerTarget && overriddenPlayerTarget != null)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityThree), overriddenPlayerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityThree, overriddenPlayerTarget.playerStats);
+		}
+		else
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityThree), behaviour.playerTarget.NetworkObjectId);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityThree, behaviour.playerTarget.playerStats);
+		}
+
 		EventBossAbilityBeginCasting(abilityThree);
 	}
 
@@ -502,15 +542,34 @@ public class EntityAbilityHandler : NetworkBehaviour
 		abilityCastingTimer = abilityToCast.abilityCastingTimer;
 		abilityBeingCasted = abilityToCast;
 
-		abilityIndicators.ShowAoeIndicators(abilityToCast, behaviour);
-
-		if (position != Vector3.zero) //ability target isnt player but a position/direction
+		if (position == Vector3.zero)
+		{
+			if (overridePlayerTarget && overriddenPlayerTarget != null)
+			{
+				if (MultiplayerManager.IsMultiplayer())
+					abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityToCast), overriddenPlayerTarget.NetworkObjectId);
+				else
+					abilityIndicators.ShowAoeIndicators(abilityToCast, overriddenPlayerTarget.playerStats);
+			}
+			else
+			{
+				if (MultiplayerManager.IsMultiplayer())
+					abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityToCast), behaviour.playerTarget.NetworkObjectId);
+				else
+					abilityIndicators.ShowAoeIndicators(abilityToCast, behaviour.playerTarget.playerStats);
+			}
+		}
+		else //ability target isnt player but a position/direction
 		{
 			Vector3 adjustedPosition = position;
 			if (isDirection)
 				adjustedPosition += behaviour.transform.position;
 
-			abilityIndicators.ShowAoeIndicators(abilityToCast, behaviour, adjustedPosition);
+			if (MultiplayerManager.IsMultiplayer())
+				abilityIndicators.SyncShowAoeIndicatorsRpc(GetAbilityIndex(abilityToCast), adjustedPosition);
+			else
+				abilityIndicators.ShowAoeIndicators(abilityToCast, adjustedPosition);
+
 			OverrideCurrentPlayerTarget(adjustedPosition);
 		}
 
@@ -532,6 +591,24 @@ public class EntityAbilityHandler : NetworkBehaviour
 		OverrideCurrentPlayerTarget(newPlayerTarget); //override for marked by boss effect
 		CastAbility(markPlayerAbility);
 		OverrideCurrentPlayerTarget(newPlayerTarget); //override for ability
+	}
+
+	//PLAYER TARGET OVERRIDING
+	private void OverrideCurrentPlayerTarget(PlayerController player)
+	{
+		overriddenPlayerTarget = player;
+		overridePlayerTarget = true;
+	}
+	private void OverrideCurrentPlayerTarget(Vector3 targetPosition)
+	{
+		overriddenTargetPosition = targetPosition;
+		overridePlayerTarget = true;
+	}
+	private void ResetOverridenPlayerTarget()
+	{
+		overridePlayerTarget = false;
+		overriddenPlayerTarget = null;
+		overriddenTargetPosition = Vector3.zero;
 	}
 
 	//unique boss events

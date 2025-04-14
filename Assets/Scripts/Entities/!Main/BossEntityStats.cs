@@ -31,8 +31,12 @@ public class BossEntityStats : EntityStats
 	protected override void Start()
 	{
 		base.Start();
+
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
+
 		inPhaseTransition = true;
 		bossBehaviour.EventSpawnBossAdds(2); //spawn adds at the start
+		gameObject.transform.rotation = Quaternion.Euler(0, 0, 0);
 	}
 	protected override void OnEnable()
 	{
@@ -63,6 +67,9 @@ public class BossEntityStats : EntityStats
 		lastBossHealthPercentage = newPercentage;
 
 		if (newPercentage <= 0)
+		{
+			Debug.LogError("invoke boss death event");
 			OnBossDeath?.Invoke();
+		}
 	}
 }

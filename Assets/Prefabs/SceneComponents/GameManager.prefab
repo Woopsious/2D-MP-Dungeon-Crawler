@@ -662,11 +662,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25c60896551568b4db204972c26a25e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entities:
-  - {fileID: 11400000, guid: 15c3b47ee5836cb4f8f751252561b1c5, type: 2}
   bossEntities:
   - {fileID: 11400000, guid: 8bd1f8d3151add04a83bb1c081de4b56, type: 2}
   - {fileID: 11400000, guid: ba9e0e514cd645d48a919eca75198f71, type: 2}
+  entities:
+  - {fileID: 11400000, guid: f5c0417f0774a2c4dbea9550ecce71a2, type: 2}
+  - {fileID: 11400000, guid: 15c3b47ee5836cb4f8f751252561b1c5, type: 2}
+  - {fileID: 11400000, guid: e2c2d49d869a56944b1758bed4a68b39, type: 2}
+  - {fileID: 11400000, guid: 6fc07025ac105da4798f3c1fd37a3158, type: 2}
+  - {fileID: 11400000, guid: a7fd124713193044db971a15b63380ad, type: 2}
+  - {fileID: 11400000, guid: 05b087a09324fc948975f97d1bc67389, type: 2}
+  - {fileID: 11400000, guid: 53a8a9c77ea7f004489b0afb22d970ba, type: 2}
+  - {fileID: 11400000, guid: 84db3693dff5d0c49bc22a22fbd42f97, type: 2}
+  - {fileID: 11400000, guid: 0288555f2ad05b84a97250bded6e5cbc, type: 2}
   classes:
   - {fileID: 11400000, guid: 8c94f4824de128042acbaee3584c249c, type: 2}
   - {fileID: 11400000, guid: 9ee37a4ea3863c441be1451688aa0d81, type: 2}
@@ -724,6 +732,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b7d7195f6f75dc04da2bf0d851bc5e19, type: 2}
   - {fileID: 11400000, guid: 4a22e233325106d45af277ab36171541, type: 2}
   - {fileID: 11400000, guid: 1cc7e53592c66eb488bf4c772a6fbc14, type: 2}
+  - {fileID: 11400000, guid: 0a90e8d491fe0194baf9d54b7feb6c31, type: 2}
+  - {fileID: 11400000, guid: d763c5907bdb43442b24c2a9c10cda6c, type: 2}
+  - {fileID: 11400000, guid: 7045b5cc3698af7438408aa8ad7c9442, type: 2}
+  - {fileID: 11400000, guid: 7c200819c157b47478418489be54b486, type: 2}
+  - {fileID: 11400000, guid: ad74b1793c26306418a33af6ecb831af, type: 2}
   statusEffects:
   - {fileID: 11400000, guid: aebfd8933e53d3449b2452b82fe6167b, type: 2}
   - {fileID: 11400000, guid: dd94fec366ee0ec478a4a8f53b951747, type: 2}

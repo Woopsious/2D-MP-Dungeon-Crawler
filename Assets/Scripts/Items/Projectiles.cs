@@ -1,10 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using UnityEngine.UIElements;
 
 public class Projectiles : NetworkBehaviour
 {
@@ -17,11 +14,7 @@ public class Projectiles : NetworkBehaviour
 	private SpriteRenderer projectileSprite;
 	private float projectileSpeed;
 	public int projectileDamage;
-	private DamageType damageType;
-	enum DamageType
-	{
-		isPhysicalDamageType, isPoisonDamageType, isFireDamageType, isIceDamageType
-	}
+	private IDamagable.DamageType damageType;
 	private IDamagable.HitBye hitBye;
 	private bool isPercentageDamage;
 
@@ -71,7 +64,7 @@ public class Projectiles : NetworkBehaviour
 
 		projectileSpeed = trapRef.projectileSpeed;
 		projectileDamage = trapDamage;
-		damageType = (DamageType)trapRef.baseDamageType;
+		damageType = (IDamagable.DamageType)trapRef.baseDamageType;
 		isPercentageDamage = false;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -111,6 +104,8 @@ public class Projectiles : NetworkBehaviour
 	}
 	private void SetUpAbilityProjectile(EntityStats ownerStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
+		Debug.LogError(abilityRef.Name + " damage: " + abilityRef.damageValue);
+
 		transform.SetParent(null);
 		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
 		trapRef = null;
@@ -127,19 +122,8 @@ public class Projectiles : NetworkBehaviour
 		boxCollider.offset = new Vector2(0, 0);
 
 		projectileSpeed = abilityRef.projectileSpeed;
-		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(projectileOwner.entityLevel));
-
-		if (damageType == DamageType.isPhysicalDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.physicalDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isPoisonDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.poisonDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isFireDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.fireDamagePercentageModifier.finalPercentageValue);
-		if (damageType == DamageType.isIceDamageType)
-			projectileDamage = (int)(newDamage * projectileOwner.iceDamagePercentageModifier.finalPercentageValue);
-
-		projectileDamage *= (int)projectileOwner.damageDealtModifier.finalPercentageValue;
-		damageType = (DamageType)abilityRef.damageType;
+		projectileDamage = SetAbilityDamage();
+		damageType = abilityRef.damageType;
 		isPercentageDamage = abilityRef.isDamagePercentageBased;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -147,6 +131,22 @@ public class Projectiles : NetworkBehaviour
 		else
 			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
+	}
+	private int SetAbilityDamage()
+	{
+		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(projectileOwner.entityLevel));
+
+		if (damageType == IDamagable.DamageType.isPhysicalDamage)
+			newDamage = (int)(newDamage * projectileOwner.physicalDamagePercentageModifier.finalPercentageValue);
+		if (damageType == IDamagable.DamageType.isPoisonDamage)
+			newDamage = (int)(newDamage * projectileOwner.poisonDamagePercentageModifier.finalPercentageValue);
+		if (damageType == IDamagable.DamageType.isFireDamage)
+			newDamage = (int)(newDamage * projectileOwner.fireDamagePercentageModifier.finalPercentageValue);
+		if (damageType == IDamagable.DamageType.isIceDamage)
+			newDamage = (int)(newDamage * projectileOwner.iceDamagePercentageModifier.finalPercentageValue);
+
+		newDamage = (int)(newDamage * projectileOwner.damageDealtModifier.finalPercentageValue);
+		return newDamage;
 	}
 
 	//set weapon projectile data
@@ -177,7 +177,7 @@ public class Projectiles : NetworkBehaviour
 		SOWeapons weaponRef = AssetDatabase.Database.weapons[weaponIndex];
 		SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);
 	}
-	private void SetUpWeaponProjectile(EntityStats ownerStats, SOWeapons weaponRef, int projectileDamage, Vector2 attackPos)
+	private void SetUpWeaponProjectile(EntityStats ownerStats, SOWeapons weaponRef, int weaponProjectileDamage, Vector2 attackPos)
 	{
 		transform.SetParent(null);
 		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
@@ -195,8 +195,8 @@ public class Projectiles : NetworkBehaviour
 		boxCollider.offset = new Vector2(0, 0);
 
 		projectileSpeed = weaponRef.projectileSpeed;
-		this.projectileDamage = projectileDamage;
-		damageType = (DamageType)weaponRef.baseDamageType;
+		projectileDamage = weaponProjectileDamage;
+		damageType = (IDamagable.DamageType)weaponRef.baseDamageType;
 		isPercentageDamage = false;
 
 		if (MultiplayerManager.IsMultiplayer())
@@ -216,7 +216,7 @@ public class Projectiles : NetworkBehaviour
 		transform.SetPositionAndRotation(OriginPosition, Quaternion.Euler(0, 0, rotz - 90));
 	}
 
-	//helps with applying damage only to enemies
+	//helper to limit who can damage who
 	private void UpdateHitByeVariable()
 	{
 		if (projectileOwner.IsPlayerEntity())

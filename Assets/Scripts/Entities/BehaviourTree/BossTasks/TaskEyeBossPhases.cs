@@ -30,7 +30,7 @@ public class TaskEyeBossPhases : EntityMovement, IBossPhases
 	{
 		if (stats.inPhaseTransition != false) return NodeState.RUNNING;
 
-		Debug.Log(stats.name + " boss phase task");
+		//Debug.Log(stats.name + " boss phase task");
 
 		if (stats.bossPhase == BossEntityStats.BossPhase.firstPhase)
 			PhaseOne();

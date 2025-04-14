@@ -214,7 +214,7 @@ public class PlayerDeathUi : MonoBehaviour
 	}
 
 	//bool checks
-	private bool PlayerPartyWiped()
+	public bool PlayerPartyWiped()
 	{
 		int playersDeadCount = 0;
 		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)

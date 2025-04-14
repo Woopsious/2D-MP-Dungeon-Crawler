@@ -119,13 +119,18 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	[Rpc(SendTo.Everyone)]
-	public void SyncEntitySORefsRPC(int index)
+	public void SyncEntitySORefsRPC(int index, bool isBoss)
 	{
-		SetEntitySoRefs(index);
+		SetEntitySoRefs(index, isBoss);
 	}
-	public void SetEntitySoRefs(int index)
+	public void SetEntitySoRefs(int index, bool isBoss)
 	{
-		SOEntityStats statsRef = AssetDatabase.Database.entities[index];
+		SOEntityStats statsRef;
+		if (isBoss)
+			statsRef = AssetDatabase.Database.bossEntities[index];
+		else
+			statsRef = AssetDatabase.Database.entities[index];
+
 		this.statsRef = statsRef;
 		entityBehaviour.behaviourRef = statsRef.entityBehaviour;
 		entityLevel = GameManager.Localplayer.playerStats.entityLevel;
@@ -230,6 +235,9 @@ public class EntityStats : NetworkBehaviour
 
 		float newHealthPercentage = (float)currentHealth / maxHealth.finalValue - damageSourceInfo.damage / maxHealth.finalValue;
 
+		//only debug heal when health gets below 0% + damage isnt coming from debug kill player
+		newHealthPercentage = DebugForceHealPlayerOnLowHealth(damageSourceInfo, newHealthPercentage);
+
 		if (MultiplayerManager.IsMultiplayer())
 			ApplyDamageRpc(newHealthPercentage, damageSourceInfo.deathMessage);
 		else
@@ -317,6 +325,31 @@ public class EntityStats : NetworkBehaviour
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
+	}
+	private float DebugForceHealPlayerOnLowHealth(DamageSourceInfo damageSourceInfo, float newHealthPercentage)
+	{
+		if (IsPlayerEntity())
+		{
+			if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityWeapon)
+			{
+				Debug.LogError(damageSourceInfo.entity.name + "hit player with " + 
+					damageSourceInfo.weapon.name + " dealing " + damageSourceInfo.damage + " damage");
+			}
+			else if (damageSourceInfo.deathMessageType == DamageSourceInfo.DeathMessageType.entityAbility)
+			{
+				Debug.LogError(damageSourceInfo.entity.name + "hit player with " +
+					damageSourceInfo.ability.name + " dealing " + damageSourceInfo.damage + " damage");
+			}
+		}
+
+		if (IsPlayerEntity() && playerRef.debugNoDeath && newHealthPercentage < 0 &&
+			damageSourceInfo.deathMessageType != DamageSourceInfo.DeathMessageType.debug) //force health regen when health below 10
+		{
+			currentHealth = maxHealth.finalValue;
+			newHealthPercentage = 1;
+			return newHealthPercentage;
+		}
+		else return newHealthPercentage;
 	}
 
 	//death event

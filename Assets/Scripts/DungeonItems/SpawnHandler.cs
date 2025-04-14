@@ -51,19 +51,24 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void OnEnable()
 	{
-		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateSpawnerLevel;
 
+		BossRoomHandler.OnStartBossFightEvent += SpawnBossEntity;
+		BossRoomHandler.OnResetRoomEvent += ForceCleanUpBossRoomEntities;
+		BossEntityStats.OnBossDeath += ForceCleanUpBossRoomAdEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
 	}
 	private void OnDisable()
 	{
-		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
 		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
 		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateSpawnerLevel;
+
+		BossRoomHandler.OnStartBossFightEvent -= SpawnBossEntity;
+		BossRoomHandler.OnResetRoomEvent -= ForceCleanUpBossRoomEntities;
+		BossEntityStats.OnBossDeath -= ForceCleanUpBossRoomAdEntities;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -161,15 +166,29 @@ public class SpawnHandler : MonoBehaviour
 	}
 
 	//Entity clean up
-	public void ForceClearAllEntities()
+	private void ForceCleanUpBossRoomEntities()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (bossEntity != null)
 		{
 			Destroy(bossEntity.gameObject);
 			bossEntity = null;
 		}
 
-		CleanUpEntities();
+		ForceCleanUpBossRoomAdEntities();
+	}
+	private void ForceCleanUpBossRoomAdEntities()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		for (int i = listOfSpawnedEntities.Count - 1; i >= 0; i--)
+		{
+			if (listOfSpawnedEntities[i] == null) return;
+
+			Destroy(listOfSpawnedEntities[i].gameObject);
+			listOfSpawnedEntities.Remove(listOfSpawnedEntities[i]);
+		}
 	}
 	private void CleanUpEntities()
 	{
@@ -226,18 +245,17 @@ public class SpawnHandler : MonoBehaviour
 	}
 	private void InstantiateNewBossEntity(GameObject roomCenterPiece)
 	{
-		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
+		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform.position, Quaternion.identity);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
 
 		if (MultiplayerManager.IsMultiplayer())
 		{
 			go.GetComponent<NetworkObject>().Spawn();
-			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn), true);
 		}
 		else
-			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn), true);
 
-		bossEntity.transform.SetParent(null);
 		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		this.bossEntity = bossEntity;
 
@@ -285,12 +303,11 @@ public class SpawnHandler : MonoBehaviour
 		if (MultiplayerManager.IsMultiplayer())
 		{
 			go.GetComponent<NetworkObject>().Spawn();
-			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]), false);
 		}
 		else
-			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]), false);
 
-		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
 		ObjectPoolingManager.AddEntityToObjectPooling(entity);
 
@@ -369,6 +386,10 @@ public class SpawnHandler : MonoBehaviour
 		{
 			Vector2 spawnPosition = (ability.obstaclePositions[i] * ability.obstaclesRadius) + adjustPosition;
 			GameObject go = Instantiate(obstaclePrefab, spawnPosition, Quaternion.identity);
+
+			if (MultiplayerManager.IsMultiplayer())
+				go.GetComponent<NetworkObject>().Spawn(true);
+
 			Obstacles bossRoomObstacle = go.GetComponent<Obstacles>();
 			bossRoomObstacle.InitilizeBossRoomObstacle(ability.abilityCastingTimer);
 		}
@@ -391,6 +412,12 @@ public class SpawnHandler : MonoBehaviour
 
 		if (closestPlayerDistance <= minSpawningDistance)
 			spawningDisabled = true;
+	}
+
+	//get spawned boss entity
+	public BossEntityStats GetBossEntity()
+	{
+		return bossEntity;
 	}
 
 	public void OnDrawGizmos()

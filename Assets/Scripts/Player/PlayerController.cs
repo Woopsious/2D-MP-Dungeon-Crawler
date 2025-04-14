@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -11,6 +12,7 @@ public class PlayerController : NetworkBehaviour
 	public bool debugUseSelectedTargetForAttackDirection;
 	public bool debugSetPlayerLevelOnStart;
 	public int debugPlayerLevel;
+	public bool debugNoDeath;
 
 	[Header("Player Info")]
 	private Camera playerCamera;
@@ -26,7 +28,10 @@ public class PlayerController : NetworkBehaviour
 	private Rigidbody2D rb;
 	private Animator animator;
 
+	//movement/velocity
 	private float moveSpeed = 12;
+	public NetworkVariable<Vector2> playerVelocity = new NetworkVariable<Vector2>(default, 
+		NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Owner);
 
 	[Header("Prefabs")]
 	public GameObject AbilityAoePrefab;
@@ -37,7 +42,7 @@ public class PlayerController : NetworkBehaviour
 	private float mainAttackAutoAttackTimer;
 
 	//player respawn info
-	private readonly float respawnTimerCooldown = 3f;
+	private readonly float respawnTimerCooldown = 20f;
 	private float respawnTimer;
 
 	//player revive info
@@ -53,13 +58,14 @@ public class PlayerController : NetworkBehaviour
 
 	//ENTITY TARGETING
 	public static event Action<EntityStats> OnNewTargetSelected;
+
 	//enemy targeting
-	public EntityStats selectedEnemyTarget { get; private set; }
+	private EntityStats selectedEnemyTarget;
 	private int selectedEnemyTargetIndex;
 	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
 
 	//friendly targeting
-	public EntityStats selectedFriendlyTarget { get; private set; }
+	private EntityStats selectedFriendlyTarget;
 
 	//current player spectating index
 	private int playerSpectatorIndex;
@@ -78,8 +84,8 @@ public class PlayerController : NetworkBehaviour
 	public GameObject PlayerBossMarker;
 
 	//interactions
-	[HideInInspector] public bool isInteractingWithInteractable;
-	[HideInInspector] public Interactables currentInteractedObject;
+	public bool isInteractingWithInteractable;
+	public Interactables currentInteractedObject;
 
 	private void Awake()
 	{
@@ -119,10 +125,6 @@ public class PlayerController : NetworkBehaviour
 
 	private void Update()
 	{
-		if (GameManager.Localplayer == this)
-			playerCamera.transform.position = new Vector3(
-				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
-
 		if (playerStats.IsEntityDead())
 		{
 			if (PlayerIsLocalPlayer())
@@ -141,9 +143,15 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void FixedUpdate()
 	{
+		UpdatePlayerCameraPosition();
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
-		PlayerMovement();
+		PlayerMovementInput();
+		UpdateSpriteDirection();
+		UpdateAnimationState();
+
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		HealPlayerInHubScene();
 	}
 
@@ -199,51 +207,15 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//movement
-	private void PlayerMovement()
+	private void PlayerMovementInput()
 	{
-		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * moveSpeed, PlayerInputHandler.Instance.MovementInput.y * moveSpeed);
+		if (GameManager.Localplayer != this) return;
 
-		if (!MultiplayerManager.IsMultiplayer())
-		{
-			//Debug.LogError("sp | move input: " + moveInput);
-			Move(moveInput);
-		}
-		else if (IsHost && IsLocalPlayer)
-		{
-			//Debug.LogError("host | move input: " + moveInput);
-			MoveRpc(moveInput);
-		}
-		else if (IsClient && IsLocalPlayer)
-		{
-			//Debug.LogError("client | move input: " + moveInput);
-			MoveRpc(moveInput);
-		}
+		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x, PlayerInputHandler.Instance.MovementInput.y);
+		rb.velocity = moveInput * moveSpeed;
 
-		UpdateSpriteDirection();
-		UpdateAnimationState();
-	}
-	[Rpc(SendTo.Server)]
-	private void MoveRpc(Vector2 moveInput)
-	{
-		Move(moveInput);
-	}
-	private void Move(Vector2 moveInput)
-	{
-		rb.velocity = moveInput;
-	}
-	private void UpdateSpriteDirection()
-	{
-		if (rb.velocity.x > 0.01 && rb.velocity.x != 0)
-			transform.eulerAngles = new Vector3(0, 0, 0);
-		else if (rb.velocity.x < -0.01 && rb.velocity.x != 0)
-			transform.eulerAngles = new Vector3(0, 180, 0);
-	}
-	private void UpdateAnimationState()
-	{
-		if (rb.velocity == new Vector2(0, 0))
-			animator.SetBool("isIdle", true);
-		else
-			animator.SetBool("isIdle", false);
+		if (MultiplayerManager.IsMultiplayer() && IsOwner)
+			playerVelocity.Value = moveInput;
 	}
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
@@ -252,7 +224,52 @@ public class PlayerController : NetworkBehaviour
 		else
 			moveSpeed *= speedModifier;
 	}
+	private void UpdateSpriteDirection()
+	{
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (Mathf.Approximately(playerVelocity.Value.x, 0)) return;
 
+			if (playerVelocity.Value.x > 0.01)
+				transform.eulerAngles = new Vector3(0, 0, 0);
+			else if (playerVelocity.Value.x < -0.01)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+		}
+		else
+		{
+			if (Mathf.Approximately(rb.velocity.x, 0)) return;
+
+			if (rb.velocity.x > 0.01)
+				transform.eulerAngles = new Vector3(0, 0, 0);
+			else if (rb.velocity.x < -0.01)
+				transform.eulerAngles = new Vector3(0, 180, 0);
+		}
+	}
+	private void UpdateAnimationState()
+	{
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (Mathf.Approximately(playerVelocity.Value.magnitude, 0))
+				animator.SetBool("isIdle", true);
+			else
+				animator.SetBool("isIdle", false);
+		}
+		else
+		{
+			if (Mathf.Approximately(rb.velocity.magnitude, 0))
+				animator.SetBool("isIdle", true);
+			else
+				animator.SetBool("isIdle", false);
+		}
+	}
+	private void UpdatePlayerCameraPosition()
+	{
+		if (GameManager.Localplayer == this)
+			playerCamera.transform.position = new Vector3(
+				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
+	}
+
+	//force heal
 	private void HealPlayerInHubScene()
 	{
 		if (GameManager.Instance.currentlyLoadedScene.name != GameManager.Instance.hubScene) return;
@@ -307,6 +324,16 @@ public class PlayerController : NetworkBehaviour
 			selectedEnemyTarget = null;
 			selectedEnemyTargetIndex = 0;
 		}
+	}
+
+	//get selected targets
+	public EntityStats GetFriendlySelectedTarget()
+	{
+		return selectedFriendlyTarget;
+	}
+	public EntityStats GetEnemySelectedTarget()
+	{
+		return selectedEnemyTarget;
 	}
 
 	//cycle targeting
@@ -434,7 +461,6 @@ public class PlayerController : NetworkBehaviour
 			}
 		}
 	}
-
 	public float GetRespawnTime()
 	{
 		return respawnTimer;
@@ -499,8 +525,8 @@ public class PlayerController : NetworkBehaviour
 	{
 		reviveTimer = reviveTimerCooldown;
 		respawnTimer = respawnTimerCooldown;
-		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
+		ResetPlayerSpectateMode();
 	}
 	private void ReviveDeadPlayer(PlayerController optionalReviverPlayer, PlayerController revivedPlayer)
 	{
@@ -508,8 +534,8 @@ public class PlayerController : NetworkBehaviour
 
 		reviveTimer = reviveTimerCooldown;
 		respawnTimer = respawnTimerCooldown;
-		playerSpectatorIndex = 0;
 		playerStats.ResetEntityStats();
+		ResetPlayerSpectateMode();
 	}
 
 	//PLAYER SPECTATING
@@ -537,6 +563,13 @@ public class PlayerController : NetworkBehaviour
 		objectCameraTracks = player.gameObject;
 		playerSpectatorIndex = playerIndex;
 		PlayerDeathUi.Instance.UpdateSpectatingPlayer(player.OwnerClientId);
+	}
+	private void ResetPlayerSpectateMode()
+	{
+		if (GameManager.Localplayer != this) return;
+
+		playerSpectatorIndex = 0;
+		objectCameraTracks = gameObject;
 	}
 
 	//PLAYER MAIN WEAPON ATTACKS
@@ -836,6 +869,8 @@ public class PlayerController : NetworkBehaviour
 	//PLAYER MARKING FOR BOSS ABILITIES
 	public void MarkPlayer()
 	{
+		Debug.LogError("player marked");
+
 		PlayerBossMarker.SetActive(true);
 	}
 	public void UnMarkPlayer()
@@ -906,9 +941,10 @@ public class PlayerController : NetworkBehaviour
 		}
 		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
 		{
-			if (!currentInteractedObject.GetPlayer().playerStats.IsEntityDead()) return; //dont care about alive players
+			PlayerController player = currentInteractedObject.GetPlayer();
+			if (!player.playerStats.IsEntityDead()) return; //dont care about alive players
 
-			if (currentInteractedObject.GetPlayer().beingRevived)
+			if (player.beingRevived)
 				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Being Revived");
 			else
 				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Revive");
@@ -920,11 +956,10 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (currentInteractedObject == null) return;
 
-		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
-
 		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
 		{
 			PlayerController player = currentInteractedObject.GetPlayer();
+
 			if (beingRevived && playerRevivingThis == player)
 			{
 				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
@@ -933,6 +968,7 @@ public class PlayerController : NetworkBehaviour
 			}
 		}
 
+		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;
 	}
@@ -946,6 +982,7 @@ public class PlayerController : NetworkBehaviour
 	{
 		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (currentInteractedObject == null) return;
+
 		currentInteractedObject.Interact(this);
 	}
 	public void InteractCanceled()

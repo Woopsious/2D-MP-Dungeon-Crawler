@@ -26,13 +26,13 @@ public class Utilities
 	{
 		float percentage = GetRandomNumber(100); //0.5% for legendary | 5% for epic | 10% for rare | 84.5% for common (Normal Difficulty)
 
-		if (GameManager.Instance.currentDungeonData == null)
-		{
-			Debug.LogError("current dungeon data null");
-		}
+		if (SceneIsActive(GameManager.Instance.hubScene)) //return normal in hub scene
+			return NormalDifficultyRarity(percentage, rarityChanceModifier);
+
 		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers == null)
 		{
-			Debug.LogError("current dungeon stat modifiers null");
+			Debug.LogError("current dungeon stat modifiers null, returning normal difficulty modifiers");
+			return NormalDifficultyRarity(percentage, rarityChanceModifier);
 		}
 
 		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier == 0.25f)
@@ -47,9 +47,9 @@ public class Utilities
 	{
 		if (percentage >= 97.5 - rarityChanceModifier) //2.5%
 			return SOItems.Rarity.isLegendary;
-		else if (percentage >= 87.5 - rarityChanceModifier && percentage < 97.5 - rarityChanceModifier) //10%
+		else if (percentage >= 85 - rarityChanceModifier && percentage < 97.5 - rarityChanceModifier) //12.5%
 			return SOItems.Rarity.isEpic;
-		else if (percentage >= 67.5 - rarityChanceModifier && percentage < 87.5 - rarityChanceModifier) //20%
+		else if (percentage >= 60 - rarityChanceModifier && percentage < 85 - rarityChanceModifier) //25%
 			return SOItems.Rarity.isRare;
 		else
 			return SOItems.Rarity.isCommon;
@@ -58,9 +58,9 @@ public class Utilities
 	{
 		if (percentage >= 99 - rarityChanceModifier) //1%
 			return SOItems.Rarity.isLegendary;
-		else if (percentage >= 91.5 - rarityChanceModifier && percentage < 99 - rarityChanceModifier) //7.5%
+		else if (percentage >= 89 - rarityChanceModifier && percentage < 99 - rarityChanceModifier) //10%
 			return SOItems.Rarity.isEpic;
-		else if (percentage >= 76.5 - rarityChanceModifier && percentage < 91.5 - rarityChanceModifier) //15%
+		else if (percentage >= 69 - rarityChanceModifier && percentage < 89 - rarityChanceModifier) //20%
 			return SOItems.Rarity.isRare;
 		else
 			return SOItems.Rarity.isCommon;
@@ -69,9 +69,9 @@ public class Utilities
 	{
 		if (percentage >= 99.5 - rarityChanceModifier) //0.5%
 			return SOItems.Rarity.isLegendary;
-		else if (percentage >= 94.5 - rarityChanceModifier && percentage < 99.5 - rarityChanceModifier) //5%
+		else if (percentage >= 92 - rarityChanceModifier && percentage < 99.5 - rarityChanceModifier) //7.5%
 			return SOItems.Rarity.isEpic;
-		else if (percentage >= 84.5 - rarityChanceModifier && percentage < 94.5 - rarityChanceModifier) //10%
+		else if (percentage >= 77 - rarityChanceModifier && percentage < 92 - rarityChanceModifier) //15%
 			return SOItems.Rarity.isRare;
 		else
 			return SOItems.Rarity.isCommon;

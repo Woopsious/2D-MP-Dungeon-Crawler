@@ -54,7 +54,10 @@ public class DungeonHandler : MonoBehaviour
 	{
 		if (!MultiplayerManager.IsClientHost()) return;
 
-		player.transform.position = GetClosestPortalToPlayer(player);
+		if (BossRoomHandler.Instance != null)
+			player.transform.position = BossRoomHandler.Instance.GetPositionOfPortalToRespawnAt(player);
+		else
+			player.transform.position = GetClosestPortalToPlayer(player);
 	}
 	private Vector2 GetClosestPortalToPlayer(PlayerController player)
 	{
@@ -74,6 +77,10 @@ public class DungeonHandler : MonoBehaviour
 			}
 		}
 		return positionToRespawnAt;
+	}
+	public Vector2 GetStartingPortalForBossRoom()
+	{
+		return dungeonPortalsList[0].transform.position;
 	}
 
 	//DUNGEON SETUP

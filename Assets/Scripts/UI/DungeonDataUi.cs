@@ -116,23 +116,24 @@ public class DungeonDataUi : MonoBehaviour
 		SetDifficultyModifierAndUI(modifier);
 		UpdateDynamicUi();
 
-		for (int i = 0; i < maxDungeonModifiers; i++)
+		if (dungeonNumber != -1)
 		{
-			int chanceOfModifierAndDelayTime = Utilities.GetRandomNumber(100);
-			await Task.Delay(chanceOfModifierAndDelayTime);
+			for (int i = 0; i < maxDungeonModifiers; i++)
+			{
+				int chanceOfModifierAndDelayTime = Utilities.GetRandomNumber(100);
+				await Task.Delay(chanceOfModifierAndDelayTime);
 
-			if (dungeonModifiersInUse.Count < minDungeonModifiers) //ensure min modifiers
-				chanceOfModifierAndDelayTime = 100;
+				if (dungeonModifiersInUse.Count < minDungeonModifiers) //ensure min modifiers
+					chanceOfModifierAndDelayTime = 100;
 
-			if (chanceOfModifierAndDelayTime <= 66) continue;
-			SetDungeonModifiersAndUi(GetNonDuplicateModifier());
+				if (chanceOfModifierAndDelayTime <= 66) continue;
+				SetDungeonModifiersAndUi(GetNonDuplicateModifier());
+			}
 		}
-
 		DungeonInfoUi.SetActive(true);
 	}
 	private void SetDifficultyModifierAndUI(int modifier)
 	{
-		if (dungeonNumber == -1) return; //boss dungeon
 		if (modifier == 0)
 		{
 			minDungeonModifiers = 0;

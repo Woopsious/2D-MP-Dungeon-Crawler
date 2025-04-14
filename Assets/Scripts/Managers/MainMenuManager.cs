@@ -38,11 +38,14 @@ public class MainMenuManager : MonoBehaviour
 	public GameObject keybindsSettingsPanel;
 	public GameObject KeyboardKeybindsPanel;
 
-	[Header("Player Settings")]
+	[Header("Player Settings Panel")]
 	public GameObject playerSettingsPanel;
 
 	[Header("Audio Panel")]
 	public GameObject audioSettingsPanel;
+
+	[Header("Credits Panel")]
+	public GameObject creditsPanel;
 
 	private void Awake()
 	{
@@ -277,6 +280,18 @@ public class MainMenuManager : MonoBehaviour
 
 		AudioManager.Instance.UpdateAudioVolume();
 		SaveManager.Instance.SavePlayerData();
+	}
+
+	//audio panel
+	public void ShowCreditsMenu()
+	{
+		mainMenuPanel.SetActive(false);
+		creditsPanel.SetActive(true);
+	}
+	public void HideCreditsMenu()
+	{
+		mainMenuPanel.SetActive(true);
+		creditsPanel.SetActive(false);
 	}
 
 	//SAVE LOAD GAME PANEL ACTIONS

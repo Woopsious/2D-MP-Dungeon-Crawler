@@ -41,6 +41,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideTip;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideTip;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideTip;
+		PlayerEventManager.OnShowPlayerCodexEvent += HideTip;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideTip;
 
 		OnMouseRightClick += HideShowContextMenu;
@@ -50,6 +51,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerJournalEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerCodexEvent += HideContextMenu;
 		PlayerEventManager.OnShowPlayerDeathUiEvent += HideContextMenu;
 	}
 	private void OnDisable()
@@ -62,6 +64,7 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideTip;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HideTip;
 		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideTip;
 
 		OnMouseRightClick -= HideShowContextMenu;
@@ -71,7 +74,8 @@ public class ToolTipManager : MonoBehaviour
 		PlayerEventManager.OnShowPlayerSkillTreeEvent -= HideContextMenu;
 		PlayerEventManager.OnShowPlayerLearntAbilitiesEvent -= HideContextMenu;
 		PlayerEventManager.OnShowPlayerJournalEvent -= HideContextMenu;
-		PlayerEventManager.OnShowPlayerDeathUiEvent += HideContextMenu;
+		PlayerEventManager.OnShowPlayerCodexEvent -= HideContextMenu;
+		PlayerEventManager.OnShowPlayerDeathUiEvent -= HideContextMenu;
 	}
 
 	//context menu
@@ -89,24 +93,25 @@ public class ToolTipManager : MonoBehaviour
 		contextWindow.transform.position = new Vector2(mousePos.x + 25 + tipWindow.sizeDelta.x / 2, mousePos.y);
 		contextWindow.gameObject.SetActive(true);
 
-		if (!slot.IsPlayerEquipmentSlot())	//show equip item buttons
-		{
-			EquipItem(slot);    //button delegation in here (more complex with multiple slot destination etc..)
-			equipItemButton.gameObject.SetActive(true);
-			unEquipItemButton.gameObject.SetActive(false);
-
-			discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); });
-			discardItemButton.gameObject.SetActive(true);
-		}
-		else //show unEquipItem button
+		if (slot.IsPlayerEquipmentSlot())	//show unEquipItem button
 		{
 			unEquipItemButton.onClick.AddListener(delegate { UnEquipItem(slot); });
 			unEquipItemButton.gameObject.SetActive(true);
 			equipItemButton.gameObject.SetActive(false);
 		}
+		else //show equip item buttons
+		{
+			EquipItem(slot);    //button delegation in here (more complex with multiple slot destination etc..)
+			equipItemButton.gameObject.SetActive(true);
+			unEquipItemButton.gameObject.SetActive(false);
 
-		//keep rest hidden for learnt abilities inventory
-		if (CheckIfListContainsSlot(PlayerInventoryUi.Instance.LearntAbilitySlots, slot)) return;
+			if (slot.slotType == InventorySlotDataUi.SlotType.ability) return; //disable deleting of abilities in learnt ability slots
+			discardItemButton.onClick.AddListener(delegate { DiscardItem(slot); });
+			discardItemButton.gameObject.SetActive(true);
+		}
+
+		//disable below for abilities in equipped ability slots
+		if (slot.slotType == InventorySlotDataUi.SlotType.equippedAbilities) return;
 
 		splitItemButton.onClick.AddListener(delegate { SplitItem(slot); });
 		splitItemButton.gameObject.SetActive(true);
@@ -237,8 +242,7 @@ public class ToolTipManager : MonoBehaviour
 
 		if (oldSlot.itemInSlot.abilityBaseRef != null)
 		{
-			Destroy(oldSlot.itemInSlot.gameObject);
-			oldSlot.RemoveItemFromSlot();
+			oldSlot.DestroyItemInSlot();
 			return;
 		}
 		else
@@ -249,7 +253,6 @@ public class ToolTipManager : MonoBehaviour
 				if (!slot.IsSlotEmpty()) continue;
 
 				slot.AddItemToSlot(oldSlot.itemInSlot);
-				oldSlot.RemoveItemFromSlot();
 				return;
 			}
 			Debug.LogError("inventory full");
@@ -271,21 +274,19 @@ public class ToolTipManager : MonoBehaviour
 		if (slot.itemInSlot.currentStackCount % 2 == 0)
 		{
 			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount / 2);
-			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+			PlayerInventoryUi.Instance.AddNewItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
 		}
 		else
 		{
 			float newStackCount = slot.itemInSlot.currentStackCount / 2; //split stack count (round down copy)
 			slot.itemInSlot.SetStackCounter((int)newStackCount);
-			PlayerInventoryUi.Instance.AddItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
+			PlayerInventoryUi.Instance.AddNewItemToInventory(slot.itemInSlot.GetComponent<Items>(), false);
 			slot.itemInSlot.SetStackCounter(slot.itemInSlot.currentStackCount + 1); //(round up original)
 		}
 	}
 	private void DiscardItem(InventorySlotDataUi slot)
 	{
-		InventoryItemUi item = slot.itemInSlot;
-		slot.RemoveItemFromSlot();
-		Destroy(item.gameObject);
+		slot.DestroyItemInSlot();
 		HideContextMenu();
 	}
 	private void HandInItem(InventorySlotDataUi slot)
@@ -310,13 +311,6 @@ public class ToolTipManager : MonoBehaviour
 	}
 
 	//bool check
-	private bool CheckIfListContainsSlot(List<GameObject> listOfSlots, InventorySlotDataUi slot)
-	{
-		if (listOfSlots.Contains(slot.gameObject))
-			return true;
-		else
-			return false;
-	}
 	private QuestDataUi CanItemBeHandedIn(InventoryItemUi item)
 	{
 		if (item.type == SOItems.ItemType.isAbility) return null;
