@@ -11,7 +11,9 @@ public class TrapActivationCollider : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (other.GetComponent<PlayerController>() != null)
-			StartCoroutine(trapHandler.ActivateTrapDelay(other));
+			StartCoroutine(trapHandler.ActivateTrap());
 	}
 }

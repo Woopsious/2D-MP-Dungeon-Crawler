@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-public class AbilityAOE : MonoBehaviour
+public class AbilityAOE : NetworkBehaviour
 {
 	public SOBossAbilities abilityBossRef;
 	public SOAbilities abilityRef;
@@ -28,20 +30,48 @@ public class AbilityAOE : MonoBehaviour
 
 	private void Update()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
 		AbilityDurationTimer();
 	}
 
 	//SET DATA
 	public void Initilize(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
 	{
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+			{
+				if (abilityRef == AssetDatabase.Database.abilities[i])
+				{
+					SetUpAoeAbilityRpc(abilityOwner.GetComponent<NetworkObject>().NetworkObjectId, i, targetPosition);
+					return;
+				}
+			}
+			Debug.LogError("aoe set up failed");
+		}
+		else
+			SetUpAoeAbility(abilityOwner, abilityRef, targetPosition);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SetUpAoeAbilityRpc(ulong ownerId, int abilityIndex, Vector2 targetPosition)
+	{
+		EntityStats entityStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAoeAbility(entityStats, ability, targetPosition);
+	}
+	private void SetUpAoeAbility(EntityStats abilityOwner, SOAbilities abilityRef, Vector2 targetPosition)
+	{
+		transform.SetParent(null);
 		debugLockDamage = false;
 
 		if (abilityRef is SOBossAbilities abilityBossRef)
 			this.abilityBossRef = abilityBossRef;
 		this.abilityRef = abilityRef;
-
 		this.abilityOwner = abilityOwner;
 		casterPosition = abilityOwner.transform.position;
+		UpdateHitByeVariable();
+
 		gameObject.name = abilityRef.Name + "Aoe";
 		aoeColliderIndicator.GetComponent<SpriteRenderer>().sprite = abilityRef.abilitySprite;
 		aoeColliderIndicator.transform.localPosition = Vector3.zero;
@@ -59,7 +89,6 @@ public class AbilityAOE : MonoBehaviour
 		}
 
 		SetDamage();
-		UpdateHitByeVariable(abilityOwner.playerRef);
 
 		aoeLingers = true;
 		abilityDurationTimer = abilityRef.aoeDuration;
@@ -69,7 +98,10 @@ public class AbilityAOE : MonoBehaviour
 			abilityDurationTimer = 0.1f;
 		}
 
-		gameObject.SetActive(true);
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 	private void SetDamage()
@@ -90,14 +122,15 @@ public class AbilityAOE : MonoBehaviour
 	}
 
 	//helps with applying damage only to enemies
-	private void UpdateHitByeVariable(PlayerController player)
+	private void UpdateHitByeVariable()
 	{
-		if (player != null)
+		if (abilityOwner.IsPlayerEntity())
 			hitBye = IDamagable.HitBye.player;
 		else
 			hitBye = IDamagable.HitBye.entity;
 
-		if (aoeLingers) //lingering aoes damage everyone
+		//overwrites
+		if (abilityRef != null && abilityRef.abilityEnviromental)
 			hitBye = IDamagable.HitBye.enviroment;
 	}
 
@@ -174,7 +207,10 @@ public class AbilityAOE : MonoBehaviour
 		{
 			if (debugLockDamage)
 			{
-				DungeonHandler.AoeAbilitiesCleanUp(this);
+				if (MultiplayerManager.IsMultiplayer())
+					DisableObjectRpc();
+				else
+					DisableObject();
 				return;
 			}
 
@@ -185,8 +221,12 @@ public class AbilityAOE : MonoBehaviour
 				else
 					DamageAllCollidedEntities();
 			}
+
 			debugLockDamage = true;
-			DungeonHandler.AoeAbilitiesCleanUp(this);
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
 		}
 	}
 
@@ -262,5 +302,27 @@ public class AbilityAOE : MonoBehaviour
 			return true;
 		else
 			return false;
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void EnableObjectRpc()
+	{
+		EnableObject();
+	}
+	private void EnableObject()
+	{
+		gameObject.SetActive(true);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void DisableObjectRpc()
+	{
+		DisableObject();
+	}
+	private void DisableObject()
+	{
+		gameObject.SetActive(false);
+		transform.position = Vector3.zero;
+		ObjectPoolingManager.AddAoeAbilityToInActivePool(this);
 	}
 }

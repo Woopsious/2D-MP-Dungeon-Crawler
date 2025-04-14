@@ -20,6 +20,13 @@ public class SOItems : ScriptableObject
 	}
 	public bool isEquipable;
 
+	[Header("Base Rarity")]
+	public Rarity rarity;
+	public enum Rarity
+	{
+		isCommon, isRare, isEpic, isLegendary
+	}
+
 	[Header("Is Inventory Stackable")]
 	public bool isStackable;
 	public int MaxStackCount;

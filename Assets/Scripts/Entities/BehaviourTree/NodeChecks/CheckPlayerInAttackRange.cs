@@ -16,22 +16,21 @@ public class CheckPlayerInAttackRange : BTNode
 
 	public override NodeState Evaluate()
 	{
-		var T = parent.GetData("PlayerVisible");
-
-		if (WithinWeaponAttackRange(equipmentHandler.equippedWeapon.weaponBaseRef))
+		if (PlayerWithinMaxAttackRange(equipmentHandler.equippedWeapon.weaponBaseRef))
 			return NodeState.SUCCESS;
 		else
 			return NodeState.FAILURE;
 	}
 
-	private bool WithinWeaponAttackRange(SOWeapons weaponBaseRef)
+	private bool PlayerWithinMaxAttackRange(SOWeapons weaponBaseRef)
 	{
-		float maxDistanceToCheck = weaponBaseRef.maxAttackRange;
-		if (!weaponBaseRef.isRangedWeapon && behaviour.entityStats.statsRef.isBossVersion)
-				maxDistanceToCheck = weaponBaseRef.maxAttackRange * 2;
+		float distanceToCheck = weaponBaseRef.maxAttackRange;
+		if (behaviour.entityStats.statsRef.isBossVersion)
+			distanceToCheck *= 2;
 
-		if (behaviour.distanceToPlayerTarget <= maxDistanceToCheck)
+		if (behaviour.distanceToPlayerTarget < distanceToCheck)
 			return true;
-		else return false;
+		else
+			return false;
 	}
 }

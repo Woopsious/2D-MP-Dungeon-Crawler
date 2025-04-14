@@ -72,7 +72,7 @@ public class TaskGoblinBossTransitions : EntityMovement, IBossTransitionPhases
 		{
 			currentSelfHealCounter++;
 			slowHealTimer = 5;
-			stats.OnHeal(0.025f, true, stats.healingPercentageModifier.finalPercentageValue);
+			stats.RecieveHealing(0.025f, true, stats.healingPercentageModifier.finalPercentageValue);
 		}
 	}
 	public void PhaseThreeTransition()

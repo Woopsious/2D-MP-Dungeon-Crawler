@@ -3,12 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class SaveManager : MonoBehaviour
 {
 	public static SaveManager Instance;
 
-	public static event Action RestoreData; //event for data that needs to be restored
+	//public static event Action RestoreData; //event for data that needs to be restored
+
+	public static event Action ReloadSaveGameData;
+
+	public static event Action ReloadDungeonData;
 
 	[SerializeReference] public GameData GameData = new GameData();
 	[SerializeReference] public SlotData SlotData = new SlotData();
@@ -31,19 +36,8 @@ public class SaveManager : MonoBehaviour
 		else
 		{
 			Instance = this;
-			DontDestroyOnLoad(this.gameObject);
+			DontDestroyOnLoad(gameObject);
 		}
-	}
-
-	private void OnEnable()
-	{
-		GameManager.OnSceneChangeFinish += LoadPlayerData;
-		GameManager.OnSceneChangeFinish += RestoreGameData;
-	}
-	private void OnDisable()
-	{
-		GameManager.OnSceneChangeFinish -= LoadPlayerData;
-		GameManager.OnSceneChangeFinish -= RestoreGameData;
 	}
 
 	public void ReloadSaveSlots(GameObject saveSlotContainer)
@@ -101,6 +95,8 @@ public class SaveManager : MonoBehaviour
 	//SAVING PLAYER DATA
 	public void SavePlayerData()
 	{
+		Debug.LogError("SAVE PLAYER DATA");
+
 		DeletePlayerData();
 
 		string directory = Application.persistentDataPath + "/PlayerData";
@@ -120,7 +116,8 @@ public class SaveManager : MonoBehaviour
 			autoSelectNewTarget = PlayerSettingsManager.Instance.autoSelectNewTarget,
 			autoCastDirectionalAbilitiesAtTarget = PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget,
 			autoCastAoeAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget,
-			autoCastEffectAbilitiesOnTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnTarget,
+			autoCastEffectAbilitiesOnEnemyTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnEnemyTarget,
+			autoCastEffectAbilitiesOnFriendlyTarget = PlayerSettingsManager.Instance.autoCastEffectAbilitiesOnFriendlyTarget,
 			keybindsData = PlayerInputHandler.Instance.playerControls.SaveBindingOverridesAsJson(),
 			musicVolume = AudioManager.Instance.musicVolume,
 			menuSfxVolume = AudioManager.Instance.menuSfxVolume,
@@ -133,6 +130,8 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadPlayerData()
 	{
+		Debug.LogError("LOAD PLAYER DATA");
+
 		string directory = Application.persistentDataPath + "/PlayerData";
 		string filePath = Application.persistentDataPath + "/PlayerData/data.json";
 
@@ -147,7 +146,7 @@ public class SaveManager : MonoBehaviour
 
 		PlayerSettingsManager.Instance.RestorePlayerSettingsData(playerData.mainAttackIsAutomatic, playerData.autoSelectNewTarget,
 			playerData.autoCastDirectionalAbilitiesAtTarget, playerData.autoCastAoeAbilitiesOnTarget, 
-			playerData.autoCastEffectAbilitiesOnTarget);
+			playerData.autoCastEffectAbilitiesOnEnemyTarget, playerData.autoCastEffectAbilitiesOnFriendlyTarget);
 
 		AudioManager.Instance.RestoreAudioVolume(playerData.musicVolume,
 			playerData.menuSfxVolume, playerData.ambienceVolume, playerData.sfxVolume);
@@ -167,12 +166,14 @@ public class SaveManager : MonoBehaviour
 	//auto features
 	public void AutoSaveData()
 	{
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
+
+		Debug.LogError("auto saving game data at: " + DateTime.Now.ToString());
 		SaveGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 	public void AutoLoadData() //(redundent function, may reuse at some point)
 	{
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) return;
 		LoadGameData(Application.persistentDataPath + "/GameData/AutoSave");
 	}
 
@@ -197,7 +198,6 @@ public class SaveManager : MonoBehaviour
 	}
 	public void LoadGameData(string directory)
 	{
-		if (GameManager.isNewGame) return;
 		if (!DoesDirectoryExist(directory)) return;
 		if (!DoesFileExist(directory, "/GameData.json")) return;
 
@@ -212,10 +212,15 @@ public class SaveManager : MonoBehaviour
 	}
 
 	//restore data event called on scene change
-	public void RestoreGameData()
+	public void ReloadSaveGameDataEvent()
 	{
-		Debug.LogError("restoring data at: " + DateTime.Now.ToString());
-		RestoreData?.Invoke();
+		Debug.LogError("reloading game data at: " + DateTime.Now.ToString());
+		ReloadSaveGameData?.Invoke();
+	}
+	public void ReloadDungeonDataEvent()
+	{
+		Debug.LogError("reloading dungeon data at: " + DateTime.Now.ToString());
+		ReloadDungeonData?.Invoke();
 	}
 
 	//saving/loading/deleting json file
@@ -290,7 +295,7 @@ public class SaveManager : MonoBehaviour
 	private void SavePlayerInfoData()
 	{
 		//need reworking for mp
-		EntityStats playerStats = SceneHandler.playerInstance.playerStats;
+		EntityStats playerStats = GameManager.Localplayer.playerStats;
 
 		Instance.SlotData.name = Utilities.GetRandomNumber(1000).ToString();
 		Instance.SlotData.level = playerStats.entityLevel.ToString();
@@ -301,17 +306,17 @@ public class SaveManager : MonoBehaviour
 		Instance.GameData.playerCurrenthealth = playerStats.currentHealth;
 		Instance.GameData.playerCurrentMana = playerStats.currentMana;
 		Instance.GameData.playerGoldAmount = PlayerInventoryUi.Instance.GetGoldAmount();
-		Instance.GameData.hasRecievedStartingItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedStartingItems;
-		Instance.GameData.hasRecievedKnightItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedKnightItems;
-		Instance.GameData.hasRecievedWarriorItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedWarriorItems;
-		Instance.GameData.hasRecievedRogueItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRogueItems;
-		Instance.GameData.hasRecievedRangerItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedRangerItems;
-		Instance.GameData.hasRecievedMageItems = playerStats.GetComponent<PlayerInventoryHandler>().hasRecievedMageItems;
 	}
 	private void SavePlayerClassData()
 	{
 		//need reworking for mp
 		Instance.GameData.currentPlayerClass = PlayerClassesUi.Instance.currentPlayerClass;
+		Instance.GameData.hasRecievedStartingItems = PlayerClassesUi.Instance.hasRecievedStartingItems;
+		Instance.GameData.hasRecievedKnightItems = PlayerClassesUi.Instance.hasRecievedKnightItems;
+		Instance.GameData.hasRecievedWarriorItems = PlayerClassesUi.Instance.hasRecievedWarriorItems;
+		Instance.GameData.hasRecievedRogueItems = PlayerClassesUi.Instance.hasRecievedRogueItems;
+		Instance.GameData.hasRecievedRangerItems = PlayerClassesUi.Instance.hasRecievedRangerItems;
+		Instance.GameData.hasRecievedMageItems = PlayerClassesUi.Instance.hasRecievedMageItems;
 		Instance.GameData.unlockedClassNodeIndexesList.Clear();
 
 		bool isNodeStatBoost;
@@ -333,16 +338,11 @@ public class SaveManager : MonoBehaviour
 	}
 	private void SavePlayerStorageChestData()
 	{
-		if (DungeonHandler.Instance.playerStorageChest == null)
-		{
-			Debug.LogError("storage chest null");
-			return;
-		}
+		if (DungeonHandler.Instance.playerStorageChest == null) return;
 
 		Instance.GameData.playerStorageChestItems.Clear();
-		ChestHandler playerStorageChest = DungeonHandler.Instance.playerStorageChest;
 
-		foreach (InventoryItemUi item in playerStorageChest.itemList)
+		foreach (InventoryItemUi item in PlayerInventoryUi.Instance.GetPlayerStoredItemsList())
 		{
 			InventoryItemData itemData = new()
 			{
@@ -352,8 +352,8 @@ public class SaveManager : MonoBehaviour
 				consumableBaseRef = item.consumableBaseRef,
 				abilityBaseRef = item.abilityBaseRef,
 
-				itemLevel = item.itemLevel,
-				rarity = (InventoryItemData.Rarity)item.rarity,
+				level = item.level,
+				rarity = item.rarity,
 
 				inventorySlotIndex = item.inventorySlotIndex,
 				isStackable = item.isStackable,
@@ -391,9 +391,9 @@ public class SaveManager : MonoBehaviour
 					consumableBaseRef = inventoryItem.consumableBaseRef,
 					abilityBaseRef = inventoryItem.abilityBaseRef,
 
-					itemLevel = inventoryItem.itemLevel,
-					enchantmentLevel = inventoryItem.itemEnchantmentLevel,
-					rarity = (InventoryItemData.Rarity)inventoryItem.rarity,
+					level = inventoryItem.level,
+					enchantmentLevel = inventoryItem.enchantmentLevel,
+					rarity = inventoryItem.rarity,
 
 					inventorySlotIndex = inventoryItem.inventorySlotIndex,
 					isStackable = inventoryItem.isStackable,
@@ -413,7 +413,7 @@ public class SaveManager : MonoBehaviour
 			QuestItemData questData = new()
 			{
 				isCurrentlyActiveQuest = quest.isCurrentlyActiveQuest,
-				questType = (QuestItemData.QuestType)quest.questType,
+				questType = quest.questType,
 				amount = quest.amount,
 				currentAmount = quest.currentAmount,
 				entityToKill = quest.entityToKill,
@@ -421,8 +421,8 @@ public class SaveManager : MonoBehaviour
 				armorToHandIn = quest.armorToHandIn,
 				accessoryToHandIn = quest.accessoryToHandIn,
 				consumableToHandIn = quest.consumableToHandIn,
-				itemTypeToHandIn = (QuestItemData.ItemType)quest.itemTypeToHandIn,
-				questRewardType = (QuestItemData.RewardType)quest.questRewardType,
+				itemTypeToHandIn = quest.itemTypeToHandIn,
+				questRewardType = quest.questRewardType,
 				rewardToAdd = quest.rewardToAdd
 			};
 			questDataList.Add(questData);
@@ -454,7 +454,8 @@ public class PlayerData
 	public bool autoSelectNewTarget;
 	public bool autoCastDirectionalAbilitiesAtTarget;
 	public bool autoCastAoeAbilitiesOnTarget;
-	public bool autoCastEffectAbilitiesOnTarget;
+	public bool autoCastEffectAbilitiesOnEnemyTarget;
+	public bool autoCastEffectAbilitiesOnFriendlyTarget;
 
 	public string keybindsData;
 
@@ -518,13 +519,9 @@ public class InventoryItemData
 	public SOAbilities abilityBaseRef;
 
 	[Header("Item Info")]
-	public int itemLevel;
+	public int level;
 	public int enchantmentLevel;
-	public Rarity rarity;
-	public enum Rarity
-	{
-		isCommon, isRare, isEpic, isLegendary
-	}
+	public SOItems.Rarity rarity;
 
 	[Header("Item Dynamic Info")]
 	public int inventorySlotIndex;
@@ -545,11 +542,7 @@ public class QuestItemData
 	public bool isCurrentlyActiveQuest;
 
 	[Header("Quest Info")]
-	public QuestType questType;
-	public enum QuestType
-	{
-		isBossKillQuest, isKillQuest, isItemHandInQuest
-	}
+	public QuestDataUi.QuestType questType;
 	public int amount;
 	public int currentAmount;
 
@@ -562,18 +555,10 @@ public class QuestItemData
 	public SOAccessories accessoryToHandIn;
 	public SOConsumables consumableToHandIn;
 
-	public ItemType itemTypeToHandIn;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public SOItems.ItemType itemTypeToHandIn;
 
 	[Header("Quest Reward")]
-	public RewardType questRewardType;
-	public enum RewardType
-	{
-		isExpReward, isGoldReward
-	}
+	public QuestDataUi.RewardType questRewardType;
 	public int rewardToAdd;
 }
 [System.Serializable]
@@ -590,6 +575,5 @@ public class DungeonData
 [System.Serializable]
 public class DungeonChestData
 {
-	public bool chestActive;
-	public bool chestStateOpened;
+	public ChestHandler.ChestState chestState;
 }

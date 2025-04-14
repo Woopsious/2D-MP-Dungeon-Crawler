@@ -47,7 +47,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		image = GetComponent<Image>();
 		nodeUnlockButtonObj.GetComponent<Button>().onClick.AddListener(UnlockThisNode);
 		nodeRefundButtonObj.GetComponent<Button>().onClick.AddListener(RefundThisNode);
-		ResetNode(null);
+		ResetNode(null, null);
 	}
 
 	//tool tip
@@ -154,22 +154,22 @@ public class ClassTreeNodeUi : MonoBehaviour
 	}
 	private string SetStatusEffectToolTips(EntityStats playerStats)
 	{
-		string info = "\n";
+		string info = "";
 
 		foreach (SOStatusEffects effect in abilityUnlock.unlock.statusEffects) //list all effect info
 		{
 			if (effect.isDOT) //dot info
-				info += $"Deals {effect.effectValue * playerStats.levelModifier} damage every second";
+				info += $"\nDeals {effect.effectValue * playerStats.levelModifier} damage every second";
 			else //effect info
 			{
 				if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect) //effect type info
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage res ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% damage recieved modifier ";
 				else if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-					info += $"Applies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
+					info += $"\nApplies a {Utilities.ConvertFloatToUiPercentage(effect.effectValue)}% movement speed ";
 
 				if (abilityUnlock.unlock.canOnlyTargetSelf) //target info
 					info += "buff to yourself";
@@ -206,13 +206,13 @@ public class ClassTreeNodeUi : MonoBehaviour
 		else if (abilityUnlock.unlock != null)
 			PlayerClassesUi.Instance.RefundAbility(this, abilityUnlock.unlock);
 	}
-	private void ResetNode(SOClasses currentClass)
+	private void ResetNode(PlayerController player, SOClasses newClass)
 	{
 		isAlreadyUnlocked = false;
 	}
 
 	//node checks 
-	public void CheckIfNodeShouldBeLockedOrUnlocked(EntityStats playerStats)
+	private void CheckIfNodeShouldBeLockedOrUnlocked(PlayerController player)
 	{
 		if (isAlreadyUnlocked)
 		{
@@ -222,7 +222,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		}
 		if (statUnlock != null)
 		{
-			if (playerStats.entityLevel < statUnlock.LevelRequirement)
+			if (player.playerStats.entityLevel < statUnlock.LevelRequirement)
 			{
 				LockNode();
 				return;
@@ -235,7 +235,7 @@ public class ClassTreeNodeUi : MonoBehaviour
 		}
 		if (abilityUnlock != null)
 		{
-			if (playerStats.entityLevel < abilityUnlock.LevelRequirement)
+			if (player.playerStats.entityLevel < abilityUnlock.LevelRequirement)
 			{
 				LockNode();
 				return;

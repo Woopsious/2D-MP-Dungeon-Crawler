@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Unity.Netcode;
 using UnityEngine;
+using static PortalHandler;
 
 public class ChestHandler : MonoBehaviour, IInteractables
 {
@@ -9,8 +12,14 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	private SpriteRenderer spriteRenderer;
 	private AudioHandler audioHandler;
 	private LootSpawnHandler lootSpawnHandler;
-	[HideInInspector] public bool chestActive;
-	[HideInInspector] public bool chestStateOpened;
+	private Interactables interactable;
+
+	private int chestListIndex;
+	private ChestState chestState;
+	public enum ChestState
+	{
+		disabled, enabled, opened
+	}
 
 	[Header("Player Chest Info")]
 	public bool isPlayerStorageChest;
@@ -34,35 +43,76 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		spriteRenderer = GetComponent<SpriteRenderer>();
 		audioHandler = GetComponent<AudioHandler>();
 		lootSpawnHandler = GetComponent<LootSpawnHandler>();
+		interactable = GetComponent<Interactables>();
 	}
 	private void Start()
 	{
 		Initilize();
 	}
 
-	//set chest data
 	private void Initilize()
 	{
-		spriteRenderer.sprite = chestClosedSprite;
-		chestStateOpened = false;
-		lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
+		if (!isPlayerStorageChest)
+		{
+			if (!DungeonHandler.Instance.dungeonLootChestsList.Contains(this))
+				Debug.LogError("Loot chest not added to dungeon loot chest list, ensure of this type are added");
+
+			spriteRenderer.sprite = chestClosedSprite;
+			lootSpawnHandler.Initilize(maxDroppedGoldAmount, minDroppedGoldAmount, lootPool, 0);
+		}
+		else
+		{
+			if (DungeonHandler.Instance.dungeonLootChestsList.Contains(this))
+				Debug.LogError("player storage chest added to dungeon loot chest list, ensure non of this type are added");
+		}
+
+		SetChestListIndex();
+	}
+	private void SetChestListIndex()
+	{
+		for (int i = 0; i < DungeonHandler.Instance.dungeonLootChestsList.Count; i++)
+		{
+			if (DungeonHandler.Instance.dungeonLootChestsList[i] != this) continue;
+			chestListIndex = i;
+		}
 	}
 
-	//loot chest states
-	public void ActivateChest()
+	//CHEST STATE CHANGES
+	//disable chest
+	public void DisableChestState()
 	{
-		chestActive = true;
-	}
-	public void DeactivateChest()
-	{
-		chestActive = false;
+		chestState = ChestState.disabled;
 		gameObject.SetActive(false);
 	}
-	public void ChangeChestStateToOpen(bool isPlayerInteraction)
+
+	//enable chest
+	public void EnableChestState()
 	{
-		PlayerEventManager.DetectNewInteractedObject(gameObject, false);
-		chestStateOpened = true;
+		chestState = ChestState.enabled;
+		gameObject.SetActive(true);
+	}
+
+	//open chest
+	public void OpenChest(bool isPlayerInteraction)
+	{
+		if (chestState == ChestState.opened) return;
+		chestState = ChestState.opened; //call early
+
+		PlayerEventManager.DetectNewInteractedObject(interactable, false, "Interact");
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncChestStateRpc(chestListIndex, chestState, isPlayerInteraction);
+		else
+			OpenChestState(isPlayerInteraction);
+	}
+	public void OpenChestState(bool isPlayerInteraction)
+	{
+		gameObject.SetActive(true);
+		chestState = ChestState.opened;
 		spriteRenderer.sprite = chestOpenedSprite;
+
+		Debug.LogError("Chest opened");
+
 		if (isPlayerInteraction)
 		{
 			lootSpawnHandler.SpawnLoot();
@@ -70,19 +120,25 @@ public class ChestHandler : MonoBehaviour, IInteractables
 		}
 	}
 
+	//helpers
+	public ChestState GetChestState()
+	{
+		return chestState;
+	}
+
 	//player interactions
 	public void Interact(PlayerController player)
 	{
 		if (!isPlayerStorageChest)
 		{
-			if (chestStateOpened == true) return;
+			if (chestState == ChestState.opened) return;
 			audioHandler.PlayAudio(chestOpenSfx);
-			ChangeChestStateToOpen(true);
+			OpenChest(true);
 		}
 		else
 		{
 			audioHandler.PlayAudio(chestOpenSfx);
-			PlayerInventoryUi.Instance.ShowPlayerStorageChest(this, 0);
+			PlayerInventoryUi.Instance.ShowPlayerStorageChest(0);
 			player.isInteractingWithInteractable = true;
 		}
 	}
@@ -90,7 +146,7 @@ public class ChestHandler : MonoBehaviour, IInteractables
 	{
 		if (!isPlayerStorageChest) return;
 		audioHandler.PlayAudio(chestCloseSfx);
-		PlayerInventoryUi.Instance.HidePlayerStorageChest(this);
+		PlayerInventoryUi.Instance.HidePlayerStorageChest();
 		player.isInteractingWithInteractable = false;
 	}
 }

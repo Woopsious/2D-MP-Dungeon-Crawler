@@ -1,8 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class NpcHandler : MonoBehaviour, IInteractables
@@ -26,10 +24,13 @@ public class NpcHandler : MonoBehaviour, IInteractables
 	[Header("Ui Notif")]
 	public TMP_Text NpcTypeText;
 
+	private bool generatedItemsQuests;
+
 	private void Awake()
 	{
 		animator = GetComponent<Animator>();
 		spriteRenderer = GetComponentInChildren<SpriteRenderer>();
+		generatedItemsQuests = false;
 	}
 	private void Start()
 	{
@@ -38,6 +39,7 @@ public class NpcHandler : MonoBehaviour, IInteractables
 	private void OnDisable()
 	{
 		PlayerJournalUi.OnNewQuestAccepted -= OnQuestAccepted;
+		Destroy(NpcTypeText.gameObject);
 	}
 	private void Update()
 	{
@@ -53,10 +55,20 @@ public class NpcHandler : MonoBehaviour, IInteractables
 
 		NpcTypeText.transform.SetParent(MainMenuManager.Instance.runtimeUiContainer.transform);
 		NpcTypeText.transform.SetAsFirstSibling();
+
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
-			GenerateNewQuests();
+			NpcTypeText.text = "Quest Npc";
 		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
-			GenerateShopItems();
+		{
+			if (npc.shopType == SONpcs.ShopType.isWeaponSmith)
+				NpcTypeText.text = "Weapon Smith Npc";
+			if (npc.shopType == SONpcs.ShopType.isArmorer)
+				NpcTypeText.text = "Armor Smith Npc";
+			if (npc.shopType == SONpcs.ShopType.isGoldSmith)
+				NpcTypeText.text = "Gold Smith Npc";
+			if (npc.shopType == SONpcs.ShopType.isGeneralStore)
+				NpcTypeText.text = "General Store Npc";
+		}
 	}
 	private void UpdateNpcTypeText()
 	{
@@ -68,6 +80,8 @@ public class NpcHandler : MonoBehaviour, IInteractables
 	//player interactions
 	public void Interact(PlayerController player)
 	{
+		TryGenerateQuestsItemsOnInteract();
+
 		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
 		{
 			PlayerEventManager.ShowPlayerJournal();
@@ -78,6 +92,7 @@ public class NpcHandler : MonoBehaviour, IInteractables
 			PlayerEventManager.ShowPlayerInventory();
 			PlayerEventManager.ShowNpcShopInventory(this);
 		}
+
 		player.isInteractingWithInteractable = true;
 	}
 	public void UnInteract(PlayerController player)
@@ -93,7 +108,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 	//quest npc functions
 	public void GenerateNewQuests()
 	{
-		NpcTypeText.text = "Quest Npc";
 		for (int i = avalableQuestList.Count; i > 0; i--)
 		{
 			if (!avalableQuestList[i - 1].isCurrentlyActiveQuest)
@@ -130,11 +144,8 @@ public class NpcHandler : MonoBehaviour, IInteractables
 			Destroy(avalableShopItemsList[i - 1].gameObject);
 		avalableShopItemsList.Clear();
 
-		//for now grab player level, later need a better way to do this if possible
-		int playerLevel = FindObjectOfType<PlayerController>().GetComponent<EntityStats>().entityLevel;
-
 		for (int i = 0; i < Utilities.GetRandomNumberBetween(npc.minNumOfShopItems, npc.maxNumOfShopItems); i++)
-			GenerateItem(playerLevel);
+			GenerateItem(GameManager.Localplayer.playerStats.entityLevel);
 	}
 	public void GenerateItem(int playerLevel)
 	{
@@ -143,7 +154,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 
 		if (npc.shopType == SONpcs.ShopType.isWeaponSmith)
 		{
-			NpcTypeText.text = "Weapon Smith Npc";
 			Weapons weapon = go.AddComponent<Weapons>();
 			weapon.weaponBaseRef = (SOWeapons)npc.weaponSmithShopItems[Utilities.GetRandomNumber(npc.weaponSmithShopItems.Count - 1)];
 			item.weaponBaseRef = weapon.weaponBaseRef;
@@ -152,7 +162,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 		}
 		if (npc.shopType == SONpcs.ShopType.isArmorer)
 		{
-			NpcTypeText.text = "Armor Smith Npc";
 			Armors armor = go.AddComponent<Armors>();
 			armor.armorBaseRef = (SOArmors)npc.armorerShopItems[Utilities.GetRandomNumber(npc.armorerShopItems.Count - 1)];
 			item.armorBaseRef = armor.armorBaseRef;
@@ -161,7 +170,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 		}
 		if (npc.shopType == SONpcs.ShopType.isGoldSmith)
 		{
-			NpcTypeText.text = "Gold Smith Npc";
 			Accessories accessory = go.AddComponent<Accessories>();
 			accessory.accessoryBaseRef = (SOAccessories)npc.goldSmithShopItems[Utilities.GetRandomNumber(npc.goldSmithShopItems.Count - 1)];
 			item.accessoryBaseRef = accessory.accessoryBaseRef;
@@ -171,7 +179,6 @@ public class NpcHandler : MonoBehaviour, IInteractables
 		}
 		if (npc.shopType == SONpcs.ShopType.isGeneralStore)
 		{
-			NpcTypeText.text = "General Store Npc";
 			Consumables consumable = go.AddComponent<Consumables>();
 			consumable.consumableBaseRef = (SOConsumables)npc.generalStoreItems[Utilities.GetRandomNumber(npc.generalStoreItems.Count - 1)];
 			item.consumableBaseRef = consumable.consumableBaseRef;
@@ -181,6 +188,19 @@ public class NpcHandler : MonoBehaviour, IInteractables
 
 		item.Initilize();
 		avalableShopItemsList.Add(item);
+	}
+
+	//bool checks
+	private void TryGenerateQuestsItemsOnInteract()
+	{
+		if (generatedItemsQuests == true) return;
+
+		if (npc.npcType == SONpcs.NPCType.isQuestNpc)
+			GenerateNewQuests();
+		else if (npc.npcType == SONpcs.NPCType.isShopNpc)
+			GenerateShopItems();
+
+		generatedItemsQuests = true;
 	}
 
 	//quest npc events

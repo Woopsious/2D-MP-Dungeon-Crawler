@@ -5,11 +5,14 @@ using UnityEngine;
 
 public class EntityDetection : MonoBehaviour
 {
-	//refs set in respected scripts on Initilize()
-	[HideInInspector] public EntityBehaviour entityBehaviour;
-	[HideInInspector] public PlayerController player;
+	private PlayerController player;
+	private EntityBehaviour entityBehaviour;
 
-	//in Mp will need to be modified to handle multiple players
+	private void Awake()
+	{
+		player = GetComponentInParent<PlayerController>();
+		entityBehaviour = GetComponentInParent<EntityBehaviour>();
+	}
 
 	private void OnTriggerEnter2D(Collider2D other)
 	{
@@ -34,7 +37,7 @@ public class EntityDetection : MonoBehaviour
 				entityBehaviour.RemovePlayerFromAggroList(other.GetComponent<PlayerController>());
 
 			if (entityBehaviour.markedForCleanUp)
-				DungeonHandler.Instance.AddNewEntitiesToPool(entityBehaviour.entityStats);
+				ObjectPoolingManager.AddEntityToInActivePool(entityBehaviour.entityStats);
 		}
 		else if (player != null) //detect others
 		{

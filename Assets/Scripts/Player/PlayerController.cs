@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -15,37 +14,55 @@ public class PlayerController : NetworkBehaviour
 
 	[Header("Player Info")]
 	private Camera playerCamera;
+	private GameObject objectCameraTracks;
 	public LayerMask includeMe;
 	[HideInInspector] public EntityStats playerStats;
-	[HideInInspector] public EntityClassHandler playerClassHandler;
+	[HideInInspector] public PlayerClassHandler playerClassHandler;
 	[HideInInspector] public PlayerEquipmentHandler playerEquipmentHandler;
 	[HideInInspector] public PlayerExperienceHandler playerExperienceHandler;
+	[HideInInspector] public PlayerInventoryHandler playerInventoryHandler;
 	[HideInInspector] public EntityDetection enemyDetection;
 	private PlayerInput playerInput;
 	private Rigidbody2D rb;
 	private Animator animator;
 
-	public float speed = 12;
+	private float moveSpeed = 12;
+
+	[Header("Prefabs")]
+	public GameObject AbilityAoePrefab;
+	public GameObject projectilePrefab;
 
 	//main attack auto attack timer
 	private readonly float mainAttackAutoAttackCooldown = 0.25f;
 	private float mainAttackAutoAttackTimer;
 
-	[Header("Player Targeting")] // +info
-	public EntityStats selectedEnemyTarget;
-	private int selectedEnemyTargetIndex;
-	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+	//player respawn info
+	private readonly float respawnTimerCooldown = 3f;
+	private float respawnTimer;
 
-	//target selected event
-	public event Action<EntityStats> OnNewTargetSelected;
+	//player revive info
+	private PlayerController playerRevivingThis;
+	private PlayerController playerBeingRevived;
+	private bool beingRevived;
+	private readonly float reviveTimerCooldown = 3f;
+	private float reviveTimer;
 
 	//targetlist update timer
 	private readonly float updateTargetListCooldown = 0.5f;
 	private float updateTargetListTimer;
 
-	[Header("Ability Prefabs")] // +info
-	public GameObject AbilityAoePrefab;
-	public GameObject projectilePrefab;
+	//ENTITY TARGETING
+	public static event Action<EntityStats> OnNewTargetSelected;
+	//enemy targeting
+	public EntityStats selectedEnemyTarget { get; private set; }
+	private int selectedEnemyTargetIndex;
+	private List<EnemyDistance> EnemyTargetList = new List<EnemyDistance>();
+
+	//friendly targeting
+	public EntityStats selectedFriendlyTarget { get; private set; }
+
+	//current player spectating index
+	private int playerSpectatorIndex;
 
 	//ability events
 	public static event Action<Abilities> OnPlayerUseAbility;
@@ -68,81 +85,107 @@ public class PlayerController : NetworkBehaviour
 	{
 		playerInput = GetComponent<PlayerInput>();
 		playerStats = GetComponent<EntityStats>();
-		playerClassHandler = GetComponent<EntityClassHandler>();
+		playerClassHandler = GetComponent<PlayerClassHandler>();
 		playerEquipmentHandler = GetComponent<PlayerEquipmentHandler>();
 		playerExperienceHandler = GetComponent<PlayerExperienceHandler>();
-		playerEquipmentHandler.player = this;
+		playerInventoryHandler = GetComponent<PlayerInventoryHandler>();
 		enemyDetection = GetComponentInChildren<EntityDetection>();
-		enemyDetection.player = this;
 		rb = GetComponent<Rigidbody2D>();
 		animator = GetComponent<Animator>();
 	}
 	private void Start()
 	{
 		Initilize();
-
-		OnNewTargetSelected += PlayerHotbarUi.Instance.OnNewTargetSelected;
-
-		playerStats.OnNewStatusEffect += PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer += PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
 	}
 
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadPlayerInfo;
-		DungeonHandler.OnEntityDeathEvent += OnSelectedTargetDeath;
+		PlayerEventManager.OnRespawnAllPlayersEvent += ReviveAllDeadPlayer;
+		PlayerEventManager.OnRespawnPlayerEvent += ReviveDeadPlayer;
+
+		SaveManager.ReloadSaveGameData += ReloadPlayerInfo;
+		ObjectPoolingManager.OnEntityDeathEvent += OnSelectedTargetDeath;
+		ObjectPoolingManager.AddPlayerToList(this);
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadPlayerInfo;
-		DungeonHandler.OnEntityDeathEvent -= OnSelectedTargetDeath;
+		PlayerEventManager.OnRespawnAllPlayersEvent -= ReviveAllDeadPlayer;
+		PlayerEventManager.OnRespawnPlayerEvent -= ReviveDeadPlayer;
 
-		OnNewTargetSelected -= PlayerHotbarUi.Instance.OnNewTargetSelected;
-
-		playerStats.OnNewStatusEffect -= PlayerHotbarUi.Instance.OnNewStatusEffectsForPlayer;
-		playerStats.OnResetStatusEffectTimer -= PlayerHotbarUi.Instance.OnResetStatusEffectTimerForPlayer;
+		SaveManager.ReloadSaveGameData -= ReloadPlayerInfo;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnSelectedTargetDeath;
+		ObjectPoolingManager.RemovePlayerFromList(this);
 	}
 
 	private void Update()
 	{
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer || IsLocalPlayer)
-			playerCamera.transform.position = new Vector3(transform.position.x, transform.position.y, playerCamera.transform.position.z);
+		if (GameManager.Localplayer == this)
+			playerCamera.transform.position = new Vector3(
+				objectCameraTracks.transform.position.x, objectCameraTracks.transform.position.y, playerCamera.transform.position.z);
 
-		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+		if (playerStats.IsEntityDead())
+		{
+			if (PlayerIsLocalPlayer())
+				RespawnTimer();
+			else
+				ReviveTimer();
+		}
+		else
+		{
+			if (IsPlayerInteracting()) return;
 
-		UpdateTargetsInList();
-		AutoAttackTimer();
-		AbilityCastingTimer();
+			UpdateTargetsInList();
+			AutoAttackTimer();
+			AbilityCastingTimer();
+		}
 	}
 	private void FixedUpdate()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		PlayerMovement();
+		HealPlayerInHubScene();
 	}
 
 	//set player data
-	public void Initilize()
+	private void Initilize()
 	{
-		if (IsLocalPlayerOrSinglePlayer())
+		if (PlayerIsLocalPlayer())
+		{
+			reviveTimer = reviveTimerCooldown;
+			respawnTimer = respawnTimerCooldown;
+			playerSpectatorIndex = 0;
 			UpdateLocalPlayerReferences();
+
+			if (MultiplayerManager.IsMultiplayer())
+				RequestPlayerInfoOfOtherClients();
+		}
 
 		if (debugSetPlayerLevelOnStart)
 			playerStats.entityLevel = debugPlayerLevel;
 		else
 			playerStats.entityLevel = 1;
 
-		PlayerEventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelChange(this);
 		playerStats.CalculateBaseStats();
 	}
-	public void UpdateLocalPlayerReferences()
+	private void UpdateLocalPlayerReferences()
 	{
-		SceneHandler.Instance.UpdateLocalPlayerInstance(this);
-		playerCamera = SceneHandler.Instance.playerCamera;
+		GameManager.Instance.UpdateLocalPlayerInstanceAndReloadAllGameData(this);
+		playerCamera = GameManager.LocalPlayerCamera;
+		objectCameraTracks = gameObject;
 		playerInput.actions = PlayerInputHandler.Instance.playerControls;
-
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
-			transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(gameObject);
+	}
+	private void RequestPlayerInfoOfOtherClients()
+	{
+		foreach (PlayerController player in ObjectPoolingManager.Instance.playersPool)
+		{
+			if (player != this)
+			{
+				player.playerClassHandler.SyncInfoToNewlyJoinedClientRpc(ClientManager.Instance.clientNetworkedId);
+				player.playerEquipmentHandler.SyncInfoToNewlyJoinedClientRpc(ClientManager.Instance.clientNetworkedId);
+			}
+		}
 	}
 
 	//event up update info
@@ -152,15 +195,15 @@ public class PlayerController : NetworkBehaviour
 		if (playerStats.entityLevel == 0)
 			playerStats.entityLevel += 1;
 		playerStats.CalculateBaseStats();
-		PlayerEventManager.PlayerLevelUp(playerStats);
+		PlayerEventManager.PlayerLevelChange(this);
 	}
 
 	//movement
 	private void PlayerMovement()
 	{
-		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * speed, PlayerInputHandler.Instance.MovementInput.y * speed);
+		Vector2 moveInput = new (PlayerInputHandler.Instance.MovementInput.x * moveSpeed, PlayerInputHandler.Instance.MovementInput.y * moveSpeed);
 
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 		{
 			//Debug.LogError("sp | move input: " + moveInput);
 			Move(moveInput);
@@ -168,19 +211,19 @@ public class PlayerController : NetworkBehaviour
 		else if (IsHost && IsLocalPlayer)
 		{
 			//Debug.LogError("host | move input: " + moveInput);
-			MoveServerRPC(moveInput);
+			MoveRpc(moveInput);
 		}
 		else if (IsClient && IsLocalPlayer)
 		{
 			//Debug.LogError("client | move input: " + moveInput);
-			MoveServerRPC(moveInput);
+			MoveRpc(moveInput);
 		}
 
 		UpdateSpriteDirection();
 		UpdateAnimationState();
 	}
-	[ServerRpc]
-	private void MoveServerRPC(Vector2 moveInput)
+	[Rpc(SendTo.Server)]
+	private void MoveRpc(Vector2 moveInput)
 	{
 		Move(moveInput);
 	}
@@ -205,78 +248,35 @@ public class PlayerController : NetworkBehaviour
 	public void UpdateMovementSpeed(float speedModifier, bool resetSpeed)
 	{
 		if (resetSpeed)
-			speed = 12;
+			moveSpeed = 12;
 		else
-			speed *= speedModifier;
+			moveSpeed *= speedModifier;
 	}
 
-	//player auto attack
-	private void AutoAttackTimer()
+	private void HealPlayerInHubScene()
 	{
-		if (!PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
-		if (EnemyTargetList.Count == 0) return;
-		if (playerEquipmentHandler.equippedWeapon == null) return;
-
-		mainAttackAutoAttackTimer -= Time.deltaTime;
-		if (mainAttackAutoAttackTimer < 0)
-		{
-			//reset cooldown timer + extra 0.25s delay, making manual attack better
-			AutoAttackWithMainWeapon();
-		}
-	}
-	private void AutoAttackWithMainWeapon()
-	{
-		//auto attack with main weapon, aiming for players selected target, if too close or out of range, attack closest target instead
-		//if no selected target aim for closest enemy (ranged weapon aim for closest enemy outside of min attack range if possible)
-
-		Weapons weapon = playerEquipmentHandler.equippedWeapon;
-		EntityStats entityToAttack = EnemyTargetList[0].entity; //grab closest enemy as default
-		mainAttackAutoAttackTimer = weapon.weaponBaseRef.baseAttackSpeed + mainAttackAutoAttackCooldown;
-
-		if (weapon.weaponBaseRef.isRangedWeapon)	//ranged weapon logic
-		{
-			if (selectedEnemyTarget != null)
-			{
-				weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
-			}
-			else	//if player selected target null, try find one within min and max attack range
-			{
-				foreach (EnemyDistance enemy in EnemyTargetList)
-				{
-					if (enemy.distance > weapon.weaponBaseRef.minAttackRange && enemy.distance < weapon.weaponBaseRef.maxAttackRange)
-						entityToAttack = enemy.entity;
-				}
-
-				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
-					weapon.RangedAttack(entityToAttack.transform.position, projectilePrefab);
-			}
-		}
-		else	//melee weapon logic
-		{
-			if (selectedEnemyTarget != null && GrabDistanceToEntity(selectedEnemyTarget) < weapon.weaponBaseRef.maxAttackRange)
-			{
-				weapon.MeleeAttack(selectedEnemyTarget.transform.position);
-			}
-			else    //if player selected target null && out of range, attack closest enemy set at start of func
-			{
-				if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
-					weapon.MeleeAttack(entityToAttack.transform.position);
-			}
-		}
+		if (GameManager.Instance.currentlyLoadedScene.name != GameManager.Instance.hubScene) return;
+		if (playerStats.currentHealth < playerStats.maxHealth.finalValue)
+			playerStats.RecieveHealing(1f, true, playerStats.healingPercentageModifier.finalPercentageValue);
 	}
 
 	//PLAYER TARGETING OPTIONS
 	//mouse select targeting
 	private void CheckForSelectableTarget()
 	{
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 1000, includeMe);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 100, includeMe);
 		if (hit.collider == null)
 			return;
 		if (hit.collider.GetComponent<EntityStats>() == null)
 			return;
 
 		EntityStats entityStats = hit.collider.GetComponent<EntityStats>();
-		if (!entityStats.IsPlayerEntity())
+		if (entityStats.IsPlayerEntity())
+		{
+			SetNewSelectedFriendlyTarget(entityStats);
+			return;
+		}
+		else
 		{
 			for (int i = 0; i < EnemyTargetList.Count; i++)
 			{
@@ -292,18 +292,24 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void OnSelectedTargetDeath(GameObject obj)
 	{
-		if (selectedEnemyTarget == null) return;
-		if (selectedEnemyTarget.gameObject != obj) return;
-
-		ClearSelectedTarget();
-	}
-	public void ClearSelectedTarget()
+		EntityStats entityStats = obj.GetComponent<EntityStats>();
+		if (entityStats.IsPlayerEntity() && entityStats == selectedFriendlyTarget)
+			ClearSelectedTarget(true);
+		else if (!entityStats.IsPlayerEntity() && entityStats == selectedEnemyTarget)
+			ClearSelectedTarget(false);
+    }
+	public void ClearSelectedTarget(bool targetFriendly)
 	{
-		selectedEnemyTarget = null;
-		selectedEnemyTargetIndex = 0;
+        if (targetFriendly)
+			selectedFriendlyTarget = null;
+		else
+		{
+			selectedEnemyTarget = null;
+			selectedEnemyTargetIndex = 0;
+		}
 	}
 
-	//tab targeting
+	//cycle targeting
 	private void CycleTargetsForwards(int startingIndex)
 	{
 		//for next target in target list, if can see that target (with raycast) select that enemy as new target, if not ++
@@ -332,14 +338,21 @@ public class PlayerController : NetworkBehaviour
 			break;
 		}
 	}
-	private void SetNewSelectedEnemyTarget(int index)
+
+	//setting new target
+	private void SetNewSelectedEnemyTarget(int entityIndex)
 	{
-		OnNewTargetSelected?.Invoke(EnemyTargetList[index].entity);
-		selectedEnemyTarget = EnemyTargetList[index].entity;
-		selectedEnemyTargetIndex = index;
+		OnNewTargetSelected?.Invoke(EnemyTargetList[entityIndex].entity);
+		selectedEnemyTarget = EnemyTargetList[entityIndex].entity;
+		selectedEnemyTargetIndex = entityIndex;
+	}
+	private void SetNewSelectedFriendlyTarget(EntityStats entity)
+	{
+		OnNewTargetSelected?.Invoke(entity);
+		selectedFriendlyTarget = entity;
 	}
 
-	//targeting updates
+	//enemy target list updates
 	public void AddNewEnemyTargetToList(EntityStats entity)
 	{
 		//add new enemy to list, then update targets
@@ -404,6 +417,212 @@ public class PlayerController : NetworkBehaviour
 		return false;
 	}
 
+	//PLAYER RESPAWNING
+	private void RespawnTimer()
+	{
+		if (BossRoomHandler.Instance != null)
+			if (BossRoomHandler.Instance.GetBossRoomState() == BossRoomHandler.BossRoomState.bossActive) return; //disable respawning
+
+		if (respawnTimer > 0)
+		{
+			respawnTimer -= Time.deltaTime;
+
+			if (respawnTimer < 0)
+			{
+				Debug.LogError("respawn complete");
+				respawnTimer = respawnTimerCooldown;
+			}
+		}
+	}
+
+	public float GetRespawnTime()
+	{
+		return respawnTimer;
+	}
+
+	//PLAYER REVIVNG
+	public void StartReviveTimer(PlayerController playerRevivingThis)
+	{
+		if (beingRevived) return;
+
+		PlayerEventManager.SyncStartRevivePlayerUiTimerEvent(reviveTimerCooldown);
+		ClientRpcManager.instance.SyncStartRevivePlayerTimerUiRpc(reviveTimerCooldown, RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+		SyncStartReviveRpc(playerRevivingThis.NetworkObjectId, NetworkObjectId);
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncStartReviveRpc(ulong playerRevivingThisId, ulong playerBeingRevivedId)
+	{
+		reviveTimer = reviveTimerCooldown;
+		playerRevivingThis = NetworkManager.SpawnManager.SpawnedObjects[playerRevivingThisId].GetComponent<PlayerController>();
+		playerBeingRevived = NetworkManager.SpawnManager.SpawnedObjects[playerBeingRevivedId].GetComponent<PlayerController>();
+		beingRevived = true;
+	}
+	public void CancelReviveTimer(PlayerController playerRevivingThis)
+	{
+		if (this.playerRevivingThis == null || beingRevived && this.playerRevivingThis != playerRevivingThis) return;
+
+		if (beingRevived && this.playerRevivingThis == playerRevivingThis)
+		{
+			PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+			ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+			SyncCancelReviveRpc();
+		}
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncCancelReviveRpc()
+	{
+		beingRevived = false;
+		reviveTimer = reviveTimerCooldown;
+		playerRevivingThis = null;
+		playerBeingRevived = null;
+	}
+	private void ReviveTimer()
+	{
+		if (!beingRevived) return;
+
+		if (reviveTimer > 0)
+		{
+			reviveTimer -= Time.deltaTime;
+
+			if (reviveTimer < 0)
+			{
+				ClientRpcManager.instance.RespawnPlayerRpc(playerRevivingThis.NetworkObjectId, playerBeingRevived.NetworkObjectId);
+				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+				ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(OwnerClientId, RpcTargetUse.Temp));
+				SyncCancelReviveRpc();
+			}
+		}
+	}
+
+	//revive event listners
+	private void ReviveAllDeadPlayer()
+	{
+		reviveTimer = reviveTimerCooldown;
+		respawnTimer = respawnTimerCooldown;
+		playerSpectatorIndex = 0;
+		playerStats.ResetEntityStats();
+	}
+	private void ReviveDeadPlayer(PlayerController optionalReviverPlayer, PlayerController revivedPlayer)
+	{
+		if (revivedPlayer != this) return;
+
+		reviveTimer = reviveTimerCooldown;
+		respawnTimer = respawnTimerCooldown;
+		playerSpectatorIndex = 0;
+		playerStats.ResetEntityStats();
+	}
+
+	//PLAYER SPECTATING
+	//spectate new players
+	private void SpectateNextAlivePlayer()
+	{
+		if (playerSpectatorIndex + 1 <= ObjectPoolingManager.Instance.playersPool.Count - 1)
+			UpdateSpectatedPlayer(playerSpectatorIndex + 1);
+		else
+			UpdateSpectatedPlayer(0);
+	}
+	private void SpecatePreviousAlivePlayer()
+	{
+		if (playerSpectatorIndex - 1 >= 0)
+			UpdateSpectatedPlayer(playerSpectatorIndex - 1);
+		else
+			UpdateSpectatedPlayer(ObjectPoolingManager.Instance.playersPool.Count - 1);
+	}
+
+	//set new spectated target
+	private void UpdateSpectatedPlayer(int playerIndex)
+	{
+		PlayerController player = ObjectPoolingManager.Instance.playersPool[playerIndex];
+
+		objectCameraTracks = player.gameObject;
+		playerSpectatorIndex = playerIndex;
+		PlayerDeathUi.Instance.UpdateSpectatingPlayer(player.OwnerClientId);
+	}
+
+	//PLAYER MAIN WEAPON ATTACKS
+	//player auto attack
+	private void AutoAttackTimer()
+	{
+		if (!PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
+		if (EnemyTargetList.Count == 0) return;
+		if (playerEquipmentHandler.equippedWeapon == null) return;
+
+		mainAttackAutoAttackTimer -= Time.deltaTime;
+		if (mainAttackAutoAttackTimer < 0)
+		{
+			//reset cooldown timer + extra 0.25s delay, making manual attack better
+			AutoAttackWithMainWeapon();
+		}
+	}
+	private void AutoAttackWithMainWeapon()
+	{
+		//auto attack with main weapon, aiming for players selected target, if too close or out of range, attack closest target instead
+		//if no selected target aim for closest enemy (ranged weapon aim for closest enemy outside of min attack range if possible)
+
+		Weapons weapon = playerEquipmentHandler.equippedWeapon;
+		EntityStats entityToAttack = EnemyTargetList[0].entity; //grab closest enemy as default
+		mainAttackAutoAttackTimer = weapon.weaponBaseRef.baseAttackSpeed + mainAttackAutoAttackCooldown;
+
+		if (selectedEnemyTarget != null)
+
+			if (weapon.weaponBaseRef.isRangedWeapon)    //ranged weapon logic
+			{
+				if (selectedEnemyTarget != null)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+				else    //if player selected target null, try find one within min and max attack range
+				{
+					foreach (EnemyDistance enemy in EnemyTargetList)
+					{
+						if (enemy.distance > weapon.weaponBaseRef.minAttackRange && enemy.distance < weapon.weaponBaseRef.maxAttackRange)
+							entityToAttack = enemy.entity;
+					}
+
+					if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+					{
+						if (MultiplayerManager.IsMultiplayer())
+							SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+						else
+							MainWeaponAttack(selectedEnemyTarget.transform.position);
+					}
+				}
+			}
+			else    //melee weapon logic
+			{
+				if (selectedEnemyTarget != null && GrabDistanceToEntity(selectedEnemyTarget) < weapon.weaponBaseRef.maxAttackRange)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+				//if player selected target null && out of range, attack closest enemy set at start of func
+				else if (GrabDistanceToEntity(entityToAttack) <= weapon.weaponBaseRef.maxAttackRange)
+				{
+					if (MultiplayerManager.IsMultiplayer())
+						SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+					else
+						MainWeaponAttack(selectedEnemyTarget.transform.position);
+				}
+			}
+	}
+
+	//initiate player attacks
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncMainWeaponAttackRpc(Vector2 attackPos)
+	{
+		MainWeaponAttack(attackPos);
+	}
+	private void MainWeaponAttack(Vector2 attackPos)
+	{
+		Weapons weapon = playerEquipmentHandler.equippedWeapon;
+		weapon.Attack(attackPos);
+	}
+
 	//PLAYER ABILITY CASTING
 	//casting events
 	private void UseAbility(Abilities ability)
@@ -417,10 +636,10 @@ public class PlayerController : NetworkBehaviour
 		abilityCastingTimer = queuedAbility.abilityBaseRef.abilityCastingTimer;
 		OnPlayerCastAbility?.Invoke();
 	}
-	private EntityStats TryGrabNewEntityOnQueuedAbilityClick(bool lookingForFriendly)	//add support/option to handle friendly targets
+	private EntityStats TryGrabNewEntityOnEffectCasting(bool lookingForFriendly)	//add support/option to handle friendly targets
 	{
 		EntityStats newEntity;
-		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 50, includeMe);
+		RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero, 100, includeMe);
 
 		if (hit.transform == null || hit.transform.gameObject.GetComponent<EntityStats>() == null)
 		{
@@ -440,14 +659,14 @@ public class PlayerController : NetworkBehaviour
 			return null;
 		}
 	}
-	public void CancelAbility(Abilities ability)
+	private void CancelAbility()
 	{
 		OnPlayerCancelAbility?.Invoke();
 		queuedAbility = null;
 		abilityCastingTimer = 0;
 	}
 
-	//casting timer
+	//casting timer + casting of ability
 	private void AbilityCastingTimer()
 	{
 		if (abilityBeingCasted != null)
@@ -460,104 +679,20 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void CastAbility(Abilities ability)
 	{
-		EntityStats enemyTarget = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnQueuedAbilityClick(false);
-
-		if (ability.abilityBaseRef.isProjectile)
-			CastDirectionalAbility(ability);
-		else if (ability.abilityBaseRef.isAOE)
-			CastAoeAbility(ability);
-		else if (ability.abilityBaseRef.requiresTarget && ability.abilityBaseRef.isOffensiveAbility)
-			CastEffect(ability, enemyTarget);
-		else if (ability.abilityBaseRef.requiresTarget && !ability.abilityBaseRef.isOffensiveAbility)   //for MP add support for friendlies
-			CastEffect(ability, playerStats);
+		if (ability.abilityBaseRef.isProjectile || ability.abilityBaseRef.isAOE)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				SyncSetUpAndCastAbilitiesRpc(playerStats.NetworkObjectId, GetAbilityIndex(ability.abilityBaseRef), GetAbilityAttackPos(ability));
+			else
+				SetUpAndCastAbilities(playerStats, ability.abilityBaseRef, GetAbilityAttackPos(ability));
+		}
+		else if (ability.abilityBaseRef.requiresTarget)
+			CastEffectAbilities(ability);
 		else
 		{
-			CancelAbility(queuedAbility);
+			CancelAbility();
 			Debug.LogError("failed to find ability type and cast, shouldnt happen");
 			return;
-		}
-	}
-
-	//types of casting
-	private void CastDirectionalAbility(Abilities ability)
-	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
-		if (projectile == null)
-		{
-			GameObject go = Instantiate(projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-		}
-
-		projectile.transform.SetParent(null);
-		if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
-			projectile.SetPositionAndAttackDirection(transform.position, selectedEnemyTarget.transform.position);
-		else
-			projectile.SetPositionAndAttackDirection(transform.position, Camera.main.ScreenToWorldPoint(Input.mousePosition));
-		projectile.Initilize(playerStats, ability.abilityBaseRef);
-
-		OnSuccessfulCast(ability);
-	}
-	private void CastAoeAbility(Abilities ability)
-	{
-		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
-		if (abilityAOE == null)
-		{
-			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
-			abilityAOE = go.GetComponent<AbilityAOE>();
-		}
-
-		//will need additional code here to handle supportive and offensive aoe abilities
-
-		Vector2 movePosition;
-		if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
-			movePosition = selectedEnemyTarget.transform.position;
-		else
-			movePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-
-		abilityAOE.transform.SetParent(null);
-		abilityAOE.Initilize(playerStats, ability.abilityBaseRef, movePosition);
-
-		OnSuccessfulCast(ability);
-	}
-	private void CastEffect(Abilities ability, EntityStats enemyTarget)
-	{
-		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing) //healing
-		{
-			if (playerStats.currentHealth < playerStats.maxHealth.finalValue) //cancel heal if player at full health in SP
-			{
-				playerStats.OnHeal(
-					ability.abilityBaseRef.damageValuePercentage, true, playerStats.healingPercentageModifier.finalPercentageValue);
-			}
-			else
-			{
-				CancelAbility(queuedAbility);     //add support/option to heal other players for MP
-				return;
-			}
-		}
-
-		if (ability.abilityBaseRef.damageValue != 0)    //apply damage for insta damage abilities
-		{
-			DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue * 
-				playerStats.levelModifier, (IDamagable.DamageType)ability.abilityBaseRef.damageType, false);
-
-			damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
-			enemyTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
-		}
-
-		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects (if has any) based on what type it is.
-		{
-			if (ability.abilityBaseRef.canOnlyTargetSelf)
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (ability.abilityBaseRef.isOffensiveAbility && enemyTarget != null)
-				enemyTarget.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else if (!ability.abilityBaseRef.isOffensiveAbility)         //add support/option to buff other players for MP
-				playerStats.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
-			else
-			{
-				Debug.LogError("failed to cast status effect");
-				CancelAbility(queuedAbility);
-				return;
-			}
 		}
 
 		OnSuccessfulCast(ability);
@@ -574,6 +709,130 @@ public class PlayerController : NetworkBehaviour
 		abilityBeingCasted = null;
 	}
 
+	//set up and cast projectile/aoe ability types
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	private void SyncSetUpAndCastAbilitiesRpc(ulong casterId, int abilityIndex, Vector2 attackPos)
+	{
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAndCastAbilities(casterStats, ability, attackPos);
+	}
+	private void SetUpAndCastAbilities(EntityStats casterStats, SOAbilities ability, Vector2 attackPos)
+	{
+		if (ability.isProjectile)
+			SetUpAndCastProjectileAbility(casterStats, ability, attackPos);
+		else if (ability.isAOE)
+			SetUpAndCastAoeAbility(casterStats, ability, attackPos);
+	}
+	private void SetUpAndCastProjectileAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
+		}
+
+		projectile.Initilize(casterStats, abilityRef,attackPos);
+	}
+	private void SetUpAndCastAoeAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
+
+			if (MultiplayerManager.IsMultiplayer())
+				abilityAOE.GetComponent<NetworkObject>().Spawn();
+		}
+
+		//will need additional code here to handle supportive and offensive aoe abilities
+		abilityAOE.Initilize(casterStats, abilityRef, attackPos);
+	}
+
+	//set up and cast effect types
+	private void CastEffectAbilities(Abilities ability)
+	{
+		EntityStats target;
+
+		if (ability.abilityBaseRef.isOffensiveAbility)
+			target = selectedEnemyTarget != null ? selectedEnemyTarget : TryGrabNewEntityOnEffectCasting(false);
+		else
+		{
+			if (!MultiplayerManager.IsMultiplayer()) //apply to self in sp
+				target = playerStats;
+			else
+				target = selectedFriendlyTarget != null ? selectedFriendlyTarget : TryGrabNewEntityOnEffectCasting(true);
+
+		}
+
+		if (ability.abilityBaseRef.damageType == IDamagable.DamageType.isHealing)
+			CastHealingEffect(ability, target);
+		else if (ability.abilityBaseRef.damageValue != 0)
+			CastDamageEffect(ability, target);
+
+		if (ability.abilityBaseRef.hasStatusEffects)    //apply effects if any
+			target.ApplyNewStatusEffects(ability.abilityBaseRef.statusEffects, playerStats);
+	}
+	private void CastHealingEffect(Abilities ability, EntityStats target)
+	{
+		if (target.currentHealth < target.maxHealth.finalValue) //cancel heal if player at full health
+		{
+			target.RecieveHealing(
+				ability.abilityBaseRef.damageValuePercentage, true, target.healingPercentageModifier.finalPercentageValue);
+		}
+		else
+		{
+			CancelAbility();     //add support/option to heal other players for MP
+			return;
+		}
+	}
+	private void CastDamageEffect(Abilities ability, EntityStats target)
+	{
+		DamageSourceInfo damageSourceInfo = new(playerStats, IDamagable.HitBye.player, ability.abilityBaseRef.damageValue *
+			playerStats.levelModifier, ability.abilityBaseRef.damageType, false);
+
+		damageSourceInfo.SetDeathMessage(ability.abilityBaseRef);
+		target.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
+	}
+
+	//casting helper funcs
+	private Vector2 GetAbilityAttackPos(Abilities ability)
+	{
+		if (ability.abilityBaseRef.isProjectile)
+		{
+			if (PlayerSettingsManager.Instance.autoCastDirectionalAbilitiesAtTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else if (ability.abilityBaseRef.isAOE)
+		{
+			if (PlayerSettingsManager.Instance.autoCastAoeAbilitiesOnTarget && selectedEnemyTarget != null)
+				return selectedEnemyTarget.transform.position;
+			else
+				return Camera.main.ScreenToWorldPoint(Input.mousePosition);
+		}
+		else return new Vector2(0, 0);
+	}
+	private int GetAbilityIndex(SOAbilities ability)
+	{
+		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+		{
+			if (ability == AssetDatabase.Database.abilities[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get class index");
+		return 0;
+	}
+
 	//PLAYER MARKING FOR BOSS ABILITIES
 	public void MarkPlayer()
 	{
@@ -585,28 +844,18 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//bool checks
-	private bool IsPlayerInteracting()
+	public bool PlayerIsLocalPlayer()
 	{
-		if (isInteractingWithInteractable)
-			return true;
-		else return false;
-	}
-	private bool IsLocalPlayerOrSinglePlayer()
-	{
-		if (MultiplayerManager.Instance == null || !MultiplayerManager.Instance.isMultiplayer)
+		if (!MultiplayerManager.IsMultiplayer())
 			return true;
 		else if (IsLocalPlayer)
 			return true;
 		else return false;
 	}
-	private bool IsCollidedObjectInteractable(Collider2D other)
+	private bool IsPlayerInteracting()
 	{
-		if (other.GetComponent<BossRoomHandler>() != null || other.GetComponent<PortalHandler>() != null ||
-			other.GetComponent<NpcHandler>() != null || other.GetComponent<ChestHandler>() != null ||
-			other.GetComponent<EnchantmentHandler>() != null || other.GetComponent<TrapHandler>() != null)
-		{
+		if (isInteractingWithInteractable)
 			return true;
-		}
 		else return false;
 	}
 
@@ -621,94 +870,92 @@ public class PlayerController : NetworkBehaviour
 		if (IsCollidedObjectInteractable(other))
 			HandleUnInteractWithCollidables(other);
 	}
+	private bool IsCollidedObjectInteractable(Collider2D other)
+	{
+		if (GameManager.Localplayer != this) return false; //ignore if not local player
+
+		if (other.GetComponent<Interactables>() != null)
+			return true;
+		else
+			return false;
+	}
 	private void HandleInteractWithCollidables(Collider2D other)
 	{
 		currentInteractedObject = other.GetComponent<Interactables>();
 
-		if (other.GetComponent<TrapHandler>() != null)
+		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.trap)
 		{
 			TrapHandler trapHandler = other.GetComponent<TrapHandler>();
-			currentInteractedObject = other.GetComponent<Interactables>();
 
-			if (!trapHandler.trapDetected) return;
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			if (trapHandler.GetTrapState() != TrapHandler.TrapStates.detected) return;
+			PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
 		}
-		if (other.GetComponent<ChestHandler>() != null)
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.portal)
 		{
-			if (other.GetComponent<ChestHandler>().chestStateOpened)
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+			if (!MultiplayerManager.IsClientHost())
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Not Host");
 			else
-				PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
+		}
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.chest)
+		{
+			if (other.GetComponent<ChestHandler>().GetChestState() == ChestHandler.ChestState.opened)
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
+			else
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
+		}
+		else if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
+		{
+			if (!currentInteractedObject.GetPlayer().playerStats.IsEntityDead()) return; //dont care about alive players
+
+			if (currentInteractedObject.GetPlayer().beingRevived)
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Being Revived");
+			else
+				PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Revive");
 		}
 		else
-			PlayerEventManager.DetectNewInteractedObject(other.gameObject, true);
+			PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, true, "Interact");
 	}
 	private void HandleUnInteractWithCollidables(Collider2D other)
 	{
-		PlayerEventManager.DetectNewInteractedObject(other.gameObject, false);
+		if (currentInteractedObject == null) return;
+
+		PlayerEventManager.DetectNewInteractedObject(currentInteractedObject, false, "Interact");
+
+		if (currentInteractedObject.GetInteractableType() == Interactables.InteractType.player)
+		{
+			PlayerController player = currentInteractedObject.GetPlayer();
+			if (beingRevived && playerRevivingThis == player)
+			{
+				PlayerEventManager.SyncCancelRevivePlayerUiTimerEvent();
+				ClientRpcManager.instance.SyncCancelRevivePlayerTimerUiRpc(RpcTarget.Single(player.OwnerClientId, RpcTargetUse.Temp));
+				SyncCancelReviveRpc();
+			}
+		}
+
 		currentInteractedObject = null;
 		isInteractingWithInteractable = false;
-	}
-
-	//MP ON NETWORK EVENTS
-	public override void OnNetworkSpawn()
-	{
-		base.OnNetworkSpawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Add(this);
-	}
-	public override void OnNetworkDespawn()
-	{
-		base.OnNetworkDespawn();
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return;
-
-		MultiplayerManager.Instance.ListOfplayers.Remove(this);
 	}
 
 	/// <summary>
 	/// Below are all player actions
 	/// </summary>
 
+	//player interacts
+	public void InteractStarted()
+	{
+		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+		if (currentInteractedObject == null) return;
+		currentInteractedObject.Interact(this);
+	}
+	public void InteractCanceled()
+	{
+		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+		if (currentInteractedObject == null) return;
+		currentInteractedObject.CancelInteract(this);
+	}
+
 	//in game actions
-	private void OnMainAttack()
-	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
-		if (queuedAbility == null)
-		{
-			if (PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
-			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf)
-				return;
-			Weapons weapon = playerEquipmentHandler.equippedWeapon;
-
-			if (weapon.weaponBaseRef.isRangedWeapon)
-			{
-				if (!debugUseSelectedTargetForAttackDirection)
-					weapon.RangedAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition), projectilePrefab);
-				else
-					weapon.RangedAttack(selectedEnemyTarget.transform.position, projectilePrefab);
-			}
-			else
-			{
-				if (!debugUseSelectedTargetForAttackDirection)
-					weapon.MeleeAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
-				else
-					weapon.MeleeAttack(selectedEnemyTarget.transform.position);
-			}
-		}
-		else
-			CastAbility();
-	}
-	private void OnRightClick()
-	{
-		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
-		if (queuedAbility != null)
-			CancelAbility(queuedAbility);
-
-		CheckForSelectableTarget();
-	}
 	private void OnCameraZoom()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
@@ -718,11 +965,53 @@ public class PlayerController : NetworkBehaviour
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}
-	private void OnInteract()
+	private void OnSpectateNextPlayer()
 	{
-		if (playerStats.IsEntityDead() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-		if (currentInteractedObject == null) return;
-		currentInteractedObject.Interact(this);
+		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
+		SpectateNextAlivePlayer();
+	}
+	private void OnSpectatePreviousPlayer()
+	{
+		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
+
+		SpecatePreviousAlivePlayer();
+	}
+	private void OnMainAttack()
+	{
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+
+		if (queuedAbility != null)
+			CastAbility();
+		else
+		{
+			if (playerEquipmentHandler.equippedWeapon == null || PlayerInventoryUi.Instance.PlayerInfoAndInventoryPanelUi.activeSelf 
+				|| PlayerSettingsManager.Instance.mainAttackIsAutomatic) return;
+
+			if (MultiplayerManager.IsMultiplayer())
+			{
+				if (!debugUseSelectedTargetForAttackDirection)
+					SyncMainWeaponAttackRpc(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+				else
+					SyncMainWeaponAttackRpc(selectedEnemyTarget.transform.position);
+			}
+			else
+			{
+				if (!debugUseSelectedTargetForAttackDirection)
+					MainWeaponAttack(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+				else
+					MainWeaponAttack(selectedEnemyTarget.transform.position);
+			}
+		}
+	}
+	private void OnRightClick()
+	{
+		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
+
+		if (queuedAbility != null)
+			CancelAbility();
+
+		CheckForSelectableTarget();
 	}
 	private void OnTabTargetingForwards()
 	{
@@ -747,15 +1036,15 @@ public class PlayerController : NetworkBehaviour
 	private void OnConsumablesOne()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
+
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
 	private void OnConsumablesTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
-
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
+
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
 	private void OnAbilityOne()
@@ -830,7 +1119,7 @@ public class PlayerController : NetworkBehaviour
 	}
 	private void TryReacquireNewTarget()
 	{
-		if (PlayerSettingsManager.Instance.autoSelectNewTarget)
+		if (selectedEnemyTarget == null && PlayerSettingsManager.Instance.autoSelectNewTarget)
 			CycleTargetsForwards(0);
 		else return;
 	}

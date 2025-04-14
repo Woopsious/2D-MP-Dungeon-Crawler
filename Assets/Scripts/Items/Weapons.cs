@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 public class Weapons : Items
@@ -26,7 +27,7 @@ public class Weapons : Items
 	}
 
 	//set weapon data
-	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public override void Initilize(SOItems.Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 
@@ -46,11 +47,11 @@ public class Weapons : Items
 		damage = (int)(damage * GetWeaponDamageModifier(playerStats));
 
 		string rarity;
-		if (this.rarity == Rarity.isLegendary)
+		if (this.rarity == SOItems.Rarity.isLegendary)
 			rarity = "<color=orange>Legendary</color>";
-		else if (this.rarity == Rarity.isEpic)
+		else if (this.rarity == SOItems.Rarity.isEpic)
 			rarity = "<color=purple>Epic</color>";
-		else if (this.rarity == Rarity.isRare)
+		else if (this.rarity == SOItems.Rarity.isRare)
 			rarity = "<color=blue>Rare</color>";
 		else
 			rarity = "Common";
@@ -64,10 +65,10 @@ public class Weapons : Items
 			weightClass = "Light Weight Restriction";
 
 		string info;
-		if (itemEnchantmentLevel == 0)
-			info = $"{rarity} Level {itemLevel} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
+		if (enchantmentLevel == 0)
+			info = $"{rarity} Level {level} {itemName}\n{AdjustItemPriceDisplay(itemInShopSlot)} Price \n{weightClass}";
 		else
-			info = $"{rarity} Level {itemLevel} Enchanted {itemName} +{itemEnchantmentLevel}\n{itemPrice} Price \n{weightClass}";
+			info = $"{rarity} Level {level} Enchanted {itemName} +{enchantmentLevel}\n{price} Price \n{weightClass}";
 
 		if (weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isMainHand)
 			info += "\n Main hand ";
@@ -97,7 +98,7 @@ public class Weapons : Items
 		}
 
 		string equipInfo;
-		if (playerStats.entityLevel < itemLevel)
+		if (playerStats.entityLevel < level)
 			equipInfo = "<color=red>Cant Equip Weapon \n Level Too High</color>";
 		else if (PlayerClassesUi.Instance.currentPlayerClass == null)
 		{
@@ -205,36 +206,37 @@ public class Weapons : Items
 		DamageSourceInfo damageSourceInfo = new(
 			weaponOwner, hitBye, damage, (IDamagable.DamageType)weaponBaseRef.baseDamageType, false);
 
-		damageSourceInfo.AddKnockbackEffect(boxCollider, weaponBaseRef.baseKnockback);
+		damageSourceInfo.AddKnockbackEffect(boxCollider.transform.position, weaponBaseRef.baseKnockback);
 		damageSourceInfo.SetDeathMessage(weaponBaseRef);
 		other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 	}
-	public void MeleeAttack(Vector3 positionOfThingToAttack)
+	public void Attack(Vector3 positionOfThingToAttack)
 	{
-		if (!canAttackAgain) return;
+		if (MultiplayerManager.IsClientHost())
+			if (!canAttackAgain) return;
+
+        if (weaponBaseRef.isRangedWeapon && MultiplayerManager.IsClientHost()) //only sp or hosts can set up projectile
+			SetUpProjectile(positionOfThingToAttack);
 
 		AttackInDirection(positionOfThingToAttack);
 		OnWeaponAttack();
 		StartCoroutine(WeaponCooldown());
 	}
-	public void RangedAttack(Vector3 positionOfThingToAttack, GameObject projectilePrefab)
+	private void SetUpProjectile(Vector3 positionOfThingToAttack)
 	{
-		if (!canAttackAgain) return;
-
-		Projectiles projectile = DungeonHandler.GetProjectile();
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
 		if (projectile == null)
 		{
-			GameObject go = Instantiate(projectilePrefab, transform, true);
+			GameObject go = Instantiate(ObjectPoolingManager.Instance.projectilePrefab, transform, true);
 			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
 		}
 
-		projectile.transform.SetParent(null);
-		projectile.SetPositionAndAttackDirection(transform.position, positionOfThingToAttack);
-		projectile.Initilize(weaponOwner, weaponBaseRef, damage);
-
-		AttackInDirection(positionOfThingToAttack);
-		OnWeaponAttack();
-		StartCoroutine(WeaponCooldown());
+		//projectile.transform.SetParent(null);
+		projectile.Initilize(weaponOwner, weaponBaseRef, damage, positionOfThingToAttack);
 	}
 	private IEnumerator WeaponCooldown()
 	{
@@ -255,6 +257,14 @@ public class Weapons : Items
 		canAttackAgain = true;
 	}
 
+	//visuals
+	//set direction of melee swings + direction ranged weapons point
+	private void AttackInDirection(Vector3 positionOfThingToAttack)
+	{
+		Vector3 rotation = positionOfThingToAttack - transform.position;
+		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
+		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
+	}
 	//sound + animation
 	private void OnWeaponAttack()
 	{
@@ -269,6 +279,7 @@ public class Weapons : Items
 		idleWeaponSprite.enabled = false;
 		attackWeaponSprite.enabled = true;
 		audioHandler.PlayAudio(weaponBaseRef.attackSfx);
+
 		canAttackAgain = false;
 	}
 	private void OnWeaponCooldown()
@@ -279,13 +290,5 @@ public class Weapons : Items
 		boxCollider.enabled = false;
 		idleWeaponSprite.enabled = true;
 		attackWeaponSprite.enabled = false;
-	}
-
-	//set direction of melee swings + direction ranged weapons point
-	private void AttackInDirection(Vector3 positionOfThingToAttack)
-	{
-		Vector3 rotation = positionOfThingToAttack - transform.position;
-		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
-		parentObj.transform.rotation = Quaternion.Euler(0, 0, rotz - 180);
 	}
 }

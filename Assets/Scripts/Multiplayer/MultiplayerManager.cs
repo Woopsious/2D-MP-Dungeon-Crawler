@@ -6,7 +6,7 @@ using System;
 using Unity.Netcode;
 using Unity.Services.Authentication;
 using System.Threading.Tasks;
-using UnityEngine.SceneManagement;
+using TMPro;
 
 public class MultiplayerManager : NetworkBehaviour
 {
@@ -16,10 +16,14 @@ public class MultiplayerManager : NetworkBehaviour
 
 	public PlayerController localPlayer;
 
-	public List<PlayerController> ListOfplayers = new List<PlayerController>();
+	//public List<PlayerController> ListOfplayers = new List<PlayerController>();
 
 	public GameObject HostClientManagerObj;
-	public bool isMultiplayer;
+	private bool isMultiplayer;
+
+	[Header("Disconnect Menu")]
+	public GameObject disconnectUiPanel;
+	public TMP_Text disconnectReasonText;
 
 	private void Awake()
 	{
@@ -31,7 +35,6 @@ public class MultiplayerManager : NetworkBehaviour
 		else
 			Destroy(gameObject);
 	}
-
 	public async Task AuthenticatePlayer()
 	{
 		await UnityServices.InitializeAsync();
@@ -64,7 +67,7 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		ClientManager.Instance.clientNetworkedId = NetworkManager.Singleton.LocalClientId;
 
-		if (IsPlayerHost())
+		if (IsClientHost())
 			HostManager.Instance.HandleClientConnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientConnectsAsClient(id);
@@ -74,10 +77,29 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 	public void PlayerDisconnectedCallback(ulong id)
 	{
-		if (IsPlayerHost())
+		if (IsClientHost())
 			HostManager.Instance.HandleClientDisconnectsAsHost(id);
 		else
 			ClientManager.Instance.HandleClientDisconnectsAsClient(id);
+
+		PlayerDeathUi.Instance.CheckDeadPlayersOnClientDisconnect();
+	}
+
+	//UPDATE MP MODE
+	public static void UpdateIsMultiplayer(bool isMultiplayer)
+	{
+		if (isMultiplayer)
+		{
+			PlayerPartyUi.Instance.playerPartyPanelUi.SetActive(true);
+			PlayerPartyUi.Instance.partyMessagesPanelUi.SetActive(true);
+		}
+		else
+		{
+			PlayerPartyUi.Instance.playerPartyPanelUi.SetActive(false);
+			PlayerPartyUi.Instance.partyMessagesPanelUi.SetActive(false);
+		}
+
+		Instance.isMultiplayer = isMultiplayer;
 	}
 
 	//Spawning/Shutdown NetworkManager
@@ -85,11 +107,6 @@ public class MultiplayerManager : NetworkBehaviour
 	{
 		GameObject go = Instantiate(HostClientManagerObj);
 		go.transform.SetParent(null);
-	}
-	public void ShutDownNetworkManagerIfActive()
-	{
-		if (NetworkManager.Singleton.isActiveAndEnabled)
-			NetworkManager.Singleton.Shutdown();
 	}
 	public static bool CheckIfMultiplayerMenusOpen()
 	{
@@ -102,120 +119,54 @@ public class MultiplayerManager : NetworkBehaviour
 	//mp scene change complete event
 	public void SceneManager_OnSceneEvent(SceneEvent sceneEvent)
 	{
-		// Both client and server receive these notifications
+		ulong clientId = sceneEvent.ClientId;
+
 		switch (sceneEvent.SceneEventType)
 		{
 			// Handle server to client Load Notifications
 			case SceneEventType.Load:
 			{
-				// This event provides you with the associated AsyncOperation
-				// AsyncOperation.progress can be used to determine scene loading progression
+				Debug.LogError("load for server ID: " + clientId + " | at: " + DateTime.Now.ToString());
 
-				var asyncLoadScene = sceneEvent.AsyncOperation;
+				if (IsHost) return;
+				if (IsClient)
+					GameManager.Instance.UnloadSceneForConnectedClients();
 
-				ulong clientId = sceneEvent.ClientId;
-
-				SaveManager.Instance.AutoSaveData();
-
-				// Since the server "initiates" the event we can simply just check if we are the server here
-				if (IsServer)
-				{
-					Debug.LogError("load for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
-					// Handle server side load event related tasks here
-				}
-				else
-				{
-					// Handle client side load event related tasks here
-					Debug.LogError("load for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
-				}
-				break;
-			}
-			// Handle server to client unload notifications
-			case SceneEventType.Unload:
-			{
-				// You can use the same pattern above under SceneEventType.Load here
 				break;
 			}
 			// Handle client to server LoadComplete notifications
 			case SceneEventType.LoadComplete:
 			{
-				// This will let you know when a load is completed
 				// Server Side: receives thisn'tification for both itself and all clients
-
-				ulong clientId = sceneEvent.ClientId;
 				if (IsServer)
 				{
-					Debug.LogError("loadCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
-
-					if (sceneEvent.ClientId == NetworkManager.LocalClientId)
-					{
-						// Handle server side LoadComplete related tasks here
-					}
-					else
-					{
-						// Handle client LoadComplete **server-side** notifications here
-					}
+					Debug.LogError("loadCompleted for server ID: " + clientId + " | at: " + DateTime.Now.ToString());
 				}
 				else // Clients generate thisn'tification locally
 				{
-					// Handle client side LoadComplete related tasks here
-					Debug.LogError("loadCompleted for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+					Debug.LogError("loadCompleted for client ID: " + clientId + " | at: " + DateTime.Now.ToString());
+
+					//if (sceneEvent.SceneName == GameManager.Instance.uiScene) //restore data for joining clients after clearing dup scenes
+						//SaveManager.Instance.ReloadSaveGameDataEvent();
 				}
-
-				// So you can use sceneEvent.ClientId to also track when clients are finished loading a scene
-				break;
-			}
-			// Handle Client to Server Unload Complete Notification(s)
-			case SceneEventType.UnloadComplete:
-			{
-				// This will let you know when an unload is completed
-				// You can follow the same pattern above as SceneEventType.LoadComplete here
-
-				// Server Side: receives thisn'tification for both itself and all clients
-				// Client Side: receives thisn'tification for itself
-
-				// So you can use sceneEvent.ClientId to also track when clients are finished unloading a scene
 				break;
 			}
 			// Handle Server to Client Load Complete (all clients finished loading notification)
 			case SceneEventType.LoadEventCompleted:
 			{
-				// This will let you know when all clients have finished loading a scene
-				// Received on both server and clients
-
-				foreach (var clientId in sceneEvent.ClientsThatCompleted)
+				foreach (var clientIdLoadComplete in sceneEvent.ClientsThatCompleted)
 				{
 					// Example of parsing through the clients that completed list
 					if (IsServer)
 					{
-						// Handle any server-side tasks here
+						Debug.LogError("loadEventCompleted for server ID: " + clientIdLoadComplete + " | at: " + DateTime.Now.ToString());
 
-						SceneHandler.Instance.SpawnNetworkedPlayerObject(clientId);
-						Debug.LogError("loadEventCompleted for server, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
+						DungeonHandler.Instance.SyncTrapsTypes();
+						DungeonHandler.Instance.SyncChestStates();
 					}
 					else
 					{
-						// Handle any client-side tasks here
-						Debug.LogError("loadEventCompleted for client, | ID: " + clientId + " | at: " + DateTime.Now.ToString());
-					}
-				}
-				break;
-			}
-			// Handle Server to Client unload Complete (all clients finished unloading notification)
-			case SceneEventType.UnloadEventCompleted:
-			{
-				// This will let you know when all clients have finished unloading a scene
-				// Received on both server and clients
-				foreach (var clientId in sceneEvent.ClientsThatCompleted)
-				{
-					// Example of parsing through the clients that completed list
-					if (IsServer)
-					{
-						// Handle any server-side tasks here
-					}
-					else
-					{
-						// Handle any client-side tasks here
+						Debug.LogError("loadEventCompleted for client ID: " + clientIdLoadComplete + " | at: " + DateTime.Now.ToString());
 					}
 				}
 				break;
@@ -224,9 +175,9 @@ public class MultiplayerManager : NetworkBehaviour
 	}
 
 	//bool checks
-	public bool IsMultiplayer()
+	public static bool IsMultiplayer()
 	{
-		if (NetworkManager.Singleton != null)
+		if (Instance.isMultiplayer)
 		{       
 			//Debug.LogError("is Multiplayer");
 			return true;
@@ -234,11 +185,11 @@ public class MultiplayerManager : NetworkBehaviour
 		//Debug.LogError("is Singleplayer");
 		return false;
 	}
-	public bool IsPlayerHost()
+	public static bool IsClientHost()
 	{
-		if (NetworkManager.Singleton != null)
+		if (IsMultiplayer())
 		{
-			if (NetworkManager.Singleton.IsHost)
+			if (NetworkManager.Singleton.IsHost || NetworkManager.Singleton.IsServer)
 			{
 				//Debug.LogError("CLIENT IS HOST");
 				return true;
@@ -249,7 +200,10 @@ public class MultiplayerManager : NetworkBehaviour
 				return false;
 			}
 		}
-		//Debug.LogError("NetworkManager doesnt exist");
-		return false;
+		else
+		{
+			//Debug.LogError("CLIENT IS HOST/SP GAME");
+			return true;
+		}
 	}
 }

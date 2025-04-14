@@ -3290,9 +3290,6 @@ MonoBehaviour:
   dungeonPortalsList: []
   playerStorageChest: {fileID: 0}
   dungeonLootChestsList: []
-  inActiveEntityPool: []
-  inActiveProjectilesPool: []
-  inActiveAoeAbilitesPool: []
 --- !u!1 &7112554634994582243
 GameObject:
   m_ObjectHideFlags: 0

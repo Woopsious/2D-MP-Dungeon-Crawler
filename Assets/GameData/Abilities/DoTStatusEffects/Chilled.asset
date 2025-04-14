@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ee1e9bbec2a6a5b45ac9894189f68f5d, type: 3}
   m_Name: Chilled
   m_EditorClassIdentifier: 
+  isMarkedByBossEffect: 0
   Name: Chilled
   effectSprite: {fileID: 0}
   statusEffectType: 0
   isDOT: 1
-  effectValue: 10
+  effectValue: 5
   damageType: 3
   hasDuration: 1
   abilityDuration: 3

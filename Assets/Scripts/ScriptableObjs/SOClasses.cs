@@ -74,8 +74,9 @@ public class SOClasses : ScriptableObject
 		light, medium, heavy
 	}
 
-	[Header("Starting Items")]
+	[Header("Player Starting Equipment")]
 	public List<SOWeapons> startingWeapon;
+	public List<SOWeapons> startingOffhandWeapon;
 	public List<SOArmors> startingArmor;
 	public List<SOAccessories> startingAccessories;
 	public List<SOConsumables> startingConsumables;

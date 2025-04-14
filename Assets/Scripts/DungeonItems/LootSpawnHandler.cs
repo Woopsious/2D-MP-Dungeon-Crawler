@@ -19,14 +19,14 @@ public class LootSpawnHandler : MonoBehaviour
 
 	private void OnEnable()
 	{
-		DungeonHandler.OnEntityDeathEvent += OnEntityDeathEvent;
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateLootSpawnerLevel;
+		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeathEvent;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateLootSpawnerLevel;
 		PlayerClassesUi.OnClassChanges += UpdateLootSpawnTable;
 	}
 	private void OnDisable()
 	{
-		DungeonHandler.OnEntityDeathEvent -= OnEntityDeathEvent;
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateLootSpawnerLevel;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeathEvent;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateLootSpawnerLevel;
 		PlayerClassesUi.OnClassChanges -= UpdateLootSpawnTable;
 
 		itemSpawnChanceTable.Clear();
@@ -40,12 +40,15 @@ public class LootSpawnHandler : MonoBehaviour
 		this.minGold = minGold;
 		lootPool = newLootPool;
 		this.itemRarityChanceModifier = itemRarityChanceModifier;
+		PlayerController player = GameManager.Localplayer;
 
-		UpdateLootSpawnTable(PlayerClassesUi.Instance.currentPlayerClass);
+		UpdateLootSpawnerLevel(player);
+		UpdateLootSpawnTable(player, player.playerClassHandler.currentEntityClass);
 	}
-	private void UpdateLootSpawnTable(SOClasses playerClass)
+	private void UpdateLootSpawnTable(PlayerController player, SOClasses newClass)
 	{
-		if (lootPool == null || playerClass == null) return; //lootPool == null when called via OnClassChanges event when scene switching
+		if (player != GameManager.Localplayer) return;
+		if (lootPool == null || newClass == null) return;
 
 		itemSpawnChanceTable.Clear();
 		totalItemSpawnChance = 0;
@@ -53,9 +56,9 @@ public class LootSpawnHandler : MonoBehaviour
 		foreach (SOItems item in lootPool.lootPoolList)
 		{
 			if (item.itemType == SOItems.ItemType.isWeapon)
-				itemSpawnChanceTable.Add(AdjustSpawnChanceForWeaponsBasedOnClass((SOWeapons)item, playerClass));
+				itemSpawnChanceTable.Add(AdjustSpawnChanceForWeaponsBasedOnClass((SOWeapons)item, newClass));
 			else if (item.itemType == SOItems.ItemType.isArmor)
-				itemSpawnChanceTable.Add(AdjustSpawnChanceForArmorsBasedOnClass((SOArmors)item, playerClass));
+				itemSpawnChanceTable.Add(AdjustSpawnChanceForArmorsBasedOnClass((SOArmors)item, newClass));
 			else
 				itemSpawnChanceTable.Add(item.itemSpawnChance);
 		}
@@ -137,21 +140,15 @@ public class LootSpawnHandler : MonoBehaviour
 		SpawnLoot();
 		AddGold();
 	}
-	private void UpdateLootSpawnerLevel(EntityStats playerStats)
+	private void UpdateLootSpawnerLevel(PlayerController player)
 	{
-		lootSpawnerLevel = playerStats.entityLevel;
-		levelModifier = playerStats.levelModifier;
+		lootSpawnerLevel = player.playerStats.entityLevel;
+		levelModifier = player.playerStats.levelModifier;
 	}
 
 	public void AddGold()
 	{
-		float goldModifier = levelModifier;
-
-		if (GameManager.Instance != null)   //add difficulty modifier to gold drops
-			goldModifier += GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
-		else
-			Debug.LogWarning("Game Manager not found whilst updating spawner level, ignore if scene testing");
-
+		float goldModifier = levelModifier + GameManager.Instance.currentDungeonData.dungeonStatModifiers.difficultyModifier;
 		int goldToAdd = Utilities.GetRandomNumberBetween((int)(minGold * goldModifier), (int)(maxGold * goldModifier));
 		PlayerInventoryUi.Instance.UpdateGoldAmount(goldToAdd);
 	}
@@ -197,8 +194,9 @@ public class LootSpawnHandler : MonoBehaviour
 		Items item = go.GetComponent<Items>();
 		item.gameObject.name = lootPool.lootPoolList[index].name;
 		item.itemName = lootPool.lootPoolList[index].name;
-		item.itemSprite = lootPool.lootPoolList[index].itemImage;
-		item.itemPrice = lootPool.lootPoolList[index].itemPrice;
+		item.sprite = lootPool.lootPoolList[index].itemImage;
+		item.price = lootPool.lootPoolList[index].itemPrice;
+		ObjectPoolingManager.AddItemsToObjectPooling(item);
 	}
 	private void SetUpWeaponItem(GameObject go, int index)
 	{

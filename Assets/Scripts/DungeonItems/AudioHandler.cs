@@ -30,6 +30,7 @@ public class AudioHandler : MonoBehaviour
 	public void PlayAudio(AudioClip clip)
 	{
 		if (clip == null) return;
+		if (!gameObject.activeInHierarchy) return;
 
 		if (IsAudioPlaying())
 			audioSource.Stop();

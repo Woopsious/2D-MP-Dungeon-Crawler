@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DungeonPortalUi : MonoBehaviour
 {
@@ -16,9 +18,6 @@ public class DungeonPortalUi : MonoBehaviour
 	public List<DungeonDataUi> activeDungeonLists = new List<DungeonDataUi>();
 	public List<DungeonDataUi> savedDungeonLists = new List<DungeonDataUi>();
 	public List<DungeonDataUi> bossDungeonLists = new List<DungeonDataUi>();
-
-	[Header("Dungeon Bosses")]
-	public List<SOEntityStats> bossesInGame = new List<SOEntityStats>();
 
 	[Header("Shared Dungeon list Ui")]
 	public GameObject dungeonListContent;
@@ -36,55 +35,99 @@ public class DungeonPortalUi : MonoBehaviour
 	[Header("Dungeon Exit Ui")]
 	public GameObject dungeonExitUi;
 
+	private bool blockNewDungeonGeneration;
+
 	private void Awake()
 	{
 		instance = this;
+		blockNewDungeonGeneration = false;
 		GenerateBossDungeonsOnAwake();
 	}
 	private void OnEnable()
 	{
-		SaveManager.RestoreData += ReloadSavedDungeons;
+		SaveManager.ReloadSaveGameData += ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi += ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi += HidePortalUi;
+
+		SceneManager.sceneLoaded += HidePortalUiOnSceneChange;
 
 		DungeonDataUi.OnDungeonSave += OnSaveDungeon;
 		DungeonDataUi.OnDungeonDelete += OnDeleteDungeon;
 	}
 	private void OnDisable()
 	{
-		SaveManager.RestoreData -= ReloadSavedDungeons;
+		SaveManager.ReloadSaveGameData -= ReloadSavedDungeons;
 		PlayerEventManager.OnShowPortalUi -= ShowPortalUi;
 		PlayerEventManager.OnHidePortalUi -= HidePortalUi;
+
+		SceneManager.sceneLoaded -= HidePortalUiOnSceneChange;
 
 		DungeonDataUi.OnDungeonSave -= OnSaveDungeon;
 		DungeonDataUi.OnDungeonDelete -= OnDeleteDungeon;
 	}
 
-	private void GenerateBossDungeonsOnAwake()
+	//button actions
+	public void GenerateNewRandomDungeonsButton()
 	{
-		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return;
+		GenerateNewDungeons();
+	}
+	public void ReturnToHubButton()
+	{
+		List<DungeonChestData> chestData = new List<DungeonChestData>();
 
-		for (int i = 0; i < bossesInGame.Count; i++) //generate dungond for each boss
+		foreach (ChestHandler chest in DungeonHandler.Instance.dungeonLootChestsList)
+		{
+			DungeonChestData data = new DungeonChestData()
+			{
+				chestState = chest.GetChestState(),
+			};
+			chestData.Add(data);
+		}
+
+		GameManager.Instance.currentDungeonData.dungeonChestData = chestData;
+
+		//save data to corrisponding DungeonSlotUi, where SaveManager will then save/reload all DungeonSlotUi's
+		if (savedDungeonLists.Count == 0 && activeDungeonLists.Count == 0)
+		{
+			Debug.LogError("returning to hub scene whilst testing dungeon scene not supported");
+			return;
+		}
+
+		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
+			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
+		else
+			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
+
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.noReload);
+	}
+
+	//dungeon generation
+	private async void GenerateBossDungeonsOnAwake()
+	{
+		for (int i = 0; i < AssetDatabase.Database.bossEntities.Count; i++) //generate dungeons for each boss
 		{
 			Transform parentTransform;
 			if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
 				parentTransform = dungeonListContent.transform;
 			else parentTransform = hiddenDungeonsParentObj.transform;
 
-			for (int j = 0; j < 3; j++) //generate dungeon for every difficulty per boss
+			for (int j = 0; j < 3; j++) //generate dungeons for every difficulty per boss
 			{
 				GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
 				DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
-				dungeonData.Initilize(i, j, bossesInGame[i]);
 				bossDungeonLists.Add(dungeonData);
+				await dungeonData.Initilize(i, j, AssetDatabase.Database.bossEntities[i]);
 			}
 		}
 	}
-	private void GenerateNewDungeons()
+	private async void GenerateNewDungeons()
 	{
-		//if (GameManager.Instance == null) return; //disables for test scene
-		if (!Utilities.GetCurrentlyActiveScene("HubArea")) return; //if not hub area return
+		if (!Utilities.SceneIsActive(GameManager.Instance.hubScene)) return; //if not hub area return
+		if (blockNewDungeonGeneration) return;
+		blockNewDungeonGeneration = true;
+
+		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
+			activeDungeonLists[i].DeleteDungeon();
 
 		activeDungeonLists.Clear();
 
@@ -97,43 +140,12 @@ public class DungeonPortalUi : MonoBehaviour
 
 			GameObject go = Instantiate(dungeonInfoSlotPrefab, parentTransform);
 			DungeonDataUi dungeonData = go.GetComponent<DungeonDataUi>();
-			dungeonData.Initilize(i);
 			activeDungeonLists.Add(dungeonData);
+			await dungeonData.Initilize(i);
 		}
+
+		blockNewDungeonGeneration = false;
 	}	
-
-	//button actions
-	public void GenerateNewRandomDungeonsButton()
-	{
-		for (int i = activeDungeonLists.Count - 1; i >= 0; i--)
-			activeDungeonLists[i].DeleteDungeon();
-
-		GenerateNewDungeons();
-	}
-	public void ReturnToHubButton()
-	{
-		List<DungeonChestData> chestData = new List<DungeonChestData>();
-
-		foreach (ChestHandler chest in DungeonHandler.Instance.dungeonLootChestsList)
-		{
-			DungeonChestData data = new DungeonChestData()
-			{
-				chestActive = chest.chestActive,
-				chestStateOpened = chest.chestStateOpened,
-			};
-			chestData.Add(data);
-		}
-
-		GameManager.Instance.currentDungeonData.dungeonChestData = chestData;
-		//save data to corrisponding DungeonSlotUi, where SaveManager will then save/reload all DungeonSlotUi's
-		if (GameManager.Instance.currentDungeonData.isDungeonSaved)
-			savedDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
-		else
-			activeDungeonLists[GameManager.Instance.currentDungeonData.dungeonIndex].dungeonChestData = chestData;
-
-		SaveManager.Instance.AutoSaveData();
-		GameManager.Instance.LoadHubArea(false);
-	}
 
 	//Events
 	private void ReloadSavedDungeons()
@@ -164,6 +176,7 @@ public class DungeonPortalUi : MonoBehaviour
 
 		activeDungeonLists.Remove(dungeonData);
 		savedDungeonLists.Add(dungeonData);
+		UpdateDungeonIndexes();
 	}
 	private void OnDeleteDungeon(DungeonDataUi dungeonData)
 	{
@@ -171,31 +184,51 @@ public class DungeonPortalUi : MonoBehaviour
 		savedDungeonLists.Remove(dungeonData);
 
 		Destroy(dungeonData.gameObject);
+		UpdateDungeonIndexes();
+	}
+	private void UpdateDungeonIndexes()
+	{
+		for (int i = 0; i < activeDungeonLists.Count; i++)
+			activeDungeonLists[i].dungeonIndex = i;
+		for (int i = 0; i < savedDungeonLists.Count; i++)
+			savedDungeonLists[i].dungeonIndex = i;
+	}
+	private void HidePortalUiOnSceneChange(Scene newSceneLoaded, LoadSceneMode mode)
+	{
+		portalPanelUi.SetActive(false);
 	}
 
 	//UI CHANGES
 	public void ShowPortalUi(PortalHandler portal)
 	{
-		if (portalPanelUi.activeInHierarchy)
-			HidePortalUi();
+		portalPanelUi.SetActive(true);
+
+		if (portal.portalType == PortalHandler.PortalType.isDungeonEnterencePortal)
+		{
+			dungeonEnterenceUi.SetActive(true);
+			dungeonExitUi.SetActive(false);
+
+			if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
+				ShowActiveDungeonListUi();
+			else
+				ShowSavedDungeonListUi();
+		}
 		else
 		{
-			HidePortalUi(); //hide all ui incase incorrect panel already active
-			portalPanelUi.SetActive(true);
-
-			if (portal.portalType == PortalHandler.PortalType.isDungeonEnterencePortal)
-			{
-				dungeonEnterenceUi.SetActive(true);
-				ShowActiveDungeonListUi();
-			}
-			else
-				dungeonExitUi.SetActive(true);
+			dungeonEnterenceUi.SetActive(false);
+			dungeonExitUi.SetActive(true);
 		}
 	}
+	public void HidePortalUi()
+	{
+		GameManager.Localplayer.isInteractingWithInteractable = false;
+		portalPanelUi.SetActive(false);
+		dungeonEnterenceUi.SetActive(false);
+		dungeonExitUi.SetActive(false);
+	}
+
 	public void ShowActiveDungeonListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Active Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.activeDungeons;
 		RemoveContentFromDungeonList();
@@ -203,8 +236,6 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ShowSavedDungeonListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.savedDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Saved Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.savedDungeons;
 		RemoveContentFromDungeonList();
@@ -212,8 +243,6 @@ public class DungeonPortalUi : MonoBehaviour
 	}
 	public void ShowBossDungeonsListUi() //button click
 	{
-		if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons) return; //ignore if already showing
-
 		dungeonListInfoText.text = "Currently Showing Boss Dungeons";
 		dungeonListTypeToShow = DungeonListTypeToShow.bossDungeons;
 		RemoveContentFromDungeonList();
@@ -231,25 +260,26 @@ public class DungeonPortalUi : MonoBehaviour
 		if (dungeonListTypeToShow == DungeonListTypeToShow.activeDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in activeDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
 		else if (dungeonListTypeToShow == DungeonListTypeToShow.savedDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in savedDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
 		else if (dungeonListTypeToShow == DungeonListTypeToShow.bossDungeons)
 		{
 			foreach (DungeonDataUi dungeonData in bossDungeonLists)
+			{
+				dungeonData.UpdateDynamicUi();
 				dungeonData.transform.SetParent(dungeonListContent.transform);
+			}
 		}
-	}
-
-	public void HidePortalUi()
-	{
-		SceneHandler.playerInstance.isInteractingWithInteractable = false;
-		portalPanelUi.SetActive(false);
-		dungeonEnterenceUi.SetActive(false);
-		dungeonExitUi.SetActive(false);
 	}
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using Unity.Services.Lobbies.Models;
 using UnityEngine;
 
-public class EntityAbilityHandler : MonoBehaviour
+public class EntityAbilityHandler : NetworkBehaviour
 {
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityBehaviour behaviour;
@@ -68,6 +69,95 @@ public class EntityAbilityHandler : MonoBehaviour
 		SetBossAbilities();
 	}
 
+	//SET ENTITY ABILITIES
+	public void AssignEntityRandomAbilities()
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		SOAbilities offensiveAbility = PickRandomAbilityFromClass(true);
+		SOAbilities healingAility = PickRandomAbilityFromClass(false);
+
+		this.offensiveAbility = offensiveAbility;
+		this.healingAbility = healingAility;
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncEntityAbilitiesForClientsRPC(FindAbilityIndex(offensiveAbility), FindAbilityIndex(healingAility));
+	}
+	private SOAbilities PickRandomAbilityFromClass(bool offensiveAbility)
+	{
+		if (offensiveAbility == true)
+		{
+			List<SOAbilities> offensiveAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
+			{
+				if (ability.isOffensiveAbility && ability.damageType != IDamagable.DamageType.isHealing)
+					offensiveAbilities.Add(ability);
+			}
+
+			if (offensiveAbilities.Count == 0)
+				return null;
+			else
+				return offensiveAbilities[Utilities.GetRandomNumber(offensiveAbilities.Count - 1)];
+		}
+		else
+		{
+			List<SOAbilities> healingAbilities = new List<SOAbilities>();
+			foreach (SOAbilities ability in AssetDatabase.Database.abilities)
+			{
+				if (ability.damageType == IDamagable.DamageType.isHealing)
+					healingAbilities.Add(ability);
+			}
+
+			if (healingAbilities.Count == 0)
+				return null;
+			else
+				return healingAbilities[Utilities.GetRandomNumber(healingAbilities.Count - 1)];
+		}
+	}
+
+	//sync abilities for mp
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityAbilitiesForClientsRPC(int offensiiveAbilityIndex, int healingbilityIndex)
+	{
+		if (offensiiveAbilityIndex == -1)
+			offensiveAbility = null;
+		else
+			offensiveAbility = AssetDatabase.Database.abilities[offensiiveAbilityIndex];
+
+		if (healingbilityIndex == -1)
+			healingAbility = null;
+		else
+			healingAbility = AssetDatabase.Database.abilities[healingbilityIndex];
+	}
+	private int FindAbilityIndex(SOAbilities abilityToMatch)
+	{
+		if (abilityToMatch == null) return -1; //no ability equipped
+
+		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+		{
+			if (AssetDatabase.Database.abilities[i] == abilityToMatch)
+				return i;
+		}
+
+		Debug.LogError("no matching ability found for entity abilities");
+		return -1; //no match
+	}
+
+	//duplicate ability check
+	private bool IsAbilityAlreadyEquipped(SOAbilities abilityToCheck)
+	{
+		if (abilityToCheck == offensiveAbility) return true;
+		if (abilityToCheck == healingAbility) return true;
+		return false;
+	}
+
+	//reset/reroll abilities
+	public void RerollEquippedAbilities()
+	{
+		entityStats.abilityHandler.offensiveAbility = null;
+		entityStats.abilityHandler.healingAbility = null;
+		AssignEntityRandomAbilities();
+	}
 	public void ResetEntityAbilities()
 	{
 		abilityBeingCasted = null;
@@ -81,6 +171,7 @@ public class EntityAbilityHandler : MonoBehaviour
 		abilityTimerThreeCounter = 0;
 	}
 
+	//boss abilities
 	private void SetBossAbilities()
 	{
 		if (behaviour.behaviourRef is SOBossEntityBehaviour bossBehaviour)
@@ -164,111 +255,26 @@ public class EntityAbilityHandler : MonoBehaviour
 	//cast ability
 	private void CastAbility(SOAbilities ability)
 	{
-		if (ability.isAOE)
-			CastAoeAbility(ability);
-		else if (ability.isProjectile)
-			CastDirectionalAbility(ability);
-		else if (ability.requiresTarget && ability.isOffensiveAbility)
+		if (ability.isProjectile || ability.isAOE)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				SyncSetUpAndCastAbilitiesRpc(entityStats.NetworkObjectId, GetAbilityIndex(ability), GetAbilityTargetPosition(ability));
+			else
+				SetUpAndCastAbilities(entityStats, ability, GetAbilityTargetPosition(ability));
+		}
+		else if (ability.requiresTarget)
 		{
 			if (behaviour.playerTarget == null && overriddenPlayerTarget == null)
 				CancelAbility();
 			else
-				CastEffect(ability);
+				CastEffectAbilities(ability);
 		}
-		else if (ability.requiresTarget && !ability.isOffensiveAbility)   //for MP add support for friendlies
-			CastEffect(ability);
 		else
 		{
 			CancelAbility();
 			Debug.LogError("failed to find ability type and cast, shouldnt happen");
 			return;
 		}
-
-		if (entityStats.statsRef.isBossVersion)
-			OnBossAbilityCast?.Invoke();
-	}
-
-	//types of casting
-	private void CastEffect(SOAbilities ability)
-	{
-		if (ability.damageType == IDamagable.DamageType.isHealing)
-		{
-			//eventually add support to heal friendlies
-			entityStats.OnHeal(ability.damageValuePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
-		}
-		if (ability.damageValue != 0)    //apply damage for insta damage abilities
-		{
-			DamageSourceInfo damageSourceInfo = new(entityStats, IDamagable.HitBye.entity, 
-				ability.damageValue * entityStats.levelModifier, (IDamagable.DamageType)ability.damageType, false);
-			damageSourceInfo.SetDeathMessage(ability);
-
-			if (overridePlayerTarget)
-				overriddenPlayerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
-			else
-				behaviour.playerTarget.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
-		}
-
-		if (ability.hasStatusEffects)    //apply effects (if has any) based on what type it is.
-		{
-			//apply effects based on what type it is.
-			if (ability.canOnlyTargetSelf)
-				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			else if (ability.isOffensiveAbility && behaviour.playerTarget != null)
-			{
-				if (overridePlayerTarget)
-					overriddenPlayerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-				else
-					behaviour.playerTarget.playerStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-			}
-			else if (!ability.isOffensiveAbility)         //add support/option to buff other friendlies
-				entityStats.ApplyNewStatusEffects(ability.statusEffects, entityStats);
-		}
-
-		OnSuccessfulCast(ability);
-	}
-	private void CastDirectionalAbility(SOAbilities ability)
-	{
-		Projectiles projectile = DungeonHandler.GetProjectile();
-		if (projectile == null)
-		{
-			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
-			projectile = go.GetComponent<Projectiles>();
-			projectile.transform.SetParent(null);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenPlayerTarget.transform.position);
-			else
-				projectile.SetPositionAndAttackDirection(transform.position, overriddenTargetPosition);
-		}
-		else
-			projectile.SetPositionAndAttackDirection(transform.position, behaviour.playerTarget.transform.position);
-
-		projectile.Initilize(entityStats, ability);
-		OnSuccessfulCast(ability);
-	}
-	private void CastAoeAbility(SOAbilities ability)
-	{
-		AbilityAOE abilityAOE = DungeonHandler.GetAoeAbility();
-		if (abilityAOE == null)
-		{
-			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
-			abilityAOE = go.GetComponent<AbilityAOE>();
-			abilityAOE.transform.SetParent(null);
-		}
-
-		if (overridePlayerTarget)
-		{
-			if (overriddenPlayerTarget != null)
-				abilityAOE.Initilize(entityStats, ability, overriddenPlayerTarget.transform.position);
-			else
-				abilityAOE.Initilize(entityStats, ability, overriddenTargetPosition);
-		}
-		else
-			abilityAOE.Initilize(entityStats, ability, behaviour.playerTarget.transform.position);
-
 		OnSuccessfulCast(ability);
 	}
 	private void OnSuccessfulCast(SOAbilities ability)
@@ -283,7 +289,134 @@ public class EntityAbilityHandler : MonoBehaviour
 		abilityBeingCasted = null;
 
 		if (entityStats.statsRef.isBossVersion)
+		{
 			abilityIndicators.HideAoeIndicators();
+			OnBossAbilityCast?.Invoke();
+		}
+	}
+
+	//set up and cast projectile/aoe ability types
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	private void SyncSetUpAndCastAbilitiesRpc(ulong casterId, int abilityIndex, Vector2 attackPos)
+	{
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		SOAbilities ability = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAndCastAbilities(casterStats, ability, attackPos);
+	}
+	private void SetUpAndCastAbilities(EntityStats casterStats, SOAbilities ability, Vector2 attackPos)
+	{
+		if (ability.isProjectile)
+			SetUpAndCastProjectileAbility(casterStats, ability, attackPos);
+		else if (ability.isAOE)
+			SetUpAndCastAoeAbility(casterStats, ability, attackPos);
+	}
+	private void SetUpAndCastProjectileAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		Projectiles projectile = ObjectPoolingManager.GetInActiveProjectile();
+		if (projectile == null)
+		{
+			GameObject go = Instantiate(behaviour.projectilePrefab, transform, true);
+			projectile = go.GetComponent<Projectiles>();
+			ObjectPoolingManager.AddProjectileToObjectPooling(projectile);
+
+			if (MultiplayerManager.IsMultiplayer())
+				projectile.GetComponent<NetworkObject>().Spawn();
+		}
+
+		projectile.Initilize(casterStats, abilityRef, attackPos);
+	}
+	private void SetUpAndCastAoeAbility(EntityStats casterStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		AbilityAOE abilityAOE = ObjectPoolingManager.GetInActiveAoeAbility();
+		if (abilityAOE == null)
+		{
+			GameObject go = Instantiate(behaviour.AbilityAoePrefab, transform, true);
+			abilityAOE = go.GetComponent<AbilityAOE>();
+			ObjectPoolingManager.AddAoeAbilityToObjectPooling(abilityAOE);
+
+			if (MultiplayerManager.IsMultiplayer())
+				abilityAOE.GetComponent<NetworkObject>().Spawn();
+		}
+
+		//will need additional code here to handle supportive and offensive aoe abilities
+		abilityAOE.Initilize(casterStats, abilityRef, attackPos);
+	}
+
+	//set up and cast effect types
+	private void CastEffectAbilities(SOAbilities ability)
+	{
+		EntityStats target;
+
+		if (ability.isOffensiveAbility)
+		{
+			if (overridePlayerTarget)
+				target = overriddenPlayerTarget.playerStats;
+			else
+				target = behaviour.playerTarget.playerStats;
+		}
+		else
+			target = entityStats;
+
+		if (ability.damageType == IDamagable.DamageType.isHealing)
+			CastHealingEffect(ability, target);
+		else if (ability.damageValue != 0)
+			CastDamageEffect(ability, target);
+
+		if (ability.hasStatusEffects)    //apply effects if any
+			target.ApplyNewStatusEffects(ability.statusEffects, entityStats);
+	}
+	private void CastHealingEffect(SOAbilities ability, EntityStats target)
+	{
+		target.RecieveHealing(ability.damageValuePercentage, true, target.healingPercentageModifier.finalPercentageValue);
+	}
+	private void CastDamageEffect(SOAbilities ability, EntityStats target)
+	{
+		DamageSourceInfo damageSourceInfo = new(entityStats, IDamagable.HitBye.entity,
+			ability.damageValue * entityStats.levelModifier, ability.damageType, false);
+		damageSourceInfo.SetDeathMessage(ability);
+
+		target.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
+	}
+
+	//casting helper funcs
+	private Vector2 GetAbilityTargetPosition(SOAbilities ability)
+	{
+		if (ability.isProjectile)
+		{
+			if (overridePlayerTarget)
+			{
+				if (overriddenPlayerTarget != null)
+					return overriddenPlayerTarget.transform.position;
+				else
+					return overriddenTargetPosition;
+			}
+			else
+				return behaviour.playerTarget.transform.position;
+		}
+		else if (ability.isAOE)
+		{
+			if (overridePlayerTarget)
+			{
+				if (overriddenPlayerTarget != null)
+					return overriddenPlayerTarget.transform.position;
+				else
+					return overriddenTargetPosition;
+			}
+			else
+				return behaviour.playerTarget.transform.position;
+		}
+		else return new Vector2(0, 0);
+	}
+	private int GetAbilityIndex(SOAbilities ability)
+	{
+		for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+		{
+			if (ability == AssetDatabase.Database.abilities[i])
+				return i;
+		}
+
+		Debug.LogError("failed to get ability index");
+		return 0;
 	}
 
 	//override current PlayerTarget

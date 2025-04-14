@@ -22,25 +22,28 @@ MonoBehaviour:
   isOffensiveAbility: 1
   requiresTarget: 0
   canOnlyTargetSelf: 0
-  hasStatusEffects: 0
-  statusEffects: []
+  hasStatusEffects: 1
+  statusEffects:
+  - {fileID: 11400000, guid: aa784849ba0abc746b68fab534e09b64, type: 2}
   isAOE: 0
-  isCircleAOE: 0
+  aoeType: 0
   isDamageSplitBetweenHits: 0
   hasAoeDuration: 0
   aoeDuration: 0
-  circleAoeSize: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  circleAoeRadius: 20
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 1
   projectileSprite: {fileID: -1934579838, guid: 6ac7d6de1363b344aa492389124a974c, type: 3}
   projectileSpeed: 25
   isDamagePercentageBased: 0
   damageType: 2
-  damageValue: 50
+  damageValue: 35
   damageValuePercentage: 0
   isSpell: 1
-  manaCost: 12
-  minPercentCost: 10
+  manaCost: 20
+  minPercentCost: 18
   hasParticleEffect: 0
   particleColour: {r: 0, g: 0, b: 0, a: 0}

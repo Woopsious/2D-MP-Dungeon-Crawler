@@ -39,11 +39,7 @@ public class QuestDataUi : MonoBehaviour
 	public SOAccessories accessoryToHandIn;
 	public SOConsumables consumableToHandIn;
 
-	public ItemType itemTypeToHandIn;
-	public enum ItemType
-	{
-		isConsumable, isWeapon, isArmor, isAccessory, isAbility
-	}
+	public SOItems.ItemType itemTypeToHandIn;
 
 	[Header("Quest Reward")]
 	public RewardType questRewardType;
@@ -90,24 +86,24 @@ public class QuestDataUi : MonoBehaviour
 	public void InitilizeItemHandInQuest()
 	{
 		questType = QuestType.isItemHandInQuest;
-		itemTypeToHandIn = (ItemType)Utilities.GetRandomNumber(3);
+		itemTypeToHandIn = (SOItems.ItemType)Utilities.GetRandomNumber(3);
 
-		if (itemTypeToHandIn == ItemType.isWeapon)
+		if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
 		{
 			weaponToHandIn = possibleWeapons[Utilities.GetRandomNumber(possibleWeapons.Count - 1)];
 			amount = 1;
 		}
-		else if (itemTypeToHandIn == ItemType.isArmor)
+		else if (itemTypeToHandIn == SOItems.ItemType.isArmor)
 		{
 			armorToHandIn = possibleArmors[Utilities.GetRandomNumber(possibleArmors.Count - 1)];
 			amount = 1;
 		}
-		else if (itemTypeToHandIn == ItemType.isAccessory)
+		else if (itemTypeToHandIn == SOItems.ItemType.isAccessory)
 		{
 			accessoryToHandIn = possibleAccessories[Utilities.GetRandomNumber(possibleAccessories.Count - 1)];
 			amount = 1;
 		}
-		else if (itemTypeToHandIn == ItemType.isConsumable)
+		else if (itemTypeToHandIn == SOItems.ItemType.isConsumable)
 		{
 			consumableToHandIn = possibleConsumables[Utilities.GetRandomNumber(possibleConsumables.Count - 1)];
 			amount = 5;
@@ -126,8 +122,8 @@ public class QuestDataUi : MonoBehaviour
 		}
 		if (questRewardType == RewardType.isGoldReward)
 		{
-			rewardToAdd = Utilities.GetRandomNumberBetween((int)(50 * SceneHandler.playerInstance.playerStats.levelModifier), 
-				(int)(75 * SceneHandler.playerInstance.playerStats.levelModifier));
+			rewardToAdd = Utilities.GetRandomNumberBetween((int)(50 * GameManager.Localplayer.playerStats.levelModifier), 
+				(int)(75 * GameManager.Localplayer.playerStats.levelModifier));
 			questRewardUi.text = $"Reward: {rewardToAdd} Gold";
 		}
 	}
@@ -155,22 +151,22 @@ public class QuestDataUi : MonoBehaviour
 		}
 		else if(questType == QuestType.isItemHandInQuest)
 		{
-			if (itemTypeToHandIn == ItemType.isWeapon)
+			if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
 			{
 				questName = $"Hand In {amount} {weaponToHandIn.itemName}";
 				questImage.sprite = weaponToHandIn.itemImage;
 			}
-			else if (itemTypeToHandIn == ItemType.isArmor)
+			else if (itemTypeToHandIn == SOItems.ItemType.isArmor)
 			{
 				questName = $"Hand In {amount} {armorToHandIn.itemName}";
 				questImage.sprite = armorToHandIn.itemImage;
 			}
-			else if (itemTypeToHandIn == ItemType.isAccessory)
+			else if (itemTypeToHandIn == SOItems.ItemType.isAccessory)
 			{
 				questName = $"Hand In {amount} {accessoryToHandIn.itemName}";
 				questImage.sprite = accessoryToHandIn.itemImage;
 			}
-			else if (itemTypeToHandIn == ItemType.isConsumable)
+			else if (itemTypeToHandIn == SOItems.ItemType.isConsumable)
 			{
 				questName = $"Hand In {amount} {consumableToHandIn.itemName}";
 				questImage.sprite = consumableToHandIn.itemImage;
@@ -200,19 +196,19 @@ public class QuestDataUi : MonoBehaviour
 		}
 		else if(questType == QuestType.isItemHandInQuest)
 		{
-			if (itemTypeToHandIn == ItemType.isWeapon)
+			if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
 				questDescription = $"Collect {amount} " +
 					$"{weaponToHandIn.itemName} and hand them in via your inventory. (items will be marked)";
 
-			else if (itemTypeToHandIn == ItemType.isArmor)
+			else if (itemTypeToHandIn == SOItems.ItemType.isArmor)
 				questDescription = $"Collect {amount} " +
 					$"{armorToHandIn.itemName} and hand them in via your inventory. (items will be marked)";
 
-			else if (itemTypeToHandIn == ItemType.isAccessory)
+			else if (itemTypeToHandIn == SOItems.ItemType.isAccessory)
 				questDescription = $"Collect {amount} " +
 					$"{accessoryToHandIn.itemName} and hand them in via your inventory. (items will be marked)";
 
-			else if (itemTypeToHandIn == ItemType.isConsumable)
+			else if (itemTypeToHandIn == SOItems.ItemType.isConsumable)
 				questDescription = $"Collect {amount} " +
 					$"{consumableToHandIn.itemName} and hand them in via your inventory. (items will be marked)";
 
@@ -235,28 +231,28 @@ public class QuestDataUi : MonoBehaviour
 
 	public bool DoesHandInItemMatch(InventoryItemUi item)
 	{
-		if (itemTypeToHandIn == ItemType.isWeapon)
+		if (itemTypeToHandIn == SOItems.ItemType.isWeapon)
 		{
 			if (weaponToHandIn == item.weaponBaseRef)
 				return true;
 			else return false;
 		}
 
-		else if (itemTypeToHandIn == ItemType.isArmor)
+		else if (itemTypeToHandIn == SOItems.ItemType.isArmor)
 		{
 			if (armorToHandIn == item.armorBaseRef)
 				return true;
 			else return false;
 		}
 
-		else if (itemTypeToHandIn == ItemType.isAccessory)
+		else if (itemTypeToHandIn == SOItems.ItemType.isAccessory)
 		{
 			if (accessoryToHandIn == item.accessoryBaseRef)
 				return true;
 			else return false;
 		}
 
-		else if (itemTypeToHandIn == ItemType.isConsumable)
+		else if (itemTypeToHandIn == SOItems.ItemType.isConsumable)
 		{
 			if (consumableToHandIn == item.consumableBaseRef)
 				return true;

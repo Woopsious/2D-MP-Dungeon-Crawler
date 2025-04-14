@@ -11,7 +11,7 @@ public class Consumables : Items
 	}
 
 	//set consumable data
-	public override void Initilize(Rarity setRarity, int setLevel, int setEnchantmentLevel)
+	public override void Initilize(SOItems.Rarity setRarity, int setLevel, int setEnchantmentLevel)
 	{
 		base.Initilize(setRarity, setLevel, setEnchantmentLevel);
 		isStackable = consumableBaseRef.isStackable;
@@ -33,7 +33,7 @@ public class Consumables : Items
 	public void ConsumeItem(EntityStats entityStats)
 	{
 		if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.healthRestoration && !EntityHealthFull(entityStats))
-			entityStats.OnHeal(consumableBaseRef.consumablePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
+			entityStats.RecieveHealing(consumableBaseRef.consumablePercentage, true, entityStats.healingPercentageModifier.finalPercentageValue);
 		else if (consumableBaseRef.consumableType == SOConsumables.ConsumableType.manaRestoration && !EntityManaFull(entityStats))
 			entityStats.IncreaseMana(consumableBaseRef.consumablePercentage, true);
 		else return;

@@ -75,11 +75,13 @@ MonoBehaviour:
   classRestriction: 1
   startingWeapon:
   - {fileID: 11400000, guid: 72e48cd549d37ba4e84c83ecc46bf1ce, type: 2}
+  startingOffhandWeapon: []
   startingArmor:
   - {fileID: 11400000, guid: 34d1623d4b6d6fc46aedcfc3cb76528c, type: 2}
   - {fileID: 11400000, guid: f5736f90d50f4b241b5998041112c022, type: 2}
   - {fileID: 11400000, guid: 2832cd6c457e77448a9083016caed9f0, type: 2}
-  startingAccessories: []
+  startingAccessories:
+  - {fileID: 11400000, guid: 55dd00374a4b75e40856a2aa269bb404, type: 2}
   startingConsumables:
   - {fileID: 11400000, guid: 5a4ca0e0bb809244c8ecafca86db3a53, type: 2}
   - {fileID: 11400000, guid: cea1a6b9d38a83942a30242a9483ff4c, type: 2}

@@ -15,6 +15,24 @@
                     "initialStateCheck": true
                 },
                 {
+                    "name": "SpectateNextPlayer",
+                    "type": "Button",
+                    "id": "99e1ff45-b075-42e3-b636-e490349a78ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "SpectatePreviousPlayer",
+                    "type": "Button",
+                    "id": "d653151e-3e02-485c-aad8-e777823a8d9e",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Movement",
                     "type": "PassThrough",
                     "id": "400db62a-d32f-4b17-b984-c4f6855fbd45",
@@ -27,7 +45,7 @@
                     "name": "MainAttack",
                     "type": "Button",
                     "id": "16166011-ddb9-4174-9835-69e38d841ba8",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -36,7 +54,7 @@
                     "name": "RightClick",
                     "type": "Button",
                     "id": "cefd9ca7-7dda-45fe-8826-300afca2cd25",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -45,7 +63,7 @@
                     "name": "Interact",
                     "type": "Button",
                     "id": "23ef1617-a567-4225-9809-90a9d0a5e36f",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -54,7 +72,7 @@
                     "name": "TabTargetingForwards",
                     "type": "Button",
                     "id": "aed5c3fd-530b-4dc6-9630-e9d8ab6c9249",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -180,7 +198,7 @@
                     "name": "LearntAbilities",
                     "type": "Button",
                     "id": "641a7cf8-2aaa-420f-b263-fee64d017918",
-                    "expectedControlType": "Button",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -268,7 +286,7 @@
                     "name": "",
                     "id": "d0dfce21-05b9-439f-913d-c13fef6b5cff",
                     "path": "<Keyboard>/f",
-                    "interactions": "",
+                    "interactions": "Press(behavior=2)",
                     "processors": "",
                     "groups": "",
                     "action": "Interact",
@@ -448,6 +466,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "TabTargetingBackwards",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5ad92fcd-3472-4971-ac08-0c174ae4ce3e",
+                    "path": "<Keyboard>/d",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpectateNextPlayer",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b11bc5e9-911f-429e-8329-c844620f8577",
+                    "path": "<Keyboard>/a",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "SpectatePreviousPlayer",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

@@ -26,7 +26,6 @@ public class ClientManager : NetworkBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			HostManager.Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
@@ -36,17 +35,26 @@ public class ClientManager : NetworkBehaviour
 	//START/STOP CLIENT
 	public void StartClientAndJoinLobby(Lobby lobby)
 	{
+		LoadingScreensManager.Instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.joiningLobby);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
 		GameManager.Instance.PauseGame(false);
 		LobbyManager.Instance.JoinLobby(lobby);
 		MultiplayerManager.Instance.SubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = true;
+		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
-	public void StopClient()
+	public void StopClient(bool quittingToMainMenu)
 	{
+		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
+			SaveManager.Instance.AutoSaveData();
+
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
-		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
-		MultiplayerManager.Instance.isMultiplayer = false;
+		MultiplayerManager.UpdateIsMultiplayer(false);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
+		NetworkManager.Singleton.Shutdown();
+
+		if (quittingToMainMenu)
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	//JOINING HOST RELAY SERVER
@@ -87,48 +95,31 @@ public class ClientManager : NetworkBehaviour
 		return new RelayServerData(allocation, "dtls");
 	}
 
+	//DISCONNECT OPTIONS
+	//leave lobby
+	public void ClientLeaveRelayAndLobby(string disconnectReason, bool quittingToMainMenu)
+	{
+		Instance.StopClient(quittingToMainMenu);
+
+		if (quittingToMainMenu) return;
+		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
+	}
+
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsClient(ulong id)
 	{
-		//noop
+		if (id != Instance.clientNetworkedId) return; //joined player is not this player
+
+		LoadingScreensManager.Instance.HideLobbyLoadingScreen();
+		LobbyManager.Instance.UpdateJoiningClientsNetworkID();
 	}
 	public void HandleClientDisconnectsAsClient(ulong id)
 	{
-		if (id != Instance.clientNetworkedId) return;
-		///<summery>
-		/// if disconnected player is this player stop client
-		/// shut down all mp related stuff, probably send player back to hub world/reload hubworld
-		/// possibly save player inventory or not??
-		///<summery>
+		if (id != Instance.clientNetworkedId) return; //joined player is not this player
 
-		MultiplayerMenuUi.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
-		MultiplayerMenuUi.Instance.ShowDisconnectUiPanel();
-		StopClient();
-	}
-}
-
-//client data
-[Serializable]
-public struct ClientDataInfo : INetworkSerializable, IEquatable<ClientDataInfo>
-{
-	public FixedString64Bytes clientName;
-	public FixedString64Bytes clientId;
-	public ulong clientNetworkedId;
-
-	public ClientDataInfo(string playerName = "not set", string clientId = "No Id Token", ulong clientNetworkedId = 0)
-	{
-		this.clientName = playerName;
-		this.clientId = clientId;
-		this.clientNetworkedId = clientNetworkedId;
-	}
-	public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
-	{
-		serializer.SerializeValue(ref clientName);
-		serializer.SerializeValue(ref clientId);
-		serializer.SerializeValue(ref clientNetworkedId);
-	}
-	public bool Equals(ClientDataInfo other)
-	{
-		return clientName == other.clientName && clientId == other.clientId && clientNetworkedId == other.clientNetworkedId;
+		LoadingScreensManager.Instance.SetDisconnectReason(NetworkManager.DisconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
+		StopClient(false);
 	}
 }

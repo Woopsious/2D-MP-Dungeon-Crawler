@@ -1,11 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Services.Lobbies.Models;
-using Unity.VisualScripting;
-using UnityEditor;
+using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.Pool;
-using UnityEngine.Rendering;
+using UnityEngine.SceneManagement;
 
 public class SpawnHandler : MonoBehaviour
 {
@@ -18,23 +15,22 @@ public class SpawnHandler : MonoBehaviour
 
 	private CircleCollider2D playerCollider;
 	private List<EntityStats> listOfSpawnedEntities = new List<EntityStats>();
-	private List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
-	private float closestPlayerDistance;
-	private bool spawningDisabled;
+	public List<PlayerController> listOfPlayersInRange = new List<PlayerController>();
+	public float closestPlayerDistance;
+	public bool spawningDisabled;
 
 	[Header("Spawner Range Settings")]
 	public int maxSpawningDistance;
 	public int minSpawningDistance;
 	[HideInInspector] public Bounds spawnBounds;
 
-	[Header("Spawner Settings")]
+	[Header("Entity Template Prefabs")]
+	public GameObject bossEntityTemplatePrefab;
 	public GameObject entityTemplatePrefab;
-	public List<SOEntityStats> possibleEntityTypesToSpawn = new List<SOEntityStats>();
 
 	[Header("Boss Spawner Settings")]
 	public bool isBossRoomSpawner;
 	public bool isBossSpawner;
-	public GameObject bossEntityTemplatePrefab;
 	public SOEntityStats bossEntityToSpawn;
 	private BossEntityStats bossEntity;
 
@@ -51,14 +47,14 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Awake()
 	{
-		Initilize();
+		playerCollider = GetComponent<CircleCollider2D>();
 	}
 	private void OnEnable()
 	{
 		BossRoomHandler.OnStartBossFight += SpawnBossEntity;
-		DungeonHandler.OnEntityDeathEvent += OnEntityDeath;
-		PlayerEventManager.OnPlayerLevelUpEvent += UpdateSpawnerLevel;
-		GameManager.OnSceneChangeFinish += TrySpawnEntities;
+		ObjectPoolingManager.OnEntityDeathEvent += OnEntityDeath;
+		PlayerEventManager.OnPlayerLevelChangeEvent += UpdateSpawnerLevel;
+
 
 		BossEntityBehaviour.OnSpawnBossAdds += ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting += SpawnBossDungeonObstacles;
@@ -66,9 +62,8 @@ public class SpawnHandler : MonoBehaviour
 	private void OnDisable()
 	{
 		BossRoomHandler.OnStartBossFight -= SpawnBossEntity;
-		DungeonHandler.OnEntityDeathEvent -= OnEntityDeath;
-		PlayerEventManager.OnPlayerLevelUpEvent -= UpdateSpawnerLevel;
-		GameManager.OnSceneChangeFinish -= TrySpawnEntities;
+		ObjectPoolingManager.OnEntityDeathEvent -= OnEntityDeath;
+		PlayerEventManager.OnPlayerLevelChangeEvent -= UpdateSpawnerLevel;
 
 		BossEntityBehaviour.OnSpawnBossAdds -= ForceSpawnEntitiesForBosses;
 		EntityAbilityHandler.OnBossAbilityBeginCasting -= SpawnBossDungeonObstacles;
@@ -76,6 +71,15 @@ public class SpawnHandler : MonoBehaviour
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;
 		StopAllCoroutines();
+	}
+
+	private void Start()
+	{
+		if (GameManager.Localplayer != null)
+			spawnerLevel = GameManager.Localplayer.playerStats.entityLevel;
+
+		Initilize();
+		TrySpawnEntities();
 	}
 
 	//track players
@@ -113,50 +117,33 @@ public class SpawnHandler : MonoBehaviour
 
 	private void Initilize()
 	{
-		playerCollider = GetComponent<CircleCollider2D>();
 		playerCollider.radius = maxSpawningDistance;
 		closestPlayerDistance = maxSpawningDistance;
 		spawningDisabled = false;
+		CreateEnemySpawnTable();
 
 		spawnBounds.min = new Vector3(transform.position.x - (minSpawningDistance / 3f),
 			transform.position.y - (minSpawningDistance / 3f), transform.position.z);
 
 		spawnBounds.max = new Vector3(transform.position.x + (minSpawningDistance / 3f),
 			transform.position.y + (minSpawningDistance / 3f), transform.position.z);
-
-		CreateEnemySpawnTable();
-		TrySpawnEntities();
 	}
 	private void CreateEnemySpawnTable()
 	{
 		enemySpawnChanceTable.Clear();
 		totalEnemySpawnChance = 0;
 
-		foreach (SOEntityStats enemy in possibleEntityTypesToSpawn)
+		foreach (SOEntityStats enemy in AssetDatabase.Database.entities)
 			enemySpawnChanceTable.Add(enemy.enemySpawnChance);
 
 		foreach (float num in enemySpawnChanceTable)
 			totalEnemySpawnChance += num;
 	}
-	private int GetIndexOfEnemyToSpawn()
-	{
-		float rand = Random.Range(0, totalEnemySpawnChance);
-		float cumChance = 0;
-
-		for (int i = 0; i < enemySpawnChanceTable.Count; i++)
-		{
-			cumChance += enemySpawnChanceTable[i];
-
-			if (rand <= cumChance)
-				return i;
-		}
-		return -1;
-	}
 
 	//event listeners
-	private void UpdateSpawnerLevel(EntityStats playerStats)
+	private void UpdateSpawnerLevel(PlayerController player)
 	{
-		spawnerLevel = playerStats.entityLevel;
+		spawnerLevel = player.playerStats.entityLevel;
 	}
 	private void OnEntityDeath(GameObject obj)
 	{
@@ -193,7 +180,7 @@ public class SpawnHandler : MonoBehaviour
 			if (listOfSpawnedEntities[i] == null) return;
 
 			if (listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().playerTarget == null)
-				DungeonHandler.Instance.AddNewEntitiesToPool(listOfSpawnedEntities[i]);
+				ObjectPoolingManager.AddEntityToInActivePool(listOfSpawnedEntities[i]);
 			else
 				listOfSpawnedEntities[i].GetComponent<EntityBehaviour>().markedForCleanUp = true;
 
@@ -212,13 +199,13 @@ public class SpawnHandler : MonoBehaviour
 	private void TrySpawnEntities()
 	{
 		if (!CanSpawnEntity()) return;
-
 		SpawnEntity();
 	}
 
 	//boss entity spawning
 	private void SpawnBossEntity(GameObject roomCenterPiece)
 	{
+		if (!MultiplayerManager.IsClientHost()) return; //disable spawning if not host
 		if (!isBossSpawner || bossEntity != null) return; //disable spawning multiple
 
 		SOEntityStats bossToSpawn = null;
@@ -235,15 +222,23 @@ public class SpawnHandler : MonoBehaviour
 
 
 		if (bossToSpawn == null) return;
-		InstantiateNewBossEntity(bossToSpawn, roomCenterPiece);
+		InstantiateNewBossEntity(roomCenterPiece);
 	}
-	private void InstantiateNewBossEntity(SOEntityStats bossToSpawn, GameObject roomCenterPiece)
+	private void InstantiateNewBossEntity(GameObject roomCenterPiece)
 	{
 		GameObject go = Instantiate(bossEntityTemplatePrefab, roomCenterPiece.transform);
 		BossEntityStats bossEntity = go.GetComponent<BossEntityStats>();
-		bossEntity.SetCenterPieceRef(roomCenterPiece);
-		bossEntity.statsRef = bossToSpawn;
+
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			go.GetComponent<NetworkObject>().Spawn();
+			bossEntity.SyncEntitySORefsRPC(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+		}
+		else
+			bossEntity.SetEntitySoRefs(GetIndexOfBossEntityInDatabase(bossEntityToSpawn));
+
 		bossEntity.transform.SetParent(null);
+		bossEntity.SetCenterPieceRef(roomCenterPiece);
 		this.bossEntity = bossEntity;
 
 		if (debugSpawnEnemiesAtSetLevel)
@@ -255,20 +250,14 @@ public class SpawnHandler : MonoBehaviour
 	//entity spawning
 	private void SpawnEntity()
 	{
-		int num = GetIndexOfEnemyToSpawn();
-		bool entityTypeMatches = false;
+		if (!MultiplayerManager.IsClientHost()) return; //disable spawning if not host
 
-		foreach (EntityStats entity in DungeonHandler.Instance.inActiveEntityPool)
-		{
-			if (entity.statsRef == possibleEntityTypesToSpawn[num])
-			{
-				entityTypeMatches = true;
-				DungeonHandler.Instance.inActiveEntityPool.Remove(entity);
-				RespawnEntity(entity);
-				break;
-			}
-		}
-		if (!entityTypeMatches)
+		int num = GetIndexOfEnemyToSpawn();
+		EntityStats entity = ObjectPoolingManager.GetInActiveEntity(AssetDatabase.Database.entities[num]);
+
+		if (entity != null)
+			RespawnEntity(entity);
+		else
 			InstantiateNewEntity();
 	}
 	private void RespawnEntity(EntityStats entity)
@@ -292,10 +281,18 @@ public class SpawnHandler : MonoBehaviour
 		int num = GetIndexOfEnemyToSpawn();
 		GameObject go = Instantiate(entityTemplatePrefab, Utilities.GetRandomPointInBounds(spawnBounds), transform.rotation);
 		EntityStats entity = go.GetComponent<EntityStats>();
-		entity.statsRef = possibleEntityTypesToSpawn[num];
-		entity.GetComponent<EntityBehaviour>().behaviourRef = possibleEntityTypesToSpawn[num].entityBehaviour;
+
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			go.GetComponent<NetworkObject>().Spawn();
+			entity.SyncEntitySORefsRPC(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+		}
+		else
+			entity.SetEntitySoRefs(GetIndexOfEntityInDatabase(AssetDatabase.Database.entities[num]));
+
 		entity.transform.SetParent(null);
 		listOfSpawnedEntities.Add(entity);
+		ObjectPoolingManager.AddEntityToObjectPooling(entity);
 
 		if (debugSpawnEnemiesAtSetLevel)
 			entity.entityLevel = debugSpawnerLevel;
@@ -303,6 +300,50 @@ public class SpawnHandler : MonoBehaviour
 			entity.entityLevel = spawnerLevel;
 
 		TrySpawnEntities();
+	}
+	private int GetIndexOfEnemyToSpawn()
+	{
+		float rand = Random.Range(0, totalEnemySpawnChance);
+		float cumChance = 0;
+
+		for (int i = 0; i < enemySpawnChanceTable.Count; i++)
+		{
+			cumChance += enemySpawnChanceTable[i];
+
+			if (rand <= cumChance)
+				return i;
+		}
+		return -1;
+	}
+
+	//sync entity SO Refs for Mp
+	private int GetIndexOfEntityInDatabase(SOEntityStats statsRef)
+	{
+		int index = 0;
+		foreach (SOEntityStats stats in AssetDatabase.Database.entities)
+		{
+			if (statsRef == stats)
+				return index;
+            else
+				index++;
+        }
+
+		Debug.LogError("entity not in database ADD IT PLEASE I BEG");
+		return index;
+	}
+	private int GetIndexOfBossEntityInDatabase(SOEntityStats statsRef)
+	{
+		int index = 0;
+		foreach (SOEntityStats stats in AssetDatabase.Database.bossEntities)
+		{
+			if (statsRef == stats)
+				return index;
+			else
+				index++;
+		}
+
+		Debug.LogError("boss entity not in database ADD IT PLEASE I BEG");
+		return index;
 	}
 
 	//bool checks

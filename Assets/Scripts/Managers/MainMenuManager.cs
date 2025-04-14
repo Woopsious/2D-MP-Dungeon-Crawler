@@ -51,21 +51,73 @@ public class MainMenuManager : MonoBehaviour
 	}
 	private void Start()
 	{
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene)) //show ui if menu scene alreadly loaded
+		{
+			Instance.ShowMainMenu();
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(false);
+
+			quitGameButton.SetActive(true);
+			startNewGameButton.SetActive(true);
+		}
+		else //hide it
+		{
+			Instance.HideMainMenu();
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(true);
+
+			quitGameButton.SetActive(false);
+			startNewGameButton.SetActive(false);
+		}
+
 		EnableMainMenuButtons();
 		SetActionForPlayMpButton();
 	}
 
-	private void EnableMainMenuButtons()
+	private void OnEnable()
 	{
-		//enable buttons unique to main menu scene
+		SceneManager.sceneLoaded += UpdatePlayerUiOnSceneChange;
+	}
+	private void OnDisable()
+	{
+		SceneManager.sceneLoaded -= UpdatePlayerUiOnSceneChange;
+	}
+
+	private void UpdatePlayerUiOnSceneChange(Scene loadedScene, LoadSceneMode mode)
+	{
 		if (GameManager.Instance == null)
 		{
-			Debug.LogWarning("Game Manager Instance not found hiding title screen buttons, ignore if testing");
-			return;
+			//load the main scene
 		}
 
-		if (Utilities.GetCurrentlyActiveScene("TestingScene")) return;
-		if (!Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName)) return;
+		if (loadedScene.name == GameManager.Instance.mainScene || loadedScene.name == GameManager.Instance.uiScene) return;
+		if (loadedScene.name == GameManager.Instance.menuScene) //show ui if new scene main menu
+		{
+			Instance.ShowMainMenu();
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(false);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(false);
+
+			quitGameButton.SetActive(true);
+			startNewGameButton.SetActive(true);
+		}
+		else //hide it
+		{
+			Instance.HideMainMenu();
+			PlayerHotbarUi.Instance.hotbarPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedFriendlyTargetPanelUi.SetActive(true);
+			PlayerSelectedTargetsUi.Instance.selectedEnemyTargetPanelUi.SetActive(true);
+
+			quitGameButton.SetActive(false);
+			startNewGameButton.SetActive(false);
+		}
+	}
+
+	private void EnableMainMenuButtons()
+	{
+		if (!Utilities.SceneIsActive(GameManager.Instance.mainScene)) return;
 
 		quitGameButton.SetActive(true);
 		startNewGameButton.SetActive(true);
@@ -83,7 +135,15 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void QuitToMainMenuButton()
 	{
-		GameManager.Instance.LoadMainMenu(false);
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			if (MultiplayerManager.IsClientHost())
+				HostManager.Instance.CloseLobbyAndStopHost("Host Quit To Main Menu", true);
+			else
+				ClientManager.Instance.ClientLeaveRelayAndLobby("Quit To Main Menu", true);
+		}
+		else
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	public void PlayGameButton()
@@ -93,7 +153,7 @@ public class MainMenuManager : MonoBehaviour
 	}
 	public void StartNewGameButton()
 	{
-		GameManager.Instance.LoadHubArea(true);
+		GameManager.Instance.LoadHubArea(true, GameManager.GameDataReloadMode.noReload);
 	}
 
 
@@ -102,16 +162,7 @@ public class MainMenuManager : MonoBehaviour
 	{
 		playMpButton.onClick.RemoveAllListeners();
 
-		if (GameManager.Instance == null) //testing
-		{
-			Debug.LogWarning("Game Manager Instance not found, showing play Multiplayer button, ignore if testing");
-			playMpButton.interactable = true;
-			playMpButtonText.color = Color.black;
-			playMpButtonText.text = "Play Multiplayer";
-			return;
-		}
-
-		if (LobbyManager.Instance != null && LobbyManager.Instance._Lobby != null) //player in lobby show lobby ui
+		if (MultiplayerManager.IsMultiplayer()) //player in lobby show lobby ui
 		{
 			playMpButton.onClick.AddListener(delegate { ShowLobbyUiWhenPlayerInLobby(); });
 			playMpButton.interactable = true;
@@ -120,7 +171,7 @@ public class MainMenuManager : MonoBehaviour
 		}
 		else //player not in lobby show play mp process
 		{
-			if (SceneManager.GetActiveScene().name == GameManager.Instance.hubAreaName)
+			if (Utilities.SceneIsActive(GameManager.Instance.hubScene))
 			{
 				playMpButton.onClick.AddListener(delegate { PlayMultiplayer(); });
 				playMpButton.interactable = true;
@@ -138,7 +189,6 @@ public class MainMenuManager : MonoBehaviour
 	public void PlayMultiplayer()
 	{
 		mainMenuPanel.SetActive(false);
-
 		SaveManager.Instance.AutoSaveData();
 		MultiplayerMenuUi.Instance.ShowMpMenuUi();
 	}
@@ -148,7 +198,7 @@ public class MainMenuManager : MonoBehaviour
 	{
 		if (LobbyManager.Instance._Lobby != null)
 		{
-			MainMenuManager.Instance.HideMainMenu();
+			Instance.HideMainMenu();
 			LobbyUi.Instance.ShowLobbyUi();
 		}
 	}
@@ -168,9 +218,6 @@ public class MainMenuManager : MonoBehaviour
 	{
 		SetActionForPlayMpButton();
 		HideSaveSlotsMenu();
-		HideKeybindsMenu();
-		HidePlayerSettingsMenu();
-		HideAudioMenu();
 		mainMenuPanel.SetActive(true);
 		GameManager.Instance.PauseGame(true);
 	}

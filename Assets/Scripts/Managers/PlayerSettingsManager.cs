@@ -25,8 +25,11 @@ public class PlayerSettingsManager : MonoBehaviour
 	public bool autoCastAoeAbilitiesOnTarget;
 	public TMP_Text autoCastAoeAbilitiesOnTargetText;
 
-	public bool autoCastEffectAbilitiesOnTarget;
-	public TMP_Text autoCastEffectAbilitiesOnTargetText;
+	public bool autoCastEffectAbilitiesOnEnemyTarget;
+	public TMP_Text autoCastEffectAbilitiesOnEnemyTargetText;
+
+	public bool autoCastEffectAbilitiesOnFriendlyTarget;
+	public TMP_Text autoCastEffectAbilitiesOnFriendlyTargetText;
 
 	private void Awake()
 	{
@@ -34,47 +37,54 @@ public class PlayerSettingsManager : MonoBehaviour
 	}
 
 	//restore data
-	public void RestorePlayerSettingsData(bool mainAttackIsAutomatic, bool autoSelectNewTarget,
-		bool autoCastDirectionalAbilitiesAtTarget, bool autoCastAoeAbilitiesOnTarget, bool autoCastEffectsOnTarget)
+	public void RestorePlayerSettingsData(bool mainAttackIsAutomatic, bool autoSelectNewTarget, bool autoCastDirectionalAbilitiesAtTarget, 
+		bool autoCastAoeAbilitiesOnTarget, bool autoCastEffectsOnEnemyTarget, bool autoCastEffectsOnFriendlyTarget)
 	{
-		if (mainAttackIsAutomatic)
-			mainAttackIsAutomaticText.text = "Main Attack is Automatic: False";
+		if (!mainAttackIsAutomatic)
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: \nFalse";
 		else
-			mainAttackIsAutomaticText.text = "Main Attack is Automatic: True";
+			mainAttackIsAutomaticText.text = "Main Attack is Automatic: \nTrue";
 
 		this.mainAttackIsAutomatic = mainAttackIsAutomatic;
 
 
-		if (autoSelectNewTarget)
-			mainAttackIsAutomaticText.text = "Auto select closest target when no target already selected: False";
+		if (!autoSelectNewTarget)
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: \nFalse";
 		else
-			mainAttackIsAutomaticText.text = "Auto select closest target when no target already selected: True";
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: \nTrue";
 
 		this.autoSelectNewTarget = autoSelectNewTarget;
 
 
-		if (autoCastDirectionalAbilitiesAtTarget)
-			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: False";
+		if (!autoCastDirectionalAbilitiesAtTarget)
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: \nFalse";
 		else
-			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: True";
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: \nTrue";
 
 		this.autoCastDirectionalAbilitiesAtTarget = autoCastDirectionalAbilitiesAtTarget;
 
 
-		if (autoCastAoeAbilitiesOnTarget)
-			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: False";
+		if (!autoCastAoeAbilitiesOnTarget)
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: \nFalse";
 		else
-			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: True";
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: \nTrue";
 
 		this.autoCastAoeAbilitiesOnTarget = autoCastAoeAbilitiesOnTarget;
 
 
-		if (autoCastEffectsOnTarget)
-			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: False";
+		if (!autoCastEffectsOnEnemyTarget)
+			autoCastEffectAbilitiesOnEnemyTargetText.text = "Auto cast effects on selected enemy targets: \nFalse";
 		else
-			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: True";
+			autoCastEffectAbilitiesOnEnemyTargetText.text = "Auto cast effects on selected enemy targets: \nTrue";
 
-		this.autoCastEffectAbilitiesOnTarget = autoCastEffectsOnTarget;
+		this.autoCastEffectAbilitiesOnEnemyTarget = autoCastEffectsOnEnemyTarget;
+
+		if (!autoCastEffectsOnFriendlyTarget)
+			autoCastEffectAbilitiesOnFriendlyTargetText.text = "Auto cast effects on selected friendly targets: \nFalse";
+		else
+			autoCastEffectAbilitiesOnFriendlyTargetText.text = "Auto cast effects on selected friendly targets: \nTrue";
+
+		this.autoCastEffectAbilitiesOnFriendlyTarget = autoCastEffectsOnFriendlyTarget;
 	}
 
 	//button actions
@@ -82,12 +92,12 @@ public class PlayerSettingsManager : MonoBehaviour
 	{
 		if (mainAttackIsAutomatic)
 		{
-			mainAttackIsAutomaticText.text = "Main attack is automatic: False";
+			mainAttackIsAutomaticText.text = "Main attack is automatic: \nFalse";
 			mainAttackIsAutomatic = false;
 		}
 		else
 		{
-			mainAttackIsAutomaticText.text = "Main attack is automatic: True";
+			mainAttackIsAutomaticText.text = "Main attack is automatic: \nTrue";
 			mainAttackIsAutomatic = true;
 		}
 	}
@@ -95,12 +105,12 @@ public class PlayerSettingsManager : MonoBehaviour
 	{
 		if (autoSelectNewTarget)
 		{
-			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: False";
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: \nFalse";
 			autoSelectNewTarget = false;
 		}
 		else
 		{
-			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: True";
+			autoSelectNewTargetText.text = "Auto select closest target when no target already selected: \nTrue";
 			autoSelectNewTarget = true;
 		}
 	}
@@ -108,12 +118,12 @@ public class PlayerSettingsManager : MonoBehaviour
 	{
 		if (autoCastDirectionalAbilitiesAtTarget)
 		{
-			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: False";
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: \nFalse";
 			autoCastDirectionalAbilitiesAtTarget = false;
 		}
 		else
 		{
-			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: True";
+			autoCastDirectionalAbilitiesAtTargetText.text = "Auto cast directional abilities at selected targets: \nTrue";
 			autoCastDirectionalAbilitiesAtTarget = true;
 		}
 	}
@@ -121,26 +131,39 @@ public class PlayerSettingsManager : MonoBehaviour
 	{
 		if (autoCastAoeAbilitiesOnTarget)
 		{
-			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: False";
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: \nFalse";
 			autoCastAoeAbilitiesOnTarget = false;
 		}
 		else
 		{
-			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: True";
+			autoCastAoeAbilitiesOnTargetText.text = "Auto cast AOE abilities on selected targets: \nTrue";
 			autoCastAoeAbilitiesOnTarget = true;
 		}
 	}
-	public void ToggleAutoCastEffectAbilitiesOnTarget()
+	public void ToggleAutoCastEffectAbilitiesOnEnemyTarget()
 	{
-		if (autoCastEffectAbilitiesOnTarget)
+		if (autoCastEffectAbilitiesOnEnemyTarget)
 		{
-			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: False";
-			autoCastEffectAbilitiesOnTarget = false;
+			autoCastEffectAbilitiesOnEnemyTargetText.text = "Auto cast effects on selected enemy targets: \nFalse";
+			autoCastEffectAbilitiesOnEnemyTarget = false;
 		}
 		else
 		{
-			autoCastEffectAbilitiesOnTargetText.text = "Auto cast effects on selected targets: True";
-			autoCastEffectAbilitiesOnTarget = true;
+			autoCastEffectAbilitiesOnEnemyTargetText.text = "Auto cast effects on selected enemy targets: \nTrue";
+			autoCastEffectAbilitiesOnEnemyTarget = true;
+		}
+	}
+	public void ToggleAutoCastEffectAbilitiesOnFriendlyTarget()
+	{
+		if (autoCastEffectAbilitiesOnFriendlyTarget)
+		{
+			autoCastEffectAbilitiesOnFriendlyTargetText.text = "Auto cast effects on selected friendly targets: \nFalse";
+			autoCastEffectAbilitiesOnFriendlyTarget = false;
+		}
+		else
+		{
+			autoCastEffectAbilitiesOnFriendlyTargetText.text = "Auto cast effects on selected friendly targets: \nTrue";
+			autoCastEffectAbilitiesOnFriendlyTarget = true;
 		}
 	}
 }

@@ -44,10 +44,16 @@ public class SaveSlotDataUi : MonoBehaviour
 			loadButtonObj.SetActive(true);
 			deleteButtonObj.SetActive(true);
 		}
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName))
-			saveButtonObj.SetActive(false);
+
+		if (MultiplayerManager.IsMultiplayer()) //hide button for Mp
+			loadButtonObj.SetActive(false);
 		else
+			loadButtonObj.SetActive(true);
+
+		if (Utilities.SceneIsActive(GameManager.Instance.hubScene)) //limit saving game to hub area
 			saveButtonObj.SetActive(true);
+		else
+			saveButtonObj.SetActive(false);
 	}
 	private string GrabSaveSlotNumber(string directory)
 	{
@@ -87,10 +93,11 @@ public class SaveSlotDataUi : MonoBehaviour
 		button.onClick.RemoveAllListeners();
 		button.onClick.AddListener(ConfirmLoadGame);
 
-		if (Utilities.GetCurrentlyActiveScene(GameManager.Instance.mainMenuName))
+		if (Utilities.SceneIsActive(GameManager.Instance.menuScene))
 		{
 			SaveManager.Instance.LoadGameData(folderDirectory);
-			GameManager.Instance.LoadHubArea(false);
+			GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadGameData);
+			MainMenuManager.Instance.HideSaveSlotsMenu();
 		}
 		else
 			MainMenuManager.Instance.ShowConfirmActionPanel(this, 1);
@@ -98,8 +105,9 @@ public class SaveSlotDataUi : MonoBehaviour
 	public void ConfirmLoadGame()
 	{
 		SaveManager.Instance.LoadGameData(folderDirectory);
-		GameManager.Instance.LoadHubArea(false);
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 		MainMenuManager.Instance.HideConfirmActionPanel();
+		MainMenuManager.Instance.HideSaveSlotsMenu();
 	}
 
 	public void DeleteGame()

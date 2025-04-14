@@ -1,13 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UIElements;
 
-public class Projectiles : MonoBehaviour
+public class Projectiles : NetworkBehaviour
 {
-	public SOTraps trapBaseRef;
-	public SOWeapons weaponBaseRef;
-	public SOAbilities abilityBaseRef;
+	public SOTraps trapRef;
+	public SOWeapons weaponRef;
+	public SOAbilities abilityRef;
 	public EntityStats projectileOwner;	//only set for abilities
 
 	private BoxCollider2D boxCollider;
@@ -26,45 +29,105 @@ public class Projectiles : MonoBehaviour
 	float distanceTraveled;
 
 	//set trap projectile data
-	public void Initilize(SOTraps trap, int trapDamage)
+	public void Initilize(SOTraps trap, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
 	{
-		trapBaseRef = trap;
-		weaponBaseRef = null;
-		abilityBaseRef = null;
-		gameObject.name = trapBaseRef.name + "Projectile";
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			for (int i = 0; i < AssetDatabase.Database.traps.Count; i++)
+			{
+				if (trapRef == AssetDatabase.Database.traps[i])
+				{
+					SetUpTrapProjectileRpc(i, trapDamage, trapPosition, attackPos);
+					return;
+				}
+			}
+			Debug.LogError("projectile set up failed");
+		}
+		else
+			SetUpTrapProjectile(trap, trapDamage, trapPosition, attackPos);
+	}
 
+	[Rpc(SendTo.Everyone)]
+	private void SetUpTrapProjectileRpc(int trapIndex, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
+	{
+		SOTraps trapRef = AssetDatabase.Database.traps[trapIndex];
+		SetUpTrapProjectile(trapRef, trapDamage, trapPosition, attackPos);
+	}
+	private void SetUpTrapProjectile(SOTraps trapRef, int trapDamage, Vector2 trapPosition, Vector2 attackPos)
+	{
+		transform.SetParent(null);
+		SetPositionAndAttackDirection(trapPosition, attackPos);
+		this.trapRef = trapRef;
+		weaponRef = null;
+		abilityRef = null;
+		UpdateHitByeVariable();
+
+		gameObject.name = trapRef.name + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = trapBaseRef.projectileSprite;
+		projectileSprite.sprite = trapRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
-		projectileSpeed = trapBaseRef.projectileSpeed;
+		projectileSpeed = trapRef.projectileSpeed;
 		projectileDamage = trapDamage;
-		damageType = (DamageType)trapBaseRef.baseDamageType;
-		UpdateHitByeVariable(null);
+		damageType = (DamageType)trapRef.baseDamageType;
 		isPercentageDamage = false;
-		gameObject.SetActive(true);
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
 	//set ability projectile data
-	public void Initilize(EntityStats projectileOwner, SOAbilities abilityBaseRef)
+	public void Initilize(EntityStats ownerStats, SOAbilities abilityRef, Vector2 attackPos)
 	{
-		trapBaseRef = null;
-		weaponBaseRef = null;
-		this.abilityBaseRef = abilityBaseRef;
-		this.projectileOwner = projectileOwner;
-		gameObject.name = abilityBaseRef.Name + "Projectile";
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			ulong ownerId = ownerStats.GetComponent<NetworkObject>().NetworkObjectId;
 
+			for (int i = 0; i < AssetDatabase.Database.abilities.Count; i++)
+			{
+				if (abilityRef == AssetDatabase.Database.abilities[i])
+				{
+					SetUpAbilityProjectileRpc(ownerId, i, attackPos);
+					return;
+				}
+			}
+			Debug.LogError("projectile set up failed");
+		}
+		else
+			SetUpAbilityProjectile(ownerStats, abilityRef, attackPos);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SetUpAbilityProjectileRpc(ulong ownerId, int abilityIndex, Vector2 attackPos)
+	{
+		EntityStats ownerStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOAbilities abilityRef = AssetDatabase.Database.abilities[abilityIndex];
+		SetUpAbilityProjectile(ownerStats, abilityRef, attackPos);
+	}
+	private void SetUpAbilityProjectile(EntityStats ownerStats, SOAbilities abilityRef, Vector2 attackPos)
+	{
+		transform.SetParent(null);
+		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
+		trapRef = null;
+		weaponRef = null;
+		this.abilityRef = abilityRef;
+		projectileOwner = ownerStats;
+		UpdateHitByeVariable();
+
+		gameObject.name = abilityRef.Name + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = abilityBaseRef.projectileSprite;
+		projectileSprite.sprite = abilityRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
-		projectileSpeed = abilityBaseRef.projectileSpeed;
-		int newDamage = (int)(abilityBaseRef.damageValue * Utilities.GetLevelModifier(projectileOwner.entityLevel));
+		projectileSpeed = abilityRef.projectileSpeed;
+		int newDamage = (int)(abilityRef.damageValue * Utilities.GetLevelModifier(projectileOwner.entityLevel));
 
 		if (damageType == DamageType.isPhysicalDamageType)
 			projectileDamage = (int)(newDamage * projectileOwner.physicalDamagePercentageModifier.finalPercentageValue);
@@ -76,61 +139,110 @@ public class Projectiles : MonoBehaviour
 			projectileDamage = (int)(newDamage * projectileOwner.iceDamagePercentageModifier.finalPercentageValue);
 
 		projectileDamage *= (int)projectileOwner.damageDealtModifier.finalPercentageValue;
-		damageType = (DamageType)abilityBaseRef.damageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
-		isPercentageDamage = abilityBaseRef.isDamagePercentageBased;
-		gameObject.SetActive(true);
+		damageType = (DamageType)abilityRef.damageType;
+		isPercentageDamage = abilityRef.isDamagePercentageBased;
+
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
+		else
+			EnableObject();
 		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
 	//set weapon projectile data
-	public void Initilize(EntityStats projectileOwner, SOWeapons weaponBaseRef, int projectileDamage)
+	public void Initilize(EntityStats ownerStats, SOWeapons weaponRef, int projectileDamage, Vector2 attackPos)
 	{
-		trapBaseRef = null;
-		this.weaponBaseRef = weaponBaseRef;
-		abilityBaseRef = null;
-		this.projectileOwner = projectileOwner;
-		gameObject.name = weaponBaseRef.itemName + "Projectile";
+		if (MultiplayerManager.IsMultiplayer())
+		{
+			ulong ownerId = ownerStats.GetComponent<NetworkObject>().NetworkObjectId;
 
+			for (int i = 0; i < AssetDatabase.Database.weapons.Count; i++)
+			{
+				if (weaponRef == AssetDatabase.Database.weapons[i])
+				{
+					SetUpWeaponProjectileRpc(ownerId, i, projectileDamage, attackPos);
+					return;
+				}
+			}
+			Debug.LogError("projectile set up failed");
+		}
+		else
+			SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SetUpWeaponProjectileRpc(ulong ownerId, int weaponIndex, int projectileDamage, Vector2 attackPos)
+	{
+		EntityStats ownerStats = NetworkManager.SpawnManager.SpawnedObjects[ownerId].GetComponent<EntityStats>();
+		SOWeapons weaponRef = AssetDatabase.Database.weapons[weaponIndex];
+		SetUpWeaponProjectile(ownerStats, weaponRef, projectileDamage, attackPos);
+	}
+	private void SetUpWeaponProjectile(EntityStats ownerStats, SOWeapons weaponRef, int projectileDamage, Vector2 attackPos)
+	{
+		transform.SetParent(null);
+		SetPositionAndAttackDirection(ownerStats.transform.position, attackPos);
+		trapRef = null;
+		this.weaponRef = weaponRef;
+		abilityRef = null;
+		projectileOwner = ownerStats;
+		UpdateHitByeVariable();
+
+		gameObject.name = weaponRef.itemName + " Projectile";
 		boxCollider = GetComponent<BoxCollider2D>();
 		projectileSprite = GetComponent<SpriteRenderer>();
-		projectileSprite.sprite = weaponBaseRef.projectileSprite;
+		projectileSprite.sprite = weaponRef.projectileSprite;
 		boxCollider.size = projectileSprite.size;
 		boxCollider.offset = new Vector2(0, 0);
 
-		projectileSpeed = weaponBaseRef.projectileSpeed;
+		projectileSpeed = weaponRef.projectileSpeed;
 		this.projectileDamage = projectileDamage;
-		damageType = (DamageType)weaponBaseRef.baseDamageType;
-		UpdateHitByeVariable(projectileOwner.playerRef);
+		damageType = (DamageType)weaponRef.baseDamageType;
 		isPercentageDamage = false;
-		gameObject.SetActive(true);
-	}
 
-	//helps with applying damage only to enemies
-	private void UpdateHitByeVariable(PlayerController player)
-	{
-		if (player != null)
-			hitBye = IDamagable.HitBye.player;
+		if (MultiplayerManager.IsMultiplayer())
+			EnableObjectRpc();
 		else
-			hitBye = IDamagable.HitBye.entity;
-
-		if (trapBaseRef != null) //if ref not null overwrite hitbye
-			hitBye = IDamagable.HitBye.enviroment;
+			EnableObject();
+		//add setup of particle effects for each status effect when i have something for them (atm all simple white particles)
 	}
 
 	//set projectile position, rotation and target position
-	public void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
+	private void SetPositionAndAttackDirection(Vector3 OriginPosition, Vector3 positionOfThingToAttack)
 	{
+		transform.position = OriginPosition;
 		projectileOrigin = OriginPosition;
 		Vector3 rotation = positionOfThingToAttack - OriginPosition;
 		float rotz = Mathf.Atan2(rotation.y, rotation.x) * Mathf.Rad2Deg;
 		transform.SetPositionAndRotation(OriginPosition, Quaternion.Euler(0, 0, rotz - 90));
 	}
 
+	//helps with applying damage only to enemies
+	private void UpdateHitByeVariable()
+	{
+		if (projectileOwner.IsPlayerEntity())
+			hitBye = IDamagable.HitBye.player;
+		else
+			hitBye = IDamagable.HitBye.entity;
+
+		//overwrites
+		if (trapRef != null)
+			hitBye = IDamagable.HitBye.enviroment;
+
+		if (abilityRef != null && abilityRef.abilityEnviromental)
+			hitBye = IDamagable.HitBye.enviroment;
+	}
+
 	private void OnTriggerEnter2D(Collider2D other)
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		if (other.gameObject.layer == LayerMask.NameToLayer("Obstacles"))
-			DungeonHandler.ProjectileCleanUp(this);
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
+		}
 
 		if (other.gameObject.GetComponent<Damageable>() == null) return;
 
@@ -141,41 +253,74 @@ public class Projectiles : MonoBehaviour
 		DamageSourceInfo damageSourceInfo = new(
 			projectileOwner, hitBye, projectileDamage, (IDamagable.DamageType)damageType, isPercentageDamage);
 
-		if (trapBaseRef != null)    //traps
+		if (trapRef != null)	//traps
 		{
-			damageSourceInfo.SetDeathMessage(trapBaseRef);
+			damageSourceInfo.SetDeathMessage(trapRef);
 			other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 
-			if (trapBaseRef.hasEffects && other.gameObject.GetComponent<EntityStats>() != null)
-				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, projectileOwner);
+			if (trapRef.hasEffects && other.gameObject.GetComponent<EntityStats>() != null)
+				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityRef.statusEffects, projectileOwner);
 		}
-		else if (abilityBaseRef != null)//abilities
+		else if (abilityRef != null)	//abilities
 		{
-			damageSourceInfo.SetDeathMessage(abilityBaseRef);
+			damageSourceInfo.SetDeathMessage(abilityRef);
 			other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 
-			if (abilityBaseRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
-				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityBaseRef.statusEffects, projectileOwner);
+			if (abilityRef.hasStatusEffects && other.gameObject.GetComponent<EntityStats>() != null)
+				other.gameObject.GetComponent<EntityStats>().ApplyNewStatusEffects(abilityRef.statusEffects, projectileOwner);
 		}
-		else     //weapon projectiles
+		else	//weapon projectiles
 		{
 			//half ranged weapon damage
-			if (distanceTraveled < weaponBaseRef.minAttackRange)
+			if (distanceTraveled < weaponRef.minAttackRange)
 				projectileDamage /= 2;
 
-			damageSourceInfo.AddKnockbackEffect(boxCollider, weaponBaseRef.baseKnockback);
-			damageSourceInfo.SetDeathMessage(weaponBaseRef);
+			damageSourceInfo.AddKnockbackEffect(boxCollider.transform.position, weaponRef.baseKnockback);
+			damageSourceInfo.SetDeathMessage(weaponRef);
 			other.GetComponent<Damageable>().OnHitFromDamageSource(damageSourceInfo);
 		}
-		DungeonHandler.ProjectileCleanUp(this);
+
+		if (MultiplayerManager.IsMultiplayer())
+			DisableObjectRpc();
+		else
+			DisableObject();
 	}
 	private void FixedUpdate()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		transform.Translate(projectileSpeed * Time.deltaTime * Vector2.up);
-		if (weaponBaseRef == null) return;
+		if (weaponRef == null) return;
 
 		distanceTraveled = Vector2.Distance(transform.position, projectileOrigin);
-		if (distanceTraveled >= weaponBaseRef.maxAttackRange)
-			DungeonHandler.ProjectileCleanUp(this);
+		if (distanceTraveled >= weaponRef.maxAttackRange)
+		{
+			if (MultiplayerManager.IsMultiplayer())
+				DisableObjectRpc();
+			else
+				DisableObject();
+		}
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void EnableObjectRpc()
+	{
+		EnableObject();
+	}
+	private void EnableObject()
+	{
+		gameObject.SetActive(true);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void DisableObjectRpc()
+	{
+		DisableObject();
+	}
+	private void DisableObject()
+	{
+		gameObject.SetActive(false);
+		transform.position = Vector3.zero;
+		ObjectPoolingManager.AddProjectileToInActivePool(this);
 	}
 }

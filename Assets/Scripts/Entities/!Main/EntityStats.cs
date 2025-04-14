@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.Services.Lobbies.Models;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -26,6 +24,7 @@ public class EntityStats : NetworkBehaviour
 	public float levelModifier;
 
 	[Header("Health")]
+	private bool entityDead;
 	public Stat maxHealth;
 	public int currentHealth;
 
@@ -60,13 +59,7 @@ public class EntityStats : NetworkBehaviour
 	public List<AbilityStatusEffect> currentStatusEffects;
 
 	//events
-	public event Action<AbilityStatusEffect> OnNewStatusEffect;
-	public event Action<SOStatusEffects> OnResetStatusEffectTimer;
-	public event Action<SOStatusEffects> OnRemoveStatusEffect;
-
-	public event Action<float, bool, float> OnRecieveHealingEvent;
-	public event Action<DamageSourceInfo> OnRecieveDamageEvent;
-
+	public event Action<AbilityStatusEffect> OnStatusEffectAppliedEvent;
 	public event Action<int, int> OnHealthChangeEvent;
 	public event Action<int, int> OnManaChangeEvent;
 
@@ -96,9 +89,9 @@ public class EntityStats : NetworkBehaviour
 
 	protected virtual void OnEnable()
 	{
-		GetComponent<Damageable>().OnHit += OnHit;
-		OnRecieveDamageEvent += RecieveDamage;
-		OnRecieveHealingEvent += RecieveHealing;
+		SceneManager.sceneLoaded += UpdateDungeonModifiersAppliedToPlayer;
+
+		GetComponent<Damageable>().OnHit += RecieveDamage;
 
 		classHandler.OnStatUnlock += OnStatUnlock;
 		classHandler.OnStatRefund += OnStatRefund;
@@ -107,9 +100,9 @@ public class EntityStats : NetworkBehaviour
 	}
 	protected virtual void OnDisable()
 	{
-		GetComponent<Damageable>().OnHit -= OnHit;
-		OnRecieveDamageEvent -= RecieveDamage;
-		OnRecieveHealingEvent -= RecieveHealing;
+		SceneManager.sceneLoaded -= UpdateDungeonModifiersAppliedToPlayer;
+
+		GetComponent<Damageable>().OnHit -= RecieveDamage;
 
 		classHandler.OnStatUnlock -= OnStatUnlock;
 		classHandler.OnStatRefund -= OnStatRefund;
@@ -119,8 +112,23 @@ public class EntityStats : NetworkBehaviour
 
 	protected virtual void Update()
 	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
 		PassiveManaRegen();
 		PlayIdleSound();
+	}
+
+	[Rpc(SendTo.Everyone)]
+	public void SyncEntitySORefsRPC(int index)
+	{
+		SetEntitySoRefs(index);
+	}
+	public void SetEntitySoRefs(int index)
+	{
+		SOEntityStats statsRef = AssetDatabase.Database.entities[index];
+		this.statsRef = statsRef;
+		entityBehaviour.behaviourRef = statsRef.entityBehaviour;
+		entityLevel = GameManager.Localplayer.playerStats.entityLevel;
 	}
 
 	//set entity data
@@ -128,31 +136,33 @@ public class EntityStats : NetworkBehaviour
 	{
 		SpriteRenderer.sprite = statsRef.sprite;
 		name = statsRef.entityName;
+		entityDead = false;
 		CalculateBaseStats();
 
 		if (playerRef == null)
 		{
-			classHandler.SetEntityClass();
-			equipmentHandler.SpawnEntityEquipment();
+			classHandler.AssignEntityRandomClass();
+			equipmentHandler.AssignEntityRandomEquipment();
+			abilityHandler.AssignEntityRandomAbilities();
 			lootSpawnHandler.Initilize(statsRef.maxDroppedGoldAmount, statsRef.minDroppedGoldAmount,
 				statsRef.lootPool, statsRef.itemRarityChanceModifier);
 		}
 
-		if (GameManager.Instance == null) return; //for now leave this line in
-		if (SceneManager.GetActiveScene().name != "TestingScene" && GameManager.Instance.currentDungeonData.dungeonStatModifiers != null)
-			ApplyDungeonModifiers(GameManager.Instance.currentDungeonData.dungeonStatModifiers); //apply dungeon mods outside of testing
+		if (GameManager.Instance.currentDungeonData.dungeonStatModifiers != null) //apply dungeon modifiers
+			ApplyDungeonModifiersToEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
 	}
 	public void ResetEntityStats()
 	{
 		StopAllCoroutines();
 		boxCollider2D.enabled = true;
 		SpriteRenderer.color = Color.white;
+		entityDead = false;
 		CalculateBaseStats();
 
 		if (currentStatusEffects.Count != 0)//clear all status effects after death
 		{
 			for (int i = currentStatusEffects.Count - 1; i >= 0; i--)
-				currentStatusEffects[i].ClearEffect();
+				currentStatusEffects[i].ClearStatusEffect();
 		}
 
 		if (IsPlayerEntity())
@@ -162,7 +172,7 @@ public class EntityStats : NetworkBehaviour
 		else
 		{
 			animator.ResetTrigger("DeathTrigger");//+ this vis versa??
-			classHandler.RerollEquippedAbilities();
+			abilityHandler.RerollEquippedAbilities();
 		}
 	}
 
@@ -185,41 +195,82 @@ public class EntityStats : NetworkBehaviour
 
 	//HEALTH EVENTS
 	//healing recieve event
-	public void OnHeal(float healthValue, bool isPercentageValue, float healingModifierPercentage)
+	public void RecieveHealing(float value, bool isPercentageValue, float healingModifierPercentage)
 	{
-		OnRecieveHealingEvent?.Invoke(healthValue, isPercentageValue, healingModifierPercentage);
-	}
-	private void RecieveHealing(float healthValue, bool isPercentageValue, float healingModifierPercentage)
-	{
+		float healingPercentage;
 		if (isPercentageValue)
-			healthValue = maxHealth.finalValue * healthValue;
+			healingPercentage = value;
+		else
+			healingPercentage = value / maxHealth.finalValue;
 
-		healthValue *= healingModifierPercentage * damageDealtModifier.finalPercentageValue;
-		currentHealth = (int)(currentHealth + Mathf.Round(healthValue));
+		healingPercentage = (float)currentHealth / maxHealth.finalValue + healingPercentage * healingModifierPercentage;
 
-		if (currentHealth > maxHealth.finalValue)
+		if (MultiplayerManager.IsMultiplayer())
+			ApplyHealingRpc(healingPercentage);
+		else
+			ApplyHealing(healingPercentage);
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ApplyHealingRpc(float newHealthPercentage)
+	{
+		ApplyHealing(newHealthPercentage);
+	}
+	private void ApplyHealing(float newHealthPercentage)
+	{
+		UpdateCurrentHealth(newHealthPercentage);
+	}
+
+	//damage recieve event
+	public void RecieveDamage(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
+	{
+		damageSourceInfo = NegateEntityResistances(damageSourceInfo);
+
+		if (!IsPlayerEntity() && damageSourceInfo.hitBye == IDamagable.HitBye.player)
+			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
+
+		float newHealthPercentage = (float)currentHealth / maxHealth.finalValue - damageSourceInfo.damage / maxHealth.finalValue;
+
+		if (MultiplayerManager.IsMultiplayer())
+			ApplyDamageRpc(newHealthPercentage, damageSourceInfo.deathMessage);
+		else
+			ApplyDamage(newHealthPercentage, damageSourceInfo.deathMessage);
+	}
+
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ApplyDamageRpc(float newHealthPercentage, string deathMessage)
+	{
+		ApplyDamage(newHealthPercentage, deathMessage);
+	}
+	private void ApplyDamage(float newHealthPercentage, string deathMessage)
+	{
+		UpdateCurrentHealth(newHealthPercentage);
+
+		StartCoroutine(FlashRedOnRecieveDamage());
+		audioHandler.PlayAudio(statsRef.hurtSfx);
+
+		if (IsEntityDead())
+			EntityDeath(deathMessage);
+	}
+
+	//update health
+	private void UpdateCurrentHealth(float newHealthPercentage)
+	{
+		if (newHealthPercentage > 1)
 			currentHealth = maxHealth.finalValue;
+		else
+			currentHealth = (int)(maxHealth.finalValue * newHealthPercentage);
 
 		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-		if (!IsPlayerEntity()) return;
+
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		UpdatePlayerStatInfoUi();
 	}
 
-	//damage recieve event
-	public void OnHit(DamageSourceInfo damageSourceInfo, bool isDestroyedInOneHit)
-	{
-        if (isDestroyedInOneHit)
-        {
-			DungeonHandler.EntityDeathEvent(gameObject);
-			return;
-		}
-		NegateEntityResistances(damageSourceInfo);
-		OnRecieveDamageEvent?.Invoke(damageSourceInfo);
-	}
+	//helpers
 	private DamageSourceInfo NegateEntityResistances(DamageSourceInfo damageSourceInfo)
 	{
-		//Debug.Log(gameObject.name + " recieved: " + damage);
+		//Debug.Log(gameObject.name + " recieved: " + damageSourceInfo.damage);
 		if (damageSourceInfo.damageType == IDamagable.DamageType.isPoisonDamage)
 		{
 			//Debug.Log("Poison Dmg res: " + poisonResistance.finalValue);
@@ -256,59 +307,41 @@ public class EntityStats : NetworkBehaviour
 		if (damageSourceInfo.damage < 3) //always deal 3 damage
 			damageSourceInfo.damage = 3;
 
-		//Debug.Log("FinalDmg: " + damage);
+		//Debug.Log("FinalDmg: " + damageSourceInfo.damage);
 		return damageSourceInfo;
 	}
-	private void RecieveDamage(DamageSourceInfo damageSourceInfo)
-	{
-		currentHealth = (int)(currentHealth - damageSourceInfo.damage);
-		RedFlashOnRecieveDamage();
-		audioHandler.PlayAudio(statsRef.hurtSfx);
-		if (!IsPlayerEntity() && damageSourceInfo.entity.playerRef != null)
-			entityBehaviour.AddToAggroRating(damageSourceInfo.entity.playerRef, (int)damageSourceInfo.damage);
-
-		if (IsEntityDead())
-			EntityDeath(damageSourceInfo);
-
-		OnHealthChangeEvent?.Invoke(maxHealth.finalValue, currentHealth);
-
-		if (!IsPlayerEntity()) return;
-
-		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
-		UpdatePlayerStatInfoUi();
-	}
-	private void RedFlashOnRecieveDamage()
+	private IEnumerator FlashRedOnRecieveDamage()
 	{
 		SpriteRenderer.color = Color.red;
-		StartCoroutine(ResetRedFlashOnRecieveDamage());
-	}
-	private IEnumerator ResetRedFlashOnRecieveDamage()
-	{
+
 		yield return new WaitForSeconds(0.1f);
 		if (IsEntityDead()) yield break;
 		SpriteRenderer.color = Color.white;
 	}
 
 	//death event
-	private void EntityDeath(DamageSourceInfo damageSourceInfo)
+	private void EntityDeath(string optionalDeathMessage)
 	{
+		if (entityDead) return;
+
+		entityDead = true;
 		audioHandler.PlayAudio(statsRef.deathSfx);
-		StartCoroutine(EntityDeathFinish(damageSourceInfo));
+		StartCoroutine(EntityDeathFinish(optionalDeathMessage));
 		animator.SetTrigger("DeathTrigger");
-		boxCollider2D.enabled = false;
 
 		if (IsPlayerEntity()) return;
+		boxCollider2D.enabled = false;
 		entityBehaviour.navMeshAgent.isStopped = true;
 	}
-	private IEnumerator EntityDeathFinish(DamageSourceInfo damageSourceInfo)
+	private IEnumerator EntityDeathFinish(string deathMessage)
 	{
 		if (audioHandler.audioSource.clip != null)
 			yield return new WaitForSeconds(audioHandler.audioSource.clip.length);
 
 		if (IsPlayerEntity())
-			PlayerEventManager.PlayerDeath(gameObject,damageSourceInfo);
+			PlayerEventManager.PlayerDeath(playerRef, deathMessage); //player death
 		else
-			DungeonHandler.EntityDeathEvent(gameObject);
+			ObjectPoolingManager.EntityDeathEvent(gameObject); //entity death
 	}
 
 	//MANA EVENTS
@@ -324,40 +357,81 @@ public class EntityStats : NetworkBehaviour
 		{
 			manaRegenTimer = manaRegenCooldown;
 			IncreaseMana(manaRegenPercentage.finalPercentageValue, true);
-			if (!IsPlayerEntity()) return;
-			PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		}
 	}
-	public void IncreaseMana(float manaValue, bool isPercentageValue)
+	public void IncreaseMana(float value, bool isPercentageValue)
 	{
+		float newManaPercentage;
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue * manaValue;
+			newManaPercentage = value;
+		else
+			newManaPercentage = value / maxMana.finalValue;
 
-		currentMana = (int)(currentMana + manaValue);
-		if (currentMana > maxMana.finalValue)
-			currentMana = maxMana.finalValue;
+		newManaPercentage = (float)currentMana / maxMana.finalValue + newManaPercentage;
 
-		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
-
-		if (!IsPlayerEntity()) return;
-		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
-		UpdatePlayerStatInfoUi();
+		if (MultiplayerManager.IsMultiplayer())
+			UpdateCurrentManaRpc(newManaPercentage);
+		else
+			UpdateCurrentMana(newManaPercentage);
 	}
-	public void DecreaseMana(float manaValue, bool isPercentageValue)
+	public void DecreaseMana(float value, bool isPercentageValue)
 	{
+		float newManaPercentage;
 		if (isPercentageValue)
-			manaValue = maxMana.finalValue * manaValue;
+			newManaPercentage = value;
+		else
+			newManaPercentage = value / maxMana.finalValue;
 
-		currentMana = (int)(currentMana - manaValue);
+		newManaPercentage = (float)currentMana / maxMana.finalValue - newManaPercentage;
+
+		if (MultiplayerManager.IsMultiplayer())
+			UpdateCurrentManaRpc(newManaPercentage);
+		else
+			UpdateCurrentMana(newManaPercentage);
+	}
+
+	//update mana
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void UpdateCurrentManaRpc(float newManaPercentage)
+	{
+		UpdateCurrentMana(newManaPercentage);
+	}
+	private void UpdateCurrentMana(float newManaPercentage)
+	{
+		if (newManaPercentage > 1)
+			currentMana = maxMana.finalValue;
+		else
+			currentMana = (int)(maxMana.finalValue * newManaPercentage);
+
 		OnManaChangeEvent?.Invoke(maxMana.finalValue, currentMana);
 
-		if (!IsPlayerEntity()) return;
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		UpdatePlayerStatInfoUi();
 	}
 
 	//status effect functions
-	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
+	public void ApplyNewStatusEffects(List<SOStatusEffects> effectsToApply, EntityStats casterStats)
+	{
+		if (!MultiplayerManager.IsClientHost()) return;
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncSetUpStatusEffectRpc(GetStatusEffectsIndexes(effectsToApply), casterStats.NetworkObjectId);
+		else
+			SetUpStatusEffect(effectsToApply, casterStats);
+	}
+	[Rpc(SendTo.Server, RequireOwnership = false)]
+	private void SyncSetUpStatusEffectRpc(int[] statusEffectsIndexes, ulong casterId)
+	{
+		EntityStats casterStats = NetworkManager.SpawnManager.SpawnedObjects[casterId].GetComponent<EntityStats>();
+		List<SOStatusEffects> effectsToApply = new();
+		
+		foreach (int effectIndex in statusEffectsIndexes)
+			effectsToApply.Add(AssetDatabase.Database.statusEffects[effectIndex]);
+
+		SetUpStatusEffect(effectsToApply, casterStats);
+	}
+	private void SetUpStatusEffect(List<SOStatusEffects> effectsToApply, EntityStats casterInfo)
 	{
 		foreach (SOStatusEffects effect in effectsToApply)
 		{
@@ -365,48 +439,67 @@ public class EntityStats : NetworkBehaviour
 			if (duplicateStatusEffect != null)
 			{
 				duplicateStatusEffect.ResetAbilityTimer();
-				OnResetStatusEffectTimer?.Invoke(effect);
+
+				if (MultiplayerManager.IsMultiplayer())
+					ResetStatusEffectTimerForUiRpc(duplicateStatusEffect.NetworkObjectId);
+				else
+					ResetStatusEffectTimerForUi(duplicateStatusEffect);
 				continue;
 			}
-
-			GameObject go = Instantiate(statusEffectsPrefab, statusEffectsParentObj.transform);
-			AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
-			statusEffect.Initilize(casterInfo, effect, this);
-
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
-				damageDealtModifier.AddPercentageValue(effect.effectValue);
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+			else
 			{
-				physicalResistance.AddPercentageValue(effect.effectValue);
-				poisonResistance.AddPercentageValue(effect.effectValue);
-				fireResistance.AddPercentageValue(effect.effectValue);
-				iceResistance.AddPercentageValue(effect.effectValue);
-			}
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
-			{
-				physicalDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				poisonDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				fireDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-				iceDamagePercentageModifier.AddPercentageValue(effect.effectValue);
-			}
-			if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
-			{
-				if (IsPlayerEntity())
-					playerRef.UpdateMovementSpeed(effect.effectValue, false);
-				else
-					entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
-			}
+				GameObject go = Instantiate(statusEffectsPrefab);
+				if (MultiplayerManager.IsMultiplayer())
+					go.GetComponent<NetworkObject>().Spawn();
 
-			OnNewStatusEffect?.Invoke(statusEffect);
-			currentStatusEffects.Add(statusEffect);
-
-			if (effect.isMarkedByBossEffect && IsPlayerEntity())
-				playerRef.MarkPlayer();
+				AbilityStatusEffect statusEffect = go.GetComponent<AbilityStatusEffect>();
+				statusEffect.Initilize(casterInfo, this, effect);
+			}
 		}
 	}
-	public void UnApplyStatusEffect(AbilityStatusEffect statusEffect)
+
+	public void AddStatusEffectValues(AbilityStatusEffect statusEffect)
 	{
-		SOStatusEffects effect = statusEffect.GrabAbilityBaseRef();
+		SOStatusEffects effect = statusEffect.GetBaseStatusEffect();
+
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
+			damageDealtModifier.AddPercentageValue(effect.effectValue);
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isResistanceEffect)
+		{
+			physicalResistance.AddPercentageValue(effect.effectValue);
+			poisonResistance.AddPercentageValue(effect.effectValue);
+			fireResistance.AddPercentageValue(effect.effectValue);
+			iceResistance.AddPercentageValue(effect.effectValue);
+		}
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageEffect)
+		{
+			physicalDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			poisonDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			fireDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+			iceDamagePercentageModifier.AddPercentageValue(effect.effectValue);
+		}
+		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isMovementEffect)
+		{
+			if (IsPlayerEntity())
+				playerRef.UpdateMovementSpeed(effect.effectValue, false);
+			else
+				entityBehaviour.UpdateMovementSpeed(effect.effectValue, false);
+		}
+
+		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
+		currentStatusEffects.Add(statusEffect);
+
+		if (!IsPlayerEntity()) return;
+
+		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
+			playerRef.MarkPlayer();
+
+		if (EntityIsLocalPlayer())
+			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
+	}
+	public void RemoveStatusEffectValues(AbilityStatusEffect statusEffect)
+	{
+		SOStatusEffects effect = statusEffect.GetBaseStatusEffect();
 
 		if (effect.statusEffectType == SOStatusEffects.StatusEffectType.isDamageRecievedEffect)
 			damageDealtModifier.RemovePercentageValue(effect.effectValue);
@@ -434,20 +527,53 @@ public class EntityStats : NetworkBehaviour
 		}
 
 		currentStatusEffects.Remove(statusEffect);
-		OnRemoveStatusEffect?.Invoke(effect);
 		TileMapHazardsManager.Instance.TryReApplyEffect(this); //re apply effects if standing in lava pool etc
 
-		if (effect.isMarkedByBossEffect && IsPlayerEntity())
+		if (IsPlayerEntity() && effect.isMarkedByBossEffect)
 			playerRef.UnMarkPlayer();
 	}
+
+	//timer ui resets for reapplied status effects
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void ResetStatusEffectTimerForUiRpc(ulong statusEffectid)
+	{
+		ResetStatusEffectTimerForUi(NetworkManager.SpawnManager.SpawnedObjects[statusEffectid].GetComponent<AbilityStatusEffect>());
+	}
+	private void ResetStatusEffectTimerForUi(AbilityStatusEffect statusEffect)
+	{
+		OnStatusEffectAppliedEvent?.Invoke(statusEffect);
+
+		if (!IsPlayerEntity()) return;
+
+		if (statusEffect.GetBaseStatusEffect().isMarkedByBossEffect)
+			playerRef.MarkPlayer();
+
+		if (EntityIsLocalPlayer())
+			PlayerEventManager.PlayerStatusEffectChange(statusEffect);
+	}
+
+	//status effects helpers
 	private AbilityStatusEffect IsStatusEffectAlreadyApplied(SOStatusEffects newStatusEffect)
 	{
 		foreach (AbilityStatusEffect statusEffect in currentStatusEffects)
 		{
-			if (statusEffect.GrabAbilityBaseRef() == newStatusEffect)
+			if (statusEffect.GetBaseStatusEffect() == newStatusEffect)
 				return statusEffect;
 		}
 		return null;
+	}
+	private int[] GetStatusEffectsIndexes(List<SOStatusEffects> effectsToApply)
+	{
+		int[] statusEffectIndexes = new int[effectsToApply.Count];
+		for (int i = 0; i < effectsToApply.Count; i++)
+		{
+			for (int effectIndex = 0; effectIndex < AssetDatabase.Database.statusEffects.Count; effectIndex++)
+			{
+				if (effectsToApply[i] == AssetDatabase.Database.statusEffects[effectIndex])
+					statusEffectIndexes[i] = effectIndex;
+			}
+		}
+		return statusEffectIndexes;
 	}
 
 	//set base stats
@@ -576,7 +702,64 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//DUNGEON MODIFIERS
-	private void ApplyDungeonModifiers(DungeonStatModifier dungeonModifiers)
+	public void UpdateDungeonModifiersAppliedToPlayer(Scene newSceneLoaded, LoadSceneMode mode)
+	{
+		if (!IsPlayerEntity()) return;
+
+		if (newSceneLoaded.name == GameManager.Instance.hubScene)
+			RemoveDungeonModifiersFromEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
+		else
+			ApplyDungeonModifiersToEntity(GameManager.Instance.currentDungeonData.dungeonStatModifiers);
+	}
+	private void RemoveDungeonModifiersFromEntity(DungeonStatModifier dungeonModifiers)
+	{
+		bool oldCurrentHealthEqualToOldMaxHealth = false;
+		if (currentHealth == maxHealth.finalValue)
+			oldCurrentHealthEqualToOldMaxHealth = true;
+
+		if (!IsPlayerEntity())
+		{
+			maxHealth.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			maxMana.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			physicalResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			poisonResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			fireResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			iceResistance.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+
+			healingPercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			physicalDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			poisonDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			fireDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			iceDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			mainWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			dualWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+			rangedWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.difficultyModifier);
+		}
+
+		maxHealth.RemovePercentageValue(dungeonModifiers.healthModifier);
+		maxMana.RemovePercentageValue(dungeonModifiers.manaModifier);
+		physicalResistance.RemovePercentageValue(dungeonModifiers.physicalResistanceModifier);
+		poisonResistance.RemovePercentageValue(dungeonModifiers.poisonResistanceModifier);
+		fireResistance.RemovePercentageValue(dungeonModifiers.fireResistanceModifier);
+		iceResistance.RemovePercentageValue(dungeonModifiers.iceResistanceModifier);
+
+		//healingPercentageModifier.AddPercentageValue();
+		physicalDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.physicalDamageModifier);
+		poisonDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.poisonDamageModifier);
+		fireDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.fireDamageModifier);
+		iceDamagePercentageModifier.RemovePercentageValue(dungeonModifiers.iceDamageModifier);
+		mainWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.mainWeaponDamageModifier);
+		dualWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.dualWeaponDamageModifier);
+		rangedWeaponDamageModifier.RemovePercentageValue(dungeonModifiers.rangedWeaponDamageModifier);
+
+		FullHealOnStatChange(oldCurrentHealthEqualToOldMaxHealth);
+		UpdatePlayerStatInfoUi();
+
+		if (equipmentHandler == null || equipmentHandler.equippedWeapon == null) return;
+		equipmentHandler.equippedWeapon.UpdateWeaponDamage(IdleWeaponSprite, this, equipmentHandler.equippedOffhandWeapon);
+		UpdatePlayerStatInfoUi();
+	}
+	private void ApplyDungeonModifiersToEntity(DungeonStatModifier dungeonModifiers)
 	{
 		bool oldCurrentHealthEqualToOldMaxHealth = false;
 		if (currentHealth == maxHealth.finalValue)
@@ -628,7 +811,7 @@ public class EntityStats : NetworkBehaviour
 	//full heal entity on stat changes
 	public void FullHealOnStatChange(bool oldCurrentHealthEqualToOldMaxHealth)
 	{
-		if (!IsPlayerEntity() && oldCurrentHealthEqualToOldMaxHealth)
+		if (oldCurrentHealthEqualToOldMaxHealth)
 		{
 			currentHealth = maxHealth.finalValue;
 			currentMana = maxMana.finalValue;
@@ -639,9 +822,9 @@ public class EntityStats : NetworkBehaviour
 	}
 
 	//update ui info if player
-	public void UpdatePlayerStatInfoUi()
+	private void UpdatePlayerStatInfoUi()
 	{
-		if (!IsPlayerEntity()) return;
+		if (!EntityIsLocalPlayer()) return;
 		PlayerEventManager.PlayerHealthChange(maxHealth.finalValue, currentHealth);
 		PlayerEventManager.PlayerManaChange(maxMana.finalValue, currentMana);
 		PlayerEventManager.PlayerStatChange(this);
@@ -659,5 +842,10 @@ public class EntityStats : NetworkBehaviour
 		if (playerRef != null && statsRef.humanoidType == SOEntityStats.HumanoidTypes.isPlayer)
 			return true;
 		else return false;
+	}
+	public bool EntityIsLocalPlayer()
+	{
+		if (playerRef == null) return false;
+		return playerRef.PlayerIsLocalPlayer();
 	}
 }

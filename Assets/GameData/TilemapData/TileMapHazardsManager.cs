@@ -37,8 +37,7 @@ public class TileMapHazardsManager : MonoBehaviour
 		Vector3Int gridPos = map.WorldToCell(collision.transform.position);
 		TileBase tile = CheckSurroundingTiles(gridPos);
 
-		if (tile == null)
-			Debug.LogError("no tile or surrounding tile found, this shouldnt happen");
+		if (tile == null) return;
 
 		if (collision.GetComponent<Damageable>() != null && dataFromTiles[tile].doesInstantDamage) //apply 1 time damage
 		{

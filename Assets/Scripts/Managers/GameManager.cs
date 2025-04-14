@@ -2,35 +2,54 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
+using Unity.Services.Lobbies.Models;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using WebSocketSharp;
+using static DungeonDataUi;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-	public static event Action OnSceneChangeStart;
-	public static event Action OnSceneChangeFinish;
+	public static bool isNewGame;   //dictates if data is restored + resets recievedStartingItems bool + set false on getting items
 
-	public static bool isNewGame;	//dictates if data is restored + resets recievedStartingItems bool + set false on getting items
+	private GameDataReloadMode gameDataReloadMode;
+	public enum GameDataReloadMode
+	{
+		reloadAllScenesAndData, reloadGameData, reloadDungeonData, noReload
+	}
+
 	public static string currentGameDataDirectory;
 
-	/// <summary>
-	/// if i ever want to make it so u can go from a standard dungeon to a boss dungeon. to save a lot of headache and it might possibly 
-	/// be funner, is once u kill the boss in the boss dungeon it returns u to the hub instead of the standard dungeon u entered from.
-	/// </summary>
+	//scene names
+	public readonly string mainScene = "MainScene";
+	public readonly string menuScene = "MenuScene";
+	public readonly string uiScene = "UiScene";
+
+	public readonly string hubScene = "HubScene";
+	public readonly string dungeonOneScene = "DungeonOneScene";
+	public readonly string bossDungeonOneScene = "BossDungeonOneScene";
+
+	//loaded scenes
+	public Scene currentlyLoadedUiScene;
+	public Scene currentlyLoadedScene;
+
+	//local player + prefab
+	public GameObject PlayerPrefab;
+	public static PlayerController Localplayer { get; private set; }
+
+	//local camera + prefab
+	public GameObject CameraPrefab;
+	public static Camera LocalPlayerCamera;
+
+	//dungeon name lists
+	public List<string> dungeonSceneNamesList = new List<string>();
+	public List<string> bossSceneNamesList = new List<string>();
+
+	//current dungeon data
 	public DungeonData currentDungeonData;
-
-	public readonly string mainMenuName = "MainMenu";
-	public readonly string hubAreaName = "HubArea";
-
-	public readonly string dungeonLayoutOneName = "DungeonOne";
-	public readonly string dungeonLayoutTwoName = "DungeonTwo";
-
-	public readonly string bossDungeonLayoutOneName = "BossDungeonOne";
-	public readonly string bossDungeonLayoutTwoName = "BossDungeonTwo";
-
-	private List<string> bossSceneNamesList = new List<string>();
 
 	private void Awake()
 	{
@@ -46,21 +65,29 @@ public class GameManager : MonoBehaviour
 			Instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
+
+		GetAllDungeonSceneNames();
 		GetAllBossSceneNames();
+
+		if (SceneHandler.Instance == null)
+			LoadMainMenu(); //default start from MainMenu Scene
+		else
+			LoadUiScene(); //debug start from hub or 1 of the dungeons scenes
+	}
+	private void Start()
+	{
+		SaveManager.Instance.LoadPlayerData();
 	}
 
 	private void OnEnable()
 	{
-		SceneManager.sceneLoaded += SceneChangeFinished;
+		SceneManager.sceneLoaded += OnLoadSceneFinish;
+		SceneManager.sceneUnloaded += OnUnloadSceneFinish;
 	}
 	private void OnDisable()
 	{
-		SceneManager.sceneLoaded -= SceneChangeFinished;
-	}
-	private void Update()
-	{
-		//Debug.LogError("vsync: " + QualitySettings.vSyncCount);
-		//Debug.LogError("framerate: " + Application.targetFrameRate);
+		SceneManager.sceneLoaded -= OnLoadSceneFinish;
+		SceneManager.sceneUnloaded -= OnUnloadSceneFinish;
 	}
 
 	private void GetAllBossSceneNames()
@@ -75,59 +102,78 @@ public class GameManager : MonoBehaviour
 				bossSceneNamesList.Add(sceneName);
 		}
 	}
-
-	//scene change finish event
-	private void SceneChangeFinished(Scene scene, LoadSceneMode mode)
+	private void GetAllDungeonSceneNames()
 	{
-		//disabled in mp as MultiplayerManager script handles scene change event in for mp
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer) return;
-
-		OnSceneChangeFinish?.Invoke();
-
-		if (scene.name == mainMenuName) return;
-
-		MainMenuManager.Instance.HideMainMenu();
-		Instance.PauseGame(false);
+		for (int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
+		{
+			string scenePath = SceneUtility.GetScenePathByBuildIndex(i);
+			string[] splitScenePath = scenePath.Split('/');
+			string sceneFile = splitScenePath[splitScenePath.Length - 1];
+			string sceneName = sceneFile.Split('.')[0];
+			if (sceneName.Contains("Boss")) continue;
+			if (sceneName.Contains("Dungeon"))
+				dungeonSceneNamesList.Add(sceneName);
+		}
 	}
 
 	//loading different scenes
-	public void LoadMainMenu(bool isNewGame)
+	public void LoadUiScene()
 	{
-		GameManager.isNewGame = isNewGame;
-		SaveManager.Instance.GameData = new GameData();
-
-		StartCoroutine(LoadNewSceneAsync(mainMenuName, isNewGame));
+		StartCoroutine(LoadSceneAsync(uiScene, false));
 	}
-	public void LoadHubArea(bool isNewGame)
+	public void LoadMainMenu()
 	{
-		GameManager.isNewGame = isNewGame;
+		SaveManager.Instance.GameData = new GameData();
+		Instance.currentDungeonData = new DungeonData();
+		LoadUiScene();
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(hubAreaName, isNewGame);
+		DestroyCurrentLocalPlayer();
+		StartCoroutine(LoadSceneAsync(menuScene, false));
+	} 
+	public void LoadHubArea(bool isNewGame, GameDataReloadMode gameDataRestoreMode)
+	{
+		LoadingScreensManager.Instance.ShowGameLoadingScreen(LoadingScreensManager.LoadingScreenType.game);
+		GameManager.isNewGame = isNewGame;
+		Instance.gameDataReloadMode = gameDataRestoreMode;
+
+		if (isNewGame)
+		{
+			SaveManager.Instance.GameData = new GameData();
+			Instance.currentDungeonData = new DungeonData();
+		}
+
+		if (gameDataRestoreMode == GameDataReloadMode.reloadAllScenesAndData)
+		{
+			ReloadAllScenes();
+			return;
+		}
+
+		if (MultiplayerManager.IsMultiplayer())
+			LoadNewMultiplayerScene(hubScene, isNewGame);
 		else
-			StartCoroutine(LoadNewSceneAsync(hubAreaName, isNewGame));
+			StartCoroutine(LoadSceneAsync(hubScene, isNewGame));
 	}
 	public void LoadDungeonOne()
 	{
-		GameManager.isNewGame = false;
+		LoadingScreensManager.Instance.ShowGameLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+		if (MultiplayerManager.IsMultiplayer())
+			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
 	}
 	public void LoadDungeonTwo()
 	{
-		GameManager.isNewGame = false;
+		LoadingScreensManager.Instance.ShowGameLoadingScreen(LoadingScreensManager.LoadingScreenType.dungeon);
 
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(dungeonLayoutOneName, false);
+		if (MultiplayerManager.IsMultiplayer())
+			LoadNewMultiplayerScene(dungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(dungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(dungeonOneScene, false));
 	}
 	public void LoadRandomBossDungeon()
 	{
-		GameManager.isNewGame = false;
+		LoadingScreensManager.Instance.ShowGameLoadingScreen(LoadingScreensManager.LoadingScreenType.bossDungeon);
 		int bossDungeonIndex = Utilities.GetRandomNumber(bossSceneNamesList.Count - 1);
 
 		if (bossDungeonIndex == 0)
@@ -137,48 +183,226 @@ public class GameManager : MonoBehaviour
 	}
 	private void LoadBossDungoenOne()
 	{
-		GameManager.isNewGame = false;
-
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutOneName, false);
+		if (MultiplayerManager.IsMultiplayer())
+			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutOneName, false));
+			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
 	}
 	private void LoadBossDungoenTwo()
 	{
-		GameManager.isNewGame = false;
-
-		if (MultiplayerManager.Instance != null && MultiplayerManager.Instance.isMultiplayer)
-			LoadNewMultiplayerScene(bossDungeonLayoutTwoName, false);
+		if (MultiplayerManager.IsMultiplayer())
+			LoadNewMultiplayerScene(bossDungeonOneScene, false);
 		else
-			StartCoroutine(LoadNewSceneAsync(bossDungeonLayoutTwoName, false));
+			StartCoroutine(LoadSceneAsync(bossDungeonOneScene, false));
 	}
 
-	//scene loading
-	private IEnumerator LoadNewSceneAsync(string sceneToLoad, bool isNewGame)
+	//SCENE LOADING
+	public void ClearDuplicateScenesForMultiplayer()
 	{
-		GameManager.isNewGame = isNewGame;
-		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Single);
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+	}
+	private void ReloadAllScenes() //when loading a save file whilst already in a game scene
+	{
+		StartCoroutine(TryUnLoadSceneAsync(uiScene));
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
-		OnSceneChangeStart?.Invoke();
+		if (Localplayer != null)
+			Destroy(Localplayer.gameObject);
+
+		LoadUiScene();
+		StartCoroutine(LoadSceneAsync(hubScene, false));
+	}
+	private IEnumerator LoadSceneAsync(string sceneToLoad, bool isNewGame)
+	{
+		Debug.LogError("loading scene name: " + sceneToLoad + " at: " + DateTime.Now.ToString());
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+
+		GameManager.isNewGame = isNewGame;
+		Instance.PauseGame(false);
+		AsyncOperation asyncLoadScene = SceneManager.LoadSceneAsync(sceneToLoad, LoadSceneMode.Additive);
 
 		while (!asyncLoadScene.isDone)
 			yield return null;
 	}
 	private void LoadNewMultiplayerScene(string sceneToLoad, bool isNewGame)
 	{
-		GameManager.isNewGame = isNewGame;
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
 
-		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Single);
-		OnSceneChangeStart?.Invoke();
+		GameManager.isNewGame = isNewGame;
+		NetworkManager.Singleton.SceneManager.LoadScene(sceneToLoad, LoadSceneMode.Additive);
+	}
+
+	//SCENE LOAD EVENT
+	private void OnLoadSceneFinish(Scene newLoadedScene, LoadSceneMode mode)
+	{
+		Debug.LogError("loaded scene name: " + newLoadedScene.name + " at: " + DateTime.Now.ToString());
+
+		UpdateActiveSceneToMainScene(newLoadedScene);
+		UpdateCurrentlyLoadedScene(newLoadedScene);
+
+		if (LocalPlayerCamera == null)
+			SpawnPlayerCameraPrefab();
+
+		if (!MultiplayerManager.IsMultiplayer())
+		{
+			if (SceneIsHubOrDungeonScene(newLoadedScene.name) && Localplayer == null)
+				SpawnPlayerPrefab();
+		}
+
+		if (SceneIsHubOrDungeonScene(newLoadedScene.name))
+		{
+			if (gameDataReloadMode == GameDataReloadMode.reloadAllScenesAndData)
+				SaveManager.Instance.ReloadDungeonDataEvent();
+			else if (gameDataReloadMode == GameDataReloadMode.reloadDungeonData)
+				SaveManager.Instance.ReloadDungeonDataEvent();
+
+			Instance.gameDataReloadMode = GameDataReloadMode.noReload;
+		}
+		LoadingScreensManager.Instance.HideGameLoadingScreen();
+	}
+
+	//SCENE UNLOADING
+	public void UnloadSceneForConnectedClients()
+	{
+		StartCoroutine(TryUnLoadSceneAsync(currentlyLoadedScene.name));
+	}
+	private IEnumerator TryUnLoadSceneAsync(string sceneToUnLoad)
+	{
+		if (sceneToUnLoad.IsNullOrEmpty()) yield return null;
+
+		if (SceneIsHubOrDungeonScene(sceneToUnLoad))
+			SaveManager.Instance.AutoSaveData();
+
+		if (!sceneToUnLoad.IsNullOrEmpty()) //without this check again, throws scene to unload is invalid exception
+		{
+			AsyncOperation asyncUnLoadScene = SceneManager.UnloadSceneAsync(sceneToUnLoad);
+
+			while (!asyncUnLoadScene.isDone)
+				yield return null;
+		}
+	}
+
+	//SCENE UNLOAD EVENT
+	private void OnUnloadSceneFinish(Scene unLoadedScene)
+	{
+        Debug.LogError("unloaded scene: " + unLoadedScene.name + " at: " + DateTime.Now.ToString());
+	}
+
+	//SCENE CHECKS/UPDATES
+	private void UpdateActiveSceneToMainScene(Scene newLoadedScene)
+	{
+		Scene currentActiveScene = SceneManager.GetActiveScene();
+		if (currentActiveScene.name == mainScene) return;
+		SceneManager.SetActiveScene(newLoadedScene);
+	}
+	private void UpdateCurrentlyLoadedScene(Scene newLoadedScene)
+	{
+		if (newLoadedScene.name == mainScene) return;    //scene always stays loaded
+		else if (newLoadedScene.name == uiScene)
+			currentlyLoadedUiScene = newLoadedScene;
+		else
+			currentlyLoadedScene = newLoadedScene;
+	}
+	public bool SceneIsHubOrDungeonScene(string sceneName)
+	{
+		if (sceneName.IsNullOrEmpty()) return false;
+		if (sceneName.Contains("Dungeon") || sceneName.Contains("Hub"))
+			return true;
+		else return false;
+	}
+	public bool SceneIsBossDungeonScene(string sceneName)
+	{
+		if (sceneName.IsNullOrEmpty()) return false;
+		if (sceneName.Contains("Boss"))
+			return true;
+		else return false;
+	}
+
+	//SYNCING DUNGEON DATA FOR MP
+	public void SyncDungeonStatModifiers(float difficultyModifier, float[] modifiersList)
+	{
+		DungeonStatModifier dungeonModifiers = new(difficultyModifier, modifiersList);
+		Instance.currentDungeonData.dungeonStatModifiers = dungeonModifiers;
+	}
+
+	//PLAYER CAMERA SPAWNING
+	private void SpawnPlayerCameraPrefab()
+	{
+		GameObject cameraObj = Instantiate(CameraPrefab);
+		LocalPlayerCamera = cameraObj.GetComponent<Camera>();
+	}
+
+	//PLAYER OBJECT SPAWNING
+	private void SpawnPlayerPrefab()
+	{
+		if (FindObjectOfType<PlayerController>() != null)
+		{
+			Debug.LogWarning("player prefab already exists in scene, ignore if testing");
+			return;
+		}
+
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
+	}
+	public void SpawnPlayerPrefab(ulong clientNetworkIdOfOwner)
+	{
+		GameObject playerObj = Instantiate(PlayerPrefab);
+		playerObj.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientNetworkIdOfOwner, true);
+		playerObj.transform.position = DungeonHandler.Instance.GetDungeonEnterencePortal(playerObj);
+	}
+	public void UpdateLocalPlayerInstanceAndReloadAllGameData(PlayerController newLocalPlayer)
+	{
+		if (!NewPlayerObjOwnedByClient(newLocalPlayer))
+		{
+			Debug.LogError("not owner of new local player");
+			return;
+		}
+
+		DestroyOldLocalPlayer(newLocalPlayer);
+		Localplayer = newLocalPlayer;
+		SaveManager.Instance.ReloadSaveGameDataEvent(); //all game data reloaded once player instance set up in sp + for all clients in mp
+		LoadingScreensManager.Instance.HideGameLoadingScreen();
+	}
+
+	private bool NewPlayerObjOwnedByClient(PlayerController newLocalPlayer)
+	{
+		if (!MultiplayerManager.IsMultiplayer())
+			return true;
+		else
+		{
+			if (newLocalPlayer.IsOwner)
+				return true;
+			else return false;
+		}
+	}
+	private void DestroyOldLocalPlayer(PlayerController newLocalPlayer)
+	{
+		if (Localplayer != null && Localplayer != newLocalPlayer)
+			Destroy(Localplayer.gameObject);
+	}
+	private void DestroyCurrentLocalPlayer()
+	{
+		if (Localplayer != null)
+			Destroy(Localplayer.gameObject);
 	}
 
 	//pause game
 	public void PauseGame(bool pauseGame)
     {
-		if (pauseGame && !MultiplayerManager.Instance.isMultiplayer)
-			Time.timeScale = 0f;
+		if (MultiplayerManager.Instance != null)
+		{
+			if (pauseGame && !MultiplayerManager.IsMultiplayer())
+				Time.timeScale = 0f;
+			else
+				Time.timeScale = 1.0f;
+		}
 		else
-			Time.timeScale = 1.0f;
+		{
+			if (pauseGame)
+				Time.timeScale = 0f;
+			else
+				Time.timeScale = 1.0f;
+		}
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
@@ -20,23 +21,20 @@ public class TaskWeaponAttack : BTNode
 		if (WeaponAttackOnCooldown(equipmentHandler.equippedWeapon)) return NodeState.RUNNING; //always needs to be running
 
 		//Debug.LogError(stats.name + " attacking with weapon");
-		AttackWithMainWeapon(equipmentHandler.equippedWeapon);
+		TryMainWeaponAttack();
 
 		//add weapon animation length here if needed, include a bool if animation should block movement
 		behaviour.globalAttackTimer = 1f;
 		return NodeState.SUCCESS;
 	}
 
-	public void AttackWithMainWeapon(Weapons weapon)
+	private void TryMainWeaponAttack()
 	{
-		if (weapon == null || behaviour.playerTarget == null) return;
-
-		if (weapon.weaponBaseRef.isRangedWeapon)
-			weapon.RangedAttack(behaviour.playerTarget.transform.position, behaviour.projectilePrefab);
-		else
-			weapon.MeleeAttack(behaviour.playerTarget.transform.position);
+		if (equipmentHandler.equippedWeapon == null || behaviour.playerTarget == null) return;
+		behaviour.MainEntityWeaponAttack(behaviour.playerTarget.transform.position);
 	}
-	public bool WeaponAttackOnCooldown(Weapons weapon)
+
+	private bool WeaponAttackOnCooldown(Weapons weapon)
 	{
 		if (behaviour.globalAttackTimer > 0 || !weapon.canAttackAgain)
 			return true;

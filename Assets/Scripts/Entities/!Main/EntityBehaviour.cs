@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -63,6 +64,7 @@ public class EntityBehaviour : Tree
 
 	protected override void Update()
 	{
+		if (!MultiplayerManager.IsClientHost()) return; //disable behaviour if not host
 		if (entityStats.IsEntityDead()) return;
 
 		UpdateAggroRatingTimer();
@@ -144,10 +146,8 @@ public class EntityBehaviour : Tree
 	protected virtual void Initilize()
 	{
 		behaviourRef = entityStats.statsRef.entityBehaviour;
-		UpdateBounds(transform.position);
-
 		viewRangeCollider.radius = playerDetectionRange;
-		viewRangeCollider.gameObject.GetComponent<EntityDetection>().entityBehaviour = this;
+		UpdateBounds(transform.position);
 
 		navMeshAgent.speed = behaviourRef.navMeshMoveSpeed;
 		navMeshAgent.angularSpeed = behaviourRef.navMeshTurnSpeed;
@@ -216,7 +216,7 @@ public class EntityBehaviour : Tree
 			navMeshAgent.speed *= speedModifier;
 	}
 
-	//player visible Checks + timer
+	//PLAYER VISIBLE CHECKS + TIMER
 	private void IsPlayerTargetVisibleTimer() //0.1s timer
 	{
 		playerDetectionTimer -= Time.deltaTime;
@@ -258,7 +258,7 @@ public class EntityBehaviour : Tree
 		if (!CurrentPlayerTargetVisible()) return;
 
 		playersLastKnownPosition = playerTarget.transform.position;
-		distanceToPlayerTarget = Vector3.Distance(transform.position, playerTarget.transform.position);
+		distanceToPlayerTarget = Vector2.Distance(transform.position, playerTarget.transform.position);
 	}
 	private bool CurrentPlayerTargetVisible()
 	{
@@ -269,20 +269,8 @@ public class EntityBehaviour : Tree
 		else return false;
 	}
 
-	//set destination
-	public void SetNewDestination(Vector2 destination)
-	{
-		navMeshAgent.SetDestination(destination);
-	}
-
-	//global attack timer
-	private void GlobalAttackTimer()
-	{
-		if (globalAttackTimer >= 0)
-			globalAttackTimer -= Time.deltaTime;
-	}
-
-	//AGGRO LIST
+	//ENTITY AGGRO LIST
+	//update list
 	private void UpdateAggroRatingTimer()
 	{
 		if (playerAggroList.Count <= 0)
@@ -310,6 +298,8 @@ public class EntityBehaviour : Tree
 		playerAggroList.Sort((b, a) => a.aggroRatingTotal.CompareTo(b.aggroRatingTotal));
 		SetCurrentPlayerTarget();
 	}
+
+	//update target based on aggro list rating
 	private void SetCurrentPlayerTarget()
 	{
 		for (int i = 0; i < playerAggroList.Count; i++)
@@ -323,7 +313,7 @@ public class EntityBehaviour : Tree
 		playerTarget = null;
 	}
 
-	//update values
+	//update specific aggro values
 	public void AddToAggroRating(PlayerController player, int damageRecieved)
 	{
 		bool playerAlreadyInAggroList = false;
@@ -384,6 +374,38 @@ public class EntityBehaviour : Tree
 			if (playerAggroList[i].player == player)
 				playerAggroList.RemoveAt(i);
 		}
+	}
+
+	//set destination
+	public void SetNewDestination(Vector2 destination)
+	{
+		navMeshAgent.SetDestination(destination);
+	}
+
+	//global attack timer
+	private void GlobalAttackTimer()
+	{
+		if (globalAttackTimer >= 0)
+			globalAttackTimer -= Time.deltaTime;
+	}
+
+	//ENTITY MAIN WEAPON ATTACK
+	public void MainEntityWeaponAttack(Vector2 attackPos)
+	{
+		if (MultiplayerManager.IsMultiplayer())
+			SyncMainWeaponAttackRpc(attackPos);
+		else
+			MainWeaponAttack(attackPos);
+	}
+	[Rpc(SendTo.Everyone, RequireOwnership = false)]
+	private void SyncMainWeaponAttackRpc(Vector2 attackPos)
+	{
+		MainWeaponAttack(attackPos);
+	}
+	private void MainWeaponAttack(Vector2 attackPos)
+	{
+		Weapons weapon = equipmentHandler.equippedWeapon;
+		weapon.Attack(attackPos);
 	}
 
 	//utility

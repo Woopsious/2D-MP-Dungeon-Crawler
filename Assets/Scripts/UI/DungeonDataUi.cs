@@ -1,17 +1,19 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static DungeonDataUi;
 
 public class DungeonDataUi : MonoBehaviour
 {
+	public GameObject DungeonInfoUi;
+
 	public GameObject saveDungeonButtonObj;
 	public GameObject deleteDungeonButtonObj;
 
-	public TMP_Text dungeonUnExploredText;
+	public TMP_Text dungeonExploredText;
 	public TMP_Text dungeonDifficultyText;
 	public TMP_Text dungeonModifiersText;
 
@@ -20,8 +22,10 @@ public class DungeonDataUi : MonoBehaviour
 	public int dungeonIndex;
 	public int dungeonNumber;
 
-	public int maxDungeonModifiers;
-	public SOEntityStats bossToSpawn;
+	private int minDungeonModifiers;
+	private int maxDungeonModifiers;
+	private SOEntityStats bossToSpawn;
+	private List<int> dungeonModifiersInUse = new List<int>();
 	public DungeonStatModifier dungeonStatModifiers;
 	public List<DungeonChestData> dungeonChestData = new List<DungeonChestData>();
 
@@ -36,49 +40,24 @@ public class DungeonDataUi : MonoBehaviour
 	public static event Action<DungeonDataUi> OnDungeonDelete;
 
 	//set dungeon data
-	public void Initilize(int index) //initilize new dungeon
+	public async Task Initilize(int index, int dungeonDifficulty, SOEntityStats bossToSpawn) //initilize boss dungeon
 	{
 		hasExploredDungeon = false;
 		isDungeonSaved = false;
 		dungeonIndex = index;
-		dungeonNumber = Utilities.GetRandomNumber(SceneManager.sceneCountInBuildSettings - 3); //(not including hub and main menu scene)
-		int modifier = Utilities.GetRandomNumber(2);
-
-		if (hasExploredDungeon == false)
-			dungeonUnExploredText.gameObject.SetActive(true);
-		else
-			dungeonUnExploredText.gameObject.SetActive(false);
-
-		if (modifier == 0)
-		{
-			maxDungeonModifiers = 1;
-			dungeonStatModifiers.difficultyModifier = 0;
-			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
-		}
-		else if (modifier == 1)
-		{
-			maxDungeonModifiers = 3;
-			dungeonStatModifiers.difficultyModifier = 0.1f;
-			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
-		}
-		else
-		{
-			maxDungeonModifiers = 5;
-			dungeonStatModifiers.difficultyModifier = 0.25f;
-			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
-		}
-
-		for (int i = 0; i < maxDungeonModifiers; i++)
-		{
-			int chanceOfModifier = Utilities.GetRandomNumber(100);
-			if (chanceOfModifier <= 50) continue;
-
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetModifierForDungeon(modifierType);
-		}
-		
-		saveDungeonButtonObj.SetActive(true);
-		deleteDungeonButtonObj.SetActive(false);
+		dungeonNumber = -1; //-1 to indicate its boss dungeon and scene it loads is randomized on enter
+		this.bossToSpawn = bossToSpawn;
+		await SetModifiersAndUi(dungeonDifficulty);
+	}
+	public async Task Initilize(int index) //initilize new dungeon
+	{
+		DungeonInfoUi.SetActive(false);
+		hasExploredDungeon = false;
+		isDungeonSaved = false;
+		dungeonIndex = index;
+		int choice = Utilities.GetRandomNumber(GameManager.Instance.dungeonSceneNamesList.Count - 1);
+		dungeonNumber = choice + 4; //+4 for other scenes in build
+		await SetModifiersAndUi(Utilities.GetRandomNumber(2));
 	}
 	public void Initilize(DungeonData dungeonData, int index) //initilize dungeon from saved data
 	{
@@ -89,26 +68,16 @@ public class DungeonDataUi : MonoBehaviour
 		dungeonStatModifiers = dungeonData.dungeonStatModifiers;
 		dungeonChestData = dungeonData.dungeonChestData;
 
-		if (hasExploredDungeon == false)
-			dungeonUnExploredText.gameObject.SetActive(true);
-		else
-			dungeonUnExploredText.gameObject.SetActive(false);
-
+		int modifier;
 		if (dungeonStatModifiers.difficultyModifier == 0)
-		{
-			maxDungeonModifiers = 1;
-			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
-		}
+			modifier = 0;
 		else if (dungeonStatModifiers.difficultyModifier == 0.1f)
-		{
-			maxDungeonModifiers = 3;
-			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
-		}
+			modifier = 1;
 		else
-		{
-			maxDungeonModifiers = 5;
-			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
-		}
+			modifier = 2;
+
+		SetDifficultyModifierAndUI(modifier);
+		UpdateDynamicUi();
 
 		if (dungeonStatModifiers.healthModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.healthModifier)}% more Health";
@@ -140,57 +109,56 @@ public class DungeonDataUi : MonoBehaviour
 		if (dungeonStatModifiers.rangedWeaponDamageModifier != 0)
 			dungeonModifiersText.text += $"\n{Utilities.ConvertFloatToUiPercentage(dungeonStatModifiers.rangedWeaponDamageModifier)}% more Ranged Weapon Damage";
 	}
-	public void Initilize(int index, int dungeonDifficulty, SOEntityStats bossToSpawn) //initilize boss dungeon
+
+	//set modifiers + ui
+	private async Task SetModifiersAndUi(int modifier)
 	{
-		hasExploredDungeon = false;
-		isDungeonSaved = false;
-		dungeonIndex = index;
-		dungeonNumber = -1; //-1 to indicate its boss dungeon and scene it loads is randomized on enter
-		this.bossToSpawn = bossToSpawn;
-		int modifier = dungeonDifficulty;
+		SetDifficultyModifierAndUI(modifier);
+		UpdateDynamicUi();
 
-		//repurpose text to display what boss player will face
-		dungeonUnExploredText.gameObject.SetActive(true);
-		dungeonUnExploredText.text = bossToSpawn.entityName;
+		for (int i = 0; i < maxDungeonModifiers; i++)
+		{
+			int chanceOfModifierAndDelayTime = Utilities.GetRandomNumber(100);
+			await Task.Delay(chanceOfModifierAndDelayTime);
 
-		//for now boss dungeons have no modifiers just difficulty
+			if (dungeonModifiersInUse.Count < minDungeonModifiers) //ensure min modifiers
+				chanceOfModifierAndDelayTime = 100;
+
+			if (chanceOfModifierAndDelayTime <= 66) continue;
+			SetDungeonModifiersAndUi(GetNonDuplicateModifier());
+		}
+
+		DungeonInfoUi.SetActive(true);
+	}
+	private void SetDifficultyModifierAndUI(int modifier)
+	{
+		if (dungeonNumber == -1) return; //boss dungeon
 		if (modifier == 0)
 		{
-			maxDungeonModifiers = 0;
+			minDungeonModifiers = 0;
+			maxDungeonModifiers = 1;
 			dungeonStatModifiers.difficultyModifier = 0;
 			dungeonDifficultyText.text = "Difficulty: Normal \n(No Bonuses to enemy stats)";
 		}
 		else if (modifier == 1)
 		{
-			maxDungeonModifiers = 0;
+			minDungeonModifiers = 1;
+			maxDungeonModifiers = 3;
 			dungeonStatModifiers.difficultyModifier = 0.1f;
 			dungeonDifficultyText.text = "Difficulty: <color=orange>Hard</color> \n(<color=orange>10%</color> bonus to all enemy stats)";
 		}
 		else
 		{
-			maxDungeonModifiers = 0;
+			minDungeonModifiers = 3;
+			maxDungeonModifiers = 5;
 			dungeonStatModifiers.difficultyModifier = 0.25f;
 			dungeonDifficultyText.text = "Difficulty: <color=red>Hell</color> \n(<color=red>25%</color> bonus to all enemy stats)";
 		}
-
-		/*
-		for (int i = 0; i < maxDungeonModifiers; i++)
-		{
-			int chanceOfModifier = Utilities.GetRandomNumber(100);
-			if (chanceOfModifier <= 50) continue;
-
-			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
-			SetModifierForDungeon(modifierType);
-		}
-		*/
-
-		//boss dungeons dont care about this
-		saveDungeonButtonObj.SetActive(false);
-		deleteDungeonButtonObj.SetActive(false);
 	}
-	private void SetModifierForDungeon(int modifierType)
+	private void SetDungeonModifiersAndUi(int modifierType)
 	{
 		float modifierValue = 0.25f;
+		dungeonModifiersInUse.Add(modifierType);
 
 		if (modifierType == 0)
 		{
@@ -263,12 +231,66 @@ public class DungeonDataUi : MonoBehaviour
 		else
 			Debug.LogError("modifer type out of range");
 	}
+	private int GetNonDuplicateModifier()
+	{
+		for (int i = 0; i < 10; i++) //try max 10 times
+		{
+			int modifierType = Utilities.GetRandomNumber(Enum.GetNames(typeof(ModifierType)).Length - 1);
+			if (!DungeonStatModifierAlreadyExists(modifierType))
+				return modifierType;
+			else
+				continue;
+		}
+		return 0; //return health mod as fail safe
+	}
+	private bool DungeonStatModifierAlreadyExists(int newModifier)
+	{
+		foreach (int modifier in dungeonModifiersInUse)
+		{
+			if (modifier == newModifier)
+				return true;
+		}
+		return false;
+	}
+
+	//ui that changes
+	public void UpdateDynamicUi()
+	{
+		if (dungeonNumber == -1) //boss dungeon
+		{
+			dungeonExploredText.gameObject.SetActive(true);
+			dungeonExploredText.text = bossToSpawn.entityName;
+			dungeonModifiersText.text = "No Modifiers for boss Dungeons";
+
+			saveDungeonButtonObj.SetActive(false);
+			deleteDungeonButtonObj.SetActive(false);
+			return;
+		}
+
+		if (hasExploredDungeon)
+			dungeonExploredText.text = "<color=yellow>Explored</color>";
+		else
+			dungeonExploredText.text = "<color=yellow>!!!Unexplored!!!</color>";
+
+		if (isDungeonSaved)
+		{
+			saveDungeonButtonObj.SetActive(false);
+			deleteDungeonButtonObj.SetActive(true);
+		}
+		else
+		{
+			saveDungeonButtonObj.SetActive(true);
+			deleteDungeonButtonObj.SetActive(false);
+		}
+	}
 
 	//actions
 	public void EnterDungeon() //button click
 	{
-		SaveManager.Instance.AutoSaveData();
 		hasExploredDungeon = true;
+
+		if (MultiplayerManager.IsMultiplayer())
+			ClientRpcManager.instance.SyncDungeonStatModifiersRpc(dungeonStatModifiers.difficultyModifier, GetListOfDungeonStatModifiers());
 
 		GameManager.Instance.currentDungeonData.hasExploredDungeon = hasExploredDungeon;
 		GameManager.Instance.currentDungeonData.isDungeonSaved = isDungeonSaved;
@@ -280,13 +302,14 @@ public class DungeonDataUi : MonoBehaviour
 
 		if (dungeonNumber == -1)
 			EnterBossDungeon();
-		else EnterNormalDungeon();
+		else	
+			EnterNormalDungeon();
 	}
 	private void EnterNormalDungeon()
 	{
-		if (dungeonNumber == 0)
+		if (dungeonNumber == 4)
 			GameManager.Instance.LoadDungeonOne();
-		else if (dungeonNumber == 1)
+		else if (dungeonNumber == 5)
 			GameManager.Instance.LoadDungeonTwo();
 	}
 	private void EnterBossDungeon()
@@ -301,5 +324,21 @@ public class DungeonDataUi : MonoBehaviour
 	public void DeleteDungeon() //button click
 	{
 		OnDungeonDelete.Invoke(this);
+	}
+
+	private float[] GetListOfDungeonStatModifiers()
+	{
+		float[] modifiers = new float[]
+		{
+			dungeonStatModifiers.healthModifier, dungeonStatModifiers.manaModifier, 
+			dungeonStatModifiers.physicalResistanceModifier,dungeonStatModifiers.poisonResistanceModifier, 
+			dungeonStatModifiers.fireResistanceModifier, dungeonStatModifiers.iceResistanceModifier,
+			dungeonStatModifiers.physicalDamageModifier, dungeonStatModifiers.poisonDamageModifier, 
+			dungeonStatModifiers.fireDamageModifier, dungeonStatModifiers.iceDamageModifier, 
+			dungeonStatModifiers.mainWeaponDamageModifier, dungeonStatModifiers.dualWeaponDamageModifier,
+			dungeonStatModifiers.rangedWeaponDamageModifier,
+		};
+
+		return modifiers;
 	}
 }

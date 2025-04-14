@@ -150,7 +150,7 @@ public class ToolTipManager : MonoBehaviour
 	private void EquipItem(InventorySlotDataUi slot)
 	{
 		slot.itemInSlot.parentAfterDrag = slot.transform;
-		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isWeapon)
+		if (slot.itemInSlot.type == SOItems.ItemType.isWeapon)
 		{
 			equipItemButton.gameObject.SetActive(true);
 			if (slot.itemInSlot.GetComponent<Weapons>().weaponBaseRef.weaponGripType == SOWeapons.WeaponGripType.isOffhand)
@@ -160,7 +160,7 @@ public class ToolTipManager : MonoBehaviour
 				equipItemButton.onClick.AddListener(
 					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.weaponEquipmentSlot); });
 		}
-		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isArmor)
+		else if (slot.itemInSlot.type == SOItems.ItemType.isArmor)
 		{
 			if (slot.itemInSlot.GetComponent<Armors>().armorBaseRef.armorSlot == SOArmors.ArmorSlot.helmet)
 				equipItemButton.onClick.AddListener(
@@ -172,7 +172,7 @@ public class ToolTipManager : MonoBehaviour
 				equipItemButton.onClick.AddListener(
 					delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.legsEquipmentSlot); });
 		}
-		else if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAccessory)
+		else if (slot.itemInSlot.type == SOItems.ItemType.isAccessory)
 		{
 			if (slot.itemInSlot.GetComponent<Accessories>().accessoryBaseRef.accessorySlot == SOAccessories.AccessorySlot.necklace)
 				equipItemButton.onClick.AddListener(
@@ -193,7 +193,7 @@ public class ToolTipManager : MonoBehaviour
 		equipItemButtonFour.onClick.RemoveAllListeners();
 		equipItemButtonFive.onClick.RemoveAllListeners();
 
-		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAccessory)
+		if (slot.itemInSlot.type == SOItems.ItemType.isAccessory)
 		{
 			equipItemButtonOne.gameObject.SetActive(true);
 			equipItemButtonTwo.gameObject.SetActive(true);
@@ -202,7 +202,7 @@ public class ToolTipManager : MonoBehaviour
 			equipItemButtonTwo.onClick.AddListener(
 				delegate { EquipItemToThisSlot(slot, PlayerInventoryUi.Instance.ringEquipmentSlotTwo); });
 		}
-		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isConsumable)
+		if (slot.itemInSlot.type == SOItems.ItemType.isConsumable)
 		{
 			equipItemButtonOne.gameObject.SetActive(true);
 			equipItemButtonTwo.gameObject.SetActive(true);
@@ -211,7 +211,7 @@ public class ToolTipManager : MonoBehaviour
 			equipItemButtonTwo.onClick.AddListener(
 				delegate { EquipItemToThisSlot(slot, PlayerHotbarUi.Instance.consumableSlotTwo); });
 		}
-		if (slot.itemInSlot.itemType == InventoryItemUi.ItemType.isAbility)
+		if (slot.itemInSlot.type == SOItems.ItemType.isAbility)
 		{
 			equipItemButtonOne.gameObject.SetActive(true);
 			equipItemButtonTwo.gameObject.SetActive(true);
@@ -319,7 +319,7 @@ public class ToolTipManager : MonoBehaviour
 	}
 	private QuestDataUi CanItemBeHandedIn(InventoryItemUi item)
 	{
-		if (item.itemType == InventoryItemUi.ItemType.isAbility) return null;
+		if (item.type == SOItems.ItemType.isAbility) return null;
 
 		QuestDataUi matchingQuest = null;
 		foreach(QuestDataUi quest in PlayerJournalUi.Instance.activeQuests)
@@ -327,7 +327,7 @@ public class ToolTipManager : MonoBehaviour
 			if (quest.questType != QuestDataUi.QuestType.isItemHandInQuest)
 				continue;
 
-			if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isWeapon)
+			if (quest.itemTypeToHandIn == SOItems.ItemType.isWeapon)
 			{
 				if (quest.weaponToHandIn == item.weaponBaseRef)
 				{
@@ -336,7 +336,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isArmor)
+			else if (quest.itemTypeToHandIn == SOItems.ItemType.isArmor)
 			{
 				if (quest.armorToHandIn == item.armorBaseRef)
 				{
@@ -345,7 +345,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isAccessory)
+			else if (quest.itemTypeToHandIn == SOItems.ItemType.isAccessory)
 			{
 				if (quest.accessoryToHandIn == item.accessoryBaseRef)
 				{
@@ -353,7 +353,7 @@ public class ToolTipManager : MonoBehaviour
 					return matchingQuest;
 				}
 			}
-			else if (quest.itemTypeToHandIn == QuestDataUi.ItemType.isConsumable)
+			else if (quest.itemTypeToHandIn == SOItems.ItemType.isConsumable)
 			{
 				if (quest.consumableToHandIn == item.consumableBaseRef)
 				{

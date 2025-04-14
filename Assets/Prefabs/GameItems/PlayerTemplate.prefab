@@ -264,13 +264,14 @@ GameObject:
   - component: {fileID: 11892441030254905}
   - component: {fileID: 5970125703919304695}
   - component: {fileID: 3468300136831603170}
+  - component: {fileID: 1965868520373403594}
   - component: {fileID: 4193777512436036858}
   - component: {fileID: 4412705391860920891}
-  - component: {fileID: 1965868520373403594}
   - component: {fileID: 3812097260653837204}
   - component: {fileID: 120328194627084056}
   - component: {fileID: 5724620505289801652}
   - component: {fileID: 4928850030821427467}
+  - component: {fileID: 4422047265584364054}
   - component: {fileID: 7384192646310340082}
   - component: {fileID: 8198535930077927786}
   - component: {fileID: 5089666405394201071}
@@ -313,7 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2150965340
+  GlobalObjectIdHash: 298178217
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -337,13 +338,13 @@ MonoBehaviour:
   UseUnreliableDeltas: 0
   SyncPositionX: 1
   SyncPositionY: 1
-  SyncPositionZ: 1
+  SyncPositionZ: 0
   SyncRotAngleX: 1
   SyncRotAngleY: 1
-  SyncRotAngleZ: 1
+  SyncRotAngleZ: 0
   SyncScaleX: 1
   SyncScaleY: 1
-  SyncScaleZ: 1
+  SyncScaleZ: 0
   PositionThreshold: 0.001
   RotAngleThreshold: 0.01
   ScaleThreshold: 0.01
@@ -351,7 +352,7 @@ MonoBehaviour:
   UseQuaternionCompression: 0
   UseHalfFloatPrecision: 0
   InLocalSpace: 0
-  Interpolate: 1
+  Interpolate: 0
   SlerpPosition: 0
 --- !u!114 &11892441030254905
 MonoBehaviour:
@@ -424,7 +425,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -467,6 +468,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
+--- !u!114 &1965868520373403594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763340389273497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  invincible: 1
+  isDestroyedInOneHit: 0
 --- !u!114 &4193777512436036858
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -481,18 +496,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugSetStartingItems: 0
   debugUseSelectedTargetForAttackDirection: 0
-  debugSetPlayerLevelOnStart: 0
-  debugPlayerLevel: 1
+  debugSetPlayerLevelOnStart: 1
+  debugPlayerLevel: 15
   includeMe:
     serializedVersion: 2
-    m_Bits: 576
+    m_Bits: 832
   playerStats: {fileID: 0}
   playerClassHandler: {fileID: 0}
   playerEquipmentHandler: {fileID: 0}
   playerExperienceHandler: {fileID: 0}
+  playerInventoryHandler: {fileID: 0}
   enemyDetection: {fileID: 0}
   speed: 12
   selectedEnemyTarget: {fileID: 0}
+  selectedFriendlyTarget: {fileID: 0}
   AbilityAoePrefab: {fileID: 1336004635016468017, guid: d74e1faf7344a9a4b9bf40fa97b1be18, type: 3}
   projectilePrefab: {fileID: 4333192885199089462, guid: 38e23977273e3be4fb68f50da648fe37, type: 3}
   PlayerBossMarker: {fileID: 4405649885330172717}
@@ -667,20 +684,6 @@ MonoBehaviour:
   statusEffectsPrefab: {fileID: 7265944562566003032, guid: d00e9ccc771dd5e419548ec42ce1a713, type: 3}
   statusEffectsParentObj: {fileID: 7651319034662892506}
   currentStatusEffects: []
---- !u!114 &1965868520373403594
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1405763340389273497}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0043d715c01b24643a0ee34de8b9e2bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  invincible: 0
-  isDestroyedInOneHit: 0
 --- !u!114 &3812097260653837204
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -710,6 +713,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
+  equipmentSlots:
+  - {fileID: 8319858746991541843}
+  - {fileID: 393445007146146923}
+  - {fileID: 5596804197132395975}
+  - {fileID: 4052656214433169475}
+  - {fileID: 1893678986790031254}
+  - {fileID: 1001066385398427362}
+  - {fileID: 8932982922295928772}
+  - {fileID: 623970924712055506}
   entityStats: {fileID: 0}
   entityClassHandler: {fileID: 0}
   isPlayerEquipment: 0
@@ -739,7 +751,6 @@ MonoBehaviour:
   poisonDamagePercentage: 0
   fireDamagePercentage: 0
   iceDamagePercentage: 0
-  player: {fileID: 0}
 --- !u!114 &5724620505289801652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -753,12 +764,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   droppedItemPrefab: {fileID: 718365149148111719, guid: 43b10edf710275e47bce18eb8c3cef24, type: 3}
-  hasRecievedStartingItems: 0
-  hasRecievedKnightItems: 0
-  hasRecievedWarriorItems: 0
-  hasRecievedRogueItems: 0
-  hasRecievedRangerItems: 0
-  hasRecievedMageItems: 0
 --- !u!114 &4928850030821427467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,6 +778,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   debugDisablePlayerLevelUp: 0
   currentExp: 0
+--- !u!114 &4422047265584364054
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1405763340389273497}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bb2fbb486575f4489faa86a1edc14a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &7384192646310340082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1152,8 +1169,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed91e617b5c092429d74e2e7803ba80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  entityBehaviour: {fileID: 0}
-  player: {fileID: 0}
 --- !u!58 &4430825405675616512
 CircleCollider2D:
   m_ObjectHideFlags: 0

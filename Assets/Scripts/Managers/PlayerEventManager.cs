@@ -8,22 +8,58 @@ public static class PlayerEventManager
 	/// <summary>
 	/// GAME EVENTS
 	/// </summary>
-	public static Action<EntityStats> OnPlayerLevelUpEvent;
-	public static void PlayerLevelUp(EntityStats playerStats)
+	public static Action<PlayerController> OnPlayerLevelChangeEvent;
+	public static void PlayerLevelChange(PlayerController player)
 	{
-		OnPlayerLevelUpEvent?.Invoke(playerStats);
+		OnPlayerLevelChangeEvent?.Invoke(player);
 	}
 
-	//player death events
-	public static event Action<GameObject> OnPlayerDeathEvent;
-	public static void PlayerDeath(GameObject obj, DamageSourceInfo damageSourceInfo)
+	//player death event
+	public static event Action<PlayerController, string> OnPlayerDeathEvent;
+	public static void PlayerDeath(PlayerController player, string deathMessage)
 	{
-		OnPlayerDeathEvent?.Invoke(obj);
-		GetPlayerDeathMessaage?.Invoke(Utilities.GetPlayerDeathMessage(damageSourceInfo));
+		OnPlayerDeathEvent?.Invoke(player, deathMessage);
 		OnShowPlayerDeathUiEvent?.Invoke();
 	}
-	public static event Action<string> GetPlayerDeathMessaage;
-	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath()
+
+	public static event Action OnShowPlayerDeathUiEvent; //invoked from PlayerDeath() hides all other ui elements
+
+	//sync player revive ui timer events
+	public static event Action<float> OnStartReviveTimerUiEvent; //also invoked from PlayerDeath()
+	public static void SyncStartRevivePlayerUiTimerEvent(float respawnTimer)
+	{
+		OnStartReviveTimerUiEvent?.Invoke(respawnTimer);
+	}
+	public static event Action OnCancelReviveTimerUiEvent; //also invoked from PlayerDeath()
+	public static void SyncCancelRevivePlayerUiTimerEvent()
+	{
+		OnCancelReviveTimerUiEvent?.Invoke();
+	}
+
+	//player Respawn events
+	public static event Action OnRespawnAllPlayersEvent;
+	public static void RespawnAllPlayers()
+	{
+		OnRespawnAllPlayersEvent?.Invoke();
+		OnRespawnPlayerEvent?.Invoke(null, GameManager.Localplayer);
+	}
+	public static event Action<PlayerController, PlayerController> OnRespawnPlayerEvent;
+	public static void RespawnPlayer(PlayerController optionalReviverPlayer, PlayerController revivedplayer)
+	{
+		OnRespawnPlayerEvent?.Invoke(optionalReviverPlayer, revivedplayer);
+	}
+
+	//player revive events
+	public static event Action<GameObject> OnStartRevivePlayerEvent;
+	public static void StartRevivePlayerEvent(GameObject playerObj)
+	{
+		OnStartRevivePlayerEvent?.Invoke(playerObj);
+	}
+	public static event Action<GameObject> OnCancelRevivePlayerEvent;
+	public static void CancelRevivePlayerEvent(GameObject playerObj)
+	{
+		OnCancelRevivePlayerEvent?.Invoke(playerObj);
+	}
 
 	/// <summary>
 	/// UI EVENTS
@@ -32,6 +68,12 @@ public static class PlayerEventManager
 	public static void GoldAmountChange(int gold)
 	{
 		OnGoldAmountChange?.Invoke(gold);
+	}
+
+	public static event Action<int, int> OnPlayerExpChangeEvent;
+	public static void PlayerExpChange(int max, int current)
+	{
+		OnPlayerExpChangeEvent?.Invoke(max, current);
 	}
 
 	public static event Action<int, int> OnPlayerHealthChangeEvent;
@@ -46,23 +88,22 @@ public static class PlayerEventManager
 		OnPlayerManaChangeEvent?.Invoke(max, current);
 	}
 
-	public static event Action<int, int> OnPlayerExpChangeEvent;
-	public static void PlayerExpChange(int max, int current)
-	{
-		OnPlayerExpChangeEvent?.Invoke(max, current);
-	}
-
 	public static event Action<EntityStats> OnPlayerStatChangeEvent;
 	public static void PlayerStatChange(EntityStats playerStats)
 	{
 		OnPlayerStatChangeEvent?.Invoke(playerStats);
 	}
+	public static event Action<AbilityStatusEffect> OnPlayerStatusEffectChange;
+	public static void PlayerStatusEffectChange(AbilityStatusEffect statusEffect)
+	{
+		OnPlayerStatusEffectChange?.Invoke(statusEffect);
+	}
 
 	//player ui
-	public static event Action<GameObject, bool> OnDetectNewInteractedObject;
-	public static void DetectNewInteractedObject(GameObject obj, bool showText)
+	public static event Action<Interactables, bool, string> OnDetectNewInteractedObject;
+	public static void DetectNewInteractedObject(Interactables interactable, bool showText, string message)
 	{
-		OnDetectNewInteractedObject?.Invoke(obj, showText);
+		OnDetectNewInteractedObject?.Invoke(interactable, showText, message);
 	}
 
 	public static event Action OnShowPlayerInventoryEvent;
@@ -73,20 +114,9 @@ public static class PlayerEventManager
 	public static event Action OnShowPlayerClassSelectionEvent;
 	public static void ShowPlayerClassSelection()
 	{
-		if (Application.isEditor) //allow class swapping in all scenes when open in editor
-		{
+		//allow class changes in editor when ever
+		if (Application.isEditor || Utilities.SceneIsActive(GameManager.Instance.hubScene))
 			OnShowPlayerClassSelectionEvent?.Invoke();
-
-			if (GameManager.Instance == null)
-				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
-		}
-		else //allow class swapping only in hub area
-		{
-			if (GameManager.Instance != null && Utilities.GetCurrentlyActiveScene(GameManager.Instance.hubAreaName))
-				OnShowPlayerClassSelectionEvent?.Invoke();
-			else
-				Debug.LogWarning("Game Manager instance not found, ignore if testing scene");
-		}
 	}
 	public static event Action OnShowPlayerSkillTreeEvent;
 	public static void ShowPlayerSkillTree()

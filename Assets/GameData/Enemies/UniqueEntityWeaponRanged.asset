@@ -19,6 +19,7 @@ MonoBehaviour:
   itemSpawnChance: 0
   itemType: 1
   isEquipable: 1
+  rarity: 0
   isStackable: 0
   MaxStackCount: 1
   equipItemSfx: {fileID: 0}
@@ -28,7 +29,7 @@ MonoBehaviour:
   baseKnockback: 5
   classRestriction: 0
   weaponGripType: 0
-  weaponType: 0
+  weaponType: 1
   baseDamage: 25
   baseDamageType: 0
   isRangedWeapon: 1

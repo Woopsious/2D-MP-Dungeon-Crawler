@@ -30,13 +30,13 @@ MonoBehaviour:
   hasAoeDuration: 0
   aoeDuration: 0
   circleAoeRadius: 30
-  angle: 0
-  coneAoeRadius: 0
-  boxAoeSizeX: 0
-  boxAoeSizeY: 0
+  angle: 30
+  coneAoeRadius: 20
+  boxAoeSizeX: 10
+  boxAoeSizeY: 20
   isProjectile: 0
   projectileSprite: {fileID: 0}
-  projectileSpeed: 0
+  projectileSpeed: 20
   isDamagePercentageBased: 0
   damageType: 0
   damageValue: 40

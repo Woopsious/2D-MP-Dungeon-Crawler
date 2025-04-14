@@ -10,8 +10,6 @@ using UnityEngine.UI;
 
 public class PlayerCardInfoHandler : MonoBehaviour
 {
-	public bool uiDirty;
-
 	public TMP_Text hostText;
 	public TMP_Text playerNameText;
 	public TMP_Text PlayerInfoText;
@@ -22,21 +20,21 @@ public class PlayerCardInfoHandler : MonoBehaviour
 	//update ui text fields
 	public void UpdateUiInfo(Lobby lobby, int index)
 	{
-		if (lobby.Players.Count - 1 < index || HostManager.Instance.connectedClientsList.Count - 1 < index) //blank info if no player exists
+		if (lobby.Players.Count - 1 < index) //blank info if no player exists
 			ClearUiInfo();
 		else
 		{
-			clientNetworkId = HostManager.Instance.connectedClientsList[index].clientNetworkedId;
 			SetHostText(index);
-			playerNameText.text = GetPlayerName(lobby, index);
-			PlayerInfoText.text = $"Level {GetPlayerLevel(lobby, index)} {GetPlayerClass(lobby, index)}";
+			playerNameText.text = LobbyManager.Instance.GetPlayerName(index);
+			PlayerInfoText.text = $"Level {LobbyManager.Instance.GetPlayerLevel(index)} {LobbyManager.Instance.GetPlayerClass(index)}";
+			clientNetworkId = LobbyManager.Instance.GetPlayerNetworkId(index);
 			UpdatePlayerActionButton(index);
 		}
 	}
 	public void ClearUiInfo()
 	{
 		hostText.text = "";
-		playerNameText.text = "Empty";
+		playerNameText.text = "No Player";
 		PlayerInfoText.text = "";
 		button.gameObject.SetActive(false);
 	}
@@ -51,26 +49,10 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		else if (index == 3)
 			hostText.text = "Player 4";
 	}
-	private string GetPlayerName(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerName", out PlayerDataObject playerName))
-			Debug.LogError("player Name Key not found");
 
-		return playerName.Value.ToString();
-	}
-	private string GetPlayerLevel(Lobby lobby, int index)
+	public void LogPlayerInfo()
 	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerLevel", out PlayerDataObject playerLevel))
-			Debug.LogError("player level Key not found");
-
-		return playerLevel.Value.ToString();
-	}
-	private string GetPlayerClass(Lobby lobby, int index)
-	{
-		if (!lobby.Players[index].Data.TryGetValue("PlayerClass", out PlayerDataObject playerClass))
-			Debug.LogError("player Class Key not found");
-
-		return playerClass.Value.ToString();
+		LobbyManager.Instance.LogSpecificPlayerInfo(clientNetworkId.ToString());
 	}
 
 	/// <summary>
@@ -83,17 +65,17 @@ public class PlayerCardInfoHandler : MonoBehaviour
 		button.gameObject.SetActive(true);
 		button.onClick.RemoveAllListeners();
 
-		if (MultiplayerManager.Instance.IsPlayerHost())
+		if (MultiplayerManager.IsClientHost())
 		{
 			if (index == 0)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Close Lobby";
-				button.onClick.AddListener(delegate { CloseLobbyButton(); });
+				button.onClick.AddListener(delegate { HostCloseLobbyButton(); });
 			}
 			else
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Kick Player";
-				button.onClick.AddListener(delegate { KickPlayerButton(); });
+				button.onClick.AddListener(delegate { HostKickPlayerButton(); });
 			}
 		}
 		else
@@ -101,7 +83,7 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			if (clientNetworkId == NetworkManager.Singleton.LocalClientId)
 			{
 				button.GetComponentInChildren<TMP_Text>().text = "Leave Lobby";
-				button.onClick.AddListener(delegate { LeaveRelayAndLobbyButton(); });
+				button.onClick.AddListener(delegate { ClientLeaveRelayAndLobbyButton(); });
 			}
 			else
 			{
@@ -109,18 +91,22 @@ public class PlayerCardInfoHandler : MonoBehaviour
 			}
 		}
 	}
-	private void CloseLobbyButton()
+	private void ClientLeaveRelayAndLobbyButton()
 	{
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
-		HostManager.Instance.CloseLobby("Host Closed Lobby");
+		if (MultiplayerManager.IsClientHost()) return; //double check
+
+		ClientManager.Instance.ClientLeaveRelayAndLobby("Lobby Left", false);
 	}
-	private void KickPlayerButton()
+	private void HostCloseLobbyButton()
 	{
-		if (!MultiplayerManager.Instance.IsPlayerHost()) return; //double check
-		HostManager.Instance.RemoveClientFromRelay(clientNetworkId, "Kicked from lobby by host");
+		if (!MultiplayerManager.IsClientHost()) return; //double check
+
+		HostManager.Instance.CloseLobbyAndStopHost("Host Closed Lobby", false);
 	}
-	private void LeaveRelayAndLobbyButton()
+	private void HostKickPlayerButton()
 	{
-		HostManager.Instance.LeaveRelayServerRPC(clientNetworkId);
+		if (!MultiplayerManager.IsClientHost()) return; //double check
+
+		HostManager.Instance.KickClientFromRelay(clientNetworkId.ToString(), "Kicked from lobby by host");
 	}
 }

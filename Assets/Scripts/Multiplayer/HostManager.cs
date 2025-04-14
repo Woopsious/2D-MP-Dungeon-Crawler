@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
@@ -9,13 +10,14 @@ using Unity.Services.Lobbies.Models;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using WebSocketSharp;
 
 public class HostManager : NetworkBehaviour
 {
 	public static HostManager Instance;
 
-	public NetworkList<ClientDataInfo> connectedClientsList;
+	public GameObject clientListObj;
 
 	public int connectedPlayers;
 	public string idOfKickedPlayer;
@@ -26,7 +28,6 @@ public class HostManager : NetworkBehaviour
 		if (Instance == null)
 		{
 			Instance = this;
-			Instance.connectedClientsList = new NetworkList<ClientDataInfo>();
 			DontDestroyOnLoad(Instance);
 		}
 		else
@@ -36,20 +37,28 @@ public class HostManager : NetworkBehaviour
 	//START/STOP HOST
 	public void StartHost()
 	{
-		ClearPlayers();
+		LoadingScreensManager.Instance.ShowLobbyLoadingScreen(LoadingScreensManager.LoadingScreenType.creatingLobby);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
+		GameManager.Instance.LoadHubArea(false, GameManager.GameDataReloadMode.reloadAllScenesAndData);
 		GameManager.Instance.PauseGame(false);
 		StartCoroutine(RelayConfigureTransportAsHostingPlayer());
 		MultiplayerManager.Instance.SubToEvents();
-		MultiplayerManager.Instance.isMultiplayer = true;
+		MultiplayerManager.UpdateIsMultiplayer(true);
 	}
-	public void StopHost()
+	public void StopHost(bool quittingToMainMenu)
 	{
-		ClearPlayers();
+		if (GameManager.Instance.currentlyLoadedScene.name == GameManager.Instance.hubScene)
+			SaveManager.Instance.AutoSaveData();
+
 		LobbyManager.Instance.DeleteLobby();
 		LobbyManager.Instance.ResetLobbyReferences();
 		MultiplayerManager.Instance.UnsubToEvents();
-		MultiplayerManager.Instance.ShutDownNetworkManagerIfActive();
-		MultiplayerManager.Instance.isMultiplayer = false;
+		MultiplayerManager.UpdateIsMultiplayer(false);
+		GameManager.Instance.ClearDuplicateScenesForMultiplayer();
+		NetworkManager.Singleton.Shutdown();
+
+		if (quittingToMainMenu)
+			GameManager.Instance.LoadMainMenu();
 	}
 
 	//CREATE RELAY SERVER
@@ -97,97 +106,67 @@ public class HostManager : NetworkBehaviour
 		}
 		return new RelayServerData(allocation, "dtls");
 	}
-
+	private void SpawnClientRpcManager()
+	{
+		var instance = Instantiate(clientListObj);
+		var instanceNetworkObject = instance.GetComponent<NetworkObject>();
+		instanceNetworkObject.Spawn();
+	}
 
 	//DISCONNECT OPTIONS
 	//close lobby
-	public void CloseLobby(string disconnectReason)
+	public void CloseLobbyAndStopHost(string disconnectReason, bool quittingToMainMenu)
 	{
-		foreach (ClientDataInfo clientData in Instance.connectedClientsList)
-			RemoveClientFromRelay(clientData.clientNetworkedId, disconnectReason);
+		for (int i = 0; i < LobbyManager.Instance._Lobby.Players.Count; i++)
+		{
+			Player player = LobbyManager.Instance._Lobby.Players[i];
+			RemoveClientFromRelay(player.Data["PlayerNetworkID"].Value, disconnectReason);
+		}
 
-		MultiplayerMenuUi.Instance.ShowMpMenuUi();
-		StopHost();
+		Instance.StopHost(quittingToMainMenu);
+
+		if (quittingToMainMenu) return;
+		LoadingScreensManager.Instance.SetDisconnectReason(disconnectReason);
+		LoadingScreensManager.Instance.ShowDisconnectScreen();
+	}
+	//kick client
+	public void KickClientFromRelay(string networkedStringId, string disconnectReason)
+	{
+		RemoveClientFromRelay(networkedStringId, disconnectReason);
 	}
 	//remove clients from relay
-	public void RemoveClientFromRelay(ulong networkedId, string disconnectReason)
+	private void RemoveClientFromRelay(string networkedStringId, string disconnectReason)
 	{
-		networkIdOfKickedPlayer = networkedId.ToString();
-
-		//save data
+		ulong networkedId = Convert.ToUInt64(networkedStringId);
+		if (networkedId == 0) return; //skip host disconnecting
 
 		if (disconnectReason.IsNullOrEmpty())
 			NetworkManager.Singleton.DisconnectClient(networkedId, "Network error"); //fall back reason
 		else
 			NetworkManager.Singleton.DisconnectClient(networkedId, disconnectReason);
 	}
-	[ServerRpc(RequireOwnership = false)]
-	public void LeaveRelayServerRPC(ulong clientId) //non Host players leave lobby this way
-	{
-		RemoveClientFromRelay(clientId, "player left lobby");
-	}
 
 	//HANDLE CLIENT CONNECTS/DISCONNECTS EVENTS
 	public void HandleClientConnectsAsHost(ulong id)
 	{
-		if (id == 0) //grab host data locally as lobby is not yet made
+		if (id == 0)
 		{
-			if (Instance.connectedClientsList == null)
-				connectedClientsList = new NetworkList<ClientDataInfo>();
-
-			ClientDataInfo data = new(ClientManager.Instance.clientUsername, ClientManager.Instance.clientId,
-				ClientManager.Instance.clientNetworkedId);
-
-			Instance.connectedClientsList.Add(data);
-
-
-		}
-		else //grab other clients data through lobby
-		{
-			Player player = LobbyManager.Instance._Lobby.Players[Instance.connectedClientsList.Count];
-			ClientDataInfo data = new(player.Data["PlayerName"].Value, player.Data["PlayerID"].Value, id);
-
-			Instance.connectedClientsList.Add(data);
+			SpawnClientRpcManager();
+			LoadingScreensManager.Instance.HideLobbyLoadingScreen();
 		}
 
-		SceneHandler.Instance.SpawnNetworkedPlayerObject(id);
+		GameManager.Instance.SpawnPlayerPrefab(id);
 	}
 	public void HandleClientDisconnectsAsHost(ulong id)
 	{
-		foreach (ClientDataInfo clientData in connectedClientsList)
-		{
-			if (clientData.clientNetworkedId == id)
-			{
-				connectedClientsList.Remove(clientData);
-				RemoveClientFromLobby(clientData.clientId.ToString());
-			}
-		}
+		RemoveDisconnectedClientsFromLobby(id);
 	}
 
-	//remove clients from lobby after disconnects
-	public async void RemoveClientFromLobby(string clientId)
+	//auto remove disconnected clients from lobby for what ever reason
+	private void RemoveDisconnectedClientsFromLobby(ulong id)
 	{
-		try
-		{
-			await LobbyService.Instance.RemovePlayerAsync(LobbyManager.Instance._Lobby.Id, clientId);
-			Debug.LogWarning($"player with Id: {clientId} kicked from lobby");
-		}
-		catch (LobbyServiceException e)
-		{
-			Debug.LogError(e.Message);
-		}
-	}
+		if (id == 0) return; //host disconnected, possibly check to ensure lobby host was in is also shut down
 
-	//reset connectedClientsList
-	public void ClearPlayers()
-	{
-		try
-		{
-			Instance.connectedClientsList.Clear();
-		}
-		catch
-		{
-			Debug.Log("failed to clear connectedClientsList: Not an issue so far");
-		}
+		LobbyManager.Instance.RemoveDisconnectedClientFromLobby(id.ToString());
 	}
 }

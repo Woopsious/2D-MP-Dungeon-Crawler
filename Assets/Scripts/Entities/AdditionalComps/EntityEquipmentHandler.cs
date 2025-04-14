@@ -1,12 +1,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Services.Lobbies.Models;
+using Unity.Netcode;
 using UnityEngine;
 
-public class EntityEquipmentHandler : MonoBehaviour
+public class EntityEquipmentHandler : NetworkBehaviour
 {
 	public GameObject itemPrefab;
+	public List<GameObject> equipmentSlots;
 
 	[HideInInspector] public EntityStats entityStats;
 	[HideInInspector] public EntityClassHandler entityClassHandler;
@@ -62,29 +63,52 @@ public class EntityEquipmentHandler : MonoBehaviour
 	}
 
 	//equip items to non players based on class
-	public void SpawnEntityEquipment()
+	public void AssignEntityRandomEquipment()
 	{
-		if (!entityStats.statsRef.canUseEquipment) //equip unique weapon
-		{
-			EquipWeapon(entityStats.statsRef.UniqueAttackWeapon, equippedWeapon, weaponSlotContainer);
-			return;
-		}
+		if (!MultiplayerManager.IsClientHost()) return;
 
-		EquipWeapon(entityClassHandler.currentEntityClass.startingWeapon[Utilities.GetRandomNumber
-			(entityClassHandler.currentEntityClass.startingWeapon.Count - 1)], equippedWeapon, weaponSlotContainer);
-		//EquipRandomWeapon( NO LIST FOR OFFHAND WEAPONS ATM, equippedOffhandWeapon, offhandWeaponSlotContainer);
+		//armour can be blank so check list and skip if it is
+		int helmetIndex = -1;
+		int chestIndex = -1;
+		int legsIndex = -1;
 
-		foreach (SOArmors armor in entityClassHandler.currentEntityClass.startingArmor)
-		{
-			if (armor.armorSlot == SOArmors.ArmorSlot.helmet)
-				EquipArmor(armor, equippedHelmet, helmetSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.chest)
-				EquipArmor(armor, equippedChestpiece, chestpieceSlotContainer);
-			if (armor.armorSlot == SOArmors.ArmorSlot.legs)
-				EquipArmor(armor, equippedLegs, legsSlotContainer);
-		}
+		int weaponIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityWeapons.Count - 1);
+
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			helmetIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityHelmetArmours.Count - 1);
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			chestIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityChestArmours.Count - 1);
+		if (entityStats.statsRef.entityHelmetArmours.Count != 0)
+			legsIndex = Utilities.GetRandomNumber(entityStats.statsRef.entityLegArmours.Count - 1);
+
+		if (MultiplayerManager.IsMultiplayer())
+			SyncEntityEquipmentForClientsRPC(weaponIndex, helmetIndex, chestIndex, legsIndex);
+		else
+			EquipEntityEquipment(weaponIndex, helmetIndex, chestIndex, legsIndex);
+	}
+
+	[Rpc(SendTo.Everyone)]
+	private void SyncEntityEquipmentForClientsRPC(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
+	{
+		EquipEntityEquipment(weaponIndex, helmetIndex, chestIndex, legsIndex);
+	}
+	private void EquipEntityEquipment(int weaponIndex, int helmetIndex, int chestIndex, int legsIndex)
+	{
+		//check index, skipping equipment thats left blank
+		if (weaponIndex != -1)
+			EquipWeapon(entityStats.statsRef.entityWeapons[weaponIndex], equippedWeapon, weaponSlotContainer);
+
+		if (helmetIndex != -1)
+			EquipArmor(entityStats.statsRef.entityHelmetArmours[helmetIndex], equippedHelmet, helmetSlotContainer);
+		if (chestIndex != -1)
+			EquipArmor(entityStats.statsRef.entityChestArmours[chestIndex], equippedChestpiece, chestpieceSlotContainer);
+		if (legsIndex != -1)
+			EquipArmor(entityStats.statsRef.entityLegArmours[legsIndex], equippedLegs, legsSlotContainer);
+
 		//Accessory functions here if/when i decide to add it
 	}
+
+	//EQUIP ENTITY ITEMS
 	private void EquipWeapon(SOWeapons weaponToEquip, Weapons equippedWeaponRef, GameObject slotToSpawnIn)
 	{
 		GameObject go;
@@ -113,8 +137,22 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equippedArmorRef.GetComponent<SpriteRenderer>().enabled = false;
 		OnArmorEquip(equippedArmorRef, slotToSpawnIn);
 	}
+	private void EquipAccessory(SOAccessories accessoryToEquip, Accessories equippedAccessoryRef, GameObject slotToSpawnIn)
+	{
+		GameObject go;
+		OnAccessoryUnequip(equippedAccessoryRef);
 
-	//equipment changes events
+		go = SpawnItemPrefab(slotToSpawnIn);
+		equippedAccessoryRef = go.AddComponent<Accessories>();
+
+		equippedAccessoryRef.accessoryBaseRef = accessoryToEquip;
+		equippedAccessoryRef.Initilize(Utilities.SetRarity(0), entityStats.entityLevel, 0);
+
+		equippedAccessoryRef.GetComponent<SpriteRenderer>().enabled = false;
+		OnAccessoryEquip(equippedAccessoryRef, slotToSpawnIn);
+	}
+
+	//equipment change events
 	protected void OnWeaponUnequip(Weapons weapon)
 	{
 		if (weapon == null) return;
@@ -131,12 +169,12 @@ public class EntityEquipmentHandler : MonoBehaviour
 			equipmentMana -= weapon.bonusMana;
 
 		entityStats.IdleWeaponSprite.sprite = null;
-		Destroy(weapon);
+		Destroy(weapon.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnWeaponEquip(Weapons weapon, GameObject slotItemIsIn)
 	{
-		if (weapon.isShield)	//shield is a unique so i use damage value to store bonus health and resists it adds
+		if (weapon.isShield)	//shield is a unique, use damage value to store bonus health and resists it adds
 		{
 			equipmentHealth += weapon.damage;
 			equipmentPhysicalResistance += weapon.damage;
@@ -163,7 +201,7 @@ public class EntityEquipmentHandler : MonoBehaviour
 		equipmentFireResistance -= armor.bonusFireResistance;
 		equipmentIceResistance -= armor.bonusIceResistance;
 
-		Destroy(armor);
+		Destroy(armor.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnArmorEquip(Armors armor, GameObject slotItemIsIn)
@@ -192,14 +230,14 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
 			physicalDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
 			poisonDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
 			fireDamagePercentage -= accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage -= accessory.bonusPercentageValue;
 
-		Destroy(accessory);
+		Destroy(accessory.gameObject);
 		OnEquipmentChanges?.Invoke(this);
 	}
 	protected void OnAccessoryEquip(Accessories accessory, GameObject slotItemIsIn)
@@ -213,29 +251,24 @@ public class EntityEquipmentHandler : MonoBehaviour
 
 		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPhysicalDamageType)
 			physicalDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
+		else if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isPoisonDamageType)
 			poisonDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isFireDamageType)
 			fireDamagePercentage += accessory.bonusPercentageValue;
-		if (accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
+		else if(accessory.damageTypeToBoost == Accessories.DamageTypeToBoost.isIceDamageType)
 			iceDamagePercentage += accessory.bonusPercentageValue;
 
 		AssignItemRefOnEquip(accessory, slotItemIsIn);
 		OnEquipmentChanges?.Invoke(this);
 	}
 
-	//physically spawned on entites
+	//spawn prefabs for equipped items
 	protected GameObject SpawnItemPrefab(GameObject slotToSpawnIn)
 	{
-		GameObject go;
-		if (slotToSpawnIn.transform.childCount == 0)
-		{
-			go = Instantiate(itemPrefab, slotToSpawnIn.transform);
-			return go;
-		}
-		else return slotToSpawnIn.transform.GetChild(0).gameObject;
+		GameObject go = Instantiate(itemPrefab, slotToSpawnIn.transform);
+		return go;
 	}
-	private Items AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
+	private void AssignItemRefOnEquip(Items itemToAssign, GameObject SlotItemIsIn)
 	{
 		if (SlotItemIsIn == weaponSlotContainer)
 			equippedWeapon = (Weapons)itemToAssign;
@@ -254,6 +287,6 @@ public class EntityEquipmentHandler : MonoBehaviour
 		else if (SlotItemIsIn == ringTwoSlotContainer)
 			equippedRingTwo = (Accessories)itemToAssign;
 		else
-			Debug.LogError("item doesnt match any equipment slot"); return null;
+			Debug.LogError("item doesnt match any equipment slot");
 	}
 }
