@@ -993,7 +993,7 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//in game actions
-	private void OnCameraZoom()
+	public void OnCameraZoom()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
@@ -1002,19 +1002,19 @@ public class PlayerController : NetworkBehaviour
 		if (playerCamera.orthographicSize > 3 && value == 120 || playerCamera.orthographicSize < 12 && value == -120)
 			playerCamera.orthographicSize -= value / 480;
 	}
-	private void OnSpectateNextPlayer()
+	public void OnSpectateNextPlayer()
 	{
 		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		SpectateNextAlivePlayer();
 	}
-	private void OnSpectatePreviousPlayer()
+	public void OnSpectatePreviousPlayer()
 	{
 		if (!playerStats.IsEntityDead() || IsPlayerInteracting()) return;
 
 		SpecatePreviousAlivePlayer();
 	}
-	private void OnMainAttack()
+	public void OnMainAttack()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
@@ -1041,7 +1041,7 @@ public class PlayerController : NetworkBehaviour
 			}
 		}
 	}
-	private void OnRightClick()
+	public void OnRightClick()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
@@ -1050,7 +1050,7 @@ public class PlayerController : NetworkBehaviour
 
 		CheckForSelectableTarget();
 	}
-	private void OnTabTargetingForwards()
+	public void OnTabTargetingForwards()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
@@ -1059,7 +1059,7 @@ public class PlayerController : NetworkBehaviour
 		else
 			CycleTargetsForwards(selectedEnemyTargetIndex + 1);
 	}
-	private void OnTabTargetingBackwards()
+	public void OnTabTargetingBackwards()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 
@@ -1070,21 +1070,21 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//hotbar actions
-	private void OnConsumablesOne()
+	public void OnConsumablesOne()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (PlayerHotbarUi.Instance.equippedConsumableOne == null) return;
 
 		PlayerHotbarUi.Instance.equippedConsumableOne.ConsumeItem(playerStats);
 	}
-	private void OnConsumablesTwo()
+	public void OnConsumablesTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (PlayerHotbarUi.Instance.equippedConsumableTwo == null) return;
 
 		PlayerHotbarUi.Instance.equippedConsumableTwo.ConsumeItem(playerStats);
 	}
-	private void OnAbilityOne()
+	public void OnAbilityOne()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityOne == null) return;
@@ -1098,7 +1098,7 @@ public class PlayerController : NetworkBehaviour
 		if (newQueuedAbility.CanInstantCastAbility())
 			CastAbility();
 	}
-	private void OnAbilityTwo()
+	public void OnAbilityTwo()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityTwo == null) return;
@@ -1112,7 +1112,7 @@ public class PlayerController : NetworkBehaviour
 		if (newQueuedAbility.CanInstantCastAbility())
 			CastAbility();
 	}
-	private void OnAbilityThree()
+	public void OnAbilityThree()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityThree == null) return;
@@ -1126,7 +1126,7 @@ public class PlayerController : NetworkBehaviour
 		if (newQueuedAbility.CanInstantCastAbility())
 			CastAbility();
 	}
-	private void OnAbilityFour()
+	public void OnAbilityFour()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFour == null) return;
@@ -1140,7 +1140,7 @@ public class PlayerController : NetworkBehaviour
 		if (newQueuedAbility.CanInstantCastAbility())
 			CastAbility();
 	}
-	private void OnAbilityFive()
+	public void OnAbilityFive()
 	{
 		if (playerStats.IsEntityDead() || IsPlayerInteracting() || MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		if (queuedAbility != null || PlayerHotbarUi.Instance.equippedAbilityFive == null) return;
@@ -1154,7 +1154,7 @@ public class PlayerController : NetworkBehaviour
 		if (newQueuedAbility.CanInstantCastAbility())
 			CastAbility();
 	}
-	private void TryReacquireNewTarget()
+	public void TryReacquireNewTarget()
 	{
 		if (selectedEnemyTarget == null && PlayerSettingsManager.Instance.autoSelectNewTarget)
 			CycleTargetsForwards(0);
@@ -1162,32 +1162,32 @@ public class PlayerController : NetworkBehaviour
 	}
 
 	//ui actions
-	private void OnMainMenu()
+	public void OnMainMenu()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		MainMenuManager.Instance.ShowHideMainMenuKeybind();
 	}
-	private void OnInventory()
+	public void OnInventory()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerInventory();
 	}
-	private void OnJournal()
+	public void OnJournal()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerJournal();
 	}
-	private void OnClassSelection()
+	public void OnClassSelection()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerClassSelection();
 	}
-	private void OnClassSkillTree()
+	public void OnClassSkillTree()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerSkillTree();
 	}
-	private void OnLearntAbilities()
+	public void OnLearntAbilities()
 	{
 		if (MultiplayerManager.CheckIfMultiplayerMenusOpen()) return;
 		PlayerEventManager.ShowPlayerLearntAbilities();

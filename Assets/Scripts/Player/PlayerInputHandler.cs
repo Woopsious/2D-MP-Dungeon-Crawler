@@ -111,6 +111,7 @@ public class PlayerInputHandler : MonoBehaviour
 			Instance = this;
 
 		SetUpInputActions();
+		playerControls.FindActionMap(actionMapName, true).Enable();
 	}
 	private void Update()
 	{
